@@ -12,4 +12,4 @@ build-job:
 test-job-empty:
   stage: test
   script:
-    - echo "Tests: none yet!"
+    - echo "Tests none yet!"
