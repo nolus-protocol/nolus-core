@@ -1,0 +1,15 @@
+stages:
+  - build
+  - test
+
+build-job:
+  stage: build
+  image: golang:1.18.2
+  script:
+    - echo "Building cosmzone ..."
+    - make build
+
+test-job-empty:
+  stage: test
+  script:
+    - echo "Tests: none yet!"
