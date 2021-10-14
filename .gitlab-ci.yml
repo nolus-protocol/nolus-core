@@ -4,7 +4,7 @@ stages:
 
 build-job:
   stage: build
-  image: golang:1.18.2
+  image: golang:1.17.2
   script:
     - echo "Building cosmzone ..."
     - make build
