@@ -1,6 +1,10 @@
 # cosmzone
 **cosmzone** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
 
+## Prerequisites
+
+Install [golang](https://golang.org/) and [jq](https://stedolan.github.io/jq/).
+
 ## Get started
 
 ```
