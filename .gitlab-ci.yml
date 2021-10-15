@@ -10,6 +10,7 @@ build-job:
     - export GOSUMDB=off
     - go env
     - go clean -modcache
+    - GOSUMDB=off go mod verify
     - make build
 
 test-job-empty:
