@@ -2,9 +2,19 @@ stages:
   - build
   - test
 
+.go-cache:
+  variables:
+    GOPATH: $CI_PROJECT_DIR/.go
+  before_script:
+    - mkdir -p .go
+  cache:
+    paths:
+      - .go/pkg/mod/
+
 build-job:
   stage: build
   image: golang:1.17.2
+  extends: .go-cache
   script:
     - echo "Building cosmzone ..."
     - export GOSUMDB=off
