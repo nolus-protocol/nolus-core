@@ -8,9 +8,8 @@ build-job:
   script:
     - echo "Building cosmzone ..."
     - export GOSUMDB=off
+    - export GOPROXY=direct
     - go env
-    - ls -lah '/go/pkg'
-    - ls -lah $(go env GOMODCACHE)
     - go clean -modcache
     - GOSUMDB=off go mod verify
     - make build
