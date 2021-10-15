@@ -8,6 +8,8 @@ build-job:
   script:
     - echo "Building cosmzone ..."
     - export GOSUMDB=off
+    - go env
+    - go clean -modcache
     - make build
 
 test-job-empty:
