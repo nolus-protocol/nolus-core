@@ -4,14 +4,12 @@ stages:
 
 build-job:
   stage: build
-  image: golang:1.16.8
+  image: golang:1.17.2
   script:
     - echo "Building cosmzone ..."
     - export GOSUMDB=off
     - export GOPROXY=direct
-    - go env
     - go clean -modcache
-    - GOSUMDB=off go mod verify
     - make build
 
 test-job-empty:
