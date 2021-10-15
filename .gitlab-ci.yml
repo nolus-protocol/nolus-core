@@ -9,7 +9,6 @@ build-job:
     - echo "Building cosmzone ..."
     - export GOSUMDB=off
     - export GOPROXY=direct
-    - go clean -modcache
     - make build
 
 test-job-empty:
