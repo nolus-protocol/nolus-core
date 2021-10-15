@@ -19,7 +19,15 @@
 
         echo |     openssl s_client -connect  gitlab-nomo.credissimo.net:443 2>/dev/null |     openssl x509 -text
 
-4. Start
+4. Configure the cache storage directory as persistent
+
+    Define `volumes = ["/path/to/host/dir/.gitlab-runner-cache:/cache"]` under the `[runners.docker]` section in `~/.gitlab-runner/config.toml`
+
+5. Make sure all relevant directories and files are marked as cache
+
+    Use `<job>:cache:` in your Gitlab pipeline yaml descriptor. [Ref](https://docs.gitlab.com/ee/ci/yaml/#cache)
+
+6. Start
 
     [Source](https://docs.gitlab.com/runner/install/docker.html#option-1-use-local-system-volume-mounts-to-start-the-runner-container)
 
@@ -28,14 +36,21 @@
             -v /var/run/docker.sock:/var/run/docker.sock \
             gitlab/gitlab-runner:alpine
 
-5. Logs
+7. Logs
 
         docker logs gitlab-runner
 
-6. Customize jobs
+8. Housekeeping
+
+        docker system prune
+
+9. References
 
     - [Docker images to run into](https://docs.gitlab.com/ee/ci/docker/using_docker_images.html)
     - [Gitlab CI/CD pipeline reference](https://docs.gitlab.com/ee/ci/yaml/)
+    - [Docker runner executor](https://docs.gitlab.com/runner/executors/docker.html)
+    - [Docker runner advanced configuration](https://docs.gitlab.com/runner/configuration/advanced-configuration.html#the-runnersdocker-section)
+    - [Caching](https://docs.gitlab.com/ee/ci/caching/index.html)
 
 # TBD
 - [Build Docker images](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html)
