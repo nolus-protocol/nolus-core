@@ -1,15 +1,8 @@
+include: '.cicd/go-cache.yml'
+
 stages:
   - build
   - test
-
-.go-cache:
-  variables:
-    GOPATH: $CI_PROJECT_DIR/.go
-  before_script:
-    - mkdir -p .go
-  cache:
-    paths:
-      - .go/pkg/mod/
 
 build-job:
   stage: build
