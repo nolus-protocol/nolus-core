@@ -7,6 +7,7 @@ build-job:
   image: golang:1.17.2
   script:
     - echo "Building cosmzone ..."
+    - export GOSUMDB=off
     - make build
 
 test-job-empty:
