@@ -1,0 +1,46 @@
+@startuml relay
+skinparam defaultTextAlignment left
+hide empty description
+
+[*] --> Initialized:\
+Read configuration file: \n\
+- Nomo node URL. \n\
+- Bridge smart contract address. \n\
+- BitcoinReceiver address. \n\
+- Starting Bitcoin block height. \n\
+- URL to hardware wallet for signing.
+
+Initialized --> WaitForDepositOrWithdrawEvent
+
+WaitForDepositOrWithdrawEvent --> OnDepositEvent:\
+Observed Deposit event from contract.
+
+OnDepositEvent --> OnDepositReceived:\
+Observed Bitcoin deposit.
+
+OnDepositReceived --> WaitForDepositOrWithdrawEvent:\
+Sign Deposit parameters + new UTXO list. \n\
+Store signature in contract.
+
+WaitForDepositOrWithdrawEvent --> OnWithdrawEvent:\
+If chosen relay: \n\
+Observed Withdraw event from contract. \n\
+Get list of UTXOs to spend.
+
+OnWithdrawEvent --> BitcoinTransactionReadyForSigning:\
+Bitcoin transaction is created from the received UTXOs. \n\
+Transaction change is a new UTXO.
+
+BitcoinTransactionReadyForSigning --> BitcoinTransactionReadyForBroadcast:\
+Bitcoin transaction is sent to hardware wallet for signing. \n\
+Signed transaction is received.
+
+BitcoinTransactionReadyForBroadcast --> WaitForDepositOrWithdrawEvent:\
+Broadcast transaction and wait for confirmations. \n\
+Call contract with: \n\
+Withdraw parameters + \n\
+new UTXO(change) + \n\
+Bitcoin TxHash + \n\
+signature
+
+@enduml

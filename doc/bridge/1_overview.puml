@@ -1,0 +1,95 @@
+@startuml overview
+skinparam defaultTextAlignment left
+hide empty description
+
+entity Client
+entity Contract
+entity Relay
+entity BitcoinNode
+entity Signer
+
+group Deposit
+
+Client -> Contract: \
+Call contract with Deposit parameters: \n\
+ClientSenderAddress - Client address which will send the Bitcoin deposit. \n\
+Amount - Amount to be deposited.
+
+Contract -> Contract:\
+Store Deposit parameters. \n\
+Emit event.
+
+Relay -> Contract:\
+Get Deposit parameters.
+
+Relay -> BitcoinNode:\
+Wait for Bitcoin deposit.
+
+Client -> BitcoinNode:\
+Deposit Bitcoin. \n\
+UTXO(TxHash, Index, Amount) is created.
+
+Relay -> BitcoinNode:\
+Observe deposit.
+
+Relay -> Relay:\
+Sign Deposit parameters + UTXO with Nomo key.
+
+Relay -> Contract:\
+Provide Deposit parameters + UTXO + signature.
+
+Contract -> Contract:\
+If majority of relay signatures have been received, \n\
+store UTXO and mint WrappedBitcoin.
+
+end
+
+group Withdraw
+
+Client -> Contract:\
+Call contract with Withdraw parameters: \n\
+WrappedTokenAddress - Nomo address of the WrappedBitcoin contract. \n\
+ClientReceiverAddress - Bitcoin address of the client to withdraw to. \n\
+Amount - Amount to be withdrawn.
+
+Contract -> Contract:\
+Choose UTXOs to spend. \n\
+Choose a relay to broadcast the Bitcoin transaction. \n\
+Store Withdraw parameters. \n\
+Emit event.
+
+Relay -> Contract:\
+Get Withdraw parameters. \n\
+Get UTXOs to spend.
+
+Relay -> Relay:\
+Chosen relay creates the Bitcoin transaction from received UTXOs. \n\
+Transcation change is returned as a new UTXO if large enough.
+
+Relay -> Signer:\
+Chosen relay sends the transaction to hardware wallet for signing.
+
+Signer -> Relay:\
+Returns signed Bitcoin transaction.
+
+Relay -> BitcoinNode:\
+Chosen relay broadcasts the Bitcoin transaction.
+
+Relay -> BitcoinNode:\
+Observe broadcasted Withdraw transaction.
+
+Relay -> Relay:\
+Sign Withdraw parameters + new UTXO(change) + Bitcoin TxHash.
+
+Relay -> Contract:\
+Provide Withdraw parameters + new UTXO(change) + Bitcoin TxHash + Signature.
+
+Contract -> Contract:\
+Verify signature. \n\
+Add new UTXO. \n\
+Remove used UTXOs. \n\
+Burn WrappedBitcoin. 
+
+end
+
+@enduml

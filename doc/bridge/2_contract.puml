@@ -1,0 +1,46 @@
+@startuml contract
+skinparam defaultTextAlignment left
+hide empty description
+
+[*] --> Initialized:\
+Admin provides configuration parameters: \n\
+- list of relay addresses, for relay signature verification. \n\
+- Bitcoin deposit address, so clients know where to deposit. \n\
+- Minimum deposit/withdraw amount. \n\
+
+Initialized --> WaitForDepositOrWithdraw:\
+Admin enables bridging.
+
+WaitForDepositOrWithdraw --> WaitForDepositSignatures:\
+Client calls contract with Deposit parameters: \n\
+Deposit(ClientSenderAddress, Amount) \n\
+Store Deposit parameters in contract storage. \n\
+Emit Deposit event for relays.
+
+WaitForDepositSignatures --> WaitForDepositSignatures:\
+Relay signature: \n\
+- Deposit parameters. \n\
+- new UTXO list. \n\
+- signature of above. \n\
+Verify signature.
+
+WaitForDepositSignatures --> WaitForDepositOrWithdraw:\
+Received majority of signatures. \n\
+Store UTXOs. \n\
+Mint WrappedBitcoin.
+
+WaitForDepositOrWithdraw --> WaitForWithdrawSignature:\
+Client calls contract with Withdraw parameters: \n\
+Withdraw(WrappedTokenAddress, ClientReceiverAddress, Amount) \n\
+Store Withdraw parameters in contract storage. \n\
+Store list of UTXOs to spend. \n\
+Choose relay to broadcast Bitcoin transaction. \n\
+Emit Withdraw event for relays.
+
+WaitForWithdrawSignature --> WaitForDepositOrWithdraw:\
+Receive and verify signature. \n\
+Add new UTXO. \n\
+Remove used UTXOs. \n\
+Burn WrappedBitcoin.
+
+@enduml
