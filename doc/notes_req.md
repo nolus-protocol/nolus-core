@@ -1,19 +1,18 @@
 19.10.2021
 ==========
 
-- vesting - it seems the built-in module cover the usecase. Going to build and CI/CD integrate functional tests.
-- dev network - going to prepare a Docker image and deploy it on GCP and AWS, total three validators. Integrate the deployment as a GitLab pipeline.
-- fuzzy and integration testing - the team is researching on what is the state-of-the-art in Cosmos. The aim is to integrate them in CI/CD pipelines.
-- wallet - Keplr and Lunie are being researched. It seems the former is more mature and easy to setup and use. In addition, it is well-known in the Cosmos community.
-    - usecase *NewUser* - a rebranded wallet is provided to the user to install
-    - usecase *ExistingCosmosUser* - connect her wallet to Nomo network
-- bridge - discussed a few options. Going to compare them based on the anticipated capex and opex
+- vesting - it seems the built-in module covers the use case. Going to build and integrate functional tests into CI/CD.
+- dev network - going to prepare a Docker image and deploy it on GCP and AWS, a total of three validators. Integrate the deployment as a GitLab pipeline.
+- fuzzy and integration testing - the team is researching what is the state-of-the-art in Cosmos. The aim is to integrate them into CI/CD pipelines.
+- wallet - Keplr and Lunie are being researched. It seems the former is more mature and easy to setup and use. In addition, it is well-known in the Cosmos community
+    - usecase *NewUser* - a rebranded wallet is provided to the user to install
+    - usecase *ExistingCosmosUser* - connect her wallet to Nomo network
+- bridge - discussed a few options. Going to compare them based on the anticipated CAPEX and OPEX
     - build our bridges to BTC and ETH
     - build our bridge to ETH and use it for BTC as well relying on wrapped BTC in ETH
     - use the Gravity bridge
     - use ThorChain
-- swap - list $NOMO in DEX-es after the main NOMO net is launched. The first version will not require exchanging since it will support using leasing and deposit products only using same currency as input and output
-
+- swap - list $NOMO in DEX-es after the main NOMO net is launched. The first version will not require exchanging since it will support using leasing and deposit products only using the same currency as input and output
 
 12.10.2021
 ==========
