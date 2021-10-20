@@ -42,3 +42,46 @@
 
 ## Aditional notes
 - written in JavaScript, using Vue.js and NuxtJS
+
+## network.js used to test locally
+```js
+export default {
+  id: 'nomo-private',
+  name: 'Nomo Local Net',
+  description:
+    'Cosmos is a network of independent parallel blockchains, powered by BFT consensus algorithms like Tendermint.',
+  logo: `logo.svg`,
+  website: 'https://cosmos.network',
+  // apiURL: 'http://localhost:8010/proxy',
+  apiURL: 'http://localhost:1317',
+  rpcURL: 'http://localhost:26657',
+  minBlockHeight: 1, // actually 5200791, but it has the wrong block time.
+  stakingDenom: 'nomo',
+  coinLookup: [
+    {
+      viewDenom: 'nomo',
+      chainDenom: 'nomo',
+      chainToViewConversionFactor: 1e-6,
+      icon: `currencies/atom.png`,
+    },
+  ],
+  addressPrefix: 'nomo',
+  validatorAddressPrefix: 'nomovaloper',
+  validatorConsensusaddressPrefix: 'nomovalcons', // needed to map validators from staking queries to the validator set
+  HDPath: `m/44'/118'/0'/0/0`,
+  lockUpPeriod: `3 days`,
+  fees: {
+    default: {
+      gasEstimate: 350000,
+      feeOptions: [
+        {
+          denom: 'nomo',
+          amount: 0.001,
+        },
+      ],
+    },
+  },
+  // icon: `https://lunie.fra1.digitaloceanspaces.com/network-icons/cosmos.png`,
+  localSigning: true, // this is only to be used as a developer tool - never deployed in production or for mainnet chains
+}
+```
