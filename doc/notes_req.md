@@ -1,3 +1,19 @@
+25.10.2021
+==========
+
+- [in progress] vesting - no progress since the last week, need verification with functional tests of the CosmosSDK module
+- [in progress] dev network - researching the options to launch a network and set up its genesis, validator set, and p2p nodes
+- [in progress] fuzzy and integration testing - a framework for the latter integrated into our codebase, pending CI integration
+- wallet - we stick to Keplr
+    - [open question] use case *NewUser* - a rebranded wallet is provided to the user to install
+    - [in progress] use case *ExistingCosmosUser* - connect her wallet to Nomo network
+- web-app - it's time to start working on it
+- [in progress] bridge - see below for details, added another option
+    - use Terra to reach Wormhole
+    - nevertheless, which we chose, the end-customer will not have to deal with it. Nomo is going to ask (s)he to transfer BTC to our address. Then NOMO is going to buy wBTC and use the bridge to move the coins into Nomo
+- launching dev/test network - a one-click setup on some Cloud providers is nice to have
+- explorer - to research how/if we can apply for integration into some of the existing explorers
+
 19.10.2021
 ==========
 
