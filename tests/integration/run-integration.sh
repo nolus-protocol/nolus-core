@@ -43,5 +43,5 @@ COSMZONED_PID=$!
 sleep 5
 
 prepare_env
-yarn test
+yarn test "$@"
 
