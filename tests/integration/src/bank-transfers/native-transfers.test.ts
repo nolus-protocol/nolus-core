@@ -1,8 +1,6 @@
-import {DirectSecp256k1Wallet} from "@cosmjs/proto-signing";
-import {CosmWasmClient, SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
-import {assertIsBroadcastTxSuccess} from "@cosmjs/stargate";
-import {fromHex} from "@cosmjs/encoding";
-import {getValidatorClient, getValidatorWallet} from "../util/clients";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
+import { assertIsBroadcastTxSuccess } from "@cosmjs/stargate";
+import { getValidatorClient, getValidatorWallet } from "../util/clients";
 
 describe('native transfers', () => {
 
@@ -10,7 +8,6 @@ describe('native transfers', () => {
         const client = await CosmWasmClient.connect(process.env.NODE_URL as string)
         const balance = await client.getBalance(process.env.VALIDATOR_ADDR as string, "nomo");
         expect(BigInt(balance.amount) > 0).toBeTruthy()
-        client.disconnect()
     })
 
     test('validator can send tokens', async () => {
@@ -19,10 +16,10 @@ describe('native transfers', () => {
         const [firstAccount] = await wallet.getAccounts();
         const amount = {
             denom: "nomo",
-            amount: "1234567",
+            amount: "1234",
         };
         const fee = {
-            amount: [{denom: "nomo", amount: "123"}],
+            amount: [{denom: "nomo", amount: "12"}],
             gas: "100000"
         }
         const previousUsrBalance = await client.getBalance(process.env.USR_1_ADDR as string, "nomo");
@@ -30,6 +27,5 @@ describe('native transfers', () => {
         const nextUsrBalance = await client.getBalance(process.env.USR_1_ADDR as string, "nomo");
         assertIsBroadcastTxSuccess(result);
         expect(BigInt(nextUsrBalance.amount)).toBe(BigInt(previousUsrBalance.amount) + BigInt(amount.amount))
-        client.disconnect()
     })
 })

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -euo pipefail
 
 # This script is a modified version of Ethermint's init.sh script https://github.com/tharsis/ethermint/blob/main/init.sh
 
@@ -7,17 +7,18 @@ KEY="local-validator"
 CHAINID="nomo-private"
 MONIKER="localtestnet"
 KEYRING="test"
+CFG_DIR="$HOME/.cosmzone/config"
 
 update_config () {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "$1" "$HOME/.cosmzone/config/config.toml"
+    sed -i '' "$1" "$CFG_DIR/config.toml"
   else
-    sed -i 's/create_empty_blocks_interval = "0s"/create_empty_blocks_interval = "30s"/g' "$HOME/.cosmzone/config/config.toml"
+    sed -i "$1" "$CFG_DIR/config.toml"
   fi
 }
 
 update_genesis () {
-  cat "$HOME/.cosmzone/config/genesis.json" | jq "$1" > "$HOME/.cosmzone/config/tmp_genesis.json" && mv "$HOME/.cosmzone/config/tmp_genesis.json" "$HOME/.cosmzone/config/genesis.json"
+  jq "$1" < "$CFG_DIR/genesis.json" > "$CFG_DIR/tmp_genesis.json" && mv "$CFG_DIR/tmp_genesis.json" "$CFG_DIR/genesis.json"
 }
 
 # validate dependencies are installed
@@ -43,7 +44,7 @@ update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="
 update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
 update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
 # Allocate genesis accounts (cosmos formatted addresses)
-cosmzoned add-genesis-account $KEY 10000000nomo --keyring-backend $KEYRING
+cosmzoned add-genesis-account $KEY 1000000000nomo --keyring-backend $KEYRING
 
 # Sign genesis transaction
 cosmzoned gentx $KEY 1000000nomo --keyring-backend $KEYRING --chain-id $CHAINID
@@ -54,8 +55,12 @@ cosmzoned collect-gentxs
 # Run this to ensure everything worked and that the genesis file is setup correctly
 cosmzoned validate-genesis
 
-if [[ $1 != "prepare" ]]; then
-cosmzoned start
-else
+if [[ "$*" =~ "integration" ]]; then
+  update_config 's/timeout_commit = "5s"/timeout_commit = "1s"/g'
+fi
+
+if [[ "$*" =~ "prepare" ]]; then
   echo "Network prepared. You can start it with the command: 'cosmzoned start'"
+else
+  cosmzoned start
 fi

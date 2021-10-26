@@ -1,4 +1,4 @@
-import {CosmWasmClient} from "@cosmjs/cosmwasm-stargate";
+import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 
 test('blockchain is running', async () => {
     const client = await CosmWasmClient.connect(process.env.NODE_URL as string)
@@ -9,5 +9,4 @@ test('blockchain is running', async () => {
 
     expect(chainId).toBeDefined()
     expect(height).toBeGreaterThan(0)
-    client.disconnect()
 })

@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --runInBand --detectOpenHandles"
+    "test": "jest --runInBand"
   },
   "dependencies": {
     "@cosmjs/stargate": "0.26.0",
