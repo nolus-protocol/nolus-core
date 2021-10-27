@@ -1,9 +1,56 @@
-# Bridge Fees
-## Wormhole
+# Bridge Options
+## Wormhole Integrated Chain <--Wormhole--> Nomo
+- Wormhole V1 is on mainnet.
+- Nomo needs to approach Wormhole DAO and convince them to add Nomo as a supported chain.
+- Transfer transaction fees are paid by the user in ETH and Nomo.
+- Users will be able to bridge between ETH, BSC, Polygon, Solana, Terra and Nomo.
+- The tokens will be minted/burned directly on Nomo.
+- Nomo needs to operate IBC relays to transfer wrapped tokens to/from another chain.
+
+## ETH <--Own Wormhole--> Nomo
+- Nomo can deploy their own version of Wormhole.
+- Likely Ethereum <-> Nomo only support.
+- Transfer transaction fees are paid by the user in ETH and Nomo.
+- Nomo will need to operate the Wormhole validators.
+- Each validator runs a client to observe events on each network.
+- Nomo will probably own all validators(centralization).
+- Nomo will need to protect the validator private keys which is a security risk.
+- Nomo needs to operate IBC relays to transfer wrapped tokens to/from another chain.
+
+## Wormhole Integrated Chain <--Wormhole--> Terra <--IBC--> Nomo
+- Wormhole V1 is on mainnet.
+- Transfer transaction fees are paid by the user in ETH, Nomo and Terra.
+- Depends on the continuous operation and existance of Terra.
+- Nomo needs to operate IBC relays to transfer tokens from/to Terra.
+- Users will be able to bridge between ETH, BSC, Polygon, Solana, Terra and Nomo.
+- Nomo may want to hide from users that the tokens pass through Terra.  
+This can be done by deploying a forked version of the [Wormhole webapp](https://wormholebridge.com/#/transfer).  
+The webapp can make the user sign a transaction that calls the Wormhole smart contract with Nomo's Terra address as recipient instead of the user's Terra address.
+Then Nomo will need to operate an observer service that will initiate IBC transfers from Terra to Nomo and back.
+
+## ETH <--Gravity--> GravityChain <--IBC--> Nomo
+- Gravity does not currently have a mainnet.
+- Nomo depends on the continuous existance of GravityChain.
+- Transfer transaction fees are paid by the user in ETH.
+- The user is minted wrapped tokens on GravityChain.
+- The user can transfer tokens from/to Nomo using IBC.
+- On GravityChain to transfer back to ETH the user needs to specify zero or non-zero token amount that will be subtracted from their unlocked amount and awarded to submitter of the Ethereum transaction. The submitter can be the user or a Gravity validator.
+- Nomo needs to operate IBC relays to transfer wrapped tokens to/from another chain.
+
+## ETH <--Own Gravity--> Nomo
+- Gravity does not currently have a mainnet.
+- Transfer transaction fees are paid by the user in ETH.
+- Nomo operates a set of Gravity validators.
+- Nomo secures Gravity validator private keys.
+- The user is minted wrapped tokens directly on Nomo.
+- Nomo operates a set of IBC relays to allow transfering tokens to another chain and back.
+
+# Bridge fees
+## ETH --Wormhole--> Terra
 ETH -> Terra Deposit:  
 - ERC20's `approve` - 46352 gas(0.00211 Ether/8.81 USD)  
 https://etherscan.io/tx/0x9f9d129b484d1a45cf554f9b4ee33f4e29d7bcb29c937001156d6102240e9d1b  
-- `transferTokens` - 80209 gas(0.0047 Ether/19.62 USD)  
+- `wrapAndTransferETH` - 80209 gas(0.0047 Ether/19.62 USD)  
 https://etherscan.io/tx/0x2b9f94089e892dda95226797a65a3ddc533792c1da1b7cb75e72ba7645de90c7  
 - User receives on Terra - 0.048021 Luna  
 https://finder.terra.money/columbus-5/tx/773C28FACD5368F7B656C8AEE72B35E3DFF8D27F939F6B5182806640553376C1
@@ -11,18 +58,18 @@ https://finder.terra.money/columbus-5/tx/773C28FACD5368F7B656C8AEE72B35E3DFF8D27
 BSC -> Terra Deposit:  
 - `approve` - 44406 gas(0.00022203 BNB/0.106840 USD)  
 https://bscscan.com/tx/0xe0cb576aa114493cb6e3fe6f799be28300b1d9e7fccd2328f9c76d28e5f470d7  
-- `wrapAndTransferETH` - 81623 gas(0.000408115 BNB/0.20 USD)  
+- `transferTokens` - 81623 gas(0.000408115 BNB/0.20 USD)  
 https://bscscan.com/tx/0x02e91b6f61f7c68a6caf5606efba02d70d2bfc276ee4b25745b58be17ace7a6f  
 - User receives on Terra - 0.480287 Luna  
 https://finder.terra.money/columbus-5/tx/DA626FEA7938C87FE829A79F45DD59A810C9D99BC44A553F716D151E20725483
 
-## Gravity
-ETH -> non-ETH:  
+## ETH --Gravity--> GravityChain
+ETH -> GravityChain:  
 - ERC20's `approve` - 46604 gas(i.e if gas is 100 gwei,  0.0046604 Ether/19.876 USD)  
 - `sendToCosmos` - based on the implementation, the cost is a bit larger but similar to the above cost.  
 https://github.com/cosmos/gravity-bridge/blob/main/solidity/contracts/Gravity.sol#L524
 
-non-ETH -> ETH:  
+GravityChain -> ETH:  
 - `MsgSendToEthereum` - user sends a transaction to the non-Ethereum chain to burn the wrapped(non-native) token.  
 Gas cost is cheap because transaction is done on a Cosmos chain.  
 (NOTE:  
