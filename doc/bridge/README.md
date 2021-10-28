@@ -143,6 +143,28 @@ The user or a `Relayer` can include this transaction in a transaction batch.
 The submitter(user or `Relayer`) calls the Gravity Ethereum contract with the batch paying for the transaction but claiming sum of submitter fees for themselves.  
 If the submitter wishes to sustain this process they can exchange the submitter fees back to Ether allowing them to submit new transaction batches.
 
+# Sifchain Peggy
+https://github.com/Sifchain/sifnode/blob/develop/docs/  
+Peggy is a bridge that moves assets from Ethereum to Sifchain and back.  
+Only transfers for whitelisted tokens are allowed.
+
+Ethereum -> Sifchain:  
+A user calls the Peggy Ethereum smart contract to lock a native token or burn a wrapped Sifchain token.  
+A relayer listens for the Peggy Ethereum smart contract's `LogLock` and `LogBurn` events.  
+Once such an event is observed by a relayer,  
+it waits 50 blocks to ensure that the transaction is still valid,  
+then submits a new `ProphecyClaim` to Sifchain.  
+Once enough other relayers submit the `ProphecyClaim` to Sifchain,  
+the assets are unlocked or minted to the Sifchain recipient.
+
+Sifchain -> Ethereum:  
+A user calls the Sifchain Cosmos SDK module to lock a native token or burn a wrapped Ethereum token.  
+A relayer listens for Sifchain's `MsgLock` and `MsgBurn` events.  
+Once such an event is observed by a relayer,  
+a new `ProphecyClaim` is submitted to the Ethereum smart contract.  
+Once enough other relayers submit the `ProphecyClaim` to Ethereum,  
+the funds are unlocked or minted to the Ethereum recipient.
+
 # PlantUML
 [PlantUML](https://plantuml.com/) is used to generate images from text files of sequence and state diagrams.
 
