@@ -9,6 +9,8 @@ MONIKER="localtestnet"
 KEYRING="test"
 CFG_DIR="$HOME/.cosmzone/config"
 
+VESTING_ACC="local-vesting-account"
+
 update_config () {
   if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '' "$1" "$CFG_DIR/config.toml"
@@ -34,6 +36,7 @@ cosmzoned config chain-id $CHAINID
 
 # if $KEY exists it should be deleted
 cosmzoned keys add $KEY --keyring-backend $KEYRING
+cosmzoned keys add $VESTING_ACC --keyring-backend $KEYRING
 
 cosmzoned init $MONIKER --chain-id $CHAINID
 
@@ -45,6 +48,14 @@ update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="
 update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
 # Allocate genesis accounts (cosmos formatted addresses)
 cosmzoned add-genesis-account $KEY 1000000000nomo --keyring-backend $KEYRING
+
+# Add DelayedVestingAccount
+TILL=$(date -d "+10 minutes" +%s)
+cosmzoned add-genesis-account $VESTING_ACC 4325346435455nomo --vesting-amount 4325346435455nomo --vesting-end-time $TILL --keyring-backend $KEYRING
+
+# Add second DelayedVestingAccount
+TILL1H=$(date -d "+1 hours" +%s)
+cosmzoned add-genesis-account nomo1332gau6khc5xw5854ldsnd6vte4u6rl34j9s6v 1343144nomo --vesting-amount 1343144nomo --vesting-end-time $TILL1H
 
 # Sign genesis transaction
 cosmzoned gentx $KEY 1000000nomo --keyring-backend $KEYRING --chain-id $CHAINID
