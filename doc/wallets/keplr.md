@@ -2,8 +2,8 @@
 
 ## Pros
 - web (Chrome and Brave extension) and mobile based wallet (mobile version contains only Cosmos, Osmosis and Regen tokens at the moment)
-- Can be built and hosted on a CDN.
-- Supports the base functionality of a blockchain wallet (create wallet, restore using mnemonic, balance, history, transfer, IBC transfer **(Chrome extension)** and staking).
+- Can be built and hosted on a CDN. **
+- Supports the base functionality of a blockchain wallet (create wallet, restore using mnemonic, balance, transfer, IBC transfer **(Chrome extension)** and staking).
 - You can also use your Google and Apple (mobile only) account to create and restore your wallet.
 - No external servers/apis required except the blockchain node's API.
 - Supports all native currencies that can enter our blockchain through IBC.
@@ -16,6 +16,7 @@
 ## Usable features
 - base wallet functionality
 - ledger support (chrome and mobile)
+- ibc transfer
 - staking
 
 ## Features we might not need
@@ -31,6 +32,59 @@
 
 ## Aditional notes
 - written in TypeScript, using React and ReactNative
+
+## Run like a suggest chain:
+-Go to Chrome Keplr extension click on the extension with right mouse button and select "Inspect". Then you will see Developer console. Please go to the Console tab and paste this code there:
+```js
+await window.keplr.experimentalSuggestChain({
+    chainId: "nomo-private",
+    chainName: "Nomo",
+    rpc: "http://127.0.0.1:26657",
+    rest: "http://127.0.0.1:1317",
+    bip44: {
+        coinType: 118,
+    },
+    bech32Config: {
+        bech32PrefixAccAddr: "nomo",
+        bech32PrefixAccPub: "nomo" + "pub",
+        bech32PrefixValAddr: "nomo" + "valoper",
+        bech32PrefixValPub: "nomo" + "valoperpub",
+        bech32PrefixConsAddr: "nomo" + "valcons",
+        bech32PrefixConsPub: "nomo" + "valconspub",
+    },
+    currencies: [ 
+        { 
+            coinDenom: "nomo", 
+            coinMinimalDenom: "nomo", 
+            coinDecimals: 6, 
+            coinGeckoId: "cosmos", 
+        }, 
+    ],
+    feeCurrencies: [
+        {
+            coinDenom: "nomo",
+            coinMinimalDenom: "nomo",
+            coinDecimals: 6,
+            coinGeckoId: "cosmos",
+        },
+    ],
+    stakeCurrency: {
+        coinDenom: "nomo",
+        coinMinimalDenom: "nomo",
+        coinDecimals: 6,
+        coinGeckoId: "cosmos",
+    },
+    coinType: 118,
+    gasPriceStep: {
+        low: 0.01,
+        average: 0.025,
+        high: 0.03,
+    },
+    features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+});
+```
+-Reload Keplr and you will see the Nomo network added in Keplr wallet.
+
 
 ## Run on your local:
 -Go to `packages/extension/src/config.ts` and add:
