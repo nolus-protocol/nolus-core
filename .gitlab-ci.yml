@@ -10,8 +10,6 @@ build-job:
   extends: .go-cache
   script:
     - echo "Building cosmzone ..."
-    - export GOSUMDB=off
-    - export GOPROXY=direct
     - make build_local
 
 test-job-empty:
