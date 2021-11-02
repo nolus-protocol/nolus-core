@@ -1,3 +1,14 @@
+02.11.2011
+==========
+- [in progress] vesting - open vesting accounts on genesis is done, going to test all usecases, pre-opened and later opened accounts, with functional tests of the CosmosSDK module
+- [in progress] dev network - no progress on researching the options to launch a network and set up its genesis, validator set, and p2p nodes
+- [in progress] fuzzy and integration testing - pending CI integration of the integration/functional tests into CI
+- wallet - demonstrated how user can coonnect to an out-of-the-box Keplr
+    - for both use cases, *NewUser* and *ExistingCosmosUser*, we begin with a connect-Nomo button on the site/web-app
+- web-app - pending gathering requirements
+- [research done] bridge - preliminary estimation is done covering four variants
+- [in progress] explorer - how/if we can apply for integration into some of the existing explorers
+
 25.10.2021
 ==========
 
