@@ -29,7 +29,9 @@ command -v jq > /dev/null 2>&1 || { echo >&2 "jq not installed. More info: https
 # remove existing daemon and client
 rm -rf ~/.cosmzone
 
-make install
+make install_local
+
+export PATH=$PATH:$(go env GOPATH)/bin
 
 cosmzoned config keyring-backend $KEYRING
 cosmzoned config chain-id $CHAINID
