@@ -1,0 +1,13 @@
+FROM alpine:3.14
+ARG BIN_NAME=cosmzoned
+ARG TARGET=release
+
+COPY target/${TARGET}/${BIN_NAME} /usr/bin/
+
+# tendermint p2p
+EXPOSE 26656/tcp
+# tendermint rpc
+EXPOSE 26657/tcp
+
+ENTRYPOINT ["cosmzoned"]
+CMD ["version"]

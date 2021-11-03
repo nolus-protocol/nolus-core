@@ -1,5 +1,4 @@
 PACKAGES=$(shell go list ./... | grep -v '/simulation')
-BUILDDIR ?= $(CURDIR)/target/release
 TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
 LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
@@ -54,7 +53,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=nomo \
 		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
-			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TM_VERSION)
+			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TMVERSION)
 
 # DB backend selection
 ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
@@ -78,7 +77,7 @@ endif
 ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
   ldflags += -w -s
 endif
-ldflags += $(LDFLAGS)
+ldflags += $(LDFLAGS) 
 ldflags := $(strip $(ldflags))
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
