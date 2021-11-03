@@ -94,6 +94,17 @@ When transfering tokens through multiple different chains, the denomination of t
 For example, if transfering a token through A -> B -> C, the resulting denomination of the token in chain C would be `ibc/{portOnC}/{channelOnC}/ibc/{portOnB}/{channelOnB}/{denomOnA}`. In this case, to receive the original tokens on A, we would need to travel the same path backwards, i.e. C -> B -> A.  
 Sending the token from C -> A, would result in a new denomination - `ibc/{portOnA}/{channelOnA}/ibc/{portOnC}/{channelOnC}/ibc/{portOnB}/{channelOnB}/{denomOnA}`.
 
+## IBC relayer incentives
+The Cosmos team have defined a specification for networks that want to add support for relayer fees and incentives - [ICS-29](https://github.com/cosmos/ibc/tree/master/spec/app/ics-029-fee-payment) and [ICS-30](https://github.com/cosmos/ibc/tree/master/spec/app/ics-030-middleware).  
+ICS-30 defines a new type of middleware module, which sits between the core IBC and the underlying application. It's meant to be self-contained and to implement its own application-specific logic through a set of interfaces with the core IBC handlers. ICS-29 is defined as a middleware module and is being implemented by the Cosmos team in the ibc-go package.  
+According to the specification:
+* relayer fees will be payed by the user submitting the IBC packet on the source chain in the same transaction as a separate message
+* there will be separate fees for relaying the packet, relaying the acknowledgement and the packet timeout
+* relayers may specify the token denominations of the fees they expect
+* as an example, they may specify a relay fee in the "wrapped" IBC native token, transferred from the destination chain; this way they can transfer these tokens back to the destination chain to keep their balance topped up automatically
+
+The Cosmos team is targeting to release their ICS-29 implementation either at the end of Q4 2021 or the beginning of Q1 2022.
+
 # registry.yaml for ts-relayer
 ```yaml
 version: 1
