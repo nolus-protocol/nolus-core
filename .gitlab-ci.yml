@@ -6,7 +6,7 @@ stages:
 
 build-job:
   stage: build
-  image: golang:1.17.2
+  #image: golang:1.17.2
   extends: .go-cache
   script:
     - echo "Building cosmzone ..."
