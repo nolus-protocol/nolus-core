@@ -94,10 +94,10 @@ cosmzoned add-genesis-account nomo1332gau6khc5xw5854ldsnd6vte4u6rl34j9s6v 134314
 # Periodic Vesting Account
 
 TILL4H=$(date -d "+4 hours" +%s)
-PV1=546654
+PV1=546652
 LENGTH=14400
 PERIODS=4
-cosmzoned add-genesis-account $PERIODIC_VEST 1343144nomo --vesting-amount $PV1+nomo --vesting-end-time $TILL4H --vesting-start-time $(date +%s)
+cosmzoned add-genesis-account $PERIODIC_VEST 1343144nomo --vesting-amount ${PV1}nomo --vesting-end-time $TILL4H --vesting-start-time $(date +%s)
 
 update_genesis '.app_state["auth"]["accounts"][3]["@type"]="/cosmos.vesting.v1beta1.PeriodicVestingAccount"'
 update_genesis '.app_state["auth"]["accounts"][3]["vesting_periods"]+=[]'
