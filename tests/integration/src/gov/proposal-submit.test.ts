@@ -1,20 +1,57 @@
+import Long from "long";
 import { isBroadcastTxFailure } from "@cosmjs/stargate";
-import { getValidatorClient, getValidatorWallet } from "../util/clients";
+import { StdFee } from "@cosmjs/amino";
+import { toUtf8 } from "@cosmjs/encoding"
+import { AccountData, DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
+import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
 import { SoftwareUpgradeProposal, CancelSoftwareUpgradeProposal } from "cosmjs-types/cosmos/upgrade/v1beta1/upgrade";
-import { UpgradeProposal, ClientUpdateProposal } from "../util/proposals"
-import { ClientState } from "cosmjs-types/ibc/lightclients/tendermint/v1/tendermint"
-import Long from "long";
+import { ClientState } from "cosmjs-types/ibc/lightclients/tendermint/v1/tendermint";
+import {
+    StoreCodeProposal,
+    InstantiateContractProposal,
+    MigrateContractProposal,
+    UpdateAdminProposal,
+    ClearAdminProposal,
+    PinCodesProposal,
+    UnpinCodesProposal
+} from "cosmjs-types/cosmwasm/wasm/v1/proposal";
+import { getValidatorClient, getValidatorWallet } from "../util/clients";
+import { UpgradeProposal, ClientUpdateProposal } from "../util/proposals";
 
 describe('proposal submission', () => {
 
+    let client: SigningCosmWasmClient;
+    let wallet: DirectSecp256k1Wallet;
+    let firstAccount: AccountData;
+    let msg: any;
+    let fee: StdFee;
+    let moduleName: string;
+
+    beforeAll(async () => {
+        client = await getValidatorClient();
+        wallet = await getValidatorWallet();
+        [firstAccount] = await wallet.getAccounts();
+        moduleName = "gov";
+    })
+
+    beforeEach(async () => {
+        fee = {
+            amount: [{denom: "nomo", amount: "12"}],
+            gas: "100000"
+        }
+    })
+
+    afterEach(async () => {
+        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
+        expect(isBroadcastTxFailure(result)).toBeTruthy();
+        expect(result.rawLog).toEqual(`failed to execute message; message index: 0: ${moduleName}: no handler exists for proposal type`);
+    })
+
     test('validator cannot submit a Text proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -29,21 +66,11 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: gov: no handler exists for proposal type");
+        moduleName = "gov";
     })
 
     test('validator cannot submit a CommunityPoolSpend proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -60,21 +87,11 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: distribution: no handler exists for proposal type");
+        moduleName = "distribution"
     })
 
     test('validator cannot submit a ParameterChange proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -94,21 +111,11 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: params: no handler exists for proposal type");
+        moduleName = "params";
     })
 
     test('validator cannot submit a SoftwareUpgrade proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -128,21 +135,11 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: upgrade: no handler exists for proposal type");
+        moduleName = "upgrade";
     })
 
     test('validator cannot submit a CancelSoftwareUpgrade proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -157,21 +154,11 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: upgrade: no handler exists for proposal type");
+        moduleName = "upgrade";
     })
 
     test('validator cannot submit an IBC Upgrade proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -201,21 +188,16 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
+        fee = {
             amount: [{denom: "nomo", amount: "12"}],
             gas: "200000"
         }
-
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: client: no handler exists for proposal type");
+        
+        moduleName = "client";
     })
 
     test('validator cannot submit a ClientUpgrade proposal', async () => {
-        const client = await getValidatorClient();
-        const wallet = await getValidatorWallet();
-        const [firstAccount] = await wallet.getAccounts();
-        const msg = {
+        msg = {
             typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
             value: {
                 content: {
@@ -232,13 +214,156 @@ describe('proposal submission', () => {
             }
         };
 
-        const fee = {
-            amount: [{denom: "nomo", amount: "12"}],
-            gas: "100000"
-        }
+        moduleName = "client";
+    })
 
-        const result = await client.signAndBroadcast(firstAccount.address, [msg], fee);
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
-        expect(result.rawLog).toEqual("failed to execute message; message index: 0: client: no handler exists for proposal type");
+    test('validator cannot submit a StoreCode proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.StoreCodeProposal",
+                    value: StoreCodeProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        runAs: firstAccount.address,
+                        wasmByteCode: new Uint8Array(2)
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a InstantiateContract proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.InstantiateContractProposal",
+                    value: InstantiateContractProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        runAs: firstAccount.address,
+                        admin: firstAccount.address,
+                        codeId: Long.fromInt(1),
+                        label: "contractlabel",
+                        msg: toUtf8("{}"),
+                        funds: [{denom: "nomo", amount: "12"}]
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a MigrateContract proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.MigrateContractProposal",
+                    value: MigrateContractProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        runAs: firstAccount.address,
+                        contract: firstAccount.address,
+                        codeId: Long.fromInt(1),
+                        msg: toUtf8("{}"),
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a UpdateAdmin proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.UpdateAdminProposal",
+                    value: UpdateAdminProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        newAdmin: firstAccount.address,
+                        contract: firstAccount.address,
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a ClearAdmin proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.ClearAdminProposal",
+                    value: ClearAdminProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        contract: firstAccount.address,
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a PinCodes proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.PinCodesProposal",
+                    value: PinCodesProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        codeIds: [Long.fromInt(1)],
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
+    })
+
+    test('validator cannot submit a UnpinCodes proposal', async () => {
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {
+                    typeUrl: "/cosmwasm.wasm.v1.UnpinCodesProposal",
+                    value: UnpinCodesProposal.encode({
+                        description: "This proposal proposes to test whether this proposal passes",
+                        title: "Test Proposal",
+                        codeIds: [Long.fromInt(1)],
+                    }).finish(),
+                },
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
+
+        moduleName = "wasm";
     })
 })
