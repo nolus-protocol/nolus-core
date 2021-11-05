@@ -1,4 +1,5 @@
 BUILD_IMAGE_SRC_DIR := "/code"
+BUILDER_IMAGE := "nomo/builder"
 
 LOCAL_GOCACHE_DIR := $(shell go env GOCACHE)
 BUILD_IMAGE_GOCACHE_DIR := "/.cache/go-build"
@@ -41,14 +42,14 @@ build_docker: prep_docker_builder ${WASMVM_LOCAL_LIB_PATH}
 		-v ${PWD}:${BUILD_IMAGE_SRC_DIR} \
 		-v ${LOCAL_GOCACHE_DIR}:${BUILD_IMAGE_GOCACHE_DIR} \
 		-v ${LOCAL_GOMODCACHE_DIR}:${BUILD_IMAGE_GOMODCACHE_DIR} \
-		nomo/builder build_local
+		${BUILDER_IMAGE} build_local
 
 build_node: build/node_spec build_docker
 	docker build -t nomo/node -f build/node_spec .
 
 # implementation targets follow
 prep_docker_builder: build/builder_spec
-	docker build -t nomo/builder -f build/builder_spec \
+	docker build -t ${BUILDER_IMAGE} -f build/builder_spec \
 		--build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR} \
 		--build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR} \
 		--build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR} \
