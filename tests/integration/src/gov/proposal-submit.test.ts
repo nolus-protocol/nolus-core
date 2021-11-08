@@ -42,6 +42,15 @@ describe('proposal submission', () => {
             amount: [{denom: "nomo", amount: "12"}],
             gas: "100000"
         }
+
+        msg = {
+            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+            value: {
+                content: {},
+                proposer: firstAccount.address,
+                initialDeposit: [{denom: "nomo", amount: "12"}],
+            }
+        };
     })
 
     afterEach(async () => {
@@ -51,141 +60,99 @@ describe('proposal submission', () => {
     })
 
     test('validator cannot submit a Text proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmos.gov.v1beta1.TextProposal",
-                    value: TextProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+            value: TextProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+            }).finish(),
         };
 
         moduleName = "gov";
     })
 
     test('validator cannot submit a CommunityPoolSpend proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
-                    value: CommunityPoolSpendProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        recipient: firstAccount.address,
-                        amount: [{denom: "nomo", amount: "1000000"}]
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
+            value: CommunityPoolSpendProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                recipient: firstAccount.address,
+                amount: [{denom: "nomo", amount: "1000000"}]
+            }).finish(),
         };
 
         moduleName = "distribution"
     })
 
     test('validator cannot submit a ParameterChange proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmos.params.v1beta1.ParameterChangeProposal",
-                    value: ParameterChangeProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        changes: [{
-                            subspace: "subspace",
-                            key: "key",
-                            value: "value"
-                        }]
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmos.params.v1beta1.ParameterChangeProposal",
+            value: ParameterChangeProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                changes: [{
+                    subspace: "subspace",
+                    key: "key",
+                    value: "value"
+                }]
+            }).finish(),
         };
 
         moduleName = "params";
     })
 
     test('validator cannot submit a SoftwareUpgrade proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal",
-                    value: SoftwareUpgradeProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        plan: {
-                            name: "Upgrade 1",
-                            height: Long.fromInt(10000),
-                            info: ""
-                        }
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal",
+            value: SoftwareUpgradeProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                plan: {
+                    name: "Upgrade 1",
+                    height: Long.fromInt(10000),
+                    info: ""
+                }
+            }).finish(),
         };
 
         moduleName = "upgrade";
     })
 
     test('validator cannot submit a CancelSoftwareUpgrade proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal",
-                    value: CancelSoftwareUpgradeProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal",
+            value: CancelSoftwareUpgradeProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+            }).finish(),
         };
 
         moduleName = "upgrade";
     })
 
     test('validator cannot submit an IBC Upgrade proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/ibc.core.client.v1.UpgradeProposal",
-                    value: UpgradeProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        plan: {
-                            name: "Upgrade 1",
-                            height: Long.fromInt(10000),
-                            info: ""
-                        },
-                        upgradedClientState: {
-                            typeUrl: "/ibc.lightclients.tendermint.v1.ClientState",
-                            value: ClientState.encode({
-                                chainId: "nomo-private",
-                                proofSpecs: [{minDepth: 0, maxDepth: 0}],
-                                upgradePath: ["upgrade", "upgradedIBCState"],
-                                allowUpdateAfterExpiry: true,
-                                allowUpdateAfterMisbehaviour: true
-                            }).finish()
-                        }
-                    }).finish(),
+        msg.value.content = {
+            typeUrl: "/ibc.core.client.v1.UpgradeProposal",
+            value: UpgradeProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                plan: {
+                    name: "Upgrade 1",
+                    height: Long.fromInt(10000),
+                    info: ""
                 },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+                upgradedClientState: {
+                    typeUrl: "/ibc.lightclients.tendermint.v1.ClientState",
+                    value: ClientState.encode({
+                        chainId: "nomo-private",
+                        proofSpecs: [{minDepth: 0, maxDepth: 0}],
+                        upgradePath: ["upgrade", "upgradedIBCState"],
+                        allowUpdateAfterExpiry: true,
+                        allowUpdateAfterMisbehaviour: true
+                    }).finish()
+                }
+            }).finish(),
         };
 
         fee = {
@@ -197,171 +164,115 @@ describe('proposal submission', () => {
     })
 
     test('validator cannot submit a ClientUpgrade proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/ibc.core.client.v1.ClientUpdateProposal",
-                    value: ClientUpdateProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        subjectClientId: "tendermint-07",
-                        substituteClientId: "tendermint-08"
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/ibc.core.client.v1.ClientUpdateProposal",
+            value: ClientUpdateProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                subjectClientId: "tendermint-07",
+                substituteClientId: "tendermint-08"
+            }).finish(),
         };
 
         moduleName = "client";
     })
 
     test('validator cannot submit a StoreCode proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.StoreCodeProposal",
-                    value: StoreCodeProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        runAs: firstAccount.address,
-                        wasmByteCode: new Uint8Array(2)
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.StoreCodeProposal",
+            value: StoreCodeProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                runAs: firstAccount.address,
+                wasmByteCode: new Uint8Array(2)
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a InstantiateContract proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.InstantiateContractProposal",
-                    value: InstantiateContractProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        runAs: firstAccount.address,
-                        admin: firstAccount.address,
-                        codeId: Long.fromInt(1),
-                        label: "contractlabel",
-                        msg: toUtf8("{}"),
-                        funds: [{denom: "nomo", amount: "12"}]
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.InstantiateContractProposal",
+            value: InstantiateContractProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                runAs: firstAccount.address,
+                admin: firstAccount.address,
+                codeId: Long.fromInt(1),
+                label: "contractlabel",
+                msg: toUtf8("{}"),
+                funds: [{denom: "nomo", amount: "12"}]
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a MigrateContract proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.MigrateContractProposal",
-                    value: MigrateContractProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        runAs: firstAccount.address,
-                        contract: firstAccount.address,
-                        codeId: Long.fromInt(1),
-                        msg: toUtf8("{}"),
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.MigrateContractProposal",
+            value: MigrateContractProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                runAs: firstAccount.address,
+                contract: firstAccount.address,
+                codeId: Long.fromInt(1),
+                msg: toUtf8("{}"),
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a UpdateAdmin proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.UpdateAdminProposal",
-                    value: UpdateAdminProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        newAdmin: firstAccount.address,
-                        contract: firstAccount.address,
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.UpdateAdminProposal",
+            value: UpdateAdminProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                newAdmin: firstAccount.address,
+                contract: firstAccount.address,
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a ClearAdmin proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.ClearAdminProposal",
-                    value: ClearAdminProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        contract: firstAccount.address,
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.ClearAdminProposal",
+            value: ClearAdminProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                contract: firstAccount.address,
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a PinCodes proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.PinCodesProposal",
-                    value: PinCodesProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        codeIds: [Long.fromInt(1)],
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.PinCodesProposal",
+            value: PinCodesProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                codeIds: [Long.fromInt(1)],
+            }).finish(),
         };
 
         moduleName = "wasm";
     })
 
     test('validator cannot submit a UnpinCodes proposal', async () => {
-        msg = {
-            typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-            value: {
-                content: {
-                    typeUrl: "/cosmwasm.wasm.v1.UnpinCodesProposal",
-                    value: UnpinCodesProposal.encode({
-                        description: "This proposal proposes to test whether this proposal passes",
-                        title: "Test Proposal",
-                        codeIds: [Long.fromInt(1)],
-                    }).finish(),
-                },
-                proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
-            }
+        msg.value.content = {
+            typeUrl: "/cosmwasm.wasm.v1.UnpinCodesProposal",
+            value: UnpinCodesProposal.encode({
+                description: "This proposal proposes to test whether this proposal passes",
+                title: "Test Proposal",
+                codeIds: [Long.fromInt(1)],
+            }).finish(),
         };
 
         moduleName = "wasm";
