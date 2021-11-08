@@ -3,6 +3,9 @@ import _m0 from "protobufjs/minimal";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import { Plan } from "cosmjs-types/cosmos/upgrade/v1beta1/upgrade";
 
+// The following interfaces and encoding/decoding functions were generated using a modified version of:
+// https://github.com/confio/cosmjs-types/blob/main/scripts/codegen.sh
+
 /**
  * ClientUpdateProposal is a governance proposal. If it passes, the substitute
  * client's latest consensus state is copied over to the subject client. The proposal
