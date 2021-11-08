@@ -3,12 +3,11 @@ import { assertIsBroadcastTxSuccess } from "@cosmjs/stargate";
 import { getValidatorClient, getValidatorWallet } from "../util/clients";
 
 describe('native transfers', () => {
-
     test('validator has positive balance', async () => {
         const client = await CosmWasmClient.connect(process.env.NODE_URL as string);
         const balance = await client.getBalance(process.env.VALIDATOR_ADDR as string, "nomo");
 
-        console.log(`Validator balance=(denom=${balance.denom}, amount=${balance.amount})`);
+        console.log(`Validator balance=(${balance.denom}, ${balance.amount})`);
 
         expect(BigInt(balance.amount) > 0).toBeTruthy();
     });

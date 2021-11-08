@@ -12,7 +12,6 @@ export async function getValidatorWallet(): Promise<DirectSecp256k1Wallet> {
     return validatorWallet;
 }
 
-
 export async function getValidatorClient(): Promise<SigningCosmWasmClient> {
     if (!validatorClient) {
         validatorClient = await SigningCosmWasmClient.connectWithSigner(process.env.NODE_URL as string, await getValidatorWallet());

@@ -13,11 +13,7 @@ const customFees = {
     exec: {
         amount: [{ amount: "500000", denom: "nomo" }],
         gas: "500000",
-    },
-    send: {
-        amount: [{ amount: "80000", denom: "nomo" }],
-        gas: "80000",
-    },
+    }
 };
 
 test('sample wasm contract successfully get deployed and runs on the blockchain', async () => {
@@ -49,7 +45,11 @@ test('sample wasm contract successfully get deployed and runs on the blockchain'
 
     // Approve the escrow
     console.log('Approving escrow');
-    const handleMsg = { "approve": { "quantity": [{ "amount": "5000", "denom": "nomo" }] } };
+    const handleMsg = {
+        "approve": {
+            "quantity": [{ "amount": "5000", "denom": "nomo" }]
+        }
+    };
     const response = await client.execute(firstAccount.address, contractAddress, handleMsg, customFees.exec);
 
     // Query again to confirm it worked
