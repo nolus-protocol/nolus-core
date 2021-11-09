@@ -1,6 +1,5 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
 import { assertIsBroadcastTxSuccess, BroadcastTxResponse, Coin } from "@cosmjs/stargate";
 import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser2Wallet, getUser1Client } from "../util/clients";
 
