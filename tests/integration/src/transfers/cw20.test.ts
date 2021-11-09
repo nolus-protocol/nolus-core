@@ -1,9 +1,7 @@
 import * as fs from "fs";
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { SigningCosmWasmClient, InstantiateResult } from "@cosmjs/cosmwasm-stargate";
 import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
-import { assertIsBroadcastTxSuccess, BroadcastTxResponse, Coin } from "@cosmjs/stargate";
-import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser2Wallet, getUser1Client } from "../util/clients";
+import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser1Client } from "../util/clients";
 import { AccountData } from "@cosmjs/amino";
 
 const customFees = {
@@ -22,7 +20,6 @@ const customFees = {
 };
 
 describe("CW20 transfers", () => {
-    let validatorWallet: DirectSecp256k1Wallet;
     let validatorClient: SigningCosmWasmClient;
     let validatorAccount: AccountData;
     let contractAddress: string;
