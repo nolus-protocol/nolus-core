@@ -4,6 +4,9 @@ stages:
   - build
   - test
 
+variables:
+  CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder"
 #needs an already configured AWS user on the host system, e.g. `aws configure`
 # prep-registry-cred:
 #   stage: prep
@@ -30,8 +33,8 @@ prep-builder-job:
     - >-
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${CI_REGISTRY_IMAGE}:${CI_COMMIT_TAG}"
+      --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
+      --destination "${NOLUS_BUILDER_IMAGE}:latest"
 
 build-job:
   stage: build
