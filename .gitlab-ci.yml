@@ -35,6 +35,9 @@ prep-builder-job:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
       --destination "${NOLUS_BUILDER_IMAGE}:latest"
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED = false'
+      when: never
 
 build-job:
   stage: build
