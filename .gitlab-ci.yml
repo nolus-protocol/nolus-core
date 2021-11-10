@@ -2,7 +2,7 @@ include: '.cicd/go-cache.yml'
 variables:
   CI_REGISTRY: "public.ecr.aws"
   CI_REGISTRY_USER: "AWS"
-  CI_REGISTRY_PASSWORD:
+  CI_REGISTRY_PASSWORD: ""
 
 stages:
   - prep
