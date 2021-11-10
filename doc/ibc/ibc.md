@@ -194,6 +194,28 @@ chains:
       - https://rpc.testnet.cosmos.network:443
 ```
 
+# Network upgrades
+All IBC channels, connections and clients are preserved when upgrading the network, so long as the chain's state is kept intact during the upgrade.
+
+However, changing the chain ID of the network, the `UnbondingPeriod` or any of the changes listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#ibc-client-breaking-upgrades), results in broken clients in all connected chains. This requires a [client upgrade proposal](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/proto-docs.md#upgradeproposal) to be submitted, which will produce an upgraded client and consensus states, which relayers must propagate to the connected chains for the connections to continue functioning. Full steps listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#step-by-step-upgrade-process-for-sdk-chains).
+
+During an `ibc-go` upgrade, there might be changes or migrations that we need to run in our new node binary. These are documented in the docs directory of the ibc-go repository.  
+Example: https://github.com/cosmos/ibc-go/blob/main/docs/migrations/ibc-migration-043.md
+
+## Regular upgrade
+If no client-breaking changes were made, then no steps need to be taken regarding IBC channels, connections or clients on the other side of the IBC connections.
+
+## Genesis restart
+Genesis restarts can break relays if the clients on the connected chains are not updated with the last block header before the restart. See https://github.com/informalsystems/ibc-rs/issues/1152.
+
+There are two approaches in avoiding IBC client breakage after a genesis restart.
+
+### 1. Pause the network before the upgrade and wait for the clients to be updated by the relays
+When performing a genesis restart upgrade, all clients on the opposite sides of the IBC connections must be updated with the block header of the last block before the restart. Relay operators should be notified that they must perform this client update, or else their relays will stop working, as this upgrade path is not supported by the relay implementations as of writing this doc.
+
+### 2. Export from the earliest block height that is used by a client on a connected chain
+This approach involves identifying which block height the oldest client on a connected chain uses and exporting the new genesis block from that height.
+
 # Links
 https://www.youtube.com/watch?v=816PP8oXv0Q - IBC high level overview + hello world IBC module  
 https://github.com/cosmos/ibc-go/blob/main/modules/core/spec/01_concepts.md - IBC connections, channels, ports, etc.  
