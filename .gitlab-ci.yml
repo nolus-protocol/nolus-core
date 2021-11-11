@@ -40,12 +40,13 @@ prep-builder:
   #   BUILD_IMAGE_SRC_DIR: "/code"
   #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
-    - "[[ ! 'docker image ls | grep \"${NOLUS_BUILDER_IMAGE}\"' ]]"
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - /kaniko/executor
-      --context "${CI_PROJECT_DIR}"
-      --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
-      --destination "${NOLUS_BUILDER_IMAGE}"
+    - if ! 'docker image ls | grep \"${NOLUS_BUILDER_IMAGE}\"' ; then     
+        /kaniko/executor
+          --context "${CI_PROJECT_DIR}"
+          --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
+          --destination "${NOLUS_BUILDER_IMAGE}" ;
+      fi
       # --no-push
       # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
