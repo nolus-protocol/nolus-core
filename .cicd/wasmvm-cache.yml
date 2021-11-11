@@ -1,7 +1,7 @@
 .wasmvm-vars:
   variables:
     WASMVM_REL_DIR: .wasmvm
-    WASMVM_DIR: "$CI_PROJECT_DIR/$WASMVM_REL_DIR"
+    WASMVM_DIR: $CI_PROJECT_DIR/$WASMVM_REL_DIR
 
 .wasmvm-cache:
   extends: .wasmvm-vars
