@@ -6,7 +6,7 @@ stages:
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
-  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:latest"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 #needs an already configured AWS user on the host system, e.g. `aws configure`
@@ -29,19 +29,26 @@ prep-builder-job:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  # variables:
+  #   BUILD_IMAGE_SRC_DIR: "/code"
+  #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
-      --destination "${NOLUS_BUILDER_IMAGE}:latest"
+      --destination "${NOLUS_BUILDER_IMAGE}"
+      # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
+      # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
+      # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
+      # --build-arg CGO_LDFLAGS=-L${WASMVM_BUILD_IMAGE_LIB_DIR}
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
 
 build-job:
   stage: build
-  #image: golang:1.17.2
+  image: "${NOLUS_BUILDER_IMAGE}"
   extends: .go-cache
   script:
     - echo "Building cosmzone ..."
