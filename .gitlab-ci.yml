@@ -43,7 +43,7 @@ prep-builder-job:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
       --destination "${NOLUS_BUILDER_IMAGE}"
-      --no-push
+      # --no-push
       # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
       # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
