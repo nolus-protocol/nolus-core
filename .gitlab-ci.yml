@@ -71,7 +71,7 @@ download-wasmvm-lib:
     WASMVM_URL: https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB
     WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
   script:
-    - [ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
+   - "[ ! -f \"$WASMVM_LOCAL_PATH\" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL"
   
 
 build-job:
