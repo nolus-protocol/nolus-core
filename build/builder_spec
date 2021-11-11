@@ -21,3 +21,4 @@ RUN apk add git
 
 WORKDIR ${CODE_DIR}
 ENTRYPOINT ["make"]
+CMD ["build_local"]
