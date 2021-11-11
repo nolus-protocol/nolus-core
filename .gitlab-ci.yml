@@ -6,7 +6,7 @@ stages:
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
-  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:latest"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:0.1"
   # NOLUS_BUILDER_IMAGE: "builder:latest"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
@@ -22,13 +22,13 @@ variables:
 #     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
 #   cache:
 
-prep-debug:
-  stage: prep
-  script:
-    - export
+# prep-debug:
+#   stage: prep
+#   script:
+#     - export
 
 #ref: https://github.com/GoogleContainerTools/kaniko
-prep-builder-job:
+prep-builder:
   stage: prep
   # needs: ["prep-registry-cred"]
   image:
@@ -52,6 +52,13 @@ prep-builder-job:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
     - when: on_success
+
+# prep-builder:load-local:
+#   stage: prep
+#   needs: ["prep-builder:image"]
+#   tag: TBD-shell-executor!
+#   script:
+#     docker load ....
 
 build-job:
   stage: build
