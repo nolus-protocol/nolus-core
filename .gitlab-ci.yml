@@ -40,6 +40,7 @@ prep-builder:
   #   BUILD_IMAGE_SRC_DIR: "/code"
   #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
+    - "[[ ! 'docker image ls | grep "${NOLUS_BUILDER_IMAGE}"' ]]"
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
     - /kaniko/executor
       --context "${CI_PROJECT_DIR}"
@@ -67,11 +68,11 @@ download-wasmvm-lib:
   image: "${NOLUS_BUILDER_IMAGE}"
   extends: .wasmvm-cache
   variables:
-    WASMVM_LIB: "libwasmvm_muslc.a"
-    WASMVM_URL: https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB
-    WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
+    WASMVM_LIB: 'libwasmvm_muslc.a'
+    WASMVM_URL: 'https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB'
+    WASMVM_LOCAL_PATH: '$WASMVM_DIR/$WASMVM_LIB'
   script:
-   - "[ ! -f \"$WASMVM_LOCAL_PATH\" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL"
+   - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
   
 
 build-job:
