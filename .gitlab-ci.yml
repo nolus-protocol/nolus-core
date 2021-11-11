@@ -55,7 +55,7 @@ prep-builder:
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
-    - when: on_success
+    # - when: on_success
 
 # prep-builder:load-local:
 #   stage: prep
@@ -69,11 +69,12 @@ download-wasmvm-lib:
   image: "${NOLUS_BUILDER_IMAGE}"
   extends: .wasmvm-cache
   variables:
-    WASMVM_LIB: 'libwasmvm_muslc.a'
-    WASMVM_URL: 'https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB'
-    WASMVM_LOCAL_PATH: '$WASMVM_DIR/$WASMVM_LIB'
+    WASMVM_LIB: "libwasmvm_muslc.a"
+    WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB"
+    WASMVM_LOCAL_PATH: "$WASMVM_DIR/$WASMVM_LIB"
   script:
-   - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
+    - wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
+  #  - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
   
 
 build-job:
