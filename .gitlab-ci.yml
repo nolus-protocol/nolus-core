@@ -71,7 +71,7 @@ download-wasmvm-lib:
   variables:
     WASMVM_LIB: "libwasmvm_muslc.a"
     WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB"
-    WASMVM_LOCAL_PATH: "$WASMVM_DIR"/"$WASMVM_LIB"
+    WASMVM_LOCAL_PATH: '$WASMVM_DIR/$WASMVM_LIB'
   script:
     - export
     - wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
