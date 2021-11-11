@@ -20,5 +20,5 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 RUN apk add git
 
 WORKDIR ${CODE_DIR}
-ENTRYPOINT ["make"]
-CMD ["build_local"]
+# ENTRYPOINT ["make"]
+CMD ["/bin/sh"]

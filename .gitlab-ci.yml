@@ -6,7 +6,8 @@ stages:
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
-  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:latest"
+  #NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:latest"
+  NOLUS_BUILDER_IMAGE: "builder:latest"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 #needs an already configured AWS user on the host system, e.g. `aws configure`
@@ -42,6 +43,7 @@ prep-builder-job:
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
       --destination "${NOLUS_BUILDER_IMAGE}"
+      --no-push
       # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
       # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
