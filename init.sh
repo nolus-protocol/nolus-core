@@ -80,8 +80,14 @@ update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="nomo"'
 update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
 update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
 update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
+
 # Allocate genesis accounts (cosmos formatted addresses)
-cosmzoned add-genesis-account $KEY 1000000000nomo --keyring-backend $KEYRING
+if [[ "$*" =~ "integration" ]]; then
+  IBC_TOKEN="ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F"
+  cosmzoned add-genesis-account $KEY "1000000000nomo, 1000000000$IBC_TOKEN" --keyring-backend $KEYRING
+else
+  cosmzoned add-genesis-account $KEY '1000000000nomo' --keyring-backend $KEYRING
+fi
 
 # Add DelayedVestingAccount
 TILL=$(date -d "+10 minutes" +%s)

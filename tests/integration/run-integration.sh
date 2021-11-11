@@ -14,6 +14,7 @@ trap cleanup INT TERM EXIT
 prepare_env() {
   cosmzoned keys add test-user-1 --keyring-backend "test" # force no password
   cosmzoned keys add test-user-2 --keyring-backend "test" # force no password
+
   VALIDATOR_ADDR=$(cosmzoned keys show local-validator -a)
   VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys  export local-validator --unsafe --unarmored-hex 2>&1)
   USR_1_ADDR=$(cosmzoned keys show test-user-1 -a)
@@ -28,11 +29,11 @@ USR_1_ADDR=${USR_1_ADDR}
 USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_ADDR=${USR_2_ADDR}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
+IBC_TOKEN=ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F
 EOF
   )
   echo "$DOT_ENV" > .env
 }
-
 
 cd ../../
 ./init.sh prepare integration >/tmp/cosmzone-prepare.log 2>&1
@@ -44,4 +45,3 @@ sleep 5
 
 prepare_env
 yarn test "$@"
-
