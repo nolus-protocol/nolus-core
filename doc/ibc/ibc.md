@@ -197,15 +197,19 @@ chains:
 # Network upgrades
 All IBC channels, connections and clients are preserved when upgrading the network, so long as the chain's state is kept intact during the upgrade.
 
-However, changing the chain ID of the network, the `UnbondingPeriod` or any of the changes listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#ibc-client-breaking-upgrades), results in broken clients in all connected chains. This requires a [client upgrade proposal](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/proto-docs.md#upgradeproposal) to be submitted, which will produce an upgraded client and consensus states, which relayers must propagate to the connected chains for the connections to continue functioning. Full steps listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#step-by-step-upgrade-process-for-sdk-chains).
+However, changing the chain ID of the network, the `UnbondingPeriod` or any of the changes listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#ibc-client-breaking-upgrades), results in broken clients in all connected chains. This requires a [client upgrade proposal](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/proto-docs.md#upgradeproposal) to be submitted, which will produce an upgraded client and consensus states, which relayers must propagate to the connected chains for the connections to continue functioning. Full steps listed [here](https://github.com/cosmos/ibc-go/blob/main/docs/ibc/upgrades/quick-guide.md#step-by-step-upgrade-process-for-sdk-chains).  
+Even though we have this proposal disabled, in case we need to create a hard fork we will:
+1. Perform a soft fork upgrade enabling the proposal
+2. Submit a client upgrade proposal
+3. Perform the hard fork upgrade, disabling the proposal once again
 
 During an `ibc-go` upgrade, there might be changes or migrations that we need to run in our new node binary. These are documented in the docs directory of the ibc-go repository.  
 Example: https://github.com/cosmos/ibc-go/blob/main/docs/migrations/ibc-migration-043.md
 
-## Regular upgrade
+## Soft fork
 If no client-breaking changes were made, then no steps need to be taken regarding IBC channels, connections or clients on the other side of the IBC connections.
 
-## Genesis restart
+## Genesis restarts without any client-breaking changes
 Genesis restarts can break relays if the clients on the connected chains are not updated with the last block header before the restart. See https://github.com/informalsystems/ibc-rs/issues/1152.
 
 There are two approaches in avoiding IBC client breakage after a genesis restart.
