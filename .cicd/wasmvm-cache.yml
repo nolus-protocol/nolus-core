@@ -1,0 +1,13 @@
+.wasmvm-vars:
+  variables:
+    WASMVM_REL_DIR: .wasmvm
+    WASMVM_DIR: $CI_PROJECT_DIR/$WASMVM_REL_DIR
+
+.wasmvm-cache:
+  extends: .wasmvm-vars
+  before_script:
+    - mkdir -p $WASMVM_DIR
+  cache:
+    key: wasmvm-lib-$CI_COMMIT_REF_SLUG
+    paths:
+      - $WASMVM_REL_DIR

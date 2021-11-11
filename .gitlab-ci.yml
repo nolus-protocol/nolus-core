@@ -1,4 +1,5 @@
 include: '.cicd/go-cache.yml'
+include: '.cicd/wasmvm-cache.yml'
 stages:
   - prep
   - build
@@ -34,6 +35,7 @@ prep-builder:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  # extends: .wasmvm-vars
   # variables:
   #   BUILD_IMAGE_SRC_DIR: "/code"
   #   BUILD_IMAGE_GOCACHE_DIR: ""
@@ -47,7 +49,7 @@ prep-builder:
       # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
       # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
-      # --build-arg CGO_LDFLAGS=-L${WASMVM_BUILD_IMAGE_LIB_DIR}
+      # --build-arg CGO_LDFLAGS=-L${WASMVM_DIR}
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
@@ -60,13 +62,26 @@ prep-builder:
 #   script:
 #     docker load ....
 
-build-job:
+download-wasmvm-lib:
   stage: build
   image: "${NOLUS_BUILDER_IMAGE}"
-  extends: .go-cache
+  extends: .wasmvm-cache
+  variables:
+    WASMVM_LIB: "libwasmvm_muslc.a"
+    WASMVM_URL: https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB
+    WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
   script:
-    - echo "Building cosmzone ..."
-    - make build_local
+    - [ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
+  
+
+build-job:
+  stage: build
+  needs: ["download-wasmvm-lib"]
+  image: "${NOLUS_BUILDER_IMAGE}"
+  extends: .go-cache
+  extends: .wasmvm-cache
+  script:
+    - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
 
 test-job-empty:
   stage: test
