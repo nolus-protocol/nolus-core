@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            async function getKeplr() {
+
+                if (document.readyState === "complete") {
+                    return window.keplr;
+                }
+
+                if (window.keplr) {
+                    return window.keplr;
+                }
+
+                return new Promise((resolve) => {
+                    const documentStateChange = (event) => {
+                        if (
+                            event.target &&
+                            (event.target).readyState === "complete"
+                        ) {
+                            resolve(window.keplr);
+                            document.removeEventListener("readystatechange", documentStateChange);
+                        }
+                    };
+
+                    document.addEventListener("readystatechange", documentStateChange);
+                });
+            }
+
+            async function addChainToKeplr() {
+                return await window.keplr.experimentalSuggestChain({
+                    chainId: "nomo-private",
+                    chainName: "Nomo",
+                    rpc: "http://127.0.0.1:26657",
+                    rest: "http://127.0.0.1:1317",
+                    bip44: {
+                        coinType: 118,
+                    },
+                    bech32Config: {
+                        bech32PrefixAccAddr: "nomo",
+                        bech32PrefixAccPub: "nomo" + "pub",
+                        bech32PrefixValAddr: "nomo" + "valoper",
+                        bech32PrefixValPub: "nomo" + "valoperpub",
+                        bech32PrefixConsAddr: "nomo" + "valcons",
+                        bech32PrefixConsPub: "nomo" + "valconspub",
+                    },
+                    currencies: [
+                        {
+                            coinDenom: "nomo",
+                            coinMinimalDenom: "nomo",
+                            coinDecimals: 6,
+                            coinGeckoId: "cosmos",
+                        },
+                    ],
+                    feeCurrencies: [
+                        {
+                            coinDenom: "nomo",
+                            coinMinimalDenom: "nomo",
+                            coinDecimals: 6,
+                            coinGeckoId: "cosmos",
+                        },
+                    ],
+                    stakeCurrency: {
+                        coinDenom: "nomo",
+                        coinMinimalDenom: "nomo",
+                        coinDecimals: 6,
+                        coinGeckoId: "cosmos",
+                    },
+                    coinType: 118,
+                    gasPriceStep: {
+                        low: 0.01,
+                        average: 0.025,
+                        high: 0.03,
+                    },
+                    features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
+                });
+            }
+
+            $('#btnAddKeplr').on('click', (event) => {
+                getKeplr().then(result => {
+                    if (result) {
+                        return addChainToKeplr()
+                    } else {
+                        //show alert
+                        alert("Keplr is not installed! Please install Keplr wallet from Google Chrome store.")
+                    }
+                }).then(keplrConfig => {
+
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+<button id="btnAddKeplr">Add Keplr</button>
+</body>
+</html>
+
