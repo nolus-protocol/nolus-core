@@ -62,11 +62,11 @@ build-job:
     - .go-cache-vars
     - .wasmvm-cache-vars
   cache:
-    key: $WASMVM_CACHE_KEY
-    policy: pull
-    key: $GOMODCACHE_KEY
-    paths:
-      - $GOMODCACHE_REL_DIR
+    - key: $WASMVM_CACHE_KEY
+      policy: pull
+    - key: $GOMODCACHE_KEY
+      paths:
+        - $GOMODCACHE_REL_DIR
   before_script:
     - mkdir -p $WASMVM_DIR
     - mkdir -p $GOMODCACHE_DIR
