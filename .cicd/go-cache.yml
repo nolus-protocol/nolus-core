@@ -1,8 +1,10 @@
 .go-cache:
   variables:
     GOPATH: $CI_PROJECT_DIR/.go
+    GOMODCACHE_DIR_RELATIVE: .go/pkg/mod/
+    GOMODCACHE_DIR: $CI_PROJECT_DIR/.go/pkg/mod/
   before_script:
     - mkdir -p .go
   cache:
     paths:
-      - .go/pkg/mod/
+      - $GOMODCACHE_DIR_RELATIVE
