@@ -11,6 +11,7 @@ variables:
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
+
 #ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
@@ -44,9 +45,8 @@ download-wasmvm-lib:
     WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB"
     WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
   script:
-    - export
-    - wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
-  #  - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
+    # - wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
+   - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
   
 
 build-job:
