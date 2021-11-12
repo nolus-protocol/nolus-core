@@ -20,8 +20,6 @@ prep-builder:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  # variables:
-  #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
     - /kaniko/executor
@@ -29,8 +27,6 @@ prep-builder:
           --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
           --destination "${NOLUS_BUILDER_IMAGE}"
       # --no-push
-      # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
-      # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
@@ -80,6 +76,9 @@ build-job:
     - go env -w GOCACHE=${GOCACHE_DIR}
     - go env -w GOMODCACHE=${GOMODCACHE_DIR}
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
+  artifacts:
+    paths:
+      - target/release
 
 test-job-empty:
   stage: test
