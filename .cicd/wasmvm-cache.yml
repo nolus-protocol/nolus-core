@@ -1,17 +1,5 @@
-.wasmvm-cache:
+.wasmvm-cache-vars:
   variables:
     WASMVM_REL_DIR: .wasmvm
     WASMVM_DIR: $CI_PROJECT_DIR/$WASMVM_REL_DIR
     WASMVM_CACHE_KEY: wasmvm-lib-$CI_COMMIT_REF_SLUG
-  before_script:
-    - mkdir -p $WASMVM_DIR
-  cache:
-    key: $WASMVM_CACHE_KEY
-    paths:
-      - $WASMVM_REL_DIR
-
-.wasmvm-cache-readonly:
-  extends: .wasmvm-cache
-  cache:
-    key: $WASMVM_CACHE_KEY
-    policy: pull
