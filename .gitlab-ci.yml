@@ -34,7 +34,7 @@ prep-builder:
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
-    - when: on_success
+    # - when: on_success
 
 download-wasmvm-lib:
   stage: build
@@ -45,8 +45,7 @@ download-wasmvm-lib:
     WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB"
     WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
   script:
-    # - wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
-   - '[ ! -f "$WASMVM_LOCAL_PATH" ] && wget -O $WASMVM_LOCAL_PATH $WASMVM_URL'
+   - if [ ! -f "$WASMVM_LOCAL_PATH" ]; then wget -O $WASMVM_LOCAL_PATH $WASMVM_URL; fi
   
 
 build-job:
