@@ -7,7 +7,7 @@ stages:
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
-  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:0.1"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:0.2"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
