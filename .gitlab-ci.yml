@@ -22,12 +22,10 @@ prep-builder:
   #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - if ! 'docker image ls | grep \"${NOLUS_BUILDER_IMAGE}\"' ; then     
-        /kaniko/executor
+    - /kaniko/executor
           --context "${CI_PROJECT_DIR}"
           --dockerfile "${CI_PROJECT_DIR}/build/builder_spec"
-          --destination "${NOLUS_BUILDER_IMAGE}" ;
-      fi
+          --destination "${NOLUS_BUILDER_IMAGE}"
       # --no-push
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
       # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
@@ -55,6 +53,8 @@ build-job:
   extends: .go-cache
   extends: .wasmvm-cache-readonly
   script:
+    - go env GOCACHE
+    - go env GOMODCACHE
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
 
 test-job-empty:
