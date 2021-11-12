@@ -9,6 +9,3 @@
     key: go-mod-cache-$CI_COMMIT_REF_SLUG
     paths:
       - $GOMODCACHE_DIR_RELATIVE
-
-.sample-cache:
-  variables:

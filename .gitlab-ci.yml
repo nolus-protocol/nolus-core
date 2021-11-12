@@ -1,5 +1,7 @@
-include: '.cicd/go-cache.yml'
-include: '.cicd/wasmvm-cache.yml'
+include:
+  - '.cicd/wasmvm-cache.yml'
+  - '.cicd/go-cache.yml'
+
 stages:
   - prep
   - build
@@ -51,7 +53,7 @@ build-job:
   needs: ["download-wasmvm-lib"]
   image: "${NOLUS_BUILDER_IMAGE}"
   extends:
-    - .sample-cache
+    - .go-cache
     - .wasmvm-cache-readonly
   script:
     - go env GOCACHE
