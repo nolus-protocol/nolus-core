@@ -69,14 +69,16 @@ build-job:
     - key: $GOMODCACHE_KEY
       paths:
         - $GOMODCACHE_REL_DIR
+    - key: $GOCACHE_KEY
+      paths:
+        - $GOCACHE_REL_DIR
   before_script:
     - mkdir -p $WASMVM_DIR
     - mkdir -p $GOMODCACHE_DIR
+    - mkdir -p $GOCACHE_DIR
   script:
-    - go env GOCACHE
-    - echo "GOMODCACHE_DIR=${GOMODCACHE_DIR}"
+    - go env -w GOCACHE=${GOCACHE_DIR}
     - go env -w GOMODCACHE=${GOMODCACHE_DIR}
-    - go env GOMODCACHE
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
 
 test-job-empty:
