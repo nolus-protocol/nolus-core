@@ -55,6 +55,7 @@ build-job:
   script:
     - go env GOCACHE
     - go env -w GOMODCACHE=${GOMODCACHE_DIR}
+    - go env GOMODCACHE
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
 
 test-job-empty:
