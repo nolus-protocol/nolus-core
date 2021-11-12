@@ -51,7 +51,7 @@ build-job:
   needs: ["download-wasmvm-lib"]
   image: "${NOLUS_BUILDER_IMAGE}"
   extends:
-    - .go-cache
+    - .sample-cache
     - .wasmvm-cache-readonly
   script:
     - go env GOCACHE
