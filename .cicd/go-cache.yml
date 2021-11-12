@@ -1,11 +1,6 @@
-.go-cache:
+.go-cache-vars:
   variables:
     GOPATH: $CI_PROJECT_DIR/.go
-    GOMODCACHE_DIR_RELATIVE: .go/pkg/mod/
-    GOMODCACHE_DIR: $CI_PROJECT_DIR/$GOMODCACHE_DIR_RELATIVE
-  before_script:
-    - mkdir -p .go
-  cache:
-    key: go-mod-cache-$CI_COMMIT_REF_SLUG
-    paths:
-      - $GOMODCACHE_DIR_RELATIVE
+    GOMODCACHE_REL_DIR: .go/pkg/mod/
+    GOMODCACHE_DIR: $CI_PROJECT_DIR/$GOMODCACHE_REL_DIR
+    GOMODCACHE_KEY: go-mod-cache-$CI_COMMIT_REF_SLUG
