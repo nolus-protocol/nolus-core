@@ -8,34 +8,15 @@ stages:
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/u2x2g6a1"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/builder:0.1"
-  # NOLUS_BUILDER_IMAGE: "builder:latest"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
-#needs an already configured AWS user on the host system, e.g. `aws configure`
-# prep-registry-cred:
-#   stage: prep
-#   image: amazon/aws-cli
-#   variables:
-#     CI_REGISTRY: "public.ecr.aws"
-#     CI_REGISTRY_USER: "AWS"
-#   script:
-#     - CI_REGISTRY_PASSWORD=$(aws ecr-public get-login-password --region us-east-1)
-#     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-#   cache:
-
-# prep-debug:
-#   stage: prep
-#   script:
-#     - export
 
 #ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
-  # needs: ["prep-registry-cred"]
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  # extends: .wasmvm-vars
   # variables:
   #   BUILD_IMAGE_SRC_DIR: "/code"
   #   BUILD_IMAGE_GOCACHE_DIR: ""
@@ -56,13 +37,6 @@ prep-builder:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
     # - when: on_success
-
-# prep-builder:load-local:
-#   stage: prep
-#   needs: ["prep-builder:image"]
-#   tag: TBD-shell-executor!
-#   script:
-#     docker load ....
 
 download-wasmvm-lib:
   stage: build

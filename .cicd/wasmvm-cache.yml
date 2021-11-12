@@ -1,10 +1,7 @@
-.wasmvm-vars:
+.wasmvm-cache:
   variables:
     WASMVM_REL_DIR: .wasmvm
     WASMVM_DIR: $CI_PROJECT_DIR/$WASMVM_REL_DIR
-
-.wasmvm-cache:
-  extends: .wasmvm-vars
   before_script:
     - mkdir -p $WASMVM_DIR
   cache:
