@@ -53,8 +53,8 @@ build-job:
   needs: ["download-wasmvm-lib"]
   image: "${NOLUS_BUILDER_IMAGE}"
   extends:
-    - .wasmvm-cache-readonly
     - .go-cache
+    - .wasmvm-cache-readonly
   script:
     - go env GOCACHE
     - echo "GOMODCACHE_DIR=${GOMODCACHE_DIR}"
