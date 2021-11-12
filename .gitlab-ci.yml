@@ -54,6 +54,7 @@ build-job:
   extends: .wasmvm-cache-readonly
   script:
     - go env GOCACHE
+    - echo "GOMODCACHE_DIR=${GOMODCACHE_DIR}"
     - go env -w GOMODCACHE=${GOMODCACHE_DIR}
     - go env GOMODCACHE
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
