@@ -10,7 +10,7 @@
       - $WASMVM_REL_DIR
 
 .wasmvm-cache-readonly:
-  extends: .wasmvm-cache:
+  extends: .wasmvm-cache
   cache:
     key: wasmvm-lib-$CI_COMMIT_REF_SLUG
     policy: pull
