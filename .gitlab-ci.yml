@@ -18,7 +18,6 @@ prep-builder:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   # variables:
-  #   BUILD_IMAGE_SRC_DIR: "/code"
   #   BUILD_IMAGE_GOCACHE_DIR: ""
   script:
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
@@ -29,14 +28,12 @@ prep-builder:
           --destination "${NOLUS_BUILDER_IMAGE}" ;
       fi
       # --no-push
-      # --build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR}
       # --build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR}
       # --build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR}
-      # --build-arg CGO_LDFLAGS=-L${WASMVM_DIR}
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: never
-    # - when: on_success
+    - when: on_success
 
 download-wasmvm-lib:
   stage: build
