@@ -63,6 +63,8 @@ build-job:
     - .wasmvm-cache-vars
   cache:
     - key: $WASMVM_CACHE_KEY
+      paths:
+        - $WASMVM_REL_DIR
       policy: pull
     - key: $GOMODCACHE_KEY
       paths:
