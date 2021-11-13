@@ -90,7 +90,7 @@ build-binary:
   script:
     - go env -w GOCACHE=${GOCACHE_DIR}
     - go env -w GOMODCACHE=${GOMODCACHE_DIR}
-    - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
+    - CGO_LDFLAGS=-L${WASMVM_DIR} make build
   artifacts:
     paths:
       - target/release

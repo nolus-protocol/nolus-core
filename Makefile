@@ -1,60 +1,112 @@
-BUILD_IMAGE_SRC_DIR := "/code"
-BUILDER_IMAGE := "nomo/builder"
-
-LOCAL_GOCACHE_DIR := $(shell go env GOCACHE)
-BUILD_IMAGE_GOCACHE_DIR := "/.cache/go-build"
-
-LOCAL_GOMODCACHE_DIR := $(shell go env GOMODCACHE)
-BUILD_IMAGE_GOMODCACHE_DIR := "/go/pkg/mod"
-
 BUILDDIR ?= $(CURDIR)/target/release
-
-WASMVM_DOWNLOAD_URL := https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0
-WASMVM_LIB := libwasmvm_muslc.a
-WASMVM_CHECKSUMS := checksums.txt
-WASMVM_LIB_CHECKSUM := $(shell curl -L ${WASMVM_DOWNLOAD_URL}/${WASMVM_CHECKSUMS} | grep ${WASMVM_LIB} | awk '{print $$1;}')
-WASMVM_LIB_URL := ${WASMVM_DOWNLOAD_URL}/${WASMVM_LIB}
-WASMVM_MOD := github.com/\!cosm\!wasm
-
-WASMVM_LOCAL_LIB_PATH := ${LOCAL_GOMODCACHE_DIR}/${WASMVM_MOD}/${WASMVM_LIB}
-WASMVM_BUILD_IMAGE_LIB_DIR := ${BUILD_IMAGE_GOMODCACHE_DIR}/${WASMVM_MOD}
-
-UID := $(shell id -u)
-GID := $(shell id -g)
+PACKAGES=$(shell go list ./... | grep -v '/simulation')
+TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
+LEDGER_ENABLED ?= true
+VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
+COMMIT := $(shell git log -1 --format='%H')
+NOMO_BINARY=cosmozoned
+export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
-default_target: build_local
+default_target: all
 
-.PHONY: default_target build_local install_local build_docker build_node prep_docker_builder
+.PHONY: default_target
 
-all: build_local build_docker
+# process build tags
 
-build_local: build/Makefile
-	make -f build/Makefile BUILDDIR=${BUILDDIR} build
+build_tags = netgo
+ifeq ($(LEDGER_ENABLED),true)
+  ifeq ($(OS),Windows_NT)
+    GCCEXE = $(shell where gcc.exe 2> NUL)
+    ifeq ($(GCCEXE),)
+      $(error gcc.exe not installed for ledger support, please install or set LEDGER_ENABLED=false)
+    else
+      build_tags += ledger
+    endif
+  else
+    UNAME_S = $(shell uname -s)
+    ifeq ($(UNAME_S),OpenBSD)
+      $(warning OpenBSD detected, disabling ledger support (https://github.com/cosmos/cosmos-sdk/issues/1988))
+    else
+      GCC = $(shell command -v gcc 2> /dev/null)
+      ifeq ($(GCC),)
+        $(error gcc not installed for ledger support, please install or set LEDGER_ENABLED=false)
+      else
+        build_tags += ledger
+      endif
+    endif
+  endif
+endif
 
-install_local: build/Makefile
-	make -f build/Makefile BUILDDIR=${BUILDDIR} install
+ifeq (cleveldb,$(findstring cleveldb,$(NOMO_BUILD_OPTIONS)))
+  build_tags += gcc
+endif
+build_tags += $(BUILD_TAGS)
+build_tags := $(strip $(build_tags))
 
-build_docker: prep_docker_builder ${WASMVM_LOCAL_LIB_PATH}
-	docker run --rm -it \
-		--name cosmzone-builder \
-		-u ${UID}:${GID} \
-		-v ${PWD}:${BUILD_IMAGE_SRC_DIR} \
-		-v ${LOCAL_GOCACHE_DIR}:${BUILD_IMAGE_GOCACHE_DIR} \
-		-v ${LOCAL_GOMODCACHE_DIR}:${BUILD_IMAGE_GOMODCACHE_DIR} \
-		${BUILDER_IMAGE} build_local
+whitespace :=
+whitespace += $(whitespace)
+comma := ,
+build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
-build_node: build/node_spec build_docker
-	docker build -t nomo/node -f build/node_spec .
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=nomo \
+		  -X github.com/cosmos/cosmos-sdk/version.AppName=${NOMO_BINARY} \
+		  -X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
+		  -X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
+		  -X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \
+			-X github.com/tendermint/tendermint/version.TMCoreSemVer=$(TMVERSION)
 
-# implementation targets follow
-prep_docker_builder: build/builder_spec
-	docker build -t ${BUILDER_IMAGE} -f build/builder_spec \
-		--build-arg CODE_DIR=${BUILD_IMAGE_SRC_DIR} \
-		--build-arg GOCACHE_DIR=${BUILD_IMAGE_GOCACHE_DIR} \
-		--build-arg GOMODCACHE_DIR=${BUILD_IMAGE_GOMODCACHE_DIR} \
-		--build-arg CGO_LDFLAGS=-L${WASMVM_BUILD_IMAGE_LIB_DIR} .
+# DB backend selection
+ifeq (cleveldb,$(findstring cleveldb,$(COSMOS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=cleveldb
+endif
+ifeq (badgerdb,$(findstring badgerdb,$(COSMOS_BUILD_OPTIONS)))
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=badgerdb
+endif
+# handle rocksdb
+ifeq (rocksdb,$(findstring rocksdb,$(COSMOS_BUILD_OPTIONS)))
+  CGO_ENABLED=1
+  BUILD_TAGS += rocksdb
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=rocksdb
+endif
+# handle boltdb
+ifeq (boltdb,$(findstring boltdb,$(COSMOS_BUILD_OPTIONS)))
+  BUILD_TAGS += boltdb
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=boltdb
+endif
 
-${WASMVM_LOCAL_LIB_PATH}:
-	@curl -L ${WASMVM_LIB_URL} -o ${WASMVM_LOCAL_LIB_PATH}
-	@sha256sum ${WASMVM_LOCAL_LIB_PATH} | grep ${WASMVM_LIB_CHECKSUM} > /dev/null
+ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+  ldflags += -w -s
+endif
+ldflags += $(LDFLAGS) 
+ldflags := $(strip $(ldflags))
+
+BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
+# check for nostrip option
+ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
+  BUILD_FLAGS += -trimpath
+endif
+
+#$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
+
+###############################################################################
+###                              Documentation                              ###
+###############################################################################
+
+all: build install
+
+BUILD_TARGETS := build install
+
+build: BUILD_ARGS=-o $(BUILDDIR)/
+
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILDDIR)/:
+	mkdir -p $(BUILDDIR)/
+
+go.sum: go.mod
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+.PHONY: all build install go.sum
