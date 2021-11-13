@@ -8,7 +8,7 @@
           --dockerfile "${CI_PROJECT_DIR}/${KANIKO_DOCKER_FILE}"
           --destination "${KANIKO_IMAGE}" ;
       else
-        echo "Not going to build the image ${KANIKO_IMAGE} as it exists in the repo!"
+        echo "Not going to build the image ${KANIKO_IMAGE} as it exists in the repo!" ;
       fi
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
