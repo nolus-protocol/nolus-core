@@ -37,18 +37,11 @@ prep-builder:check-exist:
 prep-builder:
   stage: prep
   needs: ["prep-builder:check-exist"]
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  extends: .kaniko-script
+  extends: .kaniko
   variables:
     KANIKO_DOCKER_FILE: build/builder_spec
     KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
-  rules:
-    - if: '$CI_COMMIT_REF_PROTECTED == "false"'
-      when: never
-    - when: on_success
 
 download-wasmvm-lib:
   stage: build
