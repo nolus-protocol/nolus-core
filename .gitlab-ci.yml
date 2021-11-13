@@ -1,16 +1,108 @@
-include: '.cicd/go-cache.yml'
+include:
+  - '.cicd/wasmvm-cache.yml'
+  - '.cicd/go-cache.yml'
+  - '.cicd/kaniko.yml'
 
 stages:
+  - prep
   - build
   - test
 
-build-job:
-  stage: build
-  #image: golang:1.17.2
-  extends: .go-cache
+variables:
+  CI_OCI_REGISTRY: "public.ecr.aws/nolus"
+  AWS_REGISTRY_ID: "013603813222"
+  NOLUS_BUILDER_REPO: "builder"
+  NOLUS_BUILDER_TAG: "0.2"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
+
+  NOLUS_NODE_REPO: "node"
+  NOLUS_NODE_TAG: "0.1"
+  NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
+# https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
+  container: "docker"
+
+prep-builder:check-exist:
+  stage: prep
+  image:
+    name: amazon/aws-cli
+    entrypoint: [""]
   script:
-    - echo "Building cosmzone ..."
-    - make build_local
+    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID 
+          --repository-name $NOLUS_BUILDER_REPO --region us-east-1 
+          --image-ids=imageTag=$NOLUS_BUILDER_TAG ; 
+      then
+        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
+      fi
+  artifacts:
+    reports:
+      dotenv: builder_exists.env
+
+#ref: https://github.com/GoogleContainerTools/kaniko
+prep-builder:
+  stage: prep
+  needs: ["prep-builder:check-exist"]
+  extends: .kaniko
+  variables:
+    KANIKO_DOCKER_FILE: build/builder_spec
+    KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
+    KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
+
+download-wasmvm-lib:
+  stage: build
+  image: "${NOLUS_BUILDER_IMAGE}"
+  extends: .wasmvm-cache-vars
+  cache:
+    key: $WASMVM_CACHE_KEY
+    paths:
+      - $WASMVM_REL_DIR
+  variables:
+    WASMVM_LIB: "libwasmvm_muslc.a"
+    WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v0.16.0/$WASMVM_LIB"
+    WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
+  before_script:
+    - mkdir -p $WASMVM_DIR
+  script:
+   - if [ ! -f "$WASMVM_LOCAL_PATH" ]; then wget -O $WASMVM_LOCAL_PATH $WASMVM_URL; fi
+  
+
+build-binary:
+  stage: build
+  needs: ["download-wasmvm-lib"]
+  image: "${NOLUS_BUILDER_IMAGE}"
+  extends:
+    - .go-cache-vars
+    - .wasmvm-cache-vars
+  cache:
+    - key: $WASMVM_CACHE_KEY
+      paths:
+        - $WASMVM_REL_DIR
+      policy: pull
+    - key: $GOMODCACHE_KEY
+      paths:
+        - $GOMODCACHE_REL_DIR
+    - key: $GOCACHE_KEY
+      paths:
+        - $GOCACHE_REL_DIR
+  before_script:
+    - mkdir -p $WASMVM_DIR
+    - mkdir -p $GOMODCACHE_DIR
+    - mkdir -p $GOCACHE_DIR
+  script:
+    - go env -w GOCACHE=${GOCACHE_DIR}
+    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
+    - CGO_LDFLAGS=-L${WASMVM_DIR} make build_local
+  artifacts:
+    paths:
+      - target/release
+
+build-image:
+  stage: build
+  needs: ["build-binary"]
+  extends: .kaniko
+  variables:
+    KANIKO_DOCKER_FILE: build/node_spec
+    KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
+    KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
 test-job-empty:
   stage: test

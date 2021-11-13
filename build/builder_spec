@@ -1,9 +1,4 @@
 FROM golang:1.17.2-alpine3.14
-ARG CODE_DIR
-ARG GOCACHE_DIR
-ARG GOMODCACHE_DIR
-RUN go env -w GOCACHE=${GOCACHE_DIR}
-RUN go env -w GOMODCACHE=${GOMODCACHE_DIR}
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
@@ -11,13 +6,9 @@ ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
 ARG BUILD_TAGS
 ENV BUILD_TAGS=${BUILD_TAGS:-muslc}
 
-ARG CGO_LDFLAGS
-ENV CGO_LDFLAGS=${CGO_LDFLAGS}
-
 #credit goes to https://github.com/provenance-io/wasmd/blob/v0.19.0/Dockerfile for details on muslc build
 RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
-WORKDIR ${CODE_DIR}
-ENTRYPOINT ["make"]
+CMD ["/bin/sh"]
