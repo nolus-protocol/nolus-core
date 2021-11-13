@@ -28,7 +28,9 @@ prep-builder:check-exist:
       then
         echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
       fi
-  artifacts:reports:dotenv: builder_exists.env
+  artifacts:
+    reports:
+      dotenv: builder_exists.env
 
 #ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
