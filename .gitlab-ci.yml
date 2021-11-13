@@ -14,6 +14,10 @@ variables:
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.2"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
+
+  NOLUS_NODE_REPO: "node"
+  NOLUS_NODE_TAG: "0.1"
+  NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
@@ -91,10 +95,15 @@ build-binary:
     paths:
       - target/release
 
-# build-image:
-#   stage: build
-#   needs: ["build-binary"]
-#   image
+build-image:
+  stage: build
+  needs: ["build-binary"]
+  extends: .kaniko
+  variables:
+    KANIKO_DOCKER_FILE: build/node_spec
+    KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
+    KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
+
 test-job-empty:
   stage: test
   script:
