@@ -20,7 +20,8 @@ variables:
 prep-builder:check-exist:
   stage: prep
   image:
-    amazon/aws-cli
+    name: amazon/aws-cli
+    entrypoint: [""]
   script:
     - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID 
           --repository-name $NOLUS_BUILDER_REPO --region us-east-1 
