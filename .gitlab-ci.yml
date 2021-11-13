@@ -35,7 +35,7 @@ prep-builder:check-exist:
 #ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
-  needs: ["prep-builder:check-exist:"]
+  needs: ["prep-builder:check-exist"]
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
