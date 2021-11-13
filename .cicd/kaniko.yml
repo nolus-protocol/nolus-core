@@ -1,0 +1,8 @@
+.kaniko-script:
+  script:
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - /kaniko/executor
+          --context "${CI_PROJECT_DIR}"
+          --dockerfile "${CI_PROJECT_DIR}/${KANIKO_DOCKER_FILE}"
+          --destination "${KANIKO_IMAGE}"
+      # --no-push
