@@ -3,3 +3,4 @@ vue/dist
 release/
 .idea
 target/
+**/validator_setup
