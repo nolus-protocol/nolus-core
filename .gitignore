@@ -4,3 +4,4 @@ release/
 .idea
 target/
 **/validator_setup
+scripts/genesis.json
