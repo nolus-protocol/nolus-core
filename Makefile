@@ -5,6 +5,10 @@ LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 NOMO_BINARY=cosmozoned
+FUZZ_NUM_SEEDS ?= 2
+FUZZ_NUM_RUNS_PER_SEED ?= 3
+FUZZ_NUM_BLOCKS ?= 100
+FUZZ_BLOCK_SIZE ?= 200
 export GO111MODULE = on
 
 # Default target executed when no arguments are given to make.
@@ -93,11 +97,14 @@ endif
 ###                              Documentation                              ###
 ###############################################################################
 
-all: build install
+all: build install fuzz
 
 BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
+
+fuzz:
+	go test $(BUILD_FLAGS) -mod=readonly ./app -run TestAppStateDeterminism -Enabled=true -NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v -timeout 24h -NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED)
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
@@ -109,4 +116,4 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install go.sum
+.PHONY: all build install go.sum fuzz

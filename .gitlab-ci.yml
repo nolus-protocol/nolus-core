@@ -104,7 +104,11 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
-test-job-empty:
+test-fuzzer:
+  extends: build-binary
   stage: test
+  needs: ["build-binary"]
   script:
-    - echo "Tests none yet!"
+    - go env -w GOCACHE=${GOCACHE_DIR}
+    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
+    - CGO_LDFLAGS=-L${WASMVM_DIR} make fuzz
