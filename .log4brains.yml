@@ -1,0 +1,14 @@
+project:
+  name: Nolus
+  tz: Europe/Sofia
+  adrFolder: ./doc/adr
+  packages:
+    - name: cosmzone
+      path: ./cosmzone
+      adrFolder: ./cosmzone/docs/adr
+    - name: contracts
+      path: ./contracts
+      adrFolder: ./contracts/docs/adr
+    - name: replica
+      path: ./replica
+      adrFolder: ./replica/docs/adr
