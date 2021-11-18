@@ -62,6 +62,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --timeout_commit)
+    TIMEOUT_COMMIT="$2"
+    shift
+    shift
+    ;;
   --home)
     HOME="$2"
     shift
@@ -138,4 +143,8 @@ fi
 
 if [[ -n "${PERSISTENT_PEERS+x}" ]]; then
   update_config '."p2p"."laddr"' "\"$PERSISTENT_PEERS\""
+fi
+
+if [[ -n "${TIMEOUT_COMMIT+x}" ]]; then
+  update_config '."timeout_commit"'  "\"$TIMEOUT_COMMIT\""
 fi
