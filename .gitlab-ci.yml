@@ -1,7 +1,6 @@
 include:
-  - '.cicd/wasmvm-cache.yml'
-  - '.cicd/go-cache.yml'
   - '.cicd/kaniko.yml'
+  - '.cicd/go-build.yml'
 
 stages:
   - prep
@@ -68,27 +67,10 @@ download-wasmvm-lib:
 build-binary:
   stage: build
   needs: ["download-wasmvm-lib"]
-  image: "${NOLUS_BUILDER_IMAGE}"
   extends:
-    - .go-cache-vars
-    - .wasmvm-cache-vars
-  cache:
-    - key: $WASMVM_CACHE_KEY
-      paths:
-        - $WASMVM_REL_DIR
-      policy: pull
-    - key: $GOMODCACHE_KEY
-      paths:
-        - $GOMODCACHE_REL_DIR
-    - key: $GOCACHE_KEY
-      paths:
-        - $GOCACHE_REL_DIR
-  before_script:
-    - mkdir -p $WASMVM_DIR
-    - mkdir -p $GOMODCACHE_DIR
-    - mkdir -p $GOCACHE_DIR
+    - .go-build
   script:
-    - CGO_LDFLAGS=-L${WASMVM_DIR} make build
+    - make build
   artifacts:
     paths:
       - target/release
@@ -103,12 +85,10 @@ build-image:
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
 test-fuzzer:on-schedule:
-  extends: build-binary
+  extends: .go-build
   stage: test
   needs: ["build-binary"]
-  artifacts:
-    paths: []
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   script:
-    - CGO_LDFLAGS=-L${WASMVM_DIR} make fuzz
+    - make fuzz

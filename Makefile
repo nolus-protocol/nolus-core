@@ -99,6 +99,10 @@ ifneq (${GOMODCACHE_DIR},)
 	export GOMODCACHE=${GOMODCACHE_DIR}
 endif
 
+ifneq (${WASMVM_DIR},)
+  export CGO_LDFLAGS=-L${WASMVM_DIR}
+endif
+
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 ###############################################################################
