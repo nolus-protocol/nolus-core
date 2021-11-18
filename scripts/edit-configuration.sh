@@ -146,5 +146,5 @@ if [[ -n "${PERSISTENT_PEERS+x}" ]]; then
 fi
 
 if [[ -n "${TIMEOUT_COMMIT+x}" ]]; then
-  update_config '."timeout_commit"'  "\"$TIMEOUT_COMMIT\""
+  update_config '."consensus"."timeout_commit"'  "\"$TIMEOUT_COMMIT\""
 fi
