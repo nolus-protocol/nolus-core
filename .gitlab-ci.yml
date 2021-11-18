@@ -11,6 +11,9 @@ stages:
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/nolus"
   AWS_REGISTRY_ID: "013603813222"
+# https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
+  container: "docker"
+
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.2"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
@@ -18,8 +21,10 @@ variables:
   NOLUS_NODE_REPO: "node"
   NOLUS_NODE_TAG: "0.1"
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
-# https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
-  container: "docker"
+
+  NOLUS_INTEGRATION_REPO: "integration"
+  NOLUS_INTEGRATION_TAG: "0.1"
+  NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
 
 prep-builder:check-exist:
   stage: prep
@@ -83,6 +88,15 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
+build-integration:
+  stage: build
+  needs: ["build-binary"]
+  extends: .kaniko
+  variables:
+    KANIKO_DOCKER_FILE: build/integration_spec
+    KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
+    KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
+
 test-fuzzer:on-schedule:
   extends: .go-test
   script:
@@ -92,3 +106,10 @@ test-unit-cosmos:on-schedule:
   extends: .go-test
   script:
     - make test-unit-cosmos
+
+test-integration:
+  stage: test
+  needs: ["build-integration"]
+  image: "${NOLUS_INTEGRATION_IMAGE}"
+  script:
+    - make test-integration

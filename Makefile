@@ -108,8 +108,9 @@ endif
 ###############################################################################
 ###                              Documentation                              ###
 ###############################################################################
+.PHONY: all build install go.sum fuzz
 
-all: build install fuzz test-unit-cosmos
+all: build install fuzz test-unit-cosmos test-integration
 
 BUILD_TARGETS := build install
 
@@ -121,7 +122,10 @@ fuzz:
 		-timeout 24h -NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED)
 
 test-unit-cosmos:
-	sh ./scripts/test/run-test-unit-cosmos.sh >&2
+	/bin/bash ./scripts/test/run-test-unit-cosmos.sh >&2
+
+test-integration:
+	/bin/bash ./scripts/test/run-test-integration.sh >&2
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
@@ -133,4 +137,4 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install go.sum fuzz test-unit-cosmos
+.PHONY: all build install go.sum fuzz test-unit-cosmos test-integration

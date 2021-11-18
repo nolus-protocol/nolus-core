@@ -1,7 +1,9 @@
-$() #!/bin/bash
+#!/bin/bash
 set -euo pipefail
 
-source './create-vesting-account.sh'
+ROOT_DIR=$(pwd)
+SCRIPTS_DIR="$ROOT_DIR/scripts"
+source "$SCRIPTS_DIR/create-vesting-account.sh"
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
@@ -17,6 +19,8 @@ OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
+MONIKER="localtestnet"
+KEYRING="test"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -76,8 +80,6 @@ command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
   exit 1
 }
-MONIKER="localtestnet"
-KEYRING="test"
 
 ORIG_DIR=$(pwd)
 cd "$TMPDIR"
