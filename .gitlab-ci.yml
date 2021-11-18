@@ -88,8 +88,6 @@ build-binary:
     - mkdir -p $GOMODCACHE_DIR
     - mkdir -p $GOCACHE_DIR
   script:
-    - go env -w GOCACHE=${GOCACHE_DIR}
-    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
     - CGO_LDFLAGS=-L${WASMVM_DIR} make build
   artifacts:
     paths:
@@ -104,11 +102,13 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
-test-fuzzer:
+test-fuzzer:on-schedule:
   extends: build-binary
   stage: test
   needs: ["build-binary"]
+  artifacts:
+    paths: []
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
   script:
-    - go env -w GOCACHE=${GOCACHE_DIR}
-    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
     - CGO_LDFLAGS=-L${WASMVM_DIR} make fuzz
