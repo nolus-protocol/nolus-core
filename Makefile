@@ -109,7 +109,7 @@ endif
 ###                              Documentation                              ###
 ###############################################################################
 
-all: build install fuzz
+all: build install fuzz test-unit-cosmos
 
 BUILD_TARGETS := build install
 
@@ -117,6 +117,9 @@ build: BUILD_ARGS=-o $(BUILDDIR)/
 
 fuzz:
 	go test $(BUILD_FLAGS) -mod=readonly ./app -run TestAppStateDeterminism -Enabled=true -NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v -timeout 24h -NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED)
+
+test-unit-cosmos:
+  $(shell ./scripts/test/run-test-unit-cosmos.sh >&2)
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...

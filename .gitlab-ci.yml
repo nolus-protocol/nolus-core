@@ -95,3 +95,12 @@ test-fuzzer:on-schedule:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   script:
     - make fuzz
+
+test-unit-cosmos:on-schedule:
+  extends: .go-build
+  stage: test
+  needs: ["build-binary"]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+  script:
+    - make test-unit-cosmos
