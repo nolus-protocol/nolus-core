@@ -91,6 +91,18 @@ ifeq (,$(findstring nostrip,$(COSMOS_BUILD_OPTIONS)))
   BUILD_FLAGS += -trimpath
 endif
 
+ifneq (${GOCACHE_DIR},)
+	export GOCACHE=${GOCACHE_DIR}
+endif
+
+ifneq (${GOMODCACHE_DIR},)
+	export GOMODCACHE=${GOMODCACHE_DIR}
+endif
+
+ifneq (${WASMVM_DIR},)
+  export CGO_LDFLAGS=-L${WASMVM_DIR}
+endif
+
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 ###############################################################################

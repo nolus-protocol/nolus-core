@@ -1,7 +1,6 @@
 include:
-  - '.cicd/wasmvm-cache.yml'
-  - '.cicd/go-cache.yml'
   - '.cicd/kaniko.yml'
+  - '.cicd/go-build.yml'
 
 stages:
   - prep
@@ -68,29 +67,10 @@ download-wasmvm-lib:
 build-binary:
   stage: build
   needs: ["download-wasmvm-lib"]
-  image: "${NOLUS_BUILDER_IMAGE}"
   extends:
-    - .go-cache-vars
-    - .wasmvm-cache-vars
-  cache:
-    - key: $WASMVM_CACHE_KEY
-      paths:
-        - $WASMVM_REL_DIR
-      policy: pull
-    - key: $GOMODCACHE_KEY
-      paths:
-        - $GOMODCACHE_REL_DIR
-    - key: $GOCACHE_KEY
-      paths:
-        - $GOCACHE_REL_DIR
-  before_script:
-    - mkdir -p $WASMVM_DIR
-    - mkdir -p $GOMODCACHE_DIR
-    - mkdir -p $GOCACHE_DIR
+    - .go-build
   script:
-    - go env -w GOCACHE=${GOCACHE_DIR}
-    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
-    - CGO_LDFLAGS=-L${WASMVM_DIR} make build
+    - make build
   artifacts:
     paths:
       - target/release
@@ -104,11 +84,14 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
-test-fuzzer:
-  extends: build-binary
+test-fuzzer:on-schedule:
+  extends: .go-build
   stage: test
+  # force the fuzzer to run after build-binary, as there seems to
+  # be a race condition with concurrent jobs checking out the
+  # repository at the same time and place
   needs: ["build-binary"]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
   script:
-    - go env -w GOCACHE=${GOCACHE_DIR}
-    - go env -w GOMODCACHE=${GOMODCACHE_DIR}
-    - CGO_LDFLAGS=-L${WASMVM_DIR} make fuzz
+    - make fuzz
