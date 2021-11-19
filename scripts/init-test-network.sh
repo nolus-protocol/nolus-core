@@ -53,7 +53,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: ./init-network.sh [-g|--genesis <genesis_file>] [-v|--validators <num_validators>] [-m|--mode <local|docker>] [-o|--output <output_dir>]"
+    echo "Usage: ./init-test-network.sh [-g|--genesis <genesis_file>] [-v|--validators <num_validators>] [--validator-tokens <tokens_for_val_genesis_accounts>] [-ips <val_ip_addrs>] [-m|--mode <local|docker>] [-o|--output <output_dir>]"
     exit 0
     ;;
   *) # unknown option
@@ -85,7 +85,10 @@ init_genesis() {
     append=$(jq ". += [{ \"address\": \"$address\", \"amount\":  \"$VAL_TOKENS\"}]" < "$ACCOUNTS_FILE")
     echo "$append" > "$ACCOUNTS_FILE"
   done
-  ../proto-genesis.sh --accounts "$ACCOUNTS_FILE" --output ./proto-genesis.json
+  cd ..
+  ./proto-genesis.sh --accounts "$OUTPUT_DIR/$ACCOUNTS_FILE" --output "$OUTPUT_DIR/proto-genesis.json"
+  cd "$OUTPUT_DIR"
+
   rm "$ACCOUNTS_FILE"
 
 }

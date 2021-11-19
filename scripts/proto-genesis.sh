@@ -1,5 +1,7 @@
-#!/bin/bash
+$() #!/bin/bash
 set -euo pipefail
+
+source './create-vesting-account.sh'
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
@@ -57,7 +59,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 update_genesis() {
-  jq "$1" <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
+  jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
 }
 
 run_cmd() {
@@ -93,9 +95,13 @@ update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
 if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do
     row=$(jq ".[$i]" "$ACCOUNTS_FILE")
-    address=$(jq -r  '.address' <<< "$row")
-    amount=$(jq -r  '.amount' <<< "$row")
-    run_cmd "$TMPDIR" add-genesis-account "$address" "$amount" --home .
+    address=$(jq -r '.address' <<<"$row")
+    amount=$(jq -r '.amount' <<<"$row")
+    if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
+      add_vesting_account "$row" "$TMPDIR"
+    else
+      run_cmd "$TMPDIR" add-genesis-account "$address" "$amount" --home .
+    fi
   done
 fi
 
