@@ -3,12 +3,15 @@ project:
   tz: Europe/Sofia
   adrFolder: ./doc/adr
   packages:
-    - name: cosmzone
-      path: ./cosmzone
-      adrFolder: ./cosmzone/docs/adr
-    - name: contracts
-      path: ./contracts
-      adrFolder: ./contracts/docs/adr
-    - name: replica
-      path: ./replica
-      adrFolder: ./replica/docs/adr
+    - name: Cosmos Zone
+      path: ./doc/cosmzone
+      adrFolder: ./doc/cosmzone/adr
+    - name: Smart Contracts
+      path: ./smart-contracts
+      adrFolder: ./doc/smart-contracts/adr
+    - name: Application Server
+      path: ./doc/appserver
+      adrFolder: ./doc/appserver/adr
+    - name: Web UI
+      path: ./doc/web-ui
+      adrFolder: ./doc/web-ui/adr
