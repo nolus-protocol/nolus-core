@@ -16,3 +16,9 @@ Locally, the views are edited by using Structurizr Lite. It is a Java Tomcat Web
 
     docker pull structurizr/lite
     docker run -it --rm -p 8080:8080 -v <workspace-dir>:/usr/local/structurizr structurizr/lite
+
+## References
+[Technology Radar's Diagrams-as-Code](https://www.thoughtworks.com/radar/techniques/diagrams-as-code)
+[C4 Model](https://c4model.com/)
+[Structurizr](https://structurizr.org/)
+[Getting Started](https://dev.to/simonbrown/getting-started-with-structurizr-lite-27d0)
