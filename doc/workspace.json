@@ -1,0 +1,252 @@
+{
+  "id" : 1,
+  "name" : "Name",
+  "description" : "Description",
+  "revision" : 0,
+  "lastModifiedDate" : "2021-11-19T12:43:02Z",
+  "lastModifiedAgent" : "structurizr-web/2549/diagram",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiVXNlciIKICAgICAgICBub2x1c2VudGVycHJpc2UgPSBlbnRlcnByaXNlICJOb2x1cyIgewogICAgICAgICAgICAKICAgICAgICAgICAgbm9sdXMgPSBzb2Z0d2FyZVN5c3RlbSAiTm9sdXMiIHsKICAgICAgICAgICAgICAgIHZhbGlkYXRvcm5vZGUgPSBncm91cCAiVmFsaWRhdG9yIE5vZGUiIHsKICAgICAgICAgICAgICAgICAgICBjb3Ntb3NhcHAgPSBjb250YWluZXIgIkNvc21vcyBBcHAiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzID0gY29udGFpbmVyICJTbWFydCBDb250cmFjdHMiCiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwIC0+IGNvbnRyYWN0cyAiRXhlY3V0ZSBUcngiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiU3RvcmUgU3RhdGUiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBhcHBzZXJ2ZXIgPSBjb250YWluZXIgIkFwcGxpY2F0aW9uIFNlcnZlciIgewogICAgICAgICAgICAgICAgICAgIC0+IGNvc21vc2FwcCAiU291cmNlIEV2ZW50cyIKICAgICAgICAgICAgICAgICAgICAtPiBjb3Ntb3NhcHAgIkZvcndhcmQgVHJhbnNhY3Rpb25zIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICB3ZWJhcHAgPSBjb250YWluZXIgIldlYiBVSSBDbGllbnQiIHsKICAgICAgICAgICAgICAgICAgICAtPiBhcHBzZXJ2ZXIgIlF1ZXJpZXMsIFRyYW5zYWN0aW9ucyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgaWJjID0gc29mdHdhcmVTeXN0ZW0gIkNvc21vcyBJQkMgUmVsYXkiCgogICAgICAgICAgICBpYmMgLT4gbm9sdXMgIlJlbGF5cy1pbiIKICAgICAgICAgICAgbm9sdXMgLT4gaWJjICJSZWxheXMtb3V0IgoKICAgICAgICAgICAgYWRtaW4gPSBwZXJzb24gIkFkbWluIiB7CiAgICAgICAgICAgICAgICAtPiB3ZWJhcHAgIlVzZXMiCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICAgICAgCiAgICAgICAgdXNlciAtPiB3ZWJhcHAgIlVzZXMiCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgbm9sdXMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBub2x1cyB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KICAgICAgICAKICAgICAgICB0aGVtZSBkZWZhdWx0CiAgICB9CiAgICAKfQo="
+  },
+  "configuration" : { },
+  "model" : {
+    "enterprise" : {
+      "name" : "Nolus"
+    },
+    "people" : [ {
+      "id" : "15",
+      "tags" : "Element,Person",
+      "name" : "Admin",
+      "relationships" : [ {
+        "id" : "17",
+        "tags" : "Relationship",
+        "sourceId" : "15",
+        "destinationId" : "2",
+        "description" : "Uses"
+      }, {
+        "id" : "16",
+        "tags" : "Relationship",
+        "sourceId" : "15",
+        "destinationId" : "10",
+        "description" : "Uses"
+      } ],
+      "location" : "Internal"
+    }, {
+      "id" : "1",
+      "tags" : "Element,Person",
+      "name" : "User",
+      "relationships" : [ {
+        "id" : "19",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "2",
+        "description" : "Uses"
+      }, {
+        "id" : "18",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "10",
+        "description" : "Uses"
+      } ],
+      "location" : "External"
+    } ],
+    "softwareSystems" : [ {
+      "id" : "12",
+      "tags" : "Element,Software System",
+      "name" : "Cosmos IBC Relay",
+      "relationships" : [ {
+        "id" : "13",
+        "tags" : "Relationship",
+        "sourceId" : "12",
+        "destinationId" : "2",
+        "description" : "Relays-in"
+      } ],
+      "location" : "Internal"
+    }, {
+      "id" : "2",
+      "tags" : "Element,Software System",
+      "name" : "Nolus",
+      "relationships" : [ {
+        "id" : "14",
+        "tags" : "Relationship",
+        "sourceId" : "2",
+        "destinationId" : "12",
+        "description" : "Relays-out"
+      } ],
+      "location" : "Internal",
+      "containers" : [ {
+        "id" : "10",
+        "tags" : "Element,Container",
+        "name" : "Web UI Client",
+        "relationships" : [ {
+          "id" : "11",
+          "tags" : "Relationship",
+          "sourceId" : "10",
+          "destinationId" : "7",
+          "description" : "Queries, Transactions"
+        } ]
+      }, {
+        "id" : "3",
+        "tags" : "Element,Container",
+        "name" : "Cosmos App",
+        "relationships" : [ {
+          "id" : "5",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "4",
+          "description" : "Execute Trx"
+        } ],
+        "group" : "Validator Node"
+      }, {
+        "id" : "4",
+        "tags" : "Element,Container",
+        "name" : "Smart Contracts",
+        "relationships" : [ {
+          "id" : "6",
+          "tags" : "Relationship",
+          "sourceId" : "4",
+          "destinationId" : "3",
+          "description" : "Store State"
+        } ],
+        "group" : "Validator Node"
+      }, {
+        "id" : "7",
+        "tags" : "Element,Container",
+        "name" : "Application Server",
+        "relationships" : [ {
+          "id" : "8",
+          "tags" : "Relationship",
+          "sourceId" : "7",
+          "destinationId" : "3",
+          "description" : "Source Events"
+        }, {
+          "id" : "9",
+          "tags" : "Relationship",
+          "sourceId" : "7",
+          "destinationId" : "3",
+          "description" : "Forward Transactions"
+        } ]
+      } ]
+    } ]
+  },
+  "documentation" : { },
+  "views" : {
+    "systemContextViews" : [ {
+      "softwareSystemId" : "2",
+      "key" : "Nolus-SystemContext",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "enterpriseBoundaryVisible" : true,
+      "elements" : [ {
+        "id" : "1",
+        "x" : 395,
+        "y" : 387
+      }, {
+        "id" : "12",
+        "x" : 1615,
+        "y" : 995
+      }, {
+        "id" : "2",
+        "x" : 970,
+        "y" : 995
+      }, {
+        "id" : "15",
+        "x" : 1055,
+        "y" : 387
+      } ],
+      "relationships" : [ {
+        "id" : "17"
+      }, {
+        "id" : "14",
+        "vertices" : [ {
+          "x" : 1535,
+          "y" : 1225
+        } ]
+      }, {
+        "id" : "13",
+        "vertices" : [ {
+          "x" : 1550,
+          "y" : 1077
+        } ]
+      }, {
+        "id" : "19"
+      } ]
+    } ],
+    "containerViews" : [ {
+      "softwareSystemId" : "2",
+      "key" : "Nolus-Container",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "externalSoftwareSystemBoundariesVisible" : true,
+      "elements" : [ {
+        "id" : "1",
+        "x" : 1080,
+        "y" : 30
+      }, {
+        "id" : "3",
+        "x" : 630,
+        "y" : 1145
+      }, {
+        "id" : "4",
+        "x" : 630,
+        "y" : 610
+      }, {
+        "id" : "15",
+        "x" : 1585,
+        "y" : 20
+      }, {
+        "id" : "7",
+        "x" : 1375,
+        "y" : 1145
+      }, {
+        "id" : "10",
+        "x" : 1375,
+        "y" : 610
+      } ],
+      "relationships" : [ {
+        "id" : "18"
+      }, {
+        "id" : "16"
+      }, {
+        "id" : "5",
+        "vertices" : [ {
+          "x" : 1020,
+          "y" : 1035
+        } ]
+      }, {
+        "id" : "6",
+        "vertices" : [ {
+          "x" : 800,
+          "y" : 1045
+        } ]
+      }, {
+        "id" : "11"
+      }, {
+        "id" : "8",
+        "vertices" : [ {
+          "x" : 1227,
+          "y" : 1145
+        } ]
+      }, {
+        "id" : "9",
+        "vertices" : [ {
+          "x" : 1227,
+          "y" : 1445
+        } ]
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "styles" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ],
+      "terminology" : { },
+      "lastSavedView" : "Nolus-SystemContext"
+    }
+  }
+}
