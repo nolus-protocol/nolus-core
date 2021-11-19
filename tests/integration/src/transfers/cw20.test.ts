@@ -174,5 +174,5 @@ describe("CW20 transfers", () => {
         console.log("User after transfer allowance:", (await user1Client.queryContractSmart(contractAddress, allowanceMsg)).allowance);
 
         expect(BigInt(user1BalanceAfter)).toBe(BigInt(user1BalanceBefore) + BigInt(amountToTransfer));
-    });
+    }, 30000);
 });

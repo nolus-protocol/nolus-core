@@ -1,5 +1,7 @@
-#!/bin/bash
+$() #!/bin/bash
 set -euo pipefail
+
+source './create-vesting-account.sh'
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
@@ -13,6 +15,7 @@ trap cleanup INT TERM EXIT
 CHAINID="nomo-private"
 OUTPUT_FILE="genesis.json"
 MODE="local"
+ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
 
 POSITIONAL=()
@@ -30,6 +33,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --accounts)
+    ACCOUNTS_FILE=$(realpath "$2")
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -40,7 +48,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: ./init-proto-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [-m|--mode <local|docker>]"
+    echo "Usage: ./init-proto-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [-m|--mode <local|docker>] [--accounts <accounts_file>]"
     exit 0
     ;;
   *) # unknown option
@@ -51,7 +59,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 update_genesis() {
-  jq "$1" <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
+  jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
 }
 
 run_cmd() {
@@ -83,6 +91,19 @@ update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="nomo"'
 update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
 update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
 update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
+
+if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
+  for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do
+    row=$(jq ".[$i]" "$ACCOUNTS_FILE")
+    address=$(jq -r '.address' <<<"$row")
+    amount=$(jq -r '.amount' <<<"$row")
+    if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
+      add_vesting_account "$row" "$TMPDIR"
+    else
+      run_cmd "$TMPDIR" add-genesis-account "$address" "$amount" --home .
+    fi
+  done
+fi
 
 cd "$ORIG_DIR"
 cp "$TMPDIR/config/genesis.json" "$OUTPUT_FILE"
