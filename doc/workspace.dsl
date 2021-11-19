@@ -6,8 +6,14 @@ workspace {
             
             nolus = softwareSystem "Nolus" {
                 validatornode = group "Validator Node" {
-                    cosmosapp = container "Cosmos App"
-                    contracts = container "Smart Contracts"
+                    cosmosapp = container "Cosmos App" {
+                        bank = component "Bank"
+                    }
+                    contracts = container "Smart Contracts" {
+                        flex = component "Flex"
+                        dex = component "DEX"
+                        loans_vault = component "Loans Vault"
+                    }
                     cosmosapp -> contracts "Execute Trx"
                     contracts -> cosmosapp "Store State"
                 }
@@ -42,7 +48,22 @@ workspace {
         container nolus {
             include *
         }
-        
+
+        component contracts {
+            include *
+        }
+
+        dynamic contracts {
+            title "Flex successful close    "
+            user -> flex "sign contract" "amount and down-payment"
+            user -> bank "deposit"
+            user -> bank "down-pay"
+            bank -> flex "send collateral"
+            flex -> loans_vault "request loan"
+            flex -> dex "buy target amount"
+            user -> flex "repay ..."
+            flex -> bank "transfer ownership"
+        }
         theme default
     }
     
