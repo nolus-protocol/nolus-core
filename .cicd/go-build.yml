@@ -18,6 +18,7 @@ include:
     - key: $GOCACHE_KEY
       paths:
         - $GOCACHE_REL_DIR
+  needs: ["download-wasmvm-lib"]
   before_script:
     - mkdir -p $WASMVM_DIR
     - mkdir -p $GOMODCACHE_DIR
