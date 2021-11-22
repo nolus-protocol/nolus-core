@@ -54,14 +54,14 @@ workspace {
         }
 
         dynamic contracts {
-            title "Flex successful close    "
-            user -> flex "sign contract" "amount and down-payment"
+            title "Flex successful close"
+            user -> flex "sign contract(amount, down-payment)"
             user -> bank "deposit"
             user -> bank "down-pay"
             bank -> flex "send collateral"
             flex -> loans_vault "request loan"
             flex -> dex "buy target amount"
-            user -> flex "repay ..."
+            user -> flex "repay one or more times until pay-off the total"
             flex -> bank "transfer ownership"
         }
         theme default
