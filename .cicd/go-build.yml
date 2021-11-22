@@ -4,6 +4,7 @@ include:
 
 .go-build:
   image: "${NOLUS_BUILDER_IMAGE}"
+  needs: ["download-wasmvm-lib"]
   extends:
     - .go-cache-vars
     - .wasmvm-cache-vars
@@ -18,7 +19,6 @@ include:
     - key: $GOCACHE_KEY
       paths:
         - $GOCACHE_REL_DIR
-  needs: ["download-wasmvm-lib"]
   before_script:
     - mkdir -p $WASMVM_DIR
     - mkdir -p $GOMODCACHE_DIR
