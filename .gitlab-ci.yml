@@ -66,7 +66,6 @@ download-wasmvm-lib:
 
 build-binary:
   stage: build
-  needs: ["download-wasmvm-lib"]
   extends:
     - .go-build
   script:
@@ -87,10 +86,6 @@ build-image:
 test-fuzzer:on-schedule:
   extends: .go-build
   stage: test
-  # force the fuzzer to run after build-binary, as there seems to
-  # be a race condition with concurrent jobs checking out the
-  # repository at the same time and place
-  needs: ["build-binary"]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule"'
   script:
@@ -99,7 +94,6 @@ test-fuzzer:on-schedule:
 test-unit-cosmos:on-schedule:
   extends: .go-build
   stage: test
-  needs: ["build-binary"]
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
   script:
