@@ -1,5 +1,6 @@
 include:
   - '.cicd/kaniko.yml'
+  # - '.cicd/go-test.yml'
   - '.cicd/go-test.yml'
 
 stages:
