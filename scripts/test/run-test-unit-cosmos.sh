@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+set -euxo pipefail
 
 COSMOSSDK_DIR=$(go list -m -f '{{.Dir}}' github.com/cosmos/cosmos-sdk)
 echo "Cosmos SDK Path: $COSMOSSDK_DIR"
