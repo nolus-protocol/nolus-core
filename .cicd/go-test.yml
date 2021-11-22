@@ -1,0 +1,8 @@
+include:
+  - '.cicd/go-build.yml'
+
+.go-test:
+  extends: .go-build
+  stage: test
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'

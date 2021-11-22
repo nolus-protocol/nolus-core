@@ -1,6 +1,6 @@
 include:
   - '.cicd/kaniko.yml'
-  - '.cicd/go-build.yml'
+  - '.cicd/go-test.yml'
 
 stages:
   - prep
@@ -62,7 +62,6 @@ download-wasmvm-lib:
     - mkdir -p $WASMVM_DIR
   script:
    - if [ ! -f "$WASMVM_LOCAL_PATH" ]; then wget -O $WASMVM_LOCAL_PATH $WASMVM_URL; fi
-  
 
 build-binary:
   stage: build
@@ -84,17 +83,11 @@ build-image:
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
 
 test-fuzzer:on-schedule:
-  extends: .go-build
-  stage: test
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  extends: .go-test
   script:
     - make fuzz
 
 test-unit-cosmos:on-schedule:
-  extends: .go-build
-  stage: test
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "schedule"
+  extends: .go-test
   script:
     - make test-unit-cosmos
