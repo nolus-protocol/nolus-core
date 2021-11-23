@@ -125,7 +125,7 @@ test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 test-integration:
-	/bin/bash ./scripts/test/run-test-integration.sh >&2
+	/bin/bash ./scripts/test/run-test-integration.sh $(shell pwd)  >&2
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...

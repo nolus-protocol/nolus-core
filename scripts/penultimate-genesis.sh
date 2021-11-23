@@ -1,9 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-ROOT_DIR=$(pwd)
-SCRIPTS_DIR="$ROOT_DIR/scripts"
-source "$SCRIPTS_DIR/create-vesting-account.sh"
+command -v create-vesting-account.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in $PATH."
+  exit 1
+}
+source "create-vesting-account.sh"
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
@@ -52,7 +54,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: ./init-proto-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [-m|--mode <local|docker>] [--accounts <accounts_file>]"
+    echo "Usage: init-penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option

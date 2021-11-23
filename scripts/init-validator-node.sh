@@ -15,6 +15,18 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+  --help)
+    printf \
+    "Usage: %s
+    [-g|--genesis <genesis_file>]
+    [-ip <validator_ip_addresses>]
+    [-d|--directory <full_node_directory>]
+    [--mnemonic <mnemonic>]
+    [--moniker <moniker>]
+    [--stake <validator_stake>]
+    [-m|--mode <local|docker>]" "$0"
+    exit 0
+    ;;
   -g | --genesis)
     GENESIS=$(realpath "$2")
     shift # past argument
@@ -53,10 +65,6 @@ while [[ $# -gt 0 ]]; do
     STAKE="$2"
     shift
     shift
-    ;;
-  --help)
-    echo "Usage: ./init-network.sh [-g|--genesis <genesis_file>] [-v|--validators <num_validators>] [-m|--mode <local|docker>] [--mnemonic <account mnemonic>]"
-    exit 0
     ;;
   *) # unknown option
     POSITIONAL+=("$1") # save it in an array for later

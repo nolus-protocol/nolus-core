@@ -8,7 +8,7 @@ if [ -z "$COSMOSSDK_DIR" ]
 then
 	echo "There is no Cosmos SDK"
 else
-	cd $COSMOSSDK_DIR
+	cd "$COSMOSSDK_DIR"
 	COSMOSSDK_PACKAGES=$(go list ./... | uniq)
 	echo "Cosmos SDK packages:"
 	echo "$COSMOSSDK_PACKAGES"
@@ -36,6 +36,6 @@ else
 			ARGS=
 		fi
 
-		go test -mod=readonly -tags='cgo ledger test_ledger_mock norace' $ARGS $PACKAGE
+		go test -mod=readonly -tags='cgo ledger test_ledger_mock norace' "$ARGS" "$PACKAGE"
 	done
 fi

@@ -111,4 +111,4 @@ test-integration:
   needs: ["build-binary"]
   image: "${NOLUS_INTEGRATION_IMAGE}"
   script:
-    - make test-integration
+    - PATH="$PATH:$(pwd)/scripts" make test-integration

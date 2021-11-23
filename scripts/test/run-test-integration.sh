@@ -1,14 +1,24 @@
 #!/bin/bash
-set -eux pipefail
+set -euxo pipefail
 
-ROOT_DIR=$(pwd)
-SCRIPTS_DIR="$ROOT_DIR/scripts"
+ROOT_DIR=$1
+shift
+if [[ -n ${ROOT_DIR+} ]]; then
+  echo "root directory was not set"
+  exit 1
+fi
+
 TESTS_DIR="$ROOT_DIR/tests/integration"
 HOME_DIR="$ROOT_DIR/validator_setup/node1"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
 
-source $SCRIPTS_DIR/create-vesting-account.sh
+command -v create-vesting-account.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source "create-vesting-account.sh"
 
 cleanup() {
   if [ -n "${COSMZONED_PID:-}" ]; then
@@ -60,16 +70,16 @@ EOF
   echo "$DOT_ENV" > .env
 }
 
-$SCRIPTS_DIR/init-test-network.sh -v 1 --validator-tokens "100000000000nomo,1000000000$IBC_TOKEN" 2>&1
+init-test-network.sh -v 1 --validator-tokens "100000000000nomo,1000000000$IBC_TOKEN" 2>&1
 
-$SCRIPTS_DIR/edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout_commit '1s'
+edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout-commit '1s'
+
 
 cd "$TESTS_DIR"
-
 prepare_env
 cosmzoned start --home "$HOME_DIR" >$LOG_DIR/cosmzone-run.log 2>&1 &
 COSMZONED_PID=$!
 sleep 5
 
 yarn install
-yarn test
+yarn test $@

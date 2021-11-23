@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: ./collect-validator-gentxs.sh [--collector <collector_idr>] [-gentxs <gentx_dir>] [-m|--mode <local|docker>]"
+    echo "Usage: collect-validator-gentxs.sh [--collector <collector_idr>] [-gentxs <gentx_dir>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option

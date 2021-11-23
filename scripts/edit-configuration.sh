@@ -7,6 +7,24 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    --help)
+      printf \
+      "Usage: %s
+      [-gas|--minimum-gas-prices <minimum_gas_prices>]
+      [--enable-api <true|false>]
+      [--api-address <ip_address>]
+      [--enable-grpc <true|false>]
+      [--grpc-address <ip_address>]
+      [--enable-grpc-web <true|false>]
+      [--grpc-web-address <ip_address>]
+      [--proxy-app-address <ip_address>]
+      [--tendermint-rpc-address <ip_address>]
+      [--tendermint-p2p-address <ip_address>]
+      [--persistent-peers <node_addresses>]
+      [--timeout-commit <duration>]
+      [--home <full_node_dir>]" "$0"
+      exit 0
+      ;;
   -gas | --minimum-gas-prices)
     MINIMUM_GAS_PRICES="$2"
     shift # past argument
@@ -57,18 +75,18 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --persistent_peers)
+  --persistent-peers)
     PERSISTENT_PEERS="$2"
     shift
     shift
     ;;
-  --timeout_commit)
+  --timeout-commit)
     TIMEOUT_COMMIT="$2"
     shift
     shift
     ;;
   --home)
-    HOME="$2"
+    HOME_DIR="$2"
     shift
     shift
     ;;
@@ -81,21 +99,21 @@ done
 
 
 update_app () {
-      tomlq -t "$1=$2" < "$HOME/config/app.toml" > "$HOME/config/app.toml.tmp"
-      mv "$HOME/config/app.toml.tmp" "$HOME/config/app.toml"
+      tomlq -t "$1=$2" < "$HOME_DIR/config/app.toml" > "$HOME_DIR/config/app.toml.tmp"
+      mv "$HOME_DIR/config/app.toml.tmp" "$HOME_DIR/config/app.toml"
 }
 
 update_config () {
-      tomlq -t "$1=$2" < "$HOME/config/config.toml" > "$HOME/config/config.toml.tmp"
-      mv "$HOME/config/config.toml.tmp" "$HOME/config/config.toml"
+      tomlq -t "$1=$2" < "$HOME_DIR/config/config.toml" > "$HOME_DIR/config/config.toml.tmp"
+      mv "$HOME_DIR/config/config.toml.tmp" "$HOME_DIR/config/config.toml"
 }
 
 
 command -v tomlq > /dev/null 2>&1 || { echo >&2 "tomlq not installed. More info: https://tomlq.readthedocs.io/en/latest/installation.html"; exit 1; }
 
 
-if [[ -z "$HOME" ]]; then
-  echo "HOME is unset"
+if [[ -z "$HOME_DIR" ]]; then
+  echo "HOME_DIR is unset"
    exit 1
 fi
 
