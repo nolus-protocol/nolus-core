@@ -109,7 +109,6 @@ test-unit-cosmos:on-schedule:
 
 test-integration:
   stage: test
-  needs: ["build-integration"]
   image: "${NOLUS_INTEGRATION_IMAGE}"
   script:
     - make test-integration
