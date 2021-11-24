@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euxo pipefail
 
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+
 GENESIS="genesis.json"
 IP_ADDRESS=""
 MNEMONIC=""
@@ -73,15 +80,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
-  esac
-}
-
 ## validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
@@ -110,13 +108,13 @@ WORKING_DIR=$(pwd)
 rm -rf "$NODE_DIR"
 mkdir -p "$NODE_DIR"
 
-run_cmd "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
+run_cmd "$MODE" "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
 cp "$GENESIS" "$NODE_DIR/config/genesis.json"
 
-run_cmd "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
+run_cmd "$MODE" "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
 IP=""
 if [[ -n "${IP_ADDRESS+}" ]]; then
   IP="--ip $IP_ADDRESS"
 fi
-run_cmd "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
+run_cmd "$MODE" "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
 cd "$WORKING_DIR"

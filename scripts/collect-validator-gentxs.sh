@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
+
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+
 COLLECTOR_DIR=""
 GENTXS_FILES_DIR=""
 MODE="local"
@@ -40,15 +48,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
-  esac
-}
-
 if [[ ! -d "$COLLECTOR_DIR" ]]; then
   echo "collector node directory does not exist"
    exit 1
@@ -64,4 +63,4 @@ rm -rf "$COLLECTOR_DIR/config/gentx"
 mkdir "$COLLECTOR_DIR/config/gentx"
 cp -a "$GENTXS_FILES_DIR/." "$COLLECTOR_DIR/config/gentx"
 
-run_cmd "$COLLECTOR_DIR" collect-gentxs
+run_cmd "$MODE" "$COLLECTOR_DIR" collect-gentxs

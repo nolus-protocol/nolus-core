@@ -1,11 +1,13 @@
 #!/bin/bash
 set -euxo pipefail
 
-command -v create-vesting-account.sh >/dev/null 2>&1 || {
+
+command -v common-util.sh >/dev/null 2>&1 || {
   echo >&2 "scripts are not found in \$PATH."
   exit 1
 }
 
+source common-util.sh
 ORIG_DIR=$(pwd)
 
 cleanup() {
@@ -117,26 +119,17 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" 2>&1 ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone 2>&1 ;;
-  esac
-}
-
 init_genesis() {
   rm -rf keygenerator
   mkdir keygenerator
   ACCOUNTS_FILE="accounts.json"
   echo '[]' > "$ACCOUNTS_FILE"
-  run_cmd "keygenerator" init "key-gen" --chain-id "nolus-private"
+  run_cmd "$MODE" "keygenerator" init "key-gen" --chain-id "nolus-private"
   for i in $(seq "$VALIDATORS"); do
     local out
-    out=$(run_cmd "keygenerator" keys add "val_$i" --keyring-backend test --output json)
+    out=$(run_cmd "$MODE" "keygenerator" keys add "val_$i" --keyring-backend test --output json)
     echo "$out"| jq -r .mnemonic > "val_${i}_mnemonic"
-    address=$(run_cmd "keygenerator" keys show -a "val_${i}" --keyring-backend test)
+    address=$(run_cmd "$MODE" "keygenerator" keys show -a "val_${i}" --keyring-backend test)
     append=$(jq ". += [{ \"address\": \"$address\", \"amount\":  \"$VAL_TOKENS\"}]" < "$ACCOUNTS_FILE")
     echo "$append" > "$ACCOUNTS_FILE"
   done
