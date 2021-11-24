@@ -9,7 +9,7 @@ if [[ -n ${ROOT_DIR+} ]]; then
 fi
 
 TESTS_DIR="$ROOT_DIR/tests/integration"
-HOME_DIR="$ROOT_DIR/validator_setup/node1"
+HOME_DIR="$ROOT_DIR/networks/nolus/node1"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
 
@@ -24,8 +24,12 @@ cleanup() {
   if [ -n "${COSMZONED_PID:-}" ]; then
     echo "Stopping cosmzone..."
     kill -7 "$COSMZONED_PID"
-    exit
   fi
+  if [ -n "${MARS_PID:-}" ]; then
+    echo "Stopping ibc network..."
+    kill -7 "$MARS_PID"
+  fi
+  exit
 }
 
 trap cleanup INT TERM EXIT
@@ -42,6 +46,10 @@ create_vested_account() {
 }
 
 prepare_env() {
+  init-test-network.sh -v 1 --validator-tokens "100000000000nolus,1000000000$IBC_TOKEN" --output "$ROOT_DIR/networks/nolus" 2>&1
+  edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout-commit '1s'
+  create_ibc_network
+
   create_vested_account
   cosmzoned keys add test-user-1 --keyring-backend "test" --home "$HOME_DIR" # force no password
   cosmzoned keys add test-user-2 --keyring-backend "test" --home "$HOME_DIR" # force no password
@@ -67,19 +75,25 @@ VESTED_USR_1_PRIV_KEY=${VESTED_USR_1_PRIV_KEY}
 IBC_TOKEN=${IBC_TOKEN}
 EOF
   )
-  echo "$DOT_ENV" > .env
+  echo "$DOT_ENV" > "$TESTS_DIR/.env"
+
+  cosmzoned start --home "$HOME_DIR" >$LOG_DIR/cosmzone-run.log 2>&1 &
+  COSMZONED_PID=$!
+  sleep 5
 }
 
-init-test-network.sh -v 1 --validator-tokens "100000000000nolus,1000000000$IBC_TOKEN" 2>&1
+create_ibc_network() {
+    local MARS_HOME_DIR
+    MARS_HOME_DIR="$ROOT_DIR/networks/ibc_network/node1"
+    init-test-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars' --chain-id 'mars-private' --output "$ROOT_DIR/networks/ibc_network"
+    edit-configuration.sh --home "$MARS_HOME_DIR" --enable-api true --api-address "tcp://0.0.0.0:1318" --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" --enable-grpc false --enable-grpc-web false --timeout-commit '1s'
+    cosmzoned start --home "$MARS_HOME_DIR" >$LOG_DIR/mars-run.log 2>&1 &
+    MARS_PID=$!
+}
 
-edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout-commit '1s'
+prepare_env
 
 
 cd "$TESTS_DIR"
-prepare_env
-cosmzoned start --home "$HOME_DIR" >$LOG_DIR/cosmzone-run.log 2>&1 &
-COSMZONED_PID=$!
-sleep 5
-
 yarn install
 yarn test $@

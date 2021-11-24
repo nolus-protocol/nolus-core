@@ -19,7 +19,7 @@ cleanup() {
 
 trap cleanup INT TERM EXIT
 
-CHAINID="nolus-private"
+CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
@@ -34,7 +34,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -c | --chain-id)
-    CHAINID="$2"
+    CHAIN_ID="$2"
     shift # past argument
     shift # past value
     ;;
@@ -94,9 +94,9 @@ command -v jq >/dev/null 2>&1 || {
 
 ORIG_DIR=$(pwd)
 cd "$TMPDIR"
-run_cmd "$TMPDIR" init $MONIKER --chain-id "$CHAINID" --home .
+run_cmd "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID" --home .
 run_cmd "$TMPDIR" config keyring-backend "$KEYRING" --home .
-run_cmd "$TMPDIR" config chain-id "$CHAINID" --home .
+run_cmd "$TMPDIR" config chain-id "$CHAIN_ID" --home .
 
 # Change parameter token denominations to NATIVE_CURRENCY
 update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'

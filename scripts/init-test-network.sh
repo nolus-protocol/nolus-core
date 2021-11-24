@@ -28,6 +28,7 @@ KEYRING="test"
 NATIVE_CURRENCY="nolus"
 VAL_TOKENS="1000000000nolus"
 VAL_STAKE="1000000nolus"
+CHAIN_ID="nolus-private"
 OUTPUT_DIR="./validator_setup"
 
 while [[ $# -gt 0 ]]; do
@@ -38,14 +39,21 @@ while [[ $# -gt 0 ]]; do
   -h | --help)
     printf \
     "Usage: %s
-    [-v|--validators <num_validators>]
+    [--chain_id <string>]
+    [-v|--validators <number>]
     [--currency <native_currency>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
-    [-ips <val_ip_addrs>]
+    [-ips <ip_addrs>]
     [-m|--mode <local|docker>]
     [-o|--output <output_dir>]" "$0"
     exit 0
+    ;;
+
+   --chain-id)
+    CHAIN_ID="$2"
+    shift
+    shift
     ;;
 
    -v | --validators)
@@ -133,7 +141,7 @@ init_genesis() {
     echo "$append" > "$ACCOUNTS_FILE"
   done
 
-  penultimate-genesis.sh --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json"
+  penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json"
 
   rm "$ACCOUNTS_FILE"
 }

@@ -126,7 +126,7 @@ if [[ -n "${ENABLE_API+x}" ]]; then
 fi
 
 if [[ -n "${API_ADDRESS+x}" ]]; then
-  update_app '."api"."address"' "\"$API_ADDRESS"
+  update_app '."api"."address"' "\"$API_ADDRESS\""
 fi
 
 if [[ -n "${ENABLE_GRPC+x}" ]]; then
