@@ -131,10 +131,10 @@ init_genesis() {
   mkdir keygenerator
   ACCOUNTS_FILE="accounts.json"
   echo '[]' > "$ACCOUNTS_FILE"
-  run_cmd "keygenerator" init "key-gen" --chain-id "nolus-private" --home .
+  run_cmd "keygenerator" init "key-gen" --chain-id "nolus-private"
   for i in $(seq "$VALIDATORS"); do
     local out
-    out=$(run_cmd "keygenerator" keys add "val_$i" --keyring-backend test --home . --output json)
+    out=$(run_cmd "keygenerator" keys add "val_$i" --keyring-backend test --output json)
     echo "$out"| jq -r .mnemonic > "val_${i}_mnemonic"
     address=$(run_cmd "keygenerator" keys show -a "val_${i}" --keyring-backend test)
     append=$(jq ". += [{ \"address\": \"$address\", \"amount\":  \"$VAL_TOKENS\"}]" < "$ACCOUNTS_FILE")

@@ -94,9 +94,9 @@ command -v jq >/dev/null 2>&1 || {
 
 ORIG_DIR=$(pwd)
 cd "$TMPDIR"
-run_cmd "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID" --home .
-run_cmd "$TMPDIR" config keyring-backend "$KEYRING" --home .
-run_cmd "$TMPDIR" config chain-id "$CHAIN_ID" --home .
+run_cmd "." init $MONIKER --chain-id "$CHAIN_ID"
+run_cmd "." config keyring-backend "$KEYRING"
+run_cmd "." config chain-id "$CHAIN_ID"
 
 # Change parameter token denominations to NATIVE_CURRENCY
 update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'
@@ -113,7 +113,7 @@ if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
     if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
       add_vesting_account "$row" "$TMPDIR"
     else
-      run_cmd "$TMPDIR" add-genesis-account "$address" "$amount" --home .
+      run_cmd "." add-genesis-account "$address" "$amount"
     fi
   done
 fi

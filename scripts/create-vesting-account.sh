@@ -78,7 +78,7 @@ add_vesting_account() {
   if [[ -n "$vesting_start_time" ]]; then
     VESTING_START="--vesting-start-time $vesting_start_time"
   fi
-  run_cmd "$home" add-genesis-account "$address" "$amount" --vesting-amount "$vesting_amount" --vesting-end-time "$vesting_end_time" $VESTING_START --home .
+  run_cmd "$home" add-genesis-account "$address" "$amount" --vesting-amount "$vesting_amount" --vesting-end-time "$vesting_end_time" $VESTING_START
   if [[ "$type" == "periodic" ]]; then
     index=$(jq '."app_state"["auth"]["accounts"] | map(."base_vesting_account"."base_account"."address" == "'"$address"'") | index(true)' "$home/config/genesis.json")
     jq --arg i "$index" '.app_state["auth"]["accounts"][$i|tonumber]["@type"]="/cosmos.vesting.v1beta1.PeriodicVestingAccount"' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"
