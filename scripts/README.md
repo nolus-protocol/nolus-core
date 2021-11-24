@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-In order to use the scripts you must add the `scripts` directory in your `PATH` variable. This is done so that shell scripts can be made as `source <script>.sh` ie in a directory agnostic way.  
+In order to use the scripts you must add the `scripts` directory in your `PATH` variable. This is done so that shell scripts can be made as `source <script>.sh` i.e. in a directory agnostic way.  
 
 ## penultimate-genesis.sh
 
