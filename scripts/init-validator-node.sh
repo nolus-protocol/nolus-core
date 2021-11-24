@@ -7,7 +7,7 @@ MNEMONIC=""
 NODE_DIR=""
 MONIKER="test-moniker"
 MODE="local"
-STAKE="1000000nomo"
+STAKE="1000000nolus"
 KEYRING="test"
 
 POSITIONAL=()

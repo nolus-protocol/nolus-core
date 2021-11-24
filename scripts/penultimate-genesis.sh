@@ -10,19 +10,23 @@ source "create-vesting-account.sh"
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
     rm -rf "$TMPDIR"
-    exit
   fi
+  if [[ -n "${ORIG_DIR:-}" ]]; then
+    cd "$ORIG_DIR"
+  fi
+  exit
 }
 
 trap cleanup INT TERM EXIT
 
-CHAINID="nomo-private"
+CHAINID="nolus-private"
 OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
 MONIKER="localtestnet"
 KEYRING="test"
+NATIVE_CURRENCY="nolus"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -44,6 +48,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --currency)
+    NATIVE_CURRENCY="$2"
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -54,7 +63,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: init-penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [-m|--mode <local|docker>]"
+    echo "Usage: init-penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option
@@ -73,7 +82,7 @@ run_cmd() {
   shift
   case $MODE in
   local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
+  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nolus/node $@ --home /tmp/.cosmzone ;;
   esac
 }
 
@@ -89,12 +98,12 @@ run_cmd "$TMPDIR" init $MONIKER --chain-id "$CHAINID" --home .
 run_cmd "$TMPDIR" config keyring-backend "$KEYRING" --home .
 run_cmd "$TMPDIR" config chain-id "$CHAINID" --home .
 
-# Change parameter token denominations to nomo
-update_genesis '.app_state["staking"]["params"]["bond_denom"]="nomo"'
-update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="nomo"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
-update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
+# Change parameter token denominations to NATIVE_CURRENCY
+update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"'
 
 if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do

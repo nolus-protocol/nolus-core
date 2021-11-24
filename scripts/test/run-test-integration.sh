@@ -36,7 +36,7 @@ create_vested_account() {
   local TILL4H
   TILL4H=$(($(date +%s) + 14400))
   local amnt
-  amnt='546652nomo'
+  amnt='546652nolus'
   row="{\"address\": \"$VESTED_USR_1_ADDR\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(date +%s)\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
   add_vesting_account "$row" "$HOME_DIR"
 }
@@ -70,7 +70,7 @@ EOF
   echo "$DOT_ENV" > .env
 }
 
-init-test-network.sh -v 1 --validator-tokens "100000000000nomo,1000000000$IBC_TOKEN" 2>&1
+init-test-network.sh -v 1 --validator-tokens "100000000000nolus,1000000000$IBC_TOKEN" 2>&1
 
 edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout-commit '1s'
 

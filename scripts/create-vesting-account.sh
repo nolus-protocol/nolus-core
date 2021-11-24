@@ -18,6 +18,8 @@ run_cmd() {
 create_periodic_vesting () {
 	local AMOUNT
 	AMOUNT=$(tr -dc '0-9' <<< "$1")
+	local CURRENCY
+	CURRENCY=$(tr -d '0-9' <<< "$1")
 	local LENGTH=$2 # in seconds
 	local VESTING_PERIODS=$3
 	local ACC_NUM=$4
@@ -47,7 +49,7 @@ create_periodic_vesting () {
 
 	for (( i=0; i<"$VESTING_PERIODS"; i++ ))
 	do
-		jq --arg a "$PA" --argjson n "$ACC_NUM" --arg p "$P" --argjson i "$i" '.app_state["auth"]["accounts"][$n]["vesting_periods"][$i] = { "length": $p, "amount": [ { "amount": $a, "denom": "nomo" } ] }' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"
+		jq --arg a "$PA" --argjson n "$ACC_NUM" --arg p "$P" --argjson i "$i" '.app_state["auth"]["accounts"][$n]["vesting_periods"][$i] = { "length": $p, "amount": [ { "amount": $a, "denom": "'"$CURRENCY"'" } ] }' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"
 	done
 }
 

@@ -39,7 +39,7 @@ describe('proposal submission', () => {
 
     beforeEach(async () => {
         fee = {
-            amount: [{denom: "nomo", amount: "12"}],
+            amount: [{denom: "nolus", amount: "12"}],
             gas: "100000"
         }
 
@@ -48,7 +48,7 @@ describe('proposal submission', () => {
             value: {
                 content: {},
                 proposer: firstAccount.address,
-                initialDeposit: [{denom: "nomo", amount: "12"}],
+                initialDeposit: [{denom: "nolus", amount: "12"}],
             }
         };
     })
@@ -78,7 +78,7 @@ describe('proposal submission', () => {
                 description: "This proposal proposes to test whether this proposal passes",
                 title: "Test Proposal",
                 recipient: firstAccount.address,
-                amount: [{denom: "nomo", amount: "1000000"}]
+                amount: [{denom: "nolus", amount: "1000000"}]
             }).finish(),
         };
 
@@ -145,7 +145,7 @@ describe('proposal submission', () => {
                 upgradedClientState: {
                     typeUrl: "/ibc.lightclients.tendermint.v1.ClientState",
                     value: ClientState.encode({
-                        chainId: "nomo-private",
+                        chainId: "nolus-private",
                         proofSpecs: [{minDepth: 0, maxDepth: 0}],
                         upgradePath: ["upgrade", "upgradedIBCState"],
                         allowUpdateAfterExpiry: true,
@@ -156,7 +156,7 @@ describe('proposal submission', () => {
         };
 
         fee = {
-            amount: [{denom: "nomo", amount: "12"}],
+            amount: [{denom: "nolus", amount: "12"}],
             gas: "200000"
         }
         
@@ -202,7 +202,7 @@ describe('proposal submission', () => {
                 codeId: Long.fromInt(1),
                 label: "contractlabel",
                 msg: toUtf8("{}"),
-                funds: [{denom: "nomo", amount: "12"}]
+                funds: [{denom: "nolus", amount: "12"}]
             }).finish(),
         };
 

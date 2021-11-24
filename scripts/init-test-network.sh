@@ -25,7 +25,9 @@ POSITIONAL=()
 MONIKER="test-moniker-"
 MODE="local"
 KEYRING="test"
-VAL_TOKENS="1000000000nomo"
+NATIVE_CURRENCY="nolus"
+VAL_TOKENS="1000000000nolus"
+VAL_STAKE="1000000nolus"
 OUTPUT_DIR="./validator_setup"
 
 while [[ $# -gt 0 ]]; do
@@ -37,7 +39,9 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [-v|--validators <num_validators>]
+    [--currency <native_currency>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
+    [--validator-stake <tokens_val_will_stake>]
     [-ips <val_ip_addrs>]
     [-m|--mode <local|docker>]
     [-o|--output <output_dir>]" "$0"
@@ -54,8 +58,20 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --currency)
+    NATIVE_CURRENCY="$2"
+    shift
+    shift
+    ;;
+
   --validator-tokens)
     VAL_TOKENS="$2"
+    shift
+    shift
+    ;;
+
+  --validator-stake)
+    VAL_STAKE="$2"
     shift
     shift
     ;;
@@ -107,7 +123,7 @@ init_genesis() {
   mkdir keygenerator
   ACCOUNTS_FILE="accounts.json"
   echo '[]' > "$ACCOUNTS_FILE"
-  run_cmd "keygenerator" init "key-gen" --chain-id "nomo-private" --home .
+  run_cmd "keygenerator" init "key-gen" --chain-id "nolus-private" --home .
   for i in $(seq "$VALIDATORS"); do
     local out
     out=$(run_cmd "keygenerator" keys add "val_$i" --keyring-backend test --home . --output json)
@@ -117,7 +133,7 @@ init_genesis() {
     echo "$append" > "$ACCOUNTS_FILE"
   done
 
-  penultimate-genesis.sh --accounts "$ACCOUNTS_FILE" --output "penultimate-genesis.json"
+  penultimate-genesis.sh --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json"
 
   rm "$ACCOUNTS_FILE"
 }
@@ -130,7 +146,7 @@ init_local() {
     if [[ $CUSTOM_IPS = true ]]; then
       IP="--ip ${IP_ADDRESSES[$(("$i" - 1))]}"
     fi
-    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "1000000nomo" "$IP"
+    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP"
     cp -a "node${i}/config/gentx/." "gentxs"
   done
 
