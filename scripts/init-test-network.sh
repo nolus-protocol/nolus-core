@@ -163,7 +163,7 @@ init_local() {
 
   # collect the generated messages in validator 1's node for collection and propagate the resulting genesis file
   for i in $(seq 2 "$VALIDATORS"); do
-    cp "genesis.json" "node${1}/config/"
+    cp "genesis.json" "node${i}/config/"
   done
 }
 
