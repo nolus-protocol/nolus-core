@@ -122,7 +122,7 @@ fuzz:
 		-timeout 24h -NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED)
 
 test-unit-cosmos:
-	/bin/bash ./scripts/test/run-test-unit-cosmos.sh >&2
+	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 test-integration:
 	/bin/bash ./scripts/test/run-test-integration.sh >&2
