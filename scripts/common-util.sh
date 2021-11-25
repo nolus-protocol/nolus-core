@@ -10,7 +10,7 @@ run_cmd() {
   shift
   case $mode in
   local) cosmzoned $@ --home "$dir" 2>&1 ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$dir:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone 2>&1 ;;
+  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$(realpath "$dir"):/tmp/.cosmzone:Z" public.ecr.aws/nolus/node:0.1 $@ --home /tmp/.cosmzone 2>&1 ;;
   esac
 }
 

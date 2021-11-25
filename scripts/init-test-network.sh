@@ -134,7 +134,7 @@ init_genesis() {
     echo "$append" > "$ACCOUNTS_FILE"
   done
 
-  penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json"
+  penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json" --mode "$MODE"
 
   rm "$ACCOUNTS_FILE"
 }
@@ -147,11 +147,11 @@ init_local() {
     if [[ $CUSTOM_IPS = true ]]; then
       IP="--ip ${IP_ADDRESSES[$(("$i" - 1))]}"
     fi
-    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP"
+    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP" --mode "$MODE"
     cp -a "node${i}/config/gentx/." "gentxs"
   done
 
-  collect-validator-gentxs.sh --collector "node1" --gentxs "gentxs"
+  collect-validator-gentxs.sh --collector "node1" --gentxs "gentxs" --mode "$MODE"
   cp "node1/config/genesis.json" "genesis.json"
 
   # collect the generated messages in validator 1's node for collection and propagate the resulting genesis file
