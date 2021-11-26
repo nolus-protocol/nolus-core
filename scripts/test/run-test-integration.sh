@@ -47,7 +47,8 @@ create_vested_account() {
 
 prepare_env() {
   init-test-network.sh -v 1 --validator-tokens "100000000000nolus,1000000000$IBC_TOKEN" --output "$ROOT_DIR/networks/nolus" 2>&1
-  edit-configuration.sh --home "$HOME_DIR" --enable-api true --enable-grpc true --enable-grpc-web true --timeout-commit '1s'
+  edit-configuration.sh --home "$HOME_DIR" \
+    --enable-api false --enable-grpc true --enable-grpc-web false --timeout-commit '1s'
   create_ibc_network
 
   create_vested_account
@@ -86,7 +87,11 @@ create_ibc_network() {
     local MARS_HOME_DIR
     MARS_HOME_DIR="$ROOT_DIR/networks/ibc_network/node1"
     init-test-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars' --chain-id 'mars-private' --output "$ROOT_DIR/networks/ibc_network"
-    edit-configuration.sh --home "$MARS_HOME_DIR" --enable-api true --api-address "tcp://0.0.0.0:1318" --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" --enable-grpc false --enable-grpc-web false --timeout-commit '1s'
+    edit-configuration.sh --home "$MARS_HOME_DIR" \
+      --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
+      --enable-api false --enable-grpc true --grpc-address "0.0.0.0:9095" \
+      --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \
+      --timeout-commit '1s'
     cosmzoned start --home "$MARS_HOME_DIR" >$LOG_DIR/mars-run.log 2>&1 &
     MARS_PID=$!
 }

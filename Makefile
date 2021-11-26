@@ -53,7 +53,7 @@ whitespace += $(whitespace)
 comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
-ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=nomo \
+ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=nolus \
 			-X github.com/cosmos/cosmos-sdk/version.AppName=${NOMO_BINARY} \
 			-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 			-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
