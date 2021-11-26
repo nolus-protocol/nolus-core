@@ -1,5 +1,7 @@
 FROM alpine:3.14
 
+ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
+
 RUN apk add --no-cache git python3 py3-pip
 RUN pip install tomlq
 RUN apk add --update make bash nodejs yarn jq
