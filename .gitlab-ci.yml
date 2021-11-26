@@ -23,7 +23,7 @@ variables:
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
 
   NOLUS_INTEGRATION_REPO: "integration"
-  NOLUS_INTEGRATION_TAG: "0.9"
+  NOLUS_INTEGRATION_TAG: "0.10"
   NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
 
 prep-builder:check-exist:
@@ -90,7 +90,6 @@ build-image:
 
 build-integration:
   stage: build
-  needs: ["build-binary"]
   extends: .kaniko
   variables:
     KANIKO_DOCKER_FILE: build/integration_spec
@@ -109,6 +108,7 @@ test-unit-cosmos:on-schedule:
 
 test-integration:
   stage: test
+  needs: ["build-binary"]
   image: "${NOLUS_INTEGRATION_IMAGE}"
   script:
     - make test-integration

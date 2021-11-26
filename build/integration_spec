@@ -1,10 +1,4 @@
 FROM alpine:3.14
-ARG BIN_NAME=cosmzoned
-ARG TARGET=release
-
-ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
-
-COPY target/${TARGET}/${BIN_NAME} /usr/bin/
 
 RUN apk add --no-cache git python3 py3-pip
 RUN pip install tomlq
