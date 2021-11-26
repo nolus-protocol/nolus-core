@@ -1,13 +1,20 @@
 #!/bin/bash
 set -euxo pipefail
 
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+
 GENESIS="genesis.json"
 IP_ADDRESS=""
 MNEMONIC=""
 NODE_DIR=""
 MONIKER="test-moniker"
 MODE="local"
-STAKE="1000000nomo"
+STAKE="1000000nolus"
 KEYRING="test"
 
 POSITIONAL=()
@@ -15,6 +22,18 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+  --help)
+    printf \
+    "Usage: %s
+    [-g|--genesis <genesis_file>]
+    [-ip <validator_ip_addresses>]
+    [-d|--directory <full_node_directory>]
+    [--mnemonic <mnemonic>]
+    [--moniker <moniker>]
+    [--stake <validator_stake>]
+    [-m|--mode <local|docker>]" "$0"
+    exit 0
+    ;;
   -g | --genesis)
     GENESIS=$(realpath "$2")
     shift # past argument
@@ -54,25 +73,12 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --help)
-    echo "Usage: ./init-network.sh [-g|--genesis <genesis_file>] [-v|--validators <num_validators>] [-m|--mode <local|docker>] [--mnemonic <account mnemonic>]"
-    exit 0
-    ;;
   *) # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift              # past argument
     ;;
   esac
 done
-
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
-  esac
-}
 
 ## validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
@@ -102,13 +108,13 @@ WORKING_DIR=$(pwd)
 rm -rf "$NODE_DIR"
 mkdir -p "$NODE_DIR"
 
-run_cmd "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
+run_cmd "$MODE" "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
 cp "$GENESIS" "$NODE_DIR/config/genesis.json"
 
-run_cmd "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
+run_cmd "$MODE" "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
 IP=""
 if [[ -n "${IP_ADDRESS+}" ]]; then
   IP="--ip $IP_ADDRESS"
 fi
-run_cmd "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
+run_cmd "$MODE" "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
 cd "$WORKING_DIR"

@@ -1,23 +1,23 @@
 #!/bin/bash
 set -euxo pipefail
 
+
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+
 if [[ -z "${MODE+}" ]]; then
   MODE="local"
 fi
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
-  esac
-}
-
-
 create_periodic_vesting () {
 	local AMOUNT
 	AMOUNT=$(tr -dc '0-9' <<< "$1")
+	local CURRENCY
+	CURRENCY=$(tr -d '0-9' <<< "$1")
 	local LENGTH=$2 # in seconds
 	local VESTING_PERIODS=$3
 	local ACC_NUM=$4
@@ -47,7 +47,7 @@ create_periodic_vesting () {
 
 	for (( i=0; i<"$VESTING_PERIODS"; i++ ))
 	do
-		jq --arg a "$PA" --argjson n "$ACC_NUM" --arg p "$P" --argjson i "$i" '.app_state["auth"]["accounts"][$n]["vesting_periods"][$i] = { "length": $p, "amount": [ { "amount": $a, "denom": "nomo" } ] }' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"
+		jq --arg a "$PA" --argjson n "$ACC_NUM" --arg p "$P" --argjson i "$i" '.app_state["auth"]["accounts"][$n]["vesting_periods"][$i] = { "length": $p, "amount": [ { "amount": $a, "denom": "'"$CURRENCY"'" } ] }' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"
 	done
 }
 
@@ -76,7 +76,7 @@ add_vesting_account() {
   if [[ -n "$vesting_start_time" ]]; then
     VESTING_START="--vesting-start-time $vesting_start_time"
   fi
-  run_cmd "$home" add-genesis-account "$address" "$amount" --vesting-amount "$vesting_amount" --vesting-end-time "$vesting_end_time" $VESTING_START --home .
+  run_cmd "$MODE" "$home" add-genesis-account "$address" "$amount" --vesting-amount "$vesting_amount" --vesting-end-time "$vesting_end_time" $VESTING_START
   if [[ "$type" == "periodic" ]]; then
     index=$(jq '."app_state"["auth"]["accounts"] | map(."base_vesting_account"."base_account"."address" == "'"$address"'") | index(true)' "$home/config/genesis.json")
     jq --arg i "$index" '.app_state["auth"]["accounts"][$i|tonumber]["@type"]="/cosmos.vesting.v1beta1.PeriodicVestingAccount"' <"$home/config/genesis.json" >"$home/config/genesis.json.tmp" && mv "$home/config/genesis.json.tmp" "$home/config/genesis.json"

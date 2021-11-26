@@ -1,26 +1,34 @@
 #!/bin/bash
 set -euo pipefail
 
-ROOT_DIR=$(pwd)
-SCRIPTS_DIR="$ROOT_DIR/scripts"
-source "$SCRIPTS_DIR/create-vesting-account.sh"
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+source create-vesting-account.sh
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
     rm -rf "$TMPDIR"
-    exit
   fi
+  if [[ -n "${ORIG_DIR:-}" ]]; then
+    cd "$ORIG_DIR"
+  fi
+  exit
 }
 
 trap cleanup INT TERM EXIT
 
-CHAINID="nomo-private"
+CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
 MONIKER="localtestnet"
 KEYRING="test"
+NATIVE_CURRENCY="nolus"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -28,7 +36,7 @@ while [[ $# -gt 0 ]]; do
 
   case $key in
   -c | --chain-id)
-    CHAINID="$2"
+    CHAIN_ID="$2"
     shift # past argument
     shift # past value
     ;;
@@ -42,6 +50,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --currency)
+    NATIVE_CURRENCY="$2"
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -52,7 +65,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: ./init-proto-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [-m|--mode <local|docker>] [--accounts <accounts_file>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option
@@ -66,15 +79,6 @@ update_genesis() {
   jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
 }
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone ;;
-  esac
-}
-
 # validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
@@ -83,16 +87,16 @@ command -v jq >/dev/null 2>&1 || {
 
 ORIG_DIR=$(pwd)
 cd "$TMPDIR"
-run_cmd "$TMPDIR" init $MONIKER --chain-id "$CHAINID" --home .
-run_cmd "$TMPDIR" config keyring-backend "$KEYRING" --home .
-run_cmd "$TMPDIR" config chain-id "$CHAINID" --home .
+run_cmd "$MODE" "." init $MONIKER --chain-id "$CHAIN_ID"
+run_cmd "$MODE" "." config keyring-backend "$KEYRING"
+run_cmd "$MODE" "." config chain-id "$CHAIN_ID"
 
-# Change parameter token denominations to nomo
-update_genesis '.app_state["staking"]["params"]["bond_denom"]="nomo"'
-update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="nomo"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="nomo"'
-update_genesis '.app_state["mint"]["params"]["mint_denom"]="nomo"'
+# Change parameter token denominations to NATIVE_CURRENCY
+update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
+update_genesis '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"'
 
 if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do
@@ -102,7 +106,7 @@ if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
     if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
       add_vesting_account "$row" "$TMPDIR"
     else
-      run_cmd "$TMPDIR" add-genesis-account "$address" "$amount" --home .
+      run_cmd "$MODE" "." add-genesis-account "$address" "$amount"
     fi
   done
 fi

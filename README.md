@@ -8,10 +8,13 @@ Install [golang](https://golang.org/) and [jq](https://stedolan.github.io/jq/).
 ## Get started
 
 ```
-./init.sh
+make install
+PATH="$PATH:$(pwd)/scripts"
+init-test-network.sh -v 1 --output validator_setup
+cosmzoned start --home "./validator_setup/node1"
 ```
 
-The init script will compile and start the network
+The `make install` command will compile and locally install cosmzoned on your machine. `init-test-network.sh` generates a node setup (run `init-test-network.sh --help` for more configuration options) and `cosmzoned start` starts the network. For more details check the [scripts README](./scripts/README.md)
 
 ### Configure
 

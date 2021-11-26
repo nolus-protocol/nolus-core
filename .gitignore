@@ -5,3 +5,4 @@ release/
 target/
 **/validator_setup
 scripts/genesis.json
+networks/

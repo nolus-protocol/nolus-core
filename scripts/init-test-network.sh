@@ -1,7 +1,24 @@
 #!/bin/bash
 set -euxo pipefail
 
-ROOT_DIR=$(pwd)
+
+command -v common-util.sh >/dev/null 2>&1 || {
+  echo >&2 "scripts are not found in \$PATH."
+  exit 1
+}
+
+source common-util.sh
+ORIG_DIR=$(pwd)
+
+cleanup() {
+  if [ -n "${ORIG_DIR:-}" ]; then
+    cd "$ORIG_DIR"
+    exit
+  fi
+}
+
+trap cleanup INT TERM EXIT
+
 VALIDATORS=1
 IP_ADDRESSES=()
 CUSTOM_IPS=false
@@ -10,9 +27,11 @@ POSITIONAL=()
 MONIKER="test-moniker-"
 MODE="local"
 KEYRING="test"
-VAL_TOKENS="1000000000nomo"
-SCRIPTS_DIR="$ROOT_DIR/scripts"
-OUTPUT_DIR="$ROOT_DIR/validator_setup"
+NATIVE_CURRENCY="nolus"
+VAL_TOKENS="1000000000nolus"
+VAL_STAKE="1000000nolus"
+CHAIN_ID="nolus-private"
+OUTPUT_DIR="./validator_setup"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -21,22 +40,20 @@ while [[ $# -gt 0 ]]; do
 
   -h | --help)
     printf \
-    "Usage: $0\n
-    [-r| --root <root_directory>]\n
-    [-v|--validators <num_validators>]\n
-    [--validator-tokens <tokens_for_val_genesis_accounts>]\n
-    [-ips <val_ip_addrs>]\n
-    [-m|--mode <local|docker>]\n
-    [-o|--output <output_dir>]\n"
+    "Usage: %s
+    [--chain_id <string>]
+    [-v|--validators <number>]
+    [--currency <native_currency>]
+    [--validator-tokens <tokens_for_val_genesis_accounts>]
+    [--validator-stake <tokens_val_will_stake>]
+    [-ips <ip_addrs>]
+    [-m|--mode <local|docker>]
+    [-o|--output <output_dir>]" "$0"
     exit 0
     ;;
 
-   -r | --root)
-    ROOT_DIR="$2"
-    [ -z "$ROOT_DIR"] || {
-      echo >&2 "root directory not provided"
-      exit 1
-    }
+   --chain-id)
+    CHAIN_ID="$2"
     shift
     shift
     ;;
@@ -51,8 +68,20 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --currency)
+    NATIVE_CURRENCY="$2"
+    shift
+    shift
+    ;;
+
   --validator-tokens)
     VAL_TOKENS="$2"
+    shift
+    shift
+    ;;
+
+  --validator-stake)
+    VAL_STAKE="$2"
     shift
     shift
     ;;
@@ -90,52 +119,44 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-run_cmd() {
-  local DIR="$1"
-  shift
-  case $MODE in
-  local) cosmzoned $@ --home "$DIR" 2>&1 ;;
-  docker) docker run --rm -u "$(id -u)":"$(id -u)" -v "$DIR:/tmp/.cosmzone:Z" nomo/node $@ --home /tmp/.cosmzone 2>&1 ;;
-  esac
-}
-
 init_genesis() {
-  rm -rf $OUTPUT_DIR/keygenerator
-  mkdir $OUTPUT_DIR/keygenerator
-  ACCOUNTS_FILE="$OUTPUT_DIR/accounts.json"
+  rm -rf keygenerator
+  mkdir keygenerator
+  ACCOUNTS_FILE="accounts.json"
   echo '[]' > "$ACCOUNTS_FILE"
-  run_cmd "$OUTPUT_DIR/keygenerator" init "key-gen" --chain-id "nomo-private" --home .
+  run_cmd "$MODE" "keygenerator" init "key-gen" --chain-id "nolus-private"
   for i in $(seq "$VALIDATORS"); do
-    local out=$(run_cmd "$OUTPUT_DIR/keygenerator" keys add "val_$i" --keyring-backend test --home . --output json)
-    echo "$out"| jq -r .mnemonic > "$OUTPUT_DIR/val_${i}_mnemonic"
-    address=$(run_cmd "$OUTPUT_DIR/keygenerator" keys show -a "val_${i}" --keyring-backend test)
+    local out
+    out=$(run_cmd "$MODE" "keygenerator" keys add "val_$i" --keyring-backend test --output json)
+    echo "$out"| jq -r .mnemonic > "val_${i}_mnemonic"
+    address=$(run_cmd "$MODE" "keygenerator" keys show -a "val_${i}" --keyring-backend test)
     append=$(jq ". += [{ \"address\": \"$address\", \"amount\":  \"$VAL_TOKENS\"}]" < "$ACCOUNTS_FILE")
     echo "$append" > "$ACCOUNTS_FILE"
   done
 
-  $SCRIPTS_DIR/proto-genesis.sh --accounts "$ACCOUNTS_FILE" --output "$OUTPUT_DIR/proto-genesis.json"
+  penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json" --mode "$MODE"
 
   rm "$ACCOUNTS_FILE"
 }
 
 init_local() {
-  rm -rf $OUTPUT_DIR/gentxs
-  mkdir $OUTPUT_DIR/gentxs
+  rm -rf gentxs
+  mkdir gentxs
   for i in $(seq "$VALIDATORS"); do
     IP=""
     if [[ $CUSTOM_IPS = true ]]; then
       IP="--ip ${IP_ADDRESSES[$(("$i" - 1))]}"
     fi
-    $SCRIPTS_DIR/init-validator-node.sh -g "$OUTPUT_DIR/proto-genesis.json" -d "$OUTPUT_DIR/node${i}" --moniker "validator-${i}" --mnemonic "$(cat "$OUTPUT_DIR/val_${i}_mnemonic")" --stake "1000000nomo" $IP
-    cp -a "$OUTPUT_DIR/node${i}/config/gentx/." "$OUTPUT_DIR/gentxs"
+    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP" --mode "$MODE"
+    cp -a "node${i}/config/gentx/." "gentxs"
   done
 
-  $SCRIPTS_DIR/collect-validator-gentxs.sh --collector "$OUTPUT_DIR/node1" --gentxs "$OUTPUT_DIR/gentxs"
-  cp "$OUTPUT_DIR/node1/config/genesis.json" "$OUTPUT_DIR/genesis.json"
+  collect-validator-gentxs.sh --collector "node1" --gentxs "gentxs" --mode "$MODE"
+  cp "node1/config/genesis.json" "genesis.json"
 
   # collect the generated messages in validator 1's node for collection and propagate the resulting genesis file
   for i in $(seq 2 "$VALIDATORS"); do
-    cp "$OUTPUT_DIR/genesis.json" "$OUTPUT_DIR/node${1}/config/"
+    cp "genesis.json" "node${i}/config/"
   done
 }
 
@@ -152,6 +173,7 @@ fi
 
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
+cd "$OUTPUT_DIR"
 
 init_genesis
 init_local
