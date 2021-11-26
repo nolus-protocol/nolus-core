@@ -65,7 +65,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: init-penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option
