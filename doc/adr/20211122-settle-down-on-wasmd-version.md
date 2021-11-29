@@ -1,4 +1,4 @@
-# Offload the Cosmos App from client queries
+# Settle down on wasmd version
 
 - Status: accepted
 - Deciders: the Nolus dev team
