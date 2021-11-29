@@ -8,6 +8,9 @@ workspace {
                 validatornode = group "Validator Node" {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
+                        wasm = component "Wasm Module"
+                        oracle_module = component "Oracle Module"
+                        ante = component "Ante Handlers"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
@@ -26,6 +29,10 @@ workspace {
 
                 webapp = container "Web UI Client" {
                     -> appserver "Queries, Transactions"
+                }
+
+                oracle_feed = container "Oracle Feed" {
+                    -> appserver "Price updates"
                 }
             }
 
@@ -55,6 +62,18 @@ workspace {
             include *
         }
 
+        dynamic cosmosapp oracle_msgs {
+            title "Passing message to oracle smart contracts"
+            oracle_feed -> ante "send price update"
+            ante -> oracle_module "whitelist sender address"
+            ante -> price_oracle "send without charging fee"
+            price_oracle -> price_oracle "match msg sender address to whitelist"
+
+            admin -> price_oracle "update whitelist"
+            user -> oracle_module "update whitelists"
+            oracle_module -> price_oracle "get and set whitelisted addresses"
+            autoLayout
+        }
 
         dynamic contracts "case0" "all" {
             title "Flex successful close"
@@ -67,6 +86,7 @@ workspace {
             flex -> nolus_vault "send collateral"
             price_oracle -> flex "push price update"
             scheduler_oracle -> flex "push end time period notification"
+            autolayout
         }
 
         dynamic contracts "case1" "loan payment in a single epoch" {
@@ -77,6 +97,7 @@ workspace {
             loans_vault -> flex "send amount/promise"
             user -> flex "repay one or more times until pay-off the total"
             flex -> user "transfer ownership"
+            autolayout
         }
 
             dynamic contracts "case2" "update loans via oracles" {
@@ -84,6 +105,7 @@ workspace {
             price_oracle -> flex "push price update"
             scheduler_oracle -> flex "push end time period notification"
             flex -> nolus_vault "send collateral"
+            autolayout
         }
         theme default
     }
