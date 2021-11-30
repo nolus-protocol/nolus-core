@@ -1,6 +1,7 @@
 package app
 
 import (
+	nomoante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
 	"io"
 	"net/http"
 	"os"
@@ -88,6 +89,10 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	suspendmodule "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend"
+	suspendmodulekeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
+	suspendmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
+
 )
 
 const (
@@ -166,6 +171,7 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		wasm.AppModuleBasic{},
+		suspendmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -272,6 +278,7 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, wasm.StoreKey,
+		suspendmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -406,6 +413,13 @@ func New(
 	//}
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
+	app.SuspendKeeper = *suspendmodulekeeper.NewKeeper(
+		appCodec,
+		keys[suspendmoduletypes.StoreKey],
+		keys[suspendmoduletypes.MemStoreKey],
+	)
+	suspendModule := suspendmodule.NewAppModule(appCodec, app.SuspendKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(ibctransfertypes.ModuleName, transferModule)
@@ -509,12 +523,12 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
+	anteHandler, err := nomoante.NewAnteHandler(
+		nomoante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
+			SuspendKeeper:	 app.SuspendKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-			FeegrantKeeper:  nil,
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
 	)
@@ -686,6 +700,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(suspendmoduletypes.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/paramSubspace
 
 	return paramsKeeper
