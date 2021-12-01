@@ -1,0 +1,21 @@
+syntax = "proto3";
+package nolus.suspend.v1beta1;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
+
+// Msg defines the Msg service.
+service Msg {
+  rpc ChangeSuspend(MsgChangeSuspend) returns (MsgChangeSuspendResponse);
+  // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+message MsgChangeSuspend {
+  bool suspend = 1;
+}
+
+message MsgChangeSuspendResponse {
+}
+
+// this line is used by starport scaffolding # proto/tx/message

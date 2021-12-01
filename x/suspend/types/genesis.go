@@ -30,7 +30,7 @@ func DefaultGenesis() *GenesisState {
 // failure.
 func (gs GenesisState) Validate() error {
 	if gs.FeeRate.IsNil() || gs.FeeRate.IsNegative() {
-		return fmt.Errorf("treasury parameter feeRate must not be nil or negative, received: %s", gs.FeeRate)
+		return fmt.Errorf("suspend parameter feeRate must not be nil or negative, received: %s", gs.FeeRate)
 	}
 
 	for _, feeCap := range gs.FeeCaps {

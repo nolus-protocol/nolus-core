@@ -36,7 +36,7 @@ func (k Keeper) GetParams(ctx sdk.Context) (state types2.GenesisState) {
 	store := ctx.KVStore(k.storeKey)
 	b := store.Get(types2.GenesisStateKey)
 	if b == nil {
-		panic("treasury stored state must not have been nil")
+		panic("suspend stored state must not have been nil")
 	}
 
 	k.cdc.MustUnmarshal(b, &state)
