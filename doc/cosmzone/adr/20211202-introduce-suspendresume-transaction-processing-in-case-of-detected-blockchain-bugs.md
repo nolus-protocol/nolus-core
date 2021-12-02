@@ -9,6 +9,8 @@
 
 If for some reason we need to pause processing of ALL transactions, reported bug in the consensus layer or CosmosSDK, or detected attack, we have to be able quickly to pause the network until analyse the case and assess its severity and exploitability.
 
+It is worth to note, that this functionality is intended to be used only in cases when the network or most of the apps would be affected, not an isolated app. In the latter case we provide a simmilar feature on finer granularity, for example selected apps or contracts.
+
 ## Decision Drivers <!-- optional -->
 
 - ability to enter the pausing mode immediatelly after the Nolus operations team receive a notification
