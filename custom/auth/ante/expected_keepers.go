@@ -3,6 +3,7 @@ package ante
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	autht "github.com/cosmos/cosmos-sdk/x/auth/types"
+	types2 "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
 // AccountKeeper defines the contract needed for AccountKeeper related APIs.
@@ -15,5 +16,5 @@ type AccountKeeper interface {
 }
 
 type SuspendKeeper interface {
-	IsNodeSuspend() bool
+	IsNodeSuspend(ctx sdk.Context) (suspend types2.MsgChangeSuspend)
 }

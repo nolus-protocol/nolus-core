@@ -1,0 +1,18 @@
+syntax = "proto3";
+package nomo.cosmzone.suspend;
+
+// this line is used by starport scaffolding # 1
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // this line is used by starport scaffolding # 2
+}
+
+message QuerySuspend {
+  string creator = 1;
+  bool suspend = 2;
+}
+
+// this line is used by starport scaffolding # 3

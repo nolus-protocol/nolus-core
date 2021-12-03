@@ -5,7 +5,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-///////////
 type NomoSuspendDecorator struct {
 	tk SuspendKeeper
 }
@@ -16,7 +15,8 @@ func NewSuspendDecorator(tk SuspendKeeper) NomoSuspendDecorator {
 }
 
 func (mfd NomoSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	if mfd.tk.IsNodeSuspend() {
+	msgSuspend := mfd.tk.IsNodeSuspend(ctx)
+	if msgSuspend.Suspend {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "The node is suspended!")
 	}
 	return next(ctx, tx, simulate)

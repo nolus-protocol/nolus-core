@@ -43,13 +43,10 @@ func (k Keeper) GetParams(ctx sdk.Context) (state types2.GenesisState) {
 	return
 }
 
-func (k Keeper) AddProceeds(ctx sdk.Context, delta sdk.Coins) {
+func (k Keeper) AddProceeds(ctx sdk.Context, delta bool) {
 	genState := k.GetParams(ctx)
-	if genState.FeeProceeds == nil {
-		genState.FeeProceeds = sdk.NewCoins()
-	}
-	genState.FeeProceeds = genState.FeeProceeds.Add(delta...)
-	k.Logger(ctx).Info(fmt.Sprintf("New fee proceeds state: %s", genState.FeeProceeds))
+	genState.Suspend = delta
+	k.Logger(ctx).Info(fmt.Sprintf("New Suspend proceeds state: %s", genState.Suspend))
 	k.SetParams(ctx, genState)
 }
 
@@ -60,8 +57,17 @@ func (k Keeper) SetParams(ctx sdk.Context, genState types2.GenesisState) {
 	store.Set(types2.GenesisStateKey, b)
 }
 
-func (k Keeper) IsNodeSuspend() bool {
-	return false
+func (k Keeper) SetNodeSuspend(ctx sdk.Context, msgChange *types2.MsgChangeSuspend) {
+	store := ctx.KVStore(k.storeKey)
+	b := k.cdc.MustMarshal(msgChange)
+	store.Set(types2.SuspendStateKey, b)
+}
+
+func (k Keeper) IsNodeSuspend(ctx sdk.Context) (suspend types2.MsgChangeSuspend) {
+	store := ctx.KVStore(k.storeKey)
+	b := store.Get(types2.SuspendStateKey)
+	k.cdc.MustUnmarshal(b, &suspend)
+	return suspend
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
