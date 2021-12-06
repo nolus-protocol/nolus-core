@@ -8,7 +8,18 @@ option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
 // Query defines the gRPC querier service.
 service Query {
   // this line is used by starport scaffolding # 2
+
 }
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QuerySuspendRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QuerySuspendResponse {
+  // params defines the parameters of the module.
+  QuerySuspend querySuspend = 1;
+}
+
 
 message QuerySuspend {
   string creator = 1;

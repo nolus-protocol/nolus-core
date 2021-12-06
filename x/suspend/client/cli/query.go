@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 	// "strings"
 
@@ -25,35 +26,36 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 	}
 	// this line is used by starport scaffolding # 1
 
-	//cmd.AddCommand(QueryGetSuspendCmd())
+	cmd.AddCommand(QueryGetSuspendCmd())
 
 	return cmd
 }
-//
-//func QueryGetSuspendCmd() *cobra.Command {
-//	cmd := &cobra.Command{
-//		Use:   "get",
-//		Short: "Query the current suspend value",
-//		Args:  cobra.NoArgs,
-//		Long: strings.TrimSpace(`Query the current suspend value:`),
-//		RunE: func(cmd *cobra.Command, args []string) error {
-//			clientCtx, err := client.GetClientQueryContext(cmd)
-//			if err != nil {
-//				return err
-//			}
-//
-//			queryClient := types.NewQueryClient(clientCtx)
-//			res, err := queryClient.Suspend(cmd.Context(), &types.QuerySuspend{})
-//			if err != nil {
-//				return err
-//			}
-//
-//			return clientCtx.PrintProto(res)
-//		},
-//	}
-//
-//	flags.AddQueryFlagsToCmd(cmd)
-//
-//	return cmd
-//}
 
+func QueryGetSuspendCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "get",
+		Short: "Query the current suspend value",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			params := &types.QuerySuspendRequest{}
+			res, err := queryClient.Suspend(cmd.Context(), params)
+
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
