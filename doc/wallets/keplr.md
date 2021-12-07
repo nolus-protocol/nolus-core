@@ -33,6 +33,15 @@
 ## Aditional notes
 - written in TypeScript, using React and ReactNative
 
+## Which requests Keplr uses
+```
+Account Auth: GET http://<ip>:<api_port>/auth/accounts/nolus15dqqhetmfc4a9akf358zj8hz36e59zx686wg76
+Balance: GET http://<ip>:<api_port>/bank/balances/nolus15dqqhetmfc4a9akf358zj8hz36e59zx686wg76 
+Staking delegators: GET http://<ip>:<api_port>/staking/delegators/nolus15dqqhetmfc4a9akf358zj8hz36e59zx686wg76/delegations
+Staking unbonding delegators: GET http://<ip>:<api_port>/staking/delegators/nolus15dqqhetmfc4a9akf358zj8hz36e59zx686wg76/unbonding_delegations
+Transaction: POST http://<ip>:<api_port>/cosmos/tx/v1beta1/txs
+```
+
 ## Run like a suggest chain:
 -Go to Chrome Keplr extension click on the extension with right mouse button and select "Inspect". Then you will see Developer console. Please go to the Console tab and paste this code there:
 ```js
