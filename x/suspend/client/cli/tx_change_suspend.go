@@ -1,13 +1,12 @@
 package cli
 
 import (
-    "strconv"
+	"strconv"
 
-
-	 "github.com/spf13/cast"
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-    "github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
@@ -21,11 +20,11 @@ func CmdChangeSuspend() *cobra.Command {
 		Short: "Broadcast message change-suspend",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-      		 argSuspend, err := cast.ToBoolE(args[0])
-      		 argBlockHeight, err := cast.ToInt64E(args[1])
-            if err != nil {
-                return err
-            }
+			argSuspend, err := cast.ToBoolE(args[0])
+			argAdminKey, err := cast.ToStringE(args[1])
+			if err != nil {
+				return err
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -35,7 +34,7 @@ func CmdChangeSuspend() *cobra.Command {
 			msg := types.NewMsgChangeSuspend(
 				clientCtx.GetFromAddress().String(),
 				argSuspend,
-				argBlockHeight,
+				argAdminKey,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -46,5 +45,5 @@ func CmdChangeSuspend() *cobra.Command {
 
 	flags.AddTxFlagsToCmd(cmd)
 
-    return cmd
+	return cmd
 }

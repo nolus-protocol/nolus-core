@@ -2,8 +2,10 @@ package cli
 
 import (
 	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
+
 	// "strings"
 
 	"github.com/spf13/cobra"
@@ -11,7 +13,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
-
 )
 
 // GetQueryCmd returns the cli query commands for this module

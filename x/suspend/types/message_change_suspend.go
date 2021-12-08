@@ -7,11 +7,11 @@ import (
 
 var _ sdk.Msg = &MsgChangeSuspend{}
 
-func NewMsgChangeSuspend(creator string, suspend bool, blockHeight int64) *MsgChangeSuspend {
+func NewMsgChangeSuspend(creator string, suspend bool, adminKey string) *MsgChangeSuspend {
 	return &MsgChangeSuspend{
-		Creator: creator,
-		Suspend: suspend,
-		BlockHeight: blockHeight,
+		Creator:  creator,
+		Suspend:  suspend,
+		AdminKey: adminKey,
 	}
 }
 

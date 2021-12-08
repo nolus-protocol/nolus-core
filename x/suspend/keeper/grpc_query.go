@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
@@ -13,8 +14,9 @@ func (k Keeper) Suspend(c context.Context, _ *types.QuerySuspendRequest) (*types
 	ctx := sdk.UnwrapSDKContext(c)
 	params := k.IsNodeSuspend(ctx)
 	qs := types.QuerySuspend{
-		Creator: params.Creator,
-		Suspend: params.Suspend,
+		Creator:  params.Creator,
+		Suspend:  params.Suspend,
+		AdminKey: params.AdminKey,
 	}
 
 	return &types.QuerySuspendResponse{QuerySuspend: &qs}, nil

@@ -3,10 +3,11 @@ package types
 // DefaultIndex is the default capability global index
 const DefaultIndex uint64 = 1
 
-func NewGenesis(suspend bool, blockHeight int64) *GenesisState {
+func NewGenesis(suspend bool, blockHeight int64, adminKey string) *GenesisState {
 	return &GenesisState{
-		Suspend: suspend,
+		Suspend:     suspend,
 		BlockHeight: blockHeight,
+		AdminKey:    adminKey,
 	}
 }
 

@@ -20,10 +20,10 @@ message QuerySuspendResponse {
   QuerySuspend querySuspend = 1;
 }
 
-
 message QuerySuspend {
   string creator = 1;
   bool suspend = 2;
+  string admin_key = 3;
 }
 
 // this line is used by starport scaffolding # 3
