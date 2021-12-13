@@ -12,7 +12,7 @@ service Msg {
 }
 
 message MsgChangeSuspend {
-  string creator = 1;
+  string from_address = 1;
   bool suspend = 2;
   int64 block_height = 3;
   string admin_key = 4;

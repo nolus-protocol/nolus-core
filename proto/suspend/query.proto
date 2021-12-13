@@ -21,7 +21,7 @@ message QuerySuspendResponse {
 }
 
 message QuerySuspend {
-  string creator = 1;
+  string from_address = 1;
   bool suspend = 2;
   string admin_key = 3;
 }
