@@ -1,7 +1,7 @@
-# Use XYZ as an oracle solution for feeding external data
+# Start with a centralized oracle as a solution for feeding market data
 
-- Status: draft
-- Deciders:
+- Status: proposal
+- Deciders: the dev team
 - Date: 2021-11-30
 - Tags: oracle market-data
 
@@ -15,6 +15,7 @@ To implement Nolus's core business logic we need secure and reliable access to u
 
 - reliable - failure resistant, high-availability
 - accurate - provided data reflects the real outside-world data. This implies resistance to malicious behavior.
+- time to market - how much time it will take to implement
 - optimal - avoid feeding same or insignificantly changed data. The significance is defined as a % change from the last reported value.
 
  ## Considered Options
@@ -23,8 +24,8 @@ To implement Nolus's core business logic we need secure and reliable access to u
 
 |Oracle <---> Data Source |Crypto Exchanges (Binance, Coinbase, Huobi, UniSwap, ...) | Data Aggregators (CoinGecko, Kaiko, Amberdata, ...)
 ---|---|---
-|**Centralized**, a trusted external service instance owning a Nolus priviledged account collects, aggregates and pushes data into a smart contract. It is a simple read/write register. | [+] free data<p> [-] unreliable<p> [-] vulnerable to attacks<p> [-] less accurate data| [-] paid data<p> [-] reliable<p> [-] resistent to attacks<p> [+] more accurate data
-|**Decentralized**, multiple untrusted service instances depositing some amount collect, aggregate and push data into a smart contract. It aggregates received observations in rounds and compensates or penalizes oracles.| [+] free data<p> [+] reliable<p> [+] resistent to attacks<p> [-] less accurate data| [-] paid data<p> [+] reliable<p> [+] resistent to attacks<p> [+] more accurate data
+|**Centralized**, a trusted external service instance owning a Nolus priviledged account collects, aggregates and pushes data into a smart contract. It is a simple read/write register. | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [-] less accurate data<p> [+] free data<p> [+] shorter time-to-market | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [+] more accurate data<p> [-] paid data<p> [+] shorter time-to-market
+|**Decentralized**, multiple untrusted service instances depositing some amount collect, aggregate and push data into a smart contract. It aggregates received observations in rounds and compensates or penalizes oracles.| [+] reliable<p> [+] resistent to attacks<p> [-] less accurate data<p> [+] free data<p> [-] longer time-to-market| [+] reliable<p> [+] resistent to attacks<p> [+] more accurate data<p> [-] paid data<p> [-] longer time-to-market
 
 Demo code for implementing an aggregator in Rust for CosmWasm on Terra [here](https://github.com/smartcontractkit/chainlink-terra-feeds-demo) and [by Hack.bg](https://github.com/hackbg/chainlink-terra-cosmwasm-contracts).
 
@@ -40,49 +41,11 @@ Bandchain is a CosmosSDK-based chain providing data via IBC channels on requests
 
 ## Decision Outcome
 
-Chosen option: "[option 1]", because [justification. e.g., only option, which meets k.o. criterion decision driver | which resolves force force | … | comes out best (see below)].
+Unless there is a strong objection from the business rooted to some concerns from potential investors, we propose to start with "an in-house developed centralized oracle based on data aggregators", because
+* external solutions either do not support Cosmos chains or provide market data only on demand, and
+* the security of the decentralized in-house solutions rely on enough staked amounts that fall aside the tokenomics
 
-### Positive Consequences <!-- optional -->
-
-- [e.g., improvement of quality attribute satisfaction, follow-up decisions required, …]
-- …
-
-### Negative Consequences <!-- optional -->
-
-- [e.g., compromising quality attribute, follow-up decisions required, …]
-- …
-
-## Pros and Cons of the Options <!-- optional -->
-
-### Centralized Oracle
-
-[example | description | pointer to more information | …] <!-- optional -->
-
-- Good, because [argument a]
-- Good, because [argument b]
-- [cons] single point of failure, because a single node/service provides input to the smart contracts to work properly
-- [cons] centralization, because a single entity controlling the node/service is provided with an excessive power to influence the core business logic implemented by smart contracts
-- … <!-- numbers of pros and cons can vary -->
-
-### [option 2]
-
-[example | description | pointer to more information | …] <!-- optional -->
-
-- Good, because [argument a]
-- Good, because [argument b]
-- Bad, because [argument c]
-- … <!-- numbers of pros and cons can vary -->
-
-### [option 3]
-
-[example | description | pointer to more information | …] <!-- optional -->
-
-- Good, because [argument a]
-- Good, because [argument b]
-- Bad, because [argument c]
-- … <!-- numbers of pros and cons can vary -->
-
-## Links <!-- optional -->
+## Links
 
 1. [ChainLink's overview of Blockchain Oracles](https://chain.link/education/blockchain-oracles)
 2. [What is the Blockchain Oracle Problem](https://blog.chain.link/what-is-the-blockchain-oracle-problem/)
