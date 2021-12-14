@@ -27,9 +27,9 @@ POSITIONAL=()
 MONIKER="test-moniker-"
 MODE="local"
 KEYRING="test"
-NATIVE_CURRENCY="nolus"
-VAL_TOKENS="1000000000nolus"
-VAL_STAKE="1000000nolus"
+NATIVE_CURRENCY="unolus"
+VAL_TOKENS="1000000000unolus"
+VAL_STAKE="1000000unolus"
 CHAIN_ID="nolus-private"
 OUTPUT_DIR="./validator_setup"
 

@@ -28,7 +28,7 @@ describe("IBC transfers", () => {
             amount: transferAmount,
         };
         const fee = {
-            amount: [{denom: "nolus", amount: "12"}],
+            amount: [{denom: "unolus", amount: "12"}],
             gas: "100000"
         };
         let sendTokensResponse: BroadcastTxResponse = await validatorClient.sendTokens(validatorAccount.address, user1Account.address, [transfer], fee, "Testing send transaction");
