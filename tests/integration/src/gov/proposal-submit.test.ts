@@ -39,7 +39,7 @@ describe('proposal submission', () => {
 
     beforeEach(async () => {
         fee = {
-            amount: [{denom: "nolus", amount: "12"}],
+            amount: [{denom: "unolus", amount: "12"}],
             gas: "100000"
         }
 
@@ -48,7 +48,7 @@ describe('proposal submission', () => {
             value: {
                 content: {},
                 proposer: firstAccount.address,
-                initialDeposit: [{denom: "nolus", amount: "12"}],
+                initialDeposit: [{denom: "unolus", amount: "12"}],
             }
         };
     })
@@ -78,7 +78,7 @@ describe('proposal submission', () => {
                 description: "This proposal proposes to test whether this proposal passes",
                 title: "Test Proposal",
                 recipient: firstAccount.address,
-                amount: [{denom: "nolus", amount: "1000000"}]
+                amount: [{denom: "unolus", amount: "1000000"}]
             }).finish(),
         };
 
@@ -156,7 +156,7 @@ describe('proposal submission', () => {
         };
 
         fee = {
-            amount: [{denom: "nolus", amount: "12"}],
+            amount: [{denom: "unolus", amount: "12"}],
             gas: "200000"
         }
         
@@ -202,7 +202,7 @@ describe('proposal submission', () => {
                 codeId: Long.fromInt(1),
                 label: "contractlabel",
                 msg: toUtf8("{}"),
-                funds: [{denom: "nolus", amount: "12"}]
+                funds: [{denom: "unolus", amount: "12"}]
             }).finish(),
         };
 

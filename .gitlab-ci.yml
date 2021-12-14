@@ -1,7 +1,9 @@
 include:
   - '.cicd/kaniko.yml'
-  # - '.cicd/go-build.yml'
+  - '.cicd/go-build.yml'
+  - '.cicd/go-test-abstract.yml'
   - '.cicd/go-test.yml'
+  - '.cicd/go-scheduled-test.yml'
 
 stages:
   - prep
@@ -96,13 +98,18 @@ build-integration:
     KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
 
-test-fuzzer:on-schedule:
+test-unit:
   extends: .go-test
+  script:
+    - make test-unit
+
+test-fuzzer:on-schedule:
+  extends: .go-scheduled-test
   script:
     - make fuzz
 
 test-unit-cosmos:on-schedule:
-  extends: .go-test
+  extends: .go-scheduled-test
   script:
     - make test-unit-cosmos
 

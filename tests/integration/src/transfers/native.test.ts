@@ -6,7 +6,7 @@ import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser2Wallet,
 describe("Native transfers", () => {
     test("Validator has positive balance", async () => {
         const client: CosmWasmClient = await CosmWasmClient.connect(process.env.NODE_URL as string);
-        const balance: Coin = await client.getBalance(process.env.VALIDATOR_ADDR as string, "nolus");
+        const balance: Coin = await client.getBalance(process.env.VALIDATOR_ADDR as string, "unolus");
 
         console.log(`Validator balance=(${balance.denom}, ${balance.amount})`);
 
@@ -20,24 +20,24 @@ describe("Native transfers", () => {
         const [user1Account] = await (await getUser1Wallet()).getAccounts();
         const [user2Account] = await (await getUser2Wallet()).getAccounts();
         const transfer1 = {
-            denom: "nolus",
+            denom: "unolus",
             amount: "1234",
         };
         const transfer2 = {
-            denom: "nolus",
+            denom: "unolus",
             amount: "1000",
         };
         const fee = {
-            amount: [{denom: "nolus", amount: "12"}],
+            amount: [{denom: "unolus", amount: "12"}],
             gas: "100000"
         };
 
         // validator -> user1
-        let previousValidatorBalance: Coin = await validatorClient.getBalance(validatorAccount.address, "nolus");
-        let previousUser1Balance: Coin = await validatorClient.getBalance(user1Account.address, "nolus");
+        let previousValidatorBalance: Coin = await validatorClient.getBalance(validatorAccount.address, "unolus");
+        let previousUser1Balance: Coin = await validatorClient.getBalance(user1Account.address, "unolus");
         let broadcastTxResponse1: BroadcastTxResponse = await validatorClient.sendTokens(validatorAccount.address, user1Account.address, [transfer1], fee, "Testing send transaction");
-        let nextValidatorBalance: Coin = await validatorClient.getBalance(validatorAccount.address, "nolus");
-        let nextUser1Balance: Coin = await validatorClient.getBalance(user1Account.address, "nolus");
+        let nextValidatorBalance: Coin = await validatorClient.getBalance(validatorAccount.address, "unolus");
+        let nextUser1Balance: Coin = await validatorClient.getBalance(user1Account.address, "unolus");
 
         console.log(`Validator balance before=(${previousValidatorBalance.denom}, ${previousValidatorBalance.amount}) after=(${nextValidatorBalance.denom}, ${nextValidatorBalance.amount})`);
         console.log(`User1 balance before=(${previousUser1Balance.denom}, ${previousUser1Balance.amount}) after=(${nextUser1Balance.denom}, ${nextUser1Balance.amount})`);
@@ -47,11 +47,11 @@ describe("Native transfers", () => {
         expect(BigInt(nextUser1Balance.amount)).toBe(BigInt(previousUser1Balance.amount) + BigInt(transfer1.amount));
 
         // user1 -> user2
-        previousUser1Balance = await validatorClient.getBalance(user1Account.address, "nolus");
-        let previousUser2Balance: Coin = await validatorClient.getBalance(user2Account.address, "nolus");
+        previousUser1Balance = await validatorClient.getBalance(user1Account.address, "unolus");
+        let previousUser2Balance: Coin = await validatorClient.getBalance(user2Account.address, "unolus");
         let broadcastTxResponse2: BroadcastTxResponse = await user1Client.sendTokens(user1Account.address, user2Account.address, [transfer2], fee, "Testing send transaction");
-        nextUser1Balance = await validatorClient.getBalance(user1Account.address, "nolus");
-        let nextUser2Balance: Coin = await validatorClient.getBalance(user2Account.address, "nolus");
+        nextUser1Balance = await validatorClient.getBalance(user1Account.address, "unolus");
+        let nextUser2Balance: Coin = await validatorClient.getBalance(user2Account.address, "unolus");
 
         console.log(`User1 balance before=(${previousUser1Balance.denom}, ${previousUser1Balance.amount}) after=(${nextUser1Balance.denom}, ${nextUser1Balance.amount})`);
         console.log(`User2 balance before=(${previousUser2Balance.denom}, ${previousUser2Balance.amount}) after=(${nextUser2Balance.denom}, ${nextUser2Balance.amount})`);

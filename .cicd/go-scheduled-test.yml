@@ -1,0 +1,4 @@
+.go-scheduled-test:
+  extends: .go-test-abstract
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
