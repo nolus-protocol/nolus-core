@@ -45,6 +45,11 @@ Unless there is a strong objection from the business rooted to some concerns fro
 * external solutions either do not support Cosmos chains or provide market data only on demand, and
 * the security of the decentralized in-house solutions rely on enough staked amounts that fall aside the tokenomics
 
+## Potential evolution
+
+* enhance oracle reliability by providing redundancy of the offchain oracle service instances
+* engage validators and their stake to migrate to a decentralized solution
+
 ## Links
 
 1. [ChainLink's overview of Blockchain Oracles](https://chain.link/education/blockchain-oracles)
