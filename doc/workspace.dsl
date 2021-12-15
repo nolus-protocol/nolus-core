@@ -8,16 +8,18 @@ workspace {
                 validatornode = group "Validator Node" {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
-                        wasm = component "Wasm Module"
                         oracle_module = component "Oracle Module"
                         ante = component "Ante Handlers"
+                        minter = component "Minter"
+                        block_rewards = component "Block Rewards"
+                        user_account = component "User's Account"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
                         price_data = component "Price Data"
                         scheduler_data = component "Scheduler Data"
+                        reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
-                        nolus_vault = component "Nolus Vault"
                     }
                     cosmosapp -> contracts "Execute Trx"
                     contracts -> cosmosapp "Store State"
@@ -65,7 +67,7 @@ workspace {
         dynamic cosmosapp fee_handler {
             title "Adding extra transaction fee"
             user -> ante "send transaction"
-            ante -> nolus_vault "get vault Cosmos address"
+            ante -> reserve_vault "get vault Cosmos address"
             ante -> bank "send extra fee to vault Cosmos address"
         }
 
@@ -81,6 +83,13 @@ workspace {
             oracle_module -> price_data "get and set whitelisted addresses"
         }
 
+        dynamic contracts {
+            title "Tax & Inflation distribution"
+            user_account -> block_rewards "gas fee"
+            minter -> block_rewards "inflation"
+            user_account -> reserve_vault "additional tax"
+        }
+
         dynamic contracts "case0" "all" {
             title "Flex successful close"
             user -> flex "sign contract(amount, down-payment) && deposit down-pay"
@@ -89,7 +98,7 @@ workspace {
             loans_vault -> flex "send amount/promise"
             user -> flex "repay one or more times until pay-off the total"
             flex -> user "transfer ownership"
-            flex -> nolus_vault "send collateral"
+            flex -> reserve_vault "send collateral"
             price_data -> flex "push price update"
             scheduler_data -> flex "push end time period notification"
             autolayout
@@ -110,7 +119,7 @@ workspace {
             title "Update loans via oracles"
             price_data -> flex "push price update"
             scheduler_data -> flex "push end time period notification"
-            flex -> nolus_vault "send collateral"
+            flex -> reserve_vault "send collateral"
             autolayout
         }
         theme default

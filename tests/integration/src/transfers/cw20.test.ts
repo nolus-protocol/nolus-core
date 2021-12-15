@@ -6,15 +6,15 @@ import { AccountData } from "@cosmjs/amino";
 
 const customFees = {
     upload: {
-        amount: [{ amount: "2000000", denom: "nolus" }],
+        amount: [{ amount: "2000000", denom: "unolus" }],
         gas: "2000000",
     },
     init: {
-        amount: [{ amount: "500000", denom: "nolus" }],
+        amount: [{ amount: "500000", denom: "unolus" }],
         gas: "500000",
     },
     exec: {
-        amount: [{ amount: "500000", denom: "nolus" }],
+        amount: [{ amount: "500000", denom: "unolus" }],
         gas: "500000",
     }
 };
@@ -78,7 +78,7 @@ describe("CW20 transfers", () => {
         console.log("Validator balance:", validatorBalanceMsgResponse);
 
         expect(validatorBalanceMsgResponse.balance).toBe(totalSupply);
-    });
+    }, 30000);
 
     test("Users can transfer tokens", async () => {
         const user1Client = await getUser1Client();
@@ -138,11 +138,11 @@ describe("CW20 transfers", () => {
 
         // send some native tokens to the user, so that they can call TransferFrom
         const nativeTokenTransfer = {
-            denom: "nolus",
+            denom: "unolus",
             amount: "2000000",
         };
         const fee = {
-            amount: [{denom: "nolus", amount: "12"}],
+            amount: [{denom: "unolus", amount: "12"}],
             gas: "100000"
         };
         await validatorClient.sendTokens(validatorAccount.address, user1Account.address, [nativeTokenTransfer], fee, "Send transaction");

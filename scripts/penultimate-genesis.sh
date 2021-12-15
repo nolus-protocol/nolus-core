@@ -28,7 +28,7 @@ ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
 MONIKER="localtestnet"
 KEYRING="test"
-NATIVE_CURRENCY="nolus"
+NATIVE_CURRENCY="unolus"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do

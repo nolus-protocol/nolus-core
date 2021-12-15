@@ -40,13 +40,13 @@ create_vested_account() {
   local TILL4H
   TILL4H=$(($(date +%s) + 14400))
   local amnt
-  amnt='546652nolus'
+  amnt='546652unolus'
   row="{\"address\": \"$VESTED_USR_1_ADDR\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(date +%s)\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
   add_vesting_account "$row" "$HOME_DIR"
 }
 
 prepare_env() {
-  init-test-network.sh -v 1 --validator-tokens "100000000000nolus,1000000000$IBC_TOKEN" --output "$ROOT_DIR/networks/nolus" 2>&1
+  init-test-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$ROOT_DIR/networks/nolus" 2>&1
   edit-configuration.sh --home "$HOME_DIR" \
     --enable-api false --enable-grpc false --enable-grpc-web false --timeout-commit '1s'
   create_ibc_network

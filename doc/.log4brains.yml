@@ -2,10 +2,10 @@ project:
   name: Nolus
   tz: Europe/Sofia
   adrFolder: ./adr
-  # packages:
-    # - name: Cosmos-Zone
-    #   path: ./cosmzone
-    #   adrFolder: ./cosmzone/adr
+  packages:
+    - name: Cosmos-Zone
+      path: ./cosmzone
+      adrFolder: ./cosmzone/adr
     # - name: Smart-Contracts
     #   path: ./smart-contracts
     #   adrFolder: ./smart-contracts/adr

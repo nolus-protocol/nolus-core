@@ -1,0 +1,40 @@
+syntax = "proto3";
+package nolus.mint.v1beta1;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "nolus/mint/v1beta1/mint.proto";
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types";
+
+// Query provides defines the gRPC querier service.
+service Query {
+  // Params returns the total set of minting parameters.
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/nolus/mint/v1beta1/params";
+  }
+
+  // MintState returns the current minting state value.
+  rpc MintState(QueryMintStateRequest) returns (QueryMintStateResponse) {
+    option (google.api.http).get = "/nolus/mint/v1beta1/state";
+  }
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QueryParamsRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params defines the parameters of the module.
+  Params params = 1 [(gogoproto.nullable) = false];
+}
+
+// QueryMintStateRequest is the request type for the Query/State RPC method.
+message QueryMintStateRequest {}
+
+// QueryMintStateResponse is the response type for the Query/State RPC
+// method.
+message QueryMintStateResponse {
+  bytes norm_time_passed = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  bytes total_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int", (gogoproto.nullable) = false];
+}

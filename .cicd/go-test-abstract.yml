@@ -1,0 +1,3 @@
+.go-test-abstract:
+  extends: .go-build
+  stage: test
