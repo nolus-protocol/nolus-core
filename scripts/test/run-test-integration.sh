@@ -35,14 +35,14 @@ cleanup() {
 trap cleanup INT TERM EXIT
 
 create_vested_account() {
-  cosmzoned keys add vested-user-1 --keyring-backend "test"  --home "$HOME_DIR"
-  VESTED_USR_1_ADDR=$(cosmzoned keys show vested-user-1 -a --home "$HOME_DIR" --keyring-backend "test")
+  cosmzoned keys add periodic-vesting-account --keyring-backend "test"  --home "$HOME_DIR"
+  PERIODIC_VEST=$(cosmzoned keys show periodic-vesting-account -a --home "$HOME_DIR" --keyring-backend "test")
   local TILL4H
   TILL4H=$(($(date +%s) + 14400))
   local amnt
-  amnt='546652unolus'
-  row="{\"address\": \"$VESTED_USR_1_ADDR\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(date +%s)\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
   add_vesting_account "$row" "$HOME_DIR"
+  amnt='546652nolus'
+  row="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(date +%s)\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
 }
 
 prepare_env() {
@@ -57,10 +57,10 @@ prepare_env() {
 
   VALIDATOR_ADDR=$(cosmzoned keys show validator-key -a --home "$HOME_DIR" --keyring-backend "test")
   VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys  export validator-key --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  VESTED_USR_1_ADDR=$(cosmzoned keys show vested-user-1 -a --home "$HOME_DIR" --keyring-backend "test")
+  PERIODIC_VEST_ADDR=$(cosmzoned keys show periodic-vesting-account -a --home "$HOME_DIR" --keyring-backend "test")
+  PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys  export periodic-vesting-account --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
   USR_1_ADDR=$(cosmzoned keys show test-user-1 -a --home "$HOME_DIR" --keyring-backend "test")
   USR_2_ADDR=$(cosmzoned keys show test-user-2 -a --home "$HOME_DIR" --keyring-backend "test")
-  VESTED_USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys  export vested-user-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
   USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys  export test-user-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
   USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys  export test-user-2 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
   DOT_ENV=$(cat <<-EOF
@@ -71,8 +71,8 @@ USR_1_ADDR=${USR_1_ADDR}
 USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_ADDR=${USR_2_ADDR}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
-VESTED_USR_1_ADDR=${VESTED_USR_1_ADDR}
-VESTED_USR_1_PRIV_KEY=${VESTED_USR_1_PRIV_KEY}
+PERIODIC_VEST_ADDR=${PERIODIC_VEST_ADDR}
+PERIODIC_PRIV_KEY=${PERIODIC_PRIV_KEY}
 IBC_TOKEN=${IBC_TOKEN}
 EOF
   )
