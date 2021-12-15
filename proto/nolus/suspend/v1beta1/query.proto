@@ -1,5 +1,5 @@
 syntax = "proto3";
-package nomo.cosmzone.suspend;
+package nolus.suspend.v1beta1;
 
 // this line is used by starport scaffolding # 1
 

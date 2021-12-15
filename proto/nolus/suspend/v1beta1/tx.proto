@@ -1,5 +1,5 @@
 syntax = "proto3";
-package nomo.cosmzone.suspend;
+package nolus.suspend.v1beta1;
 
 // this line is used by starport scaffolding # proto/tx/import
 
@@ -15,7 +15,6 @@ message MsgChangeSuspend {
   string from_address = 1;
   bool suspend = 2;
   int64 block_height = 3;
-  string admin_key = 4;
 }
 
 message MsgChangeSuspendResponse {

@@ -1,0 +1,16 @@
+syntax = "proto3";
+package nolus.suspend.v1beta1;
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
+
+message SuspendState {
+  bool suspend = 2 [
+    (gogoproto.nullable) = false
+  ];
+  int64 block_height = 3 [
+    (gogoproto.nullable) = false
+  ];
+  string admin_key = 4 [
+    (gogoproto.nullable) = false
+  ];
+}

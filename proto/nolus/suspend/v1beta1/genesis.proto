@@ -1,14 +1,14 @@
 syntax = "proto3";
-package nomo.cosmzone.suspend;
+package nolus.suspend.v1beta1;
 
 // this line is used by starport scaffolding # genesis/proto/import
+import "nolus/suspend/v1beta1/suspend.proto";
+import "gogoproto/gogo.proto";
 
 option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
 
 // GenesisState defines the suspend module's genesis state.
 message GenesisState {
-  string creator = 1;
-  bool suspend = 2;
-  int64 block_height = 3;
-  string admin_key = 4;
+  SuspendState state = 1 [(gogoproto.nullable) = false];
+
 }
