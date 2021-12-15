@@ -83,8 +83,16 @@ workspace {
         }
 
         dynamic cosmosapp oracle_msgs {
-            title "Passing message to oracle smart contracts"
-            oracle_operator -> ante "send price update"
+            title "Passing paid messages to oracle smart contracts"
+            market_data_aggregator -> price_feed "send charging trx fee"
+            price_feed -> price_feed "match msg sender address to whitelist"
+
+            admin -> price_feed "update whitelist"
+        }
+
+        dynamic cosmosapp oracle_msgs_no_tax {
+            title "Passing free message to oracle smart contracts"
+            market_data_aggregator -> ante "send price update"
             ante -> oracle_module "whitelist sender address"
             ante -> price_feed "send without charging fee"
             price_feed -> price_feed "match msg sender address to whitelist"
