@@ -5,7 +5,7 @@ workspace {
         nolusenterprise = enterprise "Nolus" {
             
             nolus = softwareSystem "Nolus" {
-                validatornode = group "Validator Node" {
+                validatornode = group "Validator/Sentry Node" {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
                         oracle_module = component "Oracle Module"
@@ -21,12 +21,13 @@ workspace {
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
                     }
-                    cosmosapp -> contracts "Execute Trx"
+                    cosmosapp -> contracts "Execute Trx messages"
                     contracts -> cosmosapp "Store State"
+                    contracts -> cosmosapp "Execute Trx messages"
                 }
                 appserver = container "Application Server" {
                     -> cosmosapp "Source Events"
-                    -> cosmosapp "Forward Transactions"
+                    -> cosmosapp "Forward Queries&Transactions"
                 }
 
                 webapp = container "Web UI Client" {
