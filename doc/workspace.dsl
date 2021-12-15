@@ -8,15 +8,15 @@ workspace {
                 validatornode = group "Validator/Sentry Node" {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
-                        oracle_module = component "Oracle Module"
                         ante = component "Ante Handlers"
+                        oracle_module = component "Oracle Module"
                         minter = component "Minter"
                         block_rewards = component "Block Rewards"
                         user_account = component "User's Account"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
-                        price_data = component "Price Data"
+                        price_feed = component "Price Data"
                         scheduler_data = component "Scheduler Data"
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
@@ -34,7 +34,9 @@ workspace {
                     -> appserver "Queries, Transactions"
                 }
 
-                oracle_feed = container "Oracle Feed" {
+                oracle_operator = container "Oracle Operator" {
+                    market_data_aggregator = component "Market Data Aggregator"
+
                     -> appserver "Price updates"
                 }
             }
@@ -61,7 +63,15 @@ workspace {
             include *
         }
 
+        component cosmosapp {
+            include *
+        }
+
         component contracts {
+            include *
+        }
+
+        component oracle_operator {
             include *
         }
 
@@ -74,14 +84,14 @@ workspace {
 
         dynamic cosmosapp oracle_msgs {
             title "Passing message to oracle smart contracts"
-            oracle_feed -> ante "send price update"
+            oracle_operator -> ante "send price update"
             ante -> oracle_module "whitelist sender address"
-            ante -> price_data "send without charging fee"
-            price_data -> price_data "match msg sender address to whitelist"
+            ante -> price_feed "send without charging fee"
+            price_feed -> price_feed "match msg sender address to whitelist"
 
-            admin -> price_data "update whitelist"
+            admin -> price_feed "update whitelist"
             user -> oracle_module "update whitelists"
-            oracle_module -> price_data "get and set whitelisted addresses"
+            oracle_module -> price_feed "get and set whitelisted addresses"
         }
 
         dynamic contracts {
@@ -94,13 +104,13 @@ workspace {
         dynamic contracts "case0" "all" {
             title "Flex successful close"
             user -> flex "sign contract(amount, down-payment) && deposit down-pay"
-            flex -> price_data "get currency price"
+            flex -> price_feed "get currency price"
             flex -> loans_vault "request loan"
             loans_vault -> flex "send amount/promise"
             user -> flex "repay one or more times until pay-off the total"
             flex -> user "transfer ownership"
             flex -> reserve_vault "send collateral"
-            price_data -> flex "push price update"
+            price_feed -> flex "push price update"
             scheduler_data -> flex "push end time period notification"
             autolayout
         }
@@ -108,7 +118,7 @@ workspace {
         dynamic contracts "case1" "loan payment in a single epoch" {
             title "Loan payment in a single epoch"
             user -> flex "sign contract(amount, down-payment) && deposit down-pay"
-            flex -> price_data "get currency price"
+            flex -> price_feed "get currency price"
             flex -> loans_vault "request loan"
             loans_vault -> flex "send amount/promise"
             user -> flex "repay one or more times until pay-off the total"
@@ -118,7 +128,7 @@ workspace {
 
             dynamic contracts "case2" "update loans via oracles" {
             title "Update loans via oracles"
-            price_data -> flex "push price update"
+            price_feed -> flex "push price update"
             scheduler_data -> flex "push end time period notification"
             flex -> reserve_vault "send collateral"
             autolayout
