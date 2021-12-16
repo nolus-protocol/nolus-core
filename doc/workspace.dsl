@@ -35,7 +35,7 @@ workspace {
                 }
 
                 oracle_operator = container "Oracle Operator" {
-                    market_data_aggregator = component "Market Data Aggregator"
+                    market_data_operator = component "Market Data Operator"
 
                     -> appserver "Price updates"
                 }
@@ -50,6 +50,11 @@ workspace {
                 -> webapp "Uses"
             }
         }
+
+        market_data_aggregator = softwareSystem "Market Data Aggregator" {
+        }
+
+        market_data_operator -> market_data_aggregator "Fetch Data"
 
         user -> webapp "Uses"
     }
@@ -86,11 +91,13 @@ workspace {
         }
 
         dynamic cosmosapp oracle_msgs {
-            title "Passing paid messages to oracle smart contracts"
+            title "Price Feeds"
             admin -> price_feed "update whitelist"
 
-            market_data_aggregator -> price_feed "send observations"
+            market_data_operator -> price_feed "send observations"
             price_feed -> price_feed "match msg sender address to whitelist"
+            price_feed -> price_feed "aggregate observations into price feeds"
+            price_feed -> flex "notify when price goes up/down of a threshold"
         }
 
         dynamic contracts "case0" "all" {
