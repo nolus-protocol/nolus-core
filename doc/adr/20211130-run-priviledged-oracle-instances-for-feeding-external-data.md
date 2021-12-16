@@ -1,8 +1,8 @@
-# Start with a centralized oracle as a solution for feeding market data
+# Run priviledged oracle instances as a solution for feeding market data
 
-- Status: proposal
-- Deciders: the dev team
-- Date: 2021-11-30
+- Status: accepted
+- Deciders: the product owner, the dev team
+- Date: 2021-12-16
 - Tags: oracle market-data
 
 ## Context and Problem Statement
@@ -24,8 +24,9 @@ To implement Nolus's core business logic we need secure and reliable access to u
 
 |Oracle <---> Data Source |Crypto Exchanges (Binance, Coinbase, Huobi, UniSwap, ...) | Data Aggregators (CoinGecko, Kaiko, Amberdata, ...)
 ---|---|---
-|**Centralized**, a trusted external service instance owning a Nolus priviledged account collects, aggregates and pushes data into a smart contract. It is a simple read/write register. | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [-] less accurate data<p> [+] free data<p> [+] shorter time-to-market | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [+] more accurate data<p> [-] paid data<p> [+] shorter time-to-market
-|**Decentralized**, multiple untrusted service instances depositing some amount collect, aggregate and push data into a smart contract. It aggregates received observations in rounds and compensates or penalizes oracles.| [+] reliable<p> [+] resistent to attacks<p> [-] less accurate data<p> [+] free data<p> [-] longer time-to-market| [+] reliable<p> [+] resistent to attacks<p> [+] more accurate data<p> [-] paid data<p> [-] longer time-to-market
+|**Centralized**, a trusted external service instance owning a Nolus privileged account collects, aggregates, and pushes data into a smart contract. It is a simple read/write register. | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [-] less accurate data<p> [+] free data<p> [+] shorter time-to-market | [-] single-point-of-failure<p> [-] vulnerable to attacks<p> [+] more accurate data<p> [-] paid data<p> [+] shorter time-to-market
+|**Fault-Tolerant Centralized**, a set of trusted external service instances, each owning a Nolus privileged account, collect, aggregate, and push data into a smart contract. It validates and aggregates received observations in rounds. | [+] reliable<p> [+] resistent to attacks<p> [-] less accurate data<p> [+] free data<p> [+] shorter time-to-market | [+] reliable<p> [+] resistent to attacks<p> [+] more accurate data<p> [-] paid data<p> [+] shorter time-to-market
+|**Decentralized**, multiple untrusted service instances, each depositing some amount, collect, aggregate, and push data into a smart contract. It aggregates received observations in rounds and compensates or penalizes oracles.| [+] reliable<p> [+] resistent to attacks<p> [-] less accurate data<p> [+] free data<p> [-] longer time-to-market| [+] reliable<p> [+] resistent to attacks<p> [+] more accurate data<p> [-] paid data<p> [-] longer time-to-market
 
 Demo code for implementing an aggregator in Rust for CosmWasm on Terra [here](https://github.com/smartcontractkit/chainlink-terra-feeds-demo) and [by Hack.bg](https://github.com/hackbg/chainlink-terra-cosmwasm-contracts).
 
@@ -41,14 +42,14 @@ Bandchain is a CosmosSDK-based chain providing data via IBC channels on requests
 
 ## Decision Outcome
 
-Unless there is a strong objection from the business rooted to some concerns from potential investors, we propose to start with "an in-house developed centralized oracle based on data aggregators", because
-* external solutions either do not support Cosmos chains or provide market data only on demand, and
-* the security of the decentralized in-house solutions rely on enough staked amounts that fall aside the tokenomics
+The product owner has confirmed the dev team's proposal to start with "an in-house developed **Fault-Tolerant Centralized** oracle based on data aggregators", because
+* external solutions either do not support Cosmos chains or provide market data only on demand,
+* the security of the decentralized in-house solutions rely on enough staked amounts that fall aside the tokenomics, and
+* the single instance centralized solution does not provide enough availability and is not failure nor vulnerability resistant
 
 ## Potential evolution
 
-* enhance oracle reliability by providing redundancy of the offchain oracle service instances
-* engage validators and their stake to migrate to a decentralized solution
+* engage validators and their stake
 
 ## Links
 

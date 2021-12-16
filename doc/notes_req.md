@@ -1,4 +1,13 @@
-02.11.2011
+16.12.2021
+==========
+- [cosmzone][contracts][web-app] identified tasks to complete before the network launch and filed corresponding clickup tickets
+- went over the web-app mock-ups and validated with the product owner the use-cases
+- IBC connectivity would be necessary post network launch to enable some of use-cases, e.g. DEX, bridge, supply NLS liquidity, etc.
+- connectivity to a ramp would be necessary post network launch to enable `deposit` and `withdraw` use-cases
+- got a confirmation to treat oracle transactions as regular transactions with regards to the fees
+- agreed on an oracle topology where multiple proviledged accounts are granted rights to supply market data from market data aggregators to a smart contract. It further combines received observations into authoritative and accurate market data ready for consumption by the other smart contracts. The product owner expects oracle node instances to be run by validators total 10 to 25 at most.
+
+02.11.2021
 ==========
 - [in progress] vesting - open vesting accounts on genesis is done, going to test all usecases, pre-opened and later opened accounts, with functional tests of the CosmosSDK module
 - [in progress] dev network - no progress on researching the options to launch a network and set up its genesis, validator set, and p2p nodes
