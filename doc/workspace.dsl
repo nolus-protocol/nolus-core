@@ -9,8 +9,10 @@ workspace {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
                         tax_agent = component "Tax Agent"
-                        oracle_module = component "Oracle Module"
                         minter = component "Minter"
+
+                        tax_agent -> bank "distribute the transaction gas"
+                        minter -> bank "mint amount on each block"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
@@ -89,18 +91,6 @@ workspace {
 
             market_data_aggregator -> price_feed "send observations"
             price_feed -> price_feed "match msg sender address to whitelist"
-        }
-
-        dynamic cosmosapp oracle_msgs_no_tax {
-            title "Passing free message to oracle smart contracts"
-            market_data_aggregator -> tax_agent "send price update"
-            tax_agent -> oracle_module "whitelist sender address"
-            tax_agent -> price_feed "send without charging fee"
-            price_feed -> price_feed "match msg sender address to whitelist"
-
-            admin -> price_feed "update whitelist"
-            user -> oracle_module "update whitelists"
-            oracle_module -> price_feed "get and set whitelisted addresses"
         }
 
         dynamic contracts "case0" "all" {
