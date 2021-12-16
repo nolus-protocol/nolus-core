@@ -8,15 +8,13 @@ workspace {
                 validatornode = group "Validator/Sentry Node" {
                     cosmosapp = container "Cosmos App" {
                         bank = component "Bank"
-                        ante = component "Ante Handlers"
+                        tax_agent = component "Tax Agent"
                         oracle_module = component "Oracle Module"
                         minter = component "Minter"
-                        block_rewards = component "Block Rewards"
-                        user_account = component "User's Account"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
-                        price_feed = component "Price Data"
+                        price_feed = component "Price Feed"
                         scheduler_data = component "Scheduler Data"
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
@@ -76,37 +74,33 @@ workspace {
         }
 
         dynamic cosmosapp fee_handler {
-            title "Adding extra transaction fee"
-            user -> ante "send transaction"
-            ante -> reserve_vault "get vault Cosmos address"
-            ante -> bank "send extra fee to vault Cosmos address"
+            title "Tax & Inflation distribution"
+
+            user -> tax_agent "send transaction"
+            tax_agent -> reserve_vault "get Vault address"
+            tax_agent -> bank "send extra fee to the Vault address"
+            tax_agent -> bank "send remained gas to the Collector address"
+            minter -> bank "[on block end] send newly minted coins to the Collector address"
         }
 
         dynamic cosmosapp oracle_msgs {
             title "Passing paid messages to oracle smart contracts"
-            market_data_aggregator -> price_feed "send charging trx fee"
-            price_feed -> price_feed "match msg sender address to whitelist"
-
             admin -> price_feed "update whitelist"
+
+            market_data_aggregator -> price_feed "send observations"
+            price_feed -> price_feed "match msg sender address to whitelist"
         }
 
         dynamic cosmosapp oracle_msgs_no_tax {
             title "Passing free message to oracle smart contracts"
-            market_data_aggregator -> ante "send price update"
-            ante -> oracle_module "whitelist sender address"
-            ante -> price_feed "send without charging fee"
+            market_data_aggregator -> tax_agent "send price update"
+            tax_agent -> oracle_module "whitelist sender address"
+            tax_agent -> price_feed "send without charging fee"
             price_feed -> price_feed "match msg sender address to whitelist"
 
             admin -> price_feed "update whitelist"
             user -> oracle_module "update whitelists"
             oracle_module -> price_feed "get and set whitelisted addresses"
-        }
-
-        dynamic contracts {
-            title "Tax & Inflation distribution"
-            user_account -> block_rewards "gas fee"
-            minter -> block_rewards "inflation"
-            user_account -> reserve_vault "additional tax"
         }
 
         dynamic contracts "case0" "all" {
@@ -134,7 +128,7 @@ workspace {
             autolayout
         }
 
-            dynamic contracts "case2" "update loans via oracles" {
+        dynamic contracts "case2" "update loans via oracles" {
             title "Update loans via oracles"
             price_feed -> flex "push price update"
             scheduler_data -> flex "push end time period notification"
