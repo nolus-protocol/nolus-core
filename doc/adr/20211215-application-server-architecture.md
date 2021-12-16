@@ -21,5 +21,5 @@ In the future, if we need to aggregate data, we can extend this solution by:
  - creating data/event extractor and transformer from the Cosmos blockchain to a db storage
  - providing a standalone api server that exposes this data to the outside world via rest api
 
- ![application server overview](../diagrams/application_server.jpg)
+ ![application server overview](diagrams/application_server.jpg)
 
