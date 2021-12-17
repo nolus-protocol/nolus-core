@@ -26,6 +26,8 @@ workspace {
                     contracts -> cosmosapp "Execute Trx messages"
                 }
                 appserver = container "Application Server" {
+                    api_endpoint = component "API Endpoint"
+
                     -> cosmosapp "Source Events"
                     -> cosmosapp "Forward Queries&Transactions"
                 }
@@ -35,9 +37,9 @@ workspace {
                 }
 
                 oracle_operator = container "Oracle Operator" {
-                    market_data_operator = component "Market Data Operator"
-
-                    -> appserver "Price updates"
+                    market_data_operator = component "Market Data Operator" {
+                       -> api_endpoint "Price updates"
+                    }
                 }
             }
 

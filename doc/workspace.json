@@ -3,10 +3,10 @@
   "name" : "Name",
   "description" : "Description",
   "revision" : 0,
-  "lastModifiedDate" : "2021-12-17T07:31:13Z",
+  "lastModifiedDate" : "2021-12-17T07:47:47Z",
   "lastModifiedAgent" : "structurizr-web/2549/diagram",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiVXNlciIKICAgICAgICBub2x1c2VudGVycHJpc2UgPSBlbnRlcnByaXNlICJOb2x1cyIgewogICAgICAgICAgICAKICAgICAgICAgICAgbm9sdXMgPSBzb2Z0d2FyZVN5c3RlbSAiTm9sdXMiIHsKICAgICAgICAgICAgICAgIHZhbGlkYXRvcm5vZGUgPSBncm91cCAiVmFsaWRhdG9yL1NlbnRyeSBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwID0gY29udGFpbmVyICJDb3Ntb3MgQXBwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGJhbmsgPSBjb21wb25lbnQgIkJhbmsiCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCA9IGNvbXBvbmVudCAiVGF4IEFnZW50IgogICAgICAgICAgICAgICAgICAgICAgICBtaW50ZXIgPSBjb21wb25lbnQgIk1pbnRlciIKCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCAtPiBiYW5rICJkaXN0cmlidXRlIHRoZSB0cmFuc2FjdGlvbiBnYXMiCiAgICAgICAgICAgICAgICAgICAgICAgIG1pbnRlciAtPiBiYW5rICJtaW50IGFtb3VudCBvbiBlYWNoIGJsb2NrIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBjb250cmFjdHMgPSBjb250YWluZXIgIlNtYXJ0IENvbnRyYWN0cyIgewogICAgICAgICAgICAgICAgICAgICAgICBmbGV4ID0gY29tcG9uZW50ICJGbGV4IgogICAgICAgICAgICAgICAgICAgICAgICBwcmljZV9mZWVkID0gY29tcG9uZW50ICJQcmljZSBGZWVkIgogICAgICAgICAgICAgICAgICAgICAgICBzY2hlZHVsZXJfZGF0YSA9IGNvbXBvbmVudCAiU2NoZWR1bGVyIERhdGEiCiAgICAgICAgICAgICAgICAgICAgICAgIHJlc2VydmVfdmF1bHQgPSBjb21wb25lbnQgIlJlc2VydmUgVmF1bHQiCiAgICAgICAgICAgICAgICAgICAgICAgIGxvYW5zX3ZhdWx0ID0gY29tcG9uZW50ICJMb2FucyBWYXVsdCIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwIC0+IGNvbnRyYWN0cyAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiU3RvcmUgU3RhdGUiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBhcHBzZXJ2ZXIgPSBjb250YWluZXIgIkFwcGxpY2F0aW9uIFNlcnZlciIgewogICAgICAgICAgICAgICAgICAgIC0+IGNvc21vc2FwcCAiU291cmNlIEV2ZW50cyIKICAgICAgICAgICAgICAgICAgICAtPiBjb3Ntb3NhcHAgIkZvcndhcmQgUXVlcmllcyZUcmFuc2FjdGlvbnMiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgd2ViYXBwID0gY29udGFpbmVyICJXZWIgVUkgQ2xpZW50IiB7CiAgICAgICAgICAgICAgICAgICAgLT4gYXBwc2VydmVyICJRdWVyaWVzLCBUcmFuc2FjdGlvbnMiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgb3JhY2xlX29wZXJhdG9yID0gY29udGFpbmVyICJPcmFjbGUgT3BlcmF0b3IiIHsKICAgICAgICAgICAgICAgICAgICBtYXJrZXRfZGF0YV9vcGVyYXRvciA9IGNvbXBvbmVudCAiTWFya2V0IERhdGEgT3BlcmF0b3IiCgogICAgICAgICAgICAgICAgICAgIC0+IGFwcHNlcnZlciAiUHJpY2UgdXBkYXRlcyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgaWJjID0gc29mdHdhcmVTeXN0ZW0gIkNvc21vcyBJQkMgUmVsYXkiCgogICAgICAgICAgICBpYmMgLT4gbm9sdXMgIlJlbGF5cy1pbiIKICAgICAgICAgICAgbm9sdXMgLT4gaWJjICJSZWxheXMtb3V0IgoKICAgICAgICAgICAgYWRtaW4gPSBwZXJzb24gIkFkbWluIiB7CiAgICAgICAgICAgICAgICAtPiB3ZWJhcHAgIlVzZXMiCiAgICAgICAgICAgIH0KICAgICAgICB9CgogICAgICAgIG1hcmtldF9kYXRhX2FnZ3JlZ2F0b3IgPSBzb2Z0d2FyZVN5c3RlbSAiTWFya2V0IERhdGEgQWdncmVnYXRvciIgewogICAgICAgIH0KCiAgICAgICAgbWFya2V0X2RhdGFfb3BlcmF0b3IgLT4gbWFya2V0X2RhdGFfYWdncmVnYXRvciAiRmV0Y2ggRGF0YSIKCiAgICAgICAgdXNlciAtPiB3ZWJhcHAgIlVzZXMiCiAgICB9CgogICAgdmlld3MgewogICAgICAgIHN5c3RlbUNvbnRleHQgbm9sdXMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbnRhaW5lciBub2x1cyB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IGNvc21vc2FwcCB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IGNvbnRyYWN0cyB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KCiAgICAgICAgY29tcG9uZW50IG9yYWNsZV9vcGVyYXRvciB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBjb3Ntb3NhcHAgZmVlX2hhbmRsZXIgewogICAgICAgICAgICB0aXRsZSAiVGF4ICYgSW5mbGF0aW9uIGRpc3RyaWJ1dGlvbiIKCiAgICAgICAgICAgIHVzZXIgLT4gdGF4X2FnZW50ICJzZW5kIHRyYW5zYWN0aW9uIgogICAgICAgICAgICB0YXhfYWdlbnQgLT4gcmVzZXJ2ZV92YXVsdCAiZ2V0IFZhdWx0IGFkZHJlc3MiCiAgICAgICAgICAgIHRheF9hZ2VudCAtPiBiYW5rICJzZW5kIGV4dHJhIGZlZSB0byB0aGUgVmF1bHQgYWRkcmVzcyIKICAgICAgICAgICAgdGF4X2FnZW50IC0+IGJhbmsgInNlbmQgcmVtYWluZWQgZ2FzIHRvIHRoZSBDb2xsZWN0b3IgYWRkcmVzcyIKICAgICAgICAgICAgbWludGVyIC0+IGJhbmsgIltvbiBibG9jayBlbmRdIHNlbmQgbmV3bHkgbWludGVkIGNvaW5zIHRvIHRoZSBDb2xsZWN0b3IgYWRkcmVzcyIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29udHJhY3RzIG9yYWNsZV9tc2dzIHsKICAgICAgICAgICAgdGl0bGUgIlByaWNlIEZlZWRzIgogICAgICAgICAgICBhZG1pbiAtPiBwcmljZV9mZWVkICJ1cGRhdGUgd2hpdGVsaXN0IgoKICAgICAgICAgICAgbWFya2V0X2RhdGFfb3BlcmF0b3IgLT4gbWFya2V0X2RhdGFfYWdncmVnYXRvciAicG9sbCBvYnNlcnZhdGlvbnMiCiAgICAgICAgICAgIG1hcmtldF9kYXRhX29wZXJhdG9yIC0+IHByaWNlX2ZlZWQgInNlbmQgb2JzZXJ2YXRpb25zIgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IHByaWNlX2ZlZWQgIm1hdGNoIG1zZyBzZW5kZXIgYWRkcmVzcyB0byB3aGl0ZWxpc3QiCiAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gcHJpY2VfZmVlZCAiYWdncmVnYXRlIG9ic2VydmF0aW9ucyBpbnRvIHByaWNlIGZlZWRzIgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IGZsZXggIm5vdGlmeSB3aGVuIHByaWNlIGdvZXMgdXAvZG93biBvZiBhIHRocmVzaG9sZCIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29udHJhY3RzICJjYXNlMCIgImFsbCIgewogICAgICAgICAgICB0aXRsZSAiRmxleCBzdWNjZXNzZnVsIGNsb3NlIgogICAgICAgICAgICB1c2VyIC0+IGZsZXggInNpZ24gY29udHJhY3QoYW1vdW50LCBkb3duLXBheW1lbnQpICYmIGRlcG9zaXQgZG93bi1wYXkiCiAgICAgICAgICAgIGZsZXggLT4gcHJpY2VfZmVlZCAiZ2V0IGN1cnJlbmN5IHByaWNlIgogICAgICAgICAgICBmbGV4IC0+IGxvYW5zX3ZhdWx0ICJyZXF1ZXN0IGxvYW4iCiAgICAgICAgICAgIGxvYW5zX3ZhdWx0IC0+IGZsZXggInNlbmQgYW1vdW50L3Byb21pc2UiCiAgICAgICAgICAgIHVzZXIgLT4gZmxleCAicmVwYXkgb25lIG9yIG1vcmUgdGltZXMgdW50aWwgcGF5LW9mZiB0aGUgdG90YWwiCiAgICAgICAgICAgIGZsZXggLT4gdXNlciAidHJhbnNmZXIgb3duZXJzaGlwIgogICAgICAgICAgICBmbGV4IC0+IHJlc2VydmVfdmF1bHQgInNlbmQgY29sbGF0ZXJhbCIKICAgICAgICAgICAgcHJpY2VfZmVlZCAtPiBmbGV4ICJwdXNoIHByaWNlIHVwZGF0ZSIKICAgICAgICAgICAgc2NoZWR1bGVyX2RhdGEgLT4gZmxleCAicHVzaCBlbmQgdGltZSBwZXJpb2Qgbm90aWZpY2F0aW9uIgogICAgICAgICAgICBhdXRvbGF5b3V0CiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyAiY2FzZTEiICJsb2FuIHBheW1lbnQgaW4gYSBzaW5nbGUgZXBvY2giIHsKICAgICAgICAgICAgdGl0bGUgIkxvYW4gcGF5bWVudCBpbiBhIHNpbmdsZSBlcG9jaCIKICAgICAgICAgICAgdXNlciAtPiBmbGV4ICJzaWduIGNvbnRyYWN0KGFtb3VudCwgZG93bi1wYXltZW50KSAmJiBkZXBvc2l0IGRvd24tcGF5IgogICAgICAgICAgICBmbGV4IC0+IHByaWNlX2ZlZWQgImdldCBjdXJyZW5jeSBwcmljZSIKICAgICAgICAgICAgZmxleCAtPiBsb2Fuc192YXVsdCAicmVxdWVzdCBsb2FuIgogICAgICAgICAgICBsb2Fuc192YXVsdCAtPiBmbGV4ICJzZW5kIGFtb3VudC9wcm9taXNlIgogICAgICAgICAgICB1c2VyIC0+IGZsZXggInJlcGF5IG9uZSBvciBtb3JlIHRpbWVzIHVudGlsIHBheS1vZmYgdGhlIHRvdGFsIgogICAgICAgICAgICBmbGV4IC0+IHVzZXIgInRyYW5zZmVyIG93bmVyc2hpcCIKICAgICAgICAgICAgYXV0b2xheW91dAogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBjb250cmFjdHMgImNhc2UyIiAidXBkYXRlIGxvYW5zIHZpYSBvcmFjbGVzIiB7CiAgICAgICAgICAgIHRpdGxlICJVcGRhdGUgbG9hbnMgdmlhIG9yYWNsZXMiCiAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgICAgIHNjaGVkdWxlcl9kYXRhIC0+IGZsZXggInB1c2ggZW5kIHRpbWUgcGVyaW9kIG5vdGlmaWNhdGlvbiIKICAgICAgICAgICAgZmxleCAtPiByZXNlcnZlX3ZhdWx0ICJzZW5kIGNvbGxhdGVyYWwiCiAgICAgICAgICAgIGF1dG9sYXlvdXQKICAgICAgICB9CiAgICAgICAgdGhlbWUgZGVmYXVsdAogICAgfQogICAgCn0K"
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiVXNlciIKICAgICAgICBub2x1c2VudGVycHJpc2UgPSBlbnRlcnByaXNlICJOb2x1cyIgewogICAgICAgICAgICAKICAgICAgICAgICAgbm9sdXMgPSBzb2Z0d2FyZVN5c3RlbSAiTm9sdXMiIHsKICAgICAgICAgICAgICAgIHZhbGlkYXRvcm5vZGUgPSBncm91cCAiVmFsaWRhdG9yL1NlbnRyeSBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwID0gY29udGFpbmVyICJDb3Ntb3MgQXBwIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGJhbmsgPSBjb21wb25lbnQgIkJhbmsiCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCA9IGNvbXBvbmVudCAiVGF4IEFnZW50IgogICAgICAgICAgICAgICAgICAgICAgICBtaW50ZXIgPSBjb21wb25lbnQgIk1pbnRlciIKCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCAtPiBiYW5rICJkaXN0cmlidXRlIHRoZSB0cmFuc2FjdGlvbiBnYXMiCiAgICAgICAgICAgICAgICAgICAgICAgIG1pbnRlciAtPiBiYW5rICJtaW50IGFtb3VudCBvbiBlYWNoIGJsb2NrIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBjb250cmFjdHMgPSBjb250YWluZXIgIlNtYXJ0IENvbnRyYWN0cyIgewogICAgICAgICAgICAgICAgICAgICAgICBmbGV4ID0gY29tcG9uZW50ICJGbGV4IgogICAgICAgICAgICAgICAgICAgICAgICBwcmljZV9mZWVkID0gY29tcG9uZW50ICJQcmljZSBGZWVkIgogICAgICAgICAgICAgICAgICAgICAgICBzY2hlZHVsZXJfZGF0YSA9IGNvbXBvbmVudCAiU2NoZWR1bGVyIERhdGEiCiAgICAgICAgICAgICAgICAgICAgICAgIHJlc2VydmVfdmF1bHQgPSBjb21wb25lbnQgIlJlc2VydmUgVmF1bHQiCiAgICAgICAgICAgICAgICAgICAgICAgIGxvYW5zX3ZhdWx0ID0gY29tcG9uZW50ICJMb2FucyBWYXVsdCIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwIC0+IGNvbnRyYWN0cyAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiU3RvcmUgU3RhdGUiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBhcHBzZXJ2ZXIgPSBjb250YWluZXIgIkFwcGxpY2F0aW9uIFNlcnZlciIgewogICAgICAgICAgICAgICAgICAgIGFwaV9lbmRwb2ludCA9IGNvbXBvbmVudCAiQVBJIEVuZHBvaW50IgoKICAgICAgICAgICAgICAgICAgICAtPiBjb3Ntb3NhcHAgIlNvdXJjZSBFdmVudHMiCiAgICAgICAgICAgICAgICAgICAgLT4gY29zbW9zYXBwICJGb3J3YXJkIFF1ZXJpZXMmVHJhbnNhY3Rpb25zIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIHdlYmFwcCA9IGNvbnRhaW5lciAiV2ViIFVJIENsaWVudCIgewogICAgICAgICAgICAgICAgICAgIC0+IGFwcHNlcnZlciAiUXVlcmllcywgVHJhbnNhY3Rpb25zIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIG9yYWNsZV9vcGVyYXRvciA9IGNvbnRhaW5lciAiT3JhY2xlIE9wZXJhdG9yIiB7CiAgICAgICAgICAgICAgICAgICAgbWFya2V0X2RhdGFfb3BlcmF0b3IgPSBjb21wb25lbnQgIk1hcmtldCBEYXRhIE9wZXJhdG9yIiB7CgogICAgICAgICAgICAgICAgICAgICAgIC0+IGFwaV9lbmRwb2ludCAiUHJpY2UgdXBkYXRlcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGliYyA9IHNvZnR3YXJlU3lzdGVtICJDb3Ntb3MgSUJDIFJlbGF5IgoKICAgICAgICAgICAgaWJjIC0+IG5vbHVzICJSZWxheXMtaW4iCiAgICAgICAgICAgIG5vbHVzIC0+IGliYyAiUmVsYXlzLW91dCIKCiAgICAgICAgICAgIGFkbWluID0gcGVyc29uICJBZG1pbiIgewogICAgICAgICAgICAgICAgLT4gd2ViYXBwICJVc2VzIgogICAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICBtYXJrZXRfZGF0YV9hZ2dyZWdhdG9yID0gc29mdHdhcmVTeXN0ZW0gIk1hcmtldCBEYXRhIEFnZ3JlZ2F0b3IiIHsKICAgICAgICB9CgogICAgICAgIG1hcmtldF9kYXRhX29wZXJhdG9yIC0+IG1hcmtldF9kYXRhX2FnZ3JlZ2F0b3IgIkZldGNoIERhdGEiCgogICAgICAgIHVzZXIgLT4gd2ViYXBwICJVc2VzIgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IG5vbHVzIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBjb250YWluZXIgbm9sdXMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBjb3Ntb3NhcHAgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBjb250cmFjdHMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBvcmFjbGVfb3BlcmF0b3IgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29zbW9zYXBwIGZlZV9oYW5kbGVyIHsKICAgICAgICAgICAgdGl0bGUgIlRheCAmIEluZmxhdGlvbiBkaXN0cmlidXRpb24iCgogICAgICAgICAgICB1c2VyIC0+IHRheF9hZ2VudCAic2VuZCB0cmFuc2FjdGlvbiIKICAgICAgICAgICAgdGF4X2FnZW50IC0+IHJlc2VydmVfdmF1bHQgImdldCBWYXVsdCBhZGRyZXNzIgogICAgICAgICAgICB0YXhfYWdlbnQgLT4gYmFuayAic2VuZCBleHRyYSBmZWUgdG8gdGhlIFZhdWx0IGFkZHJlc3MiCiAgICAgICAgICAgIHRheF9hZ2VudCAtPiBiYW5rICJzZW5kIHJlbWFpbmVkIGdhcyB0byB0aGUgQ29sbGVjdG9yIGFkZHJlc3MiCiAgICAgICAgICAgIG1pbnRlciAtPiBiYW5rICJbb24gYmxvY2sgZW5kXSBzZW5kIG5ld2x5IG1pbnRlZCBjb2lucyB0byB0aGUgQ29sbGVjdG9yIGFkZHJlc3MiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyBvcmFjbGVfbXNncyB7CiAgICAgICAgICAgIHRpdGxlICJQcmljZSBGZWVkcyIKICAgICAgICAgICAgYWRtaW4gLT4gcHJpY2VfZmVlZCAidXBkYXRlIHdoaXRlbGlzdCIKCiAgICAgICAgICAgIG1hcmtldF9kYXRhX29wZXJhdG9yIC0+IG1hcmtldF9kYXRhX2FnZ3JlZ2F0b3IgInBvbGwgb2JzZXJ2YXRpb25zIgogICAgICAgICAgICBtYXJrZXRfZGF0YV9vcGVyYXRvciAtPiBwcmljZV9mZWVkICJzZW5kIG9ic2VydmF0aW9ucyIKICAgICAgICAgICAgcHJpY2VfZmVlZCAtPiBwcmljZV9mZWVkICJtYXRjaCBtc2cgc2VuZGVyIGFkZHJlc3MgdG8gd2hpdGVsaXN0IgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IHByaWNlX2ZlZWQgImFnZ3JlZ2F0ZSBvYnNlcnZhdGlvbnMgaW50byBwcmljZSBmZWVkcyIKICAgICAgICAgICAgcHJpY2VfZmVlZCAtPiBmbGV4ICJub3RpZnkgd2hlbiBwcmljZSBnb2VzIHVwL2Rvd24gb2YgYSB0aHJlc2hvbGQiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyAiY2FzZTAiICJhbGwiIHsKICAgICAgICAgICAgdGl0bGUgIkZsZXggc3VjY2Vzc2Z1bCBjbG9zZSIKICAgICAgICAgICAgdXNlciAtPiBmbGV4ICJzaWduIGNvbnRyYWN0KGFtb3VudCwgZG93bi1wYXltZW50KSAmJiBkZXBvc2l0IGRvd24tcGF5IgogICAgICAgICAgICBmbGV4IC0+IHByaWNlX2ZlZWQgImdldCBjdXJyZW5jeSBwcmljZSIKICAgICAgICAgICAgZmxleCAtPiBsb2Fuc192YXVsdCAicmVxdWVzdCBsb2FuIgogICAgICAgICAgICBsb2Fuc192YXVsdCAtPiBmbGV4ICJzZW5kIGFtb3VudC9wcm9taXNlIgogICAgICAgICAgICB1c2VyIC0+IGZsZXggInJlcGF5IG9uZSBvciBtb3JlIHRpbWVzIHVudGlsIHBheS1vZmYgdGhlIHRvdGFsIgogICAgICAgICAgICBmbGV4IC0+IHVzZXIgInRyYW5zZmVyIG93bmVyc2hpcCIKICAgICAgICAgICAgZmxleCAtPiByZXNlcnZlX3ZhdWx0ICJzZW5kIGNvbGxhdGVyYWwiCiAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgICAgIHNjaGVkdWxlcl9kYXRhIC0+IGZsZXggInB1c2ggZW5kIHRpbWUgcGVyaW9kIG5vdGlmaWNhdGlvbiIKICAgICAgICAgICAgYXV0b2xheW91dAogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBjb250cmFjdHMgImNhc2UxIiAibG9hbiBwYXltZW50IGluIGEgc2luZ2xlIGVwb2NoIiB7CiAgICAgICAgICAgIHRpdGxlICJMb2FuIHBheW1lbnQgaW4gYSBzaW5nbGUgZXBvY2giCiAgICAgICAgICAgIHVzZXIgLT4gZmxleCAic2lnbiBjb250cmFjdChhbW91bnQsIGRvd24tcGF5bWVudCkgJiYgZGVwb3NpdCBkb3duLXBheSIKICAgICAgICAgICAgZmxleCAtPiBwcmljZV9mZWVkICJnZXQgY3VycmVuY3kgcHJpY2UiCiAgICAgICAgICAgIGZsZXggLT4gbG9hbnNfdmF1bHQgInJlcXVlc3QgbG9hbiIKICAgICAgICAgICAgbG9hbnNfdmF1bHQgLT4gZmxleCAic2VuZCBhbW91bnQvcHJvbWlzZSIKICAgICAgICAgICAgdXNlciAtPiBmbGV4ICJyZXBheSBvbmUgb3IgbW9yZSB0aW1lcyB1bnRpbCBwYXktb2ZmIHRoZSB0b3RhbCIKICAgICAgICAgICAgZmxleCAtPiB1c2VyICJ0cmFuc2ZlciBvd25lcnNoaXAiCiAgICAgICAgICAgIGF1dG9sYXlvdXQKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29udHJhY3RzICJjYXNlMiIgInVwZGF0ZSBsb2FucyB2aWEgb3JhY2xlcyIgewogICAgICAgICAgICB0aXRsZSAiVXBkYXRlIGxvYW5zIHZpYSBvcmFjbGVzIgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IGZsZXggInB1c2ggcHJpY2UgdXBkYXRlIgogICAgICAgICAgICBzY2hlZHVsZXJfZGF0YSAtPiBmbGV4ICJwdXNoIGVuZCB0aW1lIHBlcmlvZCBub3RpZmljYXRpb24iCiAgICAgICAgICAgIGZsZXggLT4gcmVzZXJ2ZV92YXVsdCAic2VuZCBjb2xsYXRlcmFsIgogICAgICAgICAgICBhdXRvbGF5b3V0CiAgICAgICAgfQogICAgICAgIHRoZW1lIGRlZmF1bHQKICAgIH0KICAgIAp9Cg=="
   },
   "configuration" : { },
   "model" : {
@@ -14,226 +14,210 @@
       "name" : "Nolus"
     },
     "people" : [ {
+      "id" : "33",
+      "tags" : "Element,Person",
+      "name" : "Admin",
+      "relationships" : [ {
+        "id" : "47",
+        "tags" : "Relationship",
+        "sourceId" : "33",
+        "destinationId" : "11",
+        "description" : "update whitelist"
+      }, {
+        "id" : "34",
+        "tags" : "Relationship",
+        "sourceId" : "33",
+        "destinationId" : "22",
+        "description" : "Uses"
+      }, {
+        "id" : "48",
+        "tags" : "Relationship",
+        "sourceId" : "33",
+        "destinationId" : "9",
+        "description" : "update whitelist"
+      }, {
+        "id" : "35",
+        "tags" : "Relationship",
+        "sourceId" : "33",
+        "destinationId" : "2",
+        "description" : "Uses"
+      } ],
+      "location" : "Internal"
+    }, {
       "id" : "1",
       "tags" : "Element,Person",
       "name" : "User",
       "relationships" : [ {
-        "id" : "36",
-        "tags" : "Relationship",
-        "sourceId" : "1",
-        "destinationId" : "21",
-        "description" : "Uses"
-      }, {
-        "id" : "39",
+        "id" : "43",
         "tags" : "Relationship",
         "sourceId" : "1",
         "destinationId" : "3",
         "description" : "send transaction"
       }, {
-        "id" : "38",
+        "id" : "56",
         "tags" : "Relationship",
         "sourceId" : "1",
-        "destinationId" : "5",
-        "description" : "send transaction"
+        "destinationId" : "9",
+        "description" : "sign contract(amount, down-payment) && deposit down-pay"
       }, {
-        "id" : "51",
+        "id" : "55",
         "tags" : "Relationship",
         "sourceId" : "1",
         "destinationId" : "10",
         "description" : "sign contract(amount, down-payment) && deposit down-pay"
       }, {
-        "id" : "37",
+        "id" : "40",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "22",
+        "description" : "Uses"
+      }, {
+        "id" : "41",
         "tags" : "Relationship",
         "sourceId" : "1",
         "destinationId" : "2",
         "description" : "Uses"
       }, {
-        "id" : "52",
+        "id" : "42",
         "tags" : "Relationship",
         "sourceId" : "1",
-        "destinationId" : "9",
-        "description" : "sign contract(amount, down-payment) && deposit down-pay"
+        "destinationId" : "5",
+        "description" : "send transaction"
       } ],
       "location" : "External"
-    }, {
-      "id" : "29",
-      "tags" : "Element,Person",
-      "name" : "Admin",
-      "relationships" : [ {
-        "id" : "30",
-        "tags" : "Relationship",
-        "sourceId" : "29",
-        "destinationId" : "21",
-        "description" : "Uses"
-      }, {
-        "id" : "44",
-        "tags" : "Relationship",
-        "sourceId" : "29",
-        "destinationId" : "9",
-        "description" : "update whitelist"
-      }, {
-        "id" : "31",
-        "tags" : "Relationship",
-        "sourceId" : "29",
-        "destinationId" : "2",
-        "description" : "Uses"
-      }, {
-        "id" : "43",
-        "tags" : "Relationship",
-        "sourceId" : "29",
-        "destinationId" : "11",
-        "description" : "update whitelist"
-      } ],
-      "location" : "Internal"
     } ],
     "softwareSystems" : [ {
+      "id" : "30",
+      "tags" : "Element,Software System",
+      "name" : "Cosmos IBC Relay",
+      "relationships" : [ {
+        "id" : "31",
+        "tags" : "Relationship",
+        "sourceId" : "30",
+        "destinationId" : "2",
+        "description" : "Relays-in"
+      } ],
+      "location" : "Internal"
+    }, {
       "id" : "2",
       "tags" : "Element,Software System",
       "name" : "Nolus",
       "relationships" : [ {
-        "id" : "28",
+        "id" : "32",
         "tags" : "Relationship",
         "sourceId" : "2",
-        "destinationId" : "26",
+        "destinationId" : "30",
         "description" : "Relays-out"
       }, {
-        "id" : "35",
+        "id" : "39",
         "tags" : "Relationship",
         "sourceId" : "2",
-        "destinationId" : "32",
+        "destinationId" : "36",
         "description" : "Fetch Data"
       } ],
       "location" : "Internal",
       "containers" : [ {
-        "id" : "23",
+        "id" : "24",
         "tags" : "Element,Container",
         "name" : "Oracle Operator",
         "relationships" : [ {
-          "id" : "48",
+          "id" : "28",
           "tags" : "Relationship",
-          "sourceId" : "23",
-          "destinationId" : "9",
-          "description" : "send observations"
+          "sourceId" : "24",
+          "destinationId" : "19",
+          "description" : "Price updates"
         }, {
-          "id" : "34",
+          "id" : "51",
           "tags" : "Relationship",
-          "sourceId" : "23",
-          "destinationId" : "32",
-          "description" : "Fetch Data"
-        }, {
-          "id" : "47",
-          "tags" : "Relationship",
-          "sourceId" : "23",
+          "sourceId" : "24",
           "destinationId" : "11",
           "description" : "send observations"
         }, {
-          "id" : "25",
+          "id" : "29",
           "tags" : "Relationship",
-          "sourceId" : "23",
+          "sourceId" : "24",
           "destinationId" : "18",
           "description" : "Price updates"
+        }, {
+          "id" : "52",
+          "tags" : "Relationship",
+          "sourceId" : "24",
+          "destinationId" : "9",
+          "description" : "send observations"
+        }, {
+          "id" : "38",
+          "tags" : "Relationship",
+          "sourceId" : "24",
+          "destinationId" : "36",
+          "description" : "Fetch Data"
         } ],
         "components" : [ {
-          "id" : "24",
+          "id" : "25",
           "tags" : "Element,Component",
           "name" : "Market Data Operator",
           "relationships" : [ {
-            "id" : "46",
+            "id" : "26",
             "tags" : "Relationship",
-            "sourceId" : "24",
-            "destinationId" : "9",
-            "description" : "send observations"
+            "sourceId" : "25",
+            "destinationId" : "19",
+            "description" : "Price updates"
           }, {
-            "id" : "45",
+            "id" : "49",
             "tags" : "Relationship",
-            "sourceId" : "24",
+            "sourceId" : "25",
             "destinationId" : "11",
             "description" : "send observations"
           }, {
-            "id" : "33",
+            "id" : "37",
             "tags" : "Relationship",
-            "sourceId" : "24",
-            "destinationId" : "32",
+            "sourceId" : "25",
+            "destinationId" : "36",
             "description" : "Fetch Data"
+          }, {
+            "id" : "27",
+            "tags" : "Relationship",
+            "sourceId" : "25",
+            "destinationId" : "18",
+            "description" : "Price updates"
+          }, {
+            "id" : "50",
+            "tags" : "Relationship",
+            "sourceId" : "25",
+            "destinationId" : "9",
+            "description" : "send observations"
           } ],
           "size" : 0
         } ]
       }, {
-        "id" : "21",
+        "id" : "22",
         "tags" : "Element,Container",
         "name" : "Web UI Client",
         "relationships" : [ {
-          "id" : "22",
+          "id" : "23",
           "tags" : "Relationship",
-          "sourceId" : "21",
+          "sourceId" : "22",
           "destinationId" : "18",
           "description" : "Queries, Transactions"
-        } ]
-      }, {
-        "id" : "18",
-        "tags" : "Element,Container",
-        "name" : "Application Server",
-        "relationships" : [ {
-          "id" : "19",
-          "tags" : "Relationship",
-          "sourceId" : "18",
-          "destinationId" : "3",
-          "description" : "Source Events"
-        }, {
-          "id" : "20",
-          "tags" : "Relationship",
-          "sourceId" : "18",
-          "destinationId" : "3",
-          "description" : "Forward Queries&Transactions"
         } ]
       }, {
         "id" : "3",
         "tags" : "Element,Container",
         "name" : "Cosmos App",
         "relationships" : [ {
-          "id" : "42",
-          "tags" : "Relationship",
-          "sourceId" : "3",
-          "destinationId" : "13",
-          "description" : "get Vault address"
-        }, {
           "id" : "15",
           "tags" : "Relationship",
           "sourceId" : "3",
           "destinationId" : "9",
           "description" : "Execute Trx messages"
+        }, {
+          "id" : "46",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "13",
+          "description" : "get Vault address"
         } ],
         "group" : "Validator/Sentry Node",
         "components" : [ {
-          "id" : "5",
-          "tags" : "Element,Component",
-          "name" : "Tax Agent",
-          "relationships" : [ {
-            "id" : "40",
-            "tags" : "Relationship",
-            "sourceId" : "5",
-            "destinationId" : "13",
-            "description" : "get Vault address"
-          }, {
-            "id" : "7",
-            "tags" : "Relationship",
-            "sourceId" : "5",
-            "destinationId" : "4",
-            "description" : "distribute the transaction gas"
-          }, {
-            "id" : "41",
-            "tags" : "Relationship",
-            "sourceId" : "5",
-            "destinationId" : "9",
-            "description" : "get Vault address"
-          } ],
-          "size" : 0
-        }, {
-          "id" : "4",
-          "tags" : "Element,Component",
-          "name" : "Bank",
-          "size" : 0
-        }, {
           "id" : "6",
           "tags" : "Element,Component",
           "name" : "Minter",
@@ -243,6 +227,35 @@
             "sourceId" : "6",
             "destinationId" : "4",
             "description" : "mint amount on each block"
+          } ],
+          "size" : 0
+        }, {
+          "id" : "4",
+          "tags" : "Element,Component",
+          "name" : "Bank",
+          "size" : 0
+        }, {
+          "id" : "5",
+          "tags" : "Element,Component",
+          "name" : "Tax Agent",
+          "relationships" : [ {
+            "id" : "44",
+            "tags" : "Relationship",
+            "sourceId" : "5",
+            "destinationId" : "13",
+            "description" : "get Vault address"
+          }, {
+            "id" : "45",
+            "tags" : "Relationship",
+            "sourceId" : "5",
+            "destinationId" : "9",
+            "description" : "get Vault address"
+          }, {
+            "id" : "7",
+            "tags" : "Relationship",
+            "sourceId" : "5",
+            "destinationId" : "4",
+            "description" : "distribute the transaction gas"
           } ],
           "size" : 0
         } ]
@@ -265,21 +278,20 @@
         } ],
         "group" : "Validator/Sentry Node",
         "components" : [ {
-          "id" : "11",
+          "id" : "13",
           "tags" : "Element,Component",
-          "name" : "Price Feed",
+          "name" : "Reserve Vault",
+          "size" : 0
+        }, {
+          "id" : "12",
+          "tags" : "Element,Component",
+          "name" : "Scheduler Data",
           "relationships" : [ {
-            "id" : "50",
+            "id" : "59",
             "tags" : "Relationship",
-            "sourceId" : "11",
+            "sourceId" : "12",
             "destinationId" : "10",
-            "description" : "notify when price goes up/down of a threshold"
-          }, {
-            "id" : "49",
-            "tags" : "Relationship",
-            "sourceId" : "11",
-            "destinationId" : "11",
-            "description" : "match msg sender address to whitelist"
+            "description" : "push end time period notification"
           } ],
           "size" : 0
         }, {
@@ -287,29 +299,17 @@
           "tags" : "Element,Component",
           "name" : "Flex",
           "relationships" : [ {
-            "id" : "54",
-            "tags" : "Relationship",
-            "sourceId" : "10",
-            "destinationId" : "13",
-            "description" : "send collateral"
-          }, {
-            "id" : "53",
+            "id" : "57",
             "tags" : "Relationship",
             "sourceId" : "10",
             "destinationId" : "14",
             "description" : "request loan"
-          } ],
-          "size" : 0
-        }, {
-          "id" : "12",
-          "tags" : "Element,Component",
-          "name" : "Scheduler Data",
-          "relationships" : [ {
-            "id" : "55",
+          }, {
+            "id" : "58",
             "tags" : "Relationship",
-            "sourceId" : "12",
-            "destinationId" : "10",
-            "description" : "push end time period notification"
+            "sourceId" : "10",
+            "destinationId" : "13",
+            "description" : "send collateral"
           } ],
           "size" : 0
         }, {
@@ -318,26 +318,50 @@
           "name" : "Loans Vault",
           "size" : 0
         }, {
-          "id" : "13",
+          "id" : "11",
           "tags" : "Element,Component",
-          "name" : "Reserve Vault",
+          "name" : "Price Feed",
+          "relationships" : [ {
+            "id" : "54",
+            "tags" : "Relationship",
+            "sourceId" : "11",
+            "destinationId" : "10",
+            "description" : "notify when price goes up/down of a threshold"
+          }, {
+            "id" : "53",
+            "tags" : "Relationship",
+            "sourceId" : "11",
+            "destinationId" : "11",
+            "description" : "match msg sender address to whitelist"
+          } ],
+          "size" : 0
+        } ]
+      }, {
+        "id" : "18",
+        "tags" : "Element,Container",
+        "name" : "Application Server",
+        "relationships" : [ {
+          "id" : "20",
+          "tags" : "Relationship",
+          "sourceId" : "18",
+          "destinationId" : "3",
+          "description" : "Source Events"
+        }, {
+          "id" : "21",
+          "tags" : "Relationship",
+          "sourceId" : "18",
+          "destinationId" : "3",
+          "description" : "Forward Queries&Transactions"
+        } ],
+        "components" : [ {
+          "id" : "19",
+          "tags" : "Element,Component",
+          "name" : "API Endpoint",
           "size" : 0
         } ]
       } ]
     }, {
-      "id" : "26",
-      "tags" : "Element,Software System",
-      "name" : "Cosmos IBC Relay",
-      "relationships" : [ {
-        "id" : "27",
-        "tags" : "Relationship",
-        "sourceId" : "26",
-        "destinationId" : "2",
-        "description" : "Relays-in"
-      } ],
-      "location" : "Internal"
-    }, {
-      "id" : "32",
+      "id" : "36",
       "tags" : "Element,Software System",
       "name" : "Market Data Aggregator",
       "location" : "External"
@@ -355,6 +379,10 @@
       },
       "enterpriseBoundaryVisible" : true,
       "elements" : [ {
+        "id" : "33",
+        "x" : 1615,
+        "y" : 70
+      }, {
         "id" : "1",
         "x" : 190,
         "y" : 555
@@ -363,36 +391,32 @@
         "x" : 995,
         "y" : 595
       }, {
-        "id" : "26",
-        "x" : 1710,
-        "y" : 890
-      }, {
-        "id" : "29",
-        "x" : 1615,
-        "y" : 70
-      }, {
-        "id" : "32",
+        "id" : "36",
         "x" : 1010,
         "y" : 1395
+      }, {
+        "id" : "30",
+        "x" : 1710,
+        "y" : 890
       } ],
       "relationships" : [ {
-        "id" : "28",
+        "id" : "41"
+      }, {
+        "id" : "35"
+      }, {
+        "id" : "32",
         "vertices" : [ {
           "x" : 1600,
           "y" : 860
         } ]
       }, {
-        "id" : "27",
+        "id" : "31",
         "vertices" : [ {
           "x" : 1535,
           "y" : 1055
         } ]
       }, {
-        "id" : "37"
-      }, {
-        "id" : "35"
-      }, {
-        "id" : "31"
+        "id" : "39"
       } ]
     } ],
     "containerViews" : [ {
@@ -404,39 +428,41 @@
       },
       "externalSoftwareSystemBoundariesVisible" : true,
       "elements" : [ {
-        "id" : "23",
-        "x" : 820,
-        "y" : 1685
+        "id" : "22",
+        "x" : 990,
+        "y" : 780
+      }, {
+        "id" : "33",
+        "x" : 1330,
+        "y" : 110
       }, {
         "id" : "1",
         "x" : 625,
         "y" : 100
       }, {
+        "id" : "24",
+        "x" : 820,
+        "y" : 1685
+      }, {
         "id" : "3",
         "x" : 270,
         "y" : 1285
+      }, {
+        "id" : "36",
+        "x" : 1340,
+        "y" : 2215
       }, {
         "id" : "18",
         "x" : 1320,
         "y" : 1240
       }, {
-        "id" : "29",
-        "x" : 1330,
-        "y" : 110
-      }, {
         "id" : "9",
         "x" : 240,
         "y" : 705
-      }, {
-        "id" : "32",
-        "x" : 1340,
-        "y" : 2215
-      }, {
-        "id" : "21",
-        "x" : 990,
-        "y" : 780
       } ],
       "relationships" : [ {
+        "id" : "29"
+      }, {
         "id" : "17",
         "vertices" : [ {
           "x" : 490,
@@ -455,27 +481,25 @@
           "y" : 1230
         } ]
       }, {
-        "id" : "25"
+        "id" : "40"
       }, {
-        "id" : "36"
+        "id" : "23"
       }, {
         "id" : "34"
       }, {
-        "id" : "22"
-      }, {
-        "id" : "20",
+        "id" : "21",
         "vertices" : [ {
           "x" : 1230,
           "y" : 1385
         } ]
       }, {
-        "id" : "30"
-      }, {
-        "id" : "19",
+        "id" : "20",
         "vertices" : [ {
           "x" : 1075,
           "y" : 1545
         } ]
+      }, {
+        "id" : "38"
       } ]
     } ],
     "componentViews" : [ {
@@ -485,19 +509,52 @@
         "width" : 2480,
         "height" : 1748
       },
-      "containerId" : "23",
+      "containerId" : "24",
       "externalContainerBoundariesVisible" : true,
       "elements" : [ {
-        "id" : "24",
-        "x" : 725,
-        "y" : 580
+        "id" : "25",
+        "x" : 680,
+        "y" : 330
       }, {
-        "id" : "32",
-        "x" : 1745,
-        "y" : 570
+        "id" : "36",
+        "x" : 1700,
+        "y" : 320
+      }, {
+        "id" : "18",
+        "x" : 690,
+        "y" : 970
       } ],
       "relationships" : [ {
-        "id" : "33"
+        "id" : "27"
+      }, {
+        "id" : "37"
+      } ]
+    }, {
+      "key" : "Nolus-CosmosApp-Component",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "containerId" : "3",
+      "externalContainerBoundariesVisible" : true,
+      "elements" : [ {
+        "id" : "4",
+        "x" : 1000,
+        "y" : 990
+      }, {
+        "id" : "5",
+        "x" : 500,
+        "y" : 420
+      }, {
+        "id" : "6",
+        "x" : 1435,
+        "y" : 435
+      } ],
+      "relationships" : [ {
+        "id" : "7"
+      }, {
+        "id" : "8"
       } ]
     }, {
       "key" : "Nolus-SmartContracts-Component",
@@ -529,120 +586,8 @@
         "x" : 1590,
         "y" : 690
       } ]
-    }, {
-      "key" : "Nolus-CosmosApp-Component",
-      "paperSize" : "A5_Landscape",
-      "dimensions" : {
-        "width" : 2480,
-        "height" : 1748
-      },
-      "containerId" : "3",
-      "externalContainerBoundariesVisible" : true,
-      "elements" : [ {
-        "id" : "4",
-        "x" : 1000,
-        "y" : 990
-      }, {
-        "id" : "5",
-        "x" : 500,
-        "y" : 420
-      }, {
-        "id" : "6",
-        "x" : 1435,
-        "y" : 435
-      } ],
-      "relationships" : [ {
-        "id" : "7"
-      }, {
-        "id" : "8"
-      } ]
     } ],
     "dynamicViews" : [ {
-      "description" : "all",
-      "key" : "case0",
-      "automaticLayout" : {
-        "implementation" : "Graphviz",
-        "rankDirection" : "TopBottom",
-        "rankSeparation" : 300,
-        "nodeSeparation" : 300,
-        "edgeSeparation" : 0,
-        "vertices" : false
-      },
-      "title" : "Flex successful close",
-      "elementId" : "9",
-      "externalBoundariesVisible" : true,
-      "relationships" : [ {
-        "id" : "51",
-        "description" : "sign contract(amount, down-payment) && deposit down-pay",
-        "order" : "1",
-        "response" : false
-      }, {
-        "id" : "50",
-        "description" : "get currency price",
-        "order" : "2",
-        "response" : true
-      }, {
-        "id" : "53",
-        "description" : "request loan",
-        "order" : "3",
-        "response" : false
-      }, {
-        "id" : "53",
-        "description" : "send amount/promise",
-        "order" : "4",
-        "response" : true
-      }, {
-        "id" : "51",
-        "description" : "repay one or more times until pay-off the total",
-        "order" : "5",
-        "response" : false
-      }, {
-        "id" : "51",
-        "description" : "transfer ownership",
-        "order" : "6",
-        "response" : true
-      }, {
-        "id" : "54",
-        "description" : "send collateral",
-        "order" : "7",
-        "response" : false
-      }, {
-        "id" : "50",
-        "description" : "push price update",
-        "order" : "8",
-        "response" : false
-      }, {
-        "id" : "55",
-        "description" : "push end time period notification",
-        "order" : "9",
-        "response" : false
-      } ],
-      "elements" : [ {
-        "id" : "11",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "1",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "12",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "13",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "14",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "10",
-        "x" : 0,
-        "y" : 0
-      } ]
-    }, {
       "description" : "loan payment in a single epoch",
       "key" : "case1",
       "automaticLayout" : {
@@ -657,32 +602,32 @@
       "elementId" : "9",
       "externalBoundariesVisible" : true,
       "relationships" : [ {
-        "id" : "51",
+        "id" : "55",
         "description" : "sign contract(amount, down-payment) && deposit down-pay",
         "order" : "1",
         "response" : false
       }, {
-        "id" : "50",
+        "id" : "54",
         "description" : "get currency price",
         "order" : "2",
         "response" : true
       }, {
-        "id" : "53",
+        "id" : "57",
         "description" : "request loan",
         "order" : "3",
         "response" : false
       }, {
-        "id" : "53",
+        "id" : "57",
         "description" : "send amount/promise",
         "order" : "4",
         "response" : true
       }, {
-        "id" : "51",
+        "id" : "55",
         "description" : "repay one or more times until pay-off the total",
         "order" : "5",
         "response" : false
       }, {
-        "id" : "51",
+        "id" : "55",
         "description" : "transfer ownership",
         "order" : "6",
         "response" : true
@@ -703,82 +648,6 @@
         "id" : "10",
         "x" : 0,
         "y" : 0
-      } ]
-    }, {
-      "key" : "oracle_msgs",
-      "paperSize" : "A5_Landscape",
-      "dimensions" : {
-        "width" : 2480,
-        "height" : 1748
-      },
-      "title" : "Price Feeds",
-      "elementId" : "9",
-      "externalBoundariesVisible" : true,
-      "relationships" : [ {
-        "id" : "43",
-        "description" : "update whitelist",
-        "order" : "1",
-        "response" : false
-      }, {
-        "id" : "33",
-        "description" : "poll observations",
-        "order" : "2",
-        "response" : false
-      }, {
-        "id" : "45",
-        "description" : "send observations",
-        "order" : "3",
-        "response" : false
-      }, {
-        "id" : "49",
-        "description" : "match msg sender address to whitelist",
-        "order" : "4",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1170,
-          "y" : 620
-        }, {
-          "x" : 1490,
-          "y" : 700
-        } ]
-      }, {
-        "id" : "49",
-        "description" : "aggregate observations into price feeds",
-        "order" : "5",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1085,
-          "y" : 1580
-        }, {
-          "x" : 1430,
-          "y" : 1485
-        } ]
-      }, {
-        "id" : "50",
-        "description" : "notify when price goes up/down of a threshold",
-        "order" : "6",
-        "response" : false
-      } ],
-      "elements" : [ {
-        "id" : "11",
-        "x" : 780,
-        "y" : 895
-      }, {
-        "id" : "24",
-        "x" : 780,
-        "y" : 35
-      }, {
-        "id" : "29",
-        "x" : 110,
-        "y" : 400
-      }, {
-        "id" : "32",
-        "x" : 1695,
-        "y" : 35
-      }, {
-        "id" : "10",
-        "x" : 1695,
-        "y" : 895
       } ]
     }, {
       "description" : "update loans via oracles",
@@ -795,17 +664,17 @@
       "elementId" : "9",
       "externalBoundariesVisible" : true,
       "relationships" : [ {
-        "id" : "50",
+        "id" : "54",
         "description" : "push price update",
         "order" : "1",
         "response" : false
       }, {
-        "id" : "55",
+        "id" : "59",
         "description" : "push end time period notification",
         "order" : "2",
         "response" : false
       }, {
-        "id" : "54",
+        "id" : "58",
         "description" : "send collateral",
         "order" : "3",
         "response" : false
@@ -838,12 +707,12 @@
       "elementId" : "3",
       "externalBoundariesVisible" : true,
       "relationships" : [ {
-        "id" : "38",
+        "id" : "42",
         "description" : "send transaction",
         "order" : "1",
         "response" : false
       }, {
-        "id" : "40",
+        "id" : "44",
         "description" : "get Vault address",
         "order" : "2",
         "response" : false
@@ -892,13 +761,174 @@
         "x" : 1630,
         "y" : 810
       } ]
+    }, {
+      "key" : "oracle_msgs",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "title" : "Price Feeds",
+      "elementId" : "9",
+      "externalBoundariesVisible" : true,
+      "relationships" : [ {
+        "id" : "47",
+        "description" : "update whitelist",
+        "order" : "1",
+        "response" : false
+      }, {
+        "id" : "37",
+        "description" : "poll observations",
+        "order" : "2",
+        "response" : false
+      }, {
+        "id" : "49",
+        "description" : "send observations",
+        "order" : "3",
+        "response" : false
+      }, {
+        "id" : "53",
+        "description" : "match msg sender address to whitelist",
+        "order" : "4",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1170,
+          "y" : 620
+        }, {
+          "x" : 1490,
+          "y" : 700
+        } ]
+      }, {
+        "id" : "53",
+        "description" : "aggregate observations into price feeds",
+        "order" : "5",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1085,
+          "y" : 1580
+        }, {
+          "x" : 1430,
+          "y" : 1485
+        } ]
+      }, {
+        "id" : "54",
+        "description" : "notify when price goes up/down of a threshold",
+        "order" : "6",
+        "response" : false
+      } ],
+      "elements" : [ {
+        "id" : "33",
+        "x" : 110,
+        "y" : 400
+      }, {
+        "id" : "11",
+        "x" : 780,
+        "y" : 895
+      }, {
+        "id" : "25",
+        "x" : 780,
+        "y" : 35
+      }, {
+        "id" : "36",
+        "x" : 1695,
+        "y" : 35
+      }, {
+        "id" : "10",
+        "x" : 1695,
+        "y" : 895
+      } ]
+    }, {
+      "description" : "all",
+      "key" : "case0",
+      "automaticLayout" : {
+        "implementation" : "Graphviz",
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "nodeSeparation" : 300,
+        "edgeSeparation" : 0,
+        "vertices" : false
+      },
+      "title" : "Flex successful close",
+      "elementId" : "9",
+      "externalBoundariesVisible" : true,
+      "relationships" : [ {
+        "id" : "55",
+        "description" : "sign contract(amount, down-payment) && deposit down-pay",
+        "order" : "1",
+        "response" : false
+      }, {
+        "id" : "54",
+        "description" : "get currency price",
+        "order" : "2",
+        "response" : true
+      }, {
+        "id" : "57",
+        "description" : "request loan",
+        "order" : "3",
+        "response" : false
+      }, {
+        "id" : "57",
+        "description" : "send amount/promise",
+        "order" : "4",
+        "response" : true
+      }, {
+        "id" : "55",
+        "description" : "repay one or more times until pay-off the total",
+        "order" : "5",
+        "response" : false
+      }, {
+        "id" : "55",
+        "description" : "transfer ownership",
+        "order" : "6",
+        "response" : true
+      }, {
+        "id" : "58",
+        "description" : "send collateral",
+        "order" : "7",
+        "response" : false
+      }, {
+        "id" : "54",
+        "description" : "push price update",
+        "order" : "8",
+        "response" : false
+      }, {
+        "id" : "59",
+        "description" : "push end time period notification",
+        "order" : "9",
+        "response" : false
+      } ],
+      "elements" : [ {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      } ]
     } ],
     "configuration" : {
       "branding" : { },
       "styles" : { },
       "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ],
       "terminology" : { },
-      "lastSavedView" : "oracle_msgs"
+      "lastSavedView" : "Nolus-OracleOperator-Component"
     }
   }
 }
