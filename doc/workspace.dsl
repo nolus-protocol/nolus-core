@@ -17,7 +17,7 @@ workspace {
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
                         price_feed = component "Price Feed"
-                        scheduler_data = component "Scheduler Data"
+                        timer = component "Timer"
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
                     }
@@ -115,7 +115,7 @@ workspace {
             flex -> user "transfer ownership"
             flex -> reserve_vault "send collateral"
             price_feed -> flex "push price update"
-            scheduler_data -> flex "push end time period notification"
+            timer -> flex "push time update"
             autolayout
         }
 
@@ -133,7 +133,7 @@ workspace {
         dynamic contracts "case2" "update loans via oracles" {
             title "Update loans via oracles"
             price_feed -> flex "push price update"
-            scheduler_data -> flex "push end time period notification"
+            timer -> flex "push time update"
             flex -> reserve_vault "send collateral"
             autolayout
         }
