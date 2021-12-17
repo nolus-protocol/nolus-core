@@ -94,18 +94,20 @@ workspace {
 
         dynamic contracts oracle_msgs {
             title "Price Feeds"
-            admin -> price_feed "update whitelist"
+
+            admin -> price_feed "manage supported price pairs"
+            admin -> price_feed "manage whitelisted operators"
 
             market_data_operator -> market_data_aggregator "poll observations"
             market_data_operator -> price_feed "send observations"
             price_feed -> price_feed "match msg sender address to whitelist"
-            price_feed -> price_feed "aggregate observations into price feeds"
-            price_feed -> flex "notify when price goes up/down of a threshold"
+            price_feed -> price_feed "update a price pair when aggregated observations pass % but not later than a delta t"
+            price_feed -> flex "push price update"
         }
 
         dynamic contracts "case0" "all" {
             title "Flex successful close"
-            user -> flex "sign contract(amount, down-payment) && deposit down-pay"
+            user -> flex "sign contract(amount, down-payment) && deposit down-payment"
             flex -> price_feed "get currency price"
             flex -> loans_vault "request loan"
             loans_vault -> flex "send amount/promise"
