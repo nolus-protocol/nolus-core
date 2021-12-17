@@ -21,8 +21,10 @@ variables:
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
 
   NOLUS_NODE_REPO: "node"
-  NOLUS_NODE_TAG: "0.1"
+  NOLUS_NODE_TAG: "latest"
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
+
+  NOLUS_NODE_PROD_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${PROD_VERSION}"
 
   NOLUS_INTEGRATION_REPO: "integration"
   NOLUS_INTEGRATION_TAG: "0.11"
@@ -76,10 +78,20 @@ build-binary:
   extends:
     - .go-build
   script:
-    - make build
+    - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
   artifacts:
     paths:
       - target/release
+
+
+tag-prod-branch:
+  stage: build
+  script:
+    - git tag -a "$PROD_VERSION" -m "Version created by gitlab-ci Build"
+    - git push --tags
+  rules:
+    - if:  $PROD_BUILD == "true"
+      when: on_success
 
 build-image:
   stage: build
@@ -89,6 +101,10 @@ build-image:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
+  rules:
+    - if:  $PROD_BUILD == "true"
+      variables:
+        KANIKO_IMAGE: ${NOLUS_NODE_PROD_IMAGE}
 
 build-integration:
   stage: build
