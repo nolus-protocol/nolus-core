@@ -90,10 +90,11 @@ workspace {
             minter -> bank "[on block end] send newly minted coins to the Collector address"
         }
 
-        dynamic cosmosapp oracle_msgs {
+        dynamic contracts oracle_msgs {
             title "Price Feeds"
             admin -> price_feed "update whitelist"
 
+            market_data_operator -> market_data_aggregator "poll observations"
             market_data_operator -> price_feed "send observations"
             price_feed -> price_feed "match msg sender address to whitelist"
             price_feed -> price_feed "aggregate observations into price feeds"
