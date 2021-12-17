@@ -107,34 +107,22 @@ workspace {
 
         dynamic contracts "case0" "all" {
             title "Flex successful close"
-            user -> flex "sign contract(amount, down-payment) && deposit down-payment"
+            user -> flex "sign contract(A: amount, D: down-payment) && deposit down-payment D"
             flex -> price_feed "get currency price"
-            flex -> loans_vault "request loan"
-            loans_vault -> flex "send amount/promise"
-            user -> flex "repay one or more times until pay-off the total"
-            flex -> user "transfer ownership"
-            flex -> reserve_vault "send collateral"
+            flex -> loans_vault "request loan (A-D)"
+            loans_vault -> flex "send amount (A-D)"
             price_feed -> flex "push price update"
             timer -> flex "push time update"
-            autolayout
+            user -> flex "repay one or more times until pay-off the total of (A-D+I)"
+            flex -> reserve_vault "forward payments total (A-D+I)"
+            flex -> user "transfer ownership of A"
         }
 
-        dynamic contracts "case1" "loan payment in a single epoch" {
-            title "Loan payment in a single epoch"
-            user -> flex "sign contract(amount, down-payment) && deposit down-pay"
-            flex -> price_feed "get currency price"
-            flex -> loans_vault "request loan"
-            loans_vault -> flex "send amount/promise"
-            user -> flex "repay one or more times until pay-off the total"
-            flex -> user "transfer ownership"
-            autolayout
-        }
-
-        dynamic contracts "case2" "update loans via oracles" {
-            title "Update loans via oracles"
+        dynamic contracts "case1" "Flex liquidation" {
+            title "Flex liquidation"
             price_feed -> flex "push price update"
             timer -> flex "push time update"
-            flex -> reserve_vault "send collateral"
+            flex -> reserve_vault "send the total amount A"
             autolayout
         }
         theme default
