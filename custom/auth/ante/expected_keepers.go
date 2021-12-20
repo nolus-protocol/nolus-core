@@ -16,5 +16,5 @@ type AccountKeeper interface {
 }
 
 type SuspendKeeper interface {
-	IsNodeSuspend(ctx sdk.Context) (suspend types2.MsgChangeSuspend)
+	GetState(ctx sdk.Context) (state types2.SuspendedState)
 }

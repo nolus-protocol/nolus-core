@@ -8,22 +8,22 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/sample"
 )
 
-func TestMsgChangeSuspend_ValidateBasic(t *testing.T) {
+func TestMsgChangeSuspended_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgChangeSuspend
+		msg  MsgChangeSuspended
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgChangeSuspend{
-				Creator: "invalid_address",
+			msg: MsgChangeSuspended{
+				FromAddress: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgChangeSuspend{
-				Creator: sample.AccAddress(),
+			msg: MsgChangeSuspended{
+				FromAddress: sample.AccAddress(),
 			},
 		},
 	}

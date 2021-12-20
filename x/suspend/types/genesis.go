@@ -1,25 +1,18 @@
 package types
 
-// DefaultIndex is the default capability global index
-const DefaultIndex uint64 = 1
-
-func NewGenesis(suspend bool, blockHeight int64, adminKey string) *GenesisState {
+func NewGenesisState(suspendState SuspendedState) *GenesisState {
 	return &GenesisState{
-		Suspend:     suspend,
-		BlockHeight: blockHeight,
-		AdminKey:    adminKey,
+		State: suspendState,
 	}
 }
 
-// DefaultGenesis returns the default Capability genesis state
-func DefaultGenesis() *GenesisState {
-	return &GenesisState{
-		// this line is used by starport scaffolding # genesis/types/default
-	}
+// DefaultGenesisState returns the default Capability genesis state
+func DefaultGenesisState() *GenesisState {
+	return NewGenesisState(DefaultSuspendedState())
 }
 
 // Validate performs basic genesis state validation returning an error upon any
 // failure.
-func (gs GenesisState) Validate() error {
-	return nil
+func (m GenesisState) Validate() error {
+	return m.State.Validate()
 }

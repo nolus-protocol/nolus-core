@@ -2,8 +2,8 @@ package cli
 
 import (
 	"fmt"
-
 	"github.com/cosmos/cosmos-sdk/client/flags"
+
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 
 	// "strings"
@@ -34,8 +34,8 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 
 func QueryGetSuspendCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get",
-		Short: "Query the current suspend value",
+		Use:   "state",
+		Short: "Query the current suspended state",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
@@ -46,7 +46,7 @@ func QueryGetSuspendCmd() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 			params := &types.QuerySuspendRequest{}
-			res, err := queryClient.Suspend(cmd.Context(), params)
+			res, err := queryClient.SuspendedState(cmd.Context(), params)
 
 			if err != nil {
 				return err

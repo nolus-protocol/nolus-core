@@ -2,7 +2,8 @@ package keeper
 
 import (
 	"fmt"
-	types2 "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 
 	"github.com/tendermint/tendermint/libs/log"
 
@@ -31,45 +32,41 @@ func NewKeeper(
 	}
 }
 
-// GetParams todo split to multiple methods
-func (k Keeper) GetParams(ctx sdk.Context) (state types2.GenesisState) {
+func (k Keeper) SetState(ctx sdk.Context, state types.SuspendedState) {
 	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types2.GenesisStateKey)
-	if b == nil {
-		panic("suspend stored state must not have been nil")
+	b := k.cdc.MustMarshal(&state)
+	store.Set(types.SuspendStateKey, b)
+}
+
+func (k Keeper) ChangeSuspendedState(ctx sdk.Context, msg *types.MsgChangeSuspended) error {
+	state := k.GetState(ctx)
+	if len(state.AdminAddress) == 0 {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "No admin address is set")
 	}
-
-	k.cdc.MustUnmarshal(b, &state)
-	return
+	adminAcc, err := sdk.AccAddressFromBech32(state.AdminAddress)
+	if err != nil {
+		return err
+	}
+	fromAcc, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	if err != nil {
+		return err
+	}
+	if !adminAcc.Equals(fromAcc) {
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to change suspended state", msg.FromAddress)
+	}
+	state.Suspended = msg.Suspended
+	state.BlockHeight = msg.BlockHeight
+	k.SetState(ctx, state)
+	return nil
 }
 
-func (k Keeper) AddProceeds(ctx sdk.Context, delta bool) {
-	genState := k.GetParams(ctx)
-	genState.Suspend = delta
-	k.Logger(ctx).Info(fmt.Sprintf("New Suspend proceeds state: %s", genState.Suspend))
-	k.SetParams(ctx, genState)
-}
-
-// SetParams stores the genesis state. Needs a refactor to store parameters as separate values
-func (k Keeper) SetParams(ctx sdk.Context, genState types2.GenesisState) {
+func (k Keeper) GetState(ctx sdk.Context) (suspend types.SuspendedState) {
 	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(&genState)
-	store.Set(types2.GenesisStateKey, b)
-}
-
-func (k Keeper) SetNodeSuspend(ctx sdk.Context, msgChange *types2.MsgChangeSuspend) {
-	store := ctx.KVStore(k.storeKey)
-	b := k.cdc.MustMarshal(msgChange)
-	store.Set(types2.SuspendStateKey, b)
-}
-
-func (k Keeper) IsNodeSuspend(ctx sdk.Context) (suspend types2.MsgChangeSuspend) {
-	store := ctx.KVStore(k.storeKey)
-	b := store.Get(types2.SuspendStateKey)
+	b := store.Get(types.SuspendStateKey)
 	k.cdc.MustUnmarshal(b, &suspend)
 	return suspend
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types2.ModuleName))
+	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }

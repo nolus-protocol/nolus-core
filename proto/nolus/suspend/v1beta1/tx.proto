@@ -7,17 +7,17 @@ option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
 
 // Msg defines the Msg service.
 service Msg {
-      rpc ChangeSuspend(MsgChangeSuspend) returns (MsgChangeSuspendResponse);
+      rpc ChangeSuspended(MsgChangeSuspended) returns (MsgChangeSuspendedResponse);
 // this line is used by starport scaffolding # proto/tx/rpc
 }
 
-message MsgChangeSuspend {
+message MsgChangeSuspended {
   string from_address = 1;
-  bool suspend = 2;
+  bool suspended = 2;
   int64 block_height = 3;
 }
 
-message MsgChangeSuspendResponse {
+message MsgChangeSuspendedResponse {
 }
 
 // this line is used by starport scaffolding # proto/tx/message

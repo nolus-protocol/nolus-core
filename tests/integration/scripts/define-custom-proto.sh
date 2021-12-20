@@ -18,6 +18,9 @@ protoc \
   --proto_path="$THIRD_PARTY_PROTO_DIR" \
   --ts_proto_opt="esModuleInterop=true,forceLong=long,useOptionals=messages" \
   "$COSMOS_PROTO_DIR/cosmos/vesting/v1beta1/tx.proto" \
+  "$NOLUS_PROTO_DIR/nolus/suspend/v1beta1/suspend.proto" \
+  "$NOLUS_PROTO_DIR/nolus/suspend/v1beta1/tx.proto" \
+  "$NOLUS_PROTO_DIR/nolus/suspend/v1beta1/query.proto"
 
 # Remove unnecessary codec files
 rm -rf \

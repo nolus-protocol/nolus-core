@@ -18,8 +18,8 @@ msgServer := keeper.NewMsgServerImpl(k)
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 
 		switch msg := msg.(type) {
-		case *types.MsgChangeSuspend:
-					res, err := msgServer.ChangeSuspend(sdk.WrapSDKContext(ctx), msg)
+		case *types.MsgChangeSuspended:
+					res, err := msgServer.ChangeSuspended(sdk.WrapSDKContext(ctx), msg)
 					return sdk.WrapServiceResult(ctx, res, err)
 // this line is used by starport scaffolding # 1
 		default:

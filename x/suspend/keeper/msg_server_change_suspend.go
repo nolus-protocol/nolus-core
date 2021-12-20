@@ -7,17 +7,12 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
-func (k msgServer) ChangeSuspend(goCtx context.Context, msg *types.MsgChangeSuspend) (*types.MsgChangeSuspendResponse, error) {
+func (k msgServer) ChangeSuspended(goCtx context.Context, msg *types.MsgChangeSuspended) (*types.MsgChangeSuspendedResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	//TODO if message is send from not admin account
-	if msg.Creator != msg.AdminKey {
-		return nil, goCtx.Err("")
+	err := k.ChangeSuspendedState(ctx, msg)
+	if err != nil {
+		return nil, err
 	}
 
-	k.SetNodeSuspend(ctx, msg)
-	// TODO: Handling the message
-	_ = ctx
-
-	return &types.MsgChangeSuspendResponse{}, nil
+	return &types.MsgChangeSuspendedResponse{}, nil
 }

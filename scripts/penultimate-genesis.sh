@@ -48,6 +48,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --suspend-admin)
+    SUSPEND_ADMIN="$2"
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -58,7 +63,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option

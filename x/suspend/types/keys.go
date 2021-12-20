@@ -20,9 +20,7 @@ const (
 )
 
 var (
-	// Keys for store prefixes
-	GenesisStateKey = []byte{0x01} // a key for the genesis state
-	SuspendStateKey = []byte{0x02}
+	SuspendStateKey = []byte{0x01}
 )
 
 

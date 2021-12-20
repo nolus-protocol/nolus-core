@@ -16,6 +16,7 @@ import {fromSeed} from "bip32";
 
 let validatorPrivKey = fromHex(process.env.VALIDATOR_PRIV_KEY as string);
 let periodicPrivKey = fromHex(process.env.PERIODIC_PRIV_KEY as string);
+let genUser1PrivKey = fromHex(process.env.GEN_USR_1_PRIV_KEY as string);
 let user1PrivKey = fromHex(process.env.USR_1_PRIV_KEY as string);
 let user2PrivKey = fromHex(process.env.USR_2_PRIV_KEY as string);
 let delayedVestingPrivKey = fromHex(process.env.DELAYED_VESTING_PRIV_KEY as string);
@@ -56,6 +57,14 @@ export async function getPeriodicWallet(): Promise<DirectSecp256k1Wallet> {
 
 export async function getPeriodicClient(): Promise<SigningCosmWasmClient> {
     return await getClientWithKey(periodicPrivKey);
+}
+
+export async function getGenesisUser1Wallet(): Promise<DirectSecp256k1Wallet> {
+    return await getWallet(genUser1PrivKey);
+}
+
+export async function getGenesisUser1Client(): Promise<SigningCosmWasmClient> {
+    return getClientWithKey(genUser1PrivKey)
 }
 
 export async function getUser2Wallet(): Promise<DirectSecp256k1Wallet> {
@@ -108,6 +117,8 @@ function getSignerOptions(): SigningCosmWasmClientOptions {
         ["/cosmwasm.wasm.v1.MsgInstantiateContract", MsgInstantiateContract],
         ["/cosmwasm.wasm.v1.MsgUpdateAdmin", MsgUpdateAdmin],
         [`/${vestingPackage}.MsgCreateVestingAccount`, MsgCreateVestingAccount],
+        [`/${protobufPackage}.MsgChangeSuspended`, MsgChangeSuspended],
+        [`/${protobufPackage}.QuerySuspendRequest`, QuerySuspendRequest],
     ]);
     return {registry: customRegistry}
 }
