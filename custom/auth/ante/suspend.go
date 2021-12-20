@@ -3,7 +3,7 @@ package ante
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	type2 "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
+	suspendTypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
 type NolusSuspendDecorator struct {
@@ -25,14 +25,14 @@ func (nsd NolusSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	if state.Suspended && (state.BlockHeight == 0 || ctx.BlockHeight() > state.BlockHeight) {
 		includesSuspend := false
 		for _, msg := range tx.GetMsgs() {
-			if _, ok := msg.(*type2.MsgChangeSuspended); ok {
+			if _, ok := msg.(*suspendTypes.MsgChangeSuspended); ok {
 				includesSuspend = true
 			}
 		}
 		if includesSuspend {
 			return next(ctx, tx, simulate)
 		} else {
-			return ctx, sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "node is suspended")
+			return ctx, sdkerrors.Wrap(suspendTypes.ErrSuspended, "unauthorized")
 		}
 	}
 	return next(ctx, tx, simulate)

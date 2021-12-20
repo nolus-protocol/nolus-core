@@ -8,6 +8,6 @@ import (
 
 // x/suspend module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "The node is suspended!!!")
+	ErrSuspended = sdkerrors.Register(ModuleName, 1100, "node is suspended")
 
 )

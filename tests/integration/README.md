@@ -15,4 +15,6 @@ This script will spin a new blockchain on your local machine and run all integra
 
 Same as above, but the script will pass the extra -t argument to `jest`, which tells it to only run the specified test.
 
-## Add proto file encoding
+## Add proto file codec
+
+In order to send custom proto queries/transactions, you have to reference their respective proto files in the `./scripts/define-custom-proto.sh`  script. Then run the job `npm run setup-proto`, which generates proto codes in `src/util/codec`. Finally, add the codecs to the custom registry in `clients.ts`. 

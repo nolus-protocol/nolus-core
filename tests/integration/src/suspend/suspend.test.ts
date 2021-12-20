@@ -17,7 +17,7 @@ import {isBroadcastTxFailure} from "@cosmjs/stargate";
 
 
 describe("suspend module", () => {
-    const DUMMY_TRANFER_MSG = [{denom: "unolus", "amount": "1"}];
+    const DUMMY_TRANSFER_MSG = [{denom: "unolus", "amount": "1"}];
     let validatorClient: SigningCosmWasmClient;
     let validatorAccount: AccountData
     let genUserClient: SigningCosmWasmClient;
@@ -61,8 +61,8 @@ describe("suspend module", () => {
             const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, currentHeight + 1);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            const broadcast = () => validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANFER_MSG, DEFAULT_FEE)
-            await expect(broadcast).rejects.toThrow(/^.*node is suspended: unauthorized$/)
+            const broadcast = () => validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
+            await expect(broadcast).rejects.toThrow(/^.*unauthorized: node is suspended/)
         })
 
         test("when suspended but height is not reached then other transactions are authorized", async () => {
@@ -70,7 +70,7 @@ describe("suspend module", () => {
             const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, currentHeight + 1000);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            const result = await validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANFER_MSG, DEFAULT_FEE)
+            const result = await validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
             expect(isBroadcastTxFailure(result)).toBeFalsy()
         })
 
@@ -129,8 +129,8 @@ describe("suspend module", () => {
             const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, 0);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            const broadcast = () => genUserClient.sendTokens(genUserAccount.address, validatorAccount.address, DUMMY_TRANFER_MSG, DEFAULT_FEE)
-            await expect(broadcast).rejects.toThrow(/^.*node is suspended: unauthorized$/)
+            const broadcast = () => genUserClient.sendTokens(genUserAccount.address, validatorAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
+            await expect(broadcast).rejects.toThrow(/^.*unauthorized: node is suspended$/)
         })
 
         test("when suspended cannot bypass it by sending multiple messages including MsgChangeSuspend", async () => {
@@ -167,7 +167,7 @@ describe("suspend module", () => {
             value: {
                 fromAddress: fromAddress.address,
                 toAddress: toAddress.address,
-                amount: DUMMY_TRANFER_MSG
+                amount: DUMMY_TRANSFER_MSG
             }
         };
     }

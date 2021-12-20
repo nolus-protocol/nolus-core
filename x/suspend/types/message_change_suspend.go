@@ -10,7 +10,7 @@ var _ sdk.Msg = &MsgChangeSuspended{}
 func NewMsgChangeSuspended(fromAddress string, suspended bool, blockHeight int64) *MsgChangeSuspended {
 	return &MsgChangeSuspended{
 		FromAddress: fromAddress,
-		Suspended:     suspended,
+		Suspended:   suspended,
 		BlockHeight: blockHeight,
 	}
 }

@@ -2,17 +2,10 @@ package cli
 
 import (
 	"fmt"
-	"github.com/cosmos/cosmos-sdk/client/flags"
-
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
-
-	// "strings"
-
-	"github.com/spf13/cobra"
-
 	"github.com/cosmos/cosmos-sdk/client"
-	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/client/flags"
+	"github.com/spf13/cobra"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module
@@ -26,7 +19,6 @@ func GetQueryCmd(queryRoute string) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	// this line is used by starport scaffolding # 1
-
 	cmd.AddCommand(QueryGetSuspendCmd())
 
 	return cmd
