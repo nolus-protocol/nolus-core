@@ -1,14 +1,16 @@
 package types
 
 import (
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/sample"
 )
 
 func TestMsgChangeSuspended_ValidateBasic(t *testing.T) {
+	hex, _ := sdk.AccAddressFromHex(ed25519.GenPrivKey().PubKey().Address().String())
 	tests := []struct {
 		name string
 		msg  MsgChangeSuspended
@@ -23,7 +25,7 @@ func TestMsgChangeSuspended_ValidateBasic(t *testing.T) {
 		}, {
 			name: "valid address",
 			msg: MsgChangeSuspended{
-				FromAddress: sample.AccAddress(),
+				FromAddress: hex.String(),
 			},
 		},
 	}
