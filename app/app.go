@@ -413,7 +413,7 @@ func New(
 	//}
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
-	app.SuspendKeeper = *suspendmodulekeeper.NewKeeper(
+	app.SuspendKeeper = suspendmodulekeeper.NewKeeper(
 		appCodec,
 		keys[suspendmoduletypes.StoreKey],
 		keys[suspendmoduletypes.MemStoreKey],
