@@ -1,7 +1,7 @@
 {
   "name": "integration",
   "version": "0.0.1",
-  "description": "Integration testing for nomo",
+  "description": "Integration testing for nolus",
   "main": "index.js",
   "license": "MIT",
   "scripts": {

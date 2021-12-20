@@ -1,7 +1,7 @@
 package app
 
 import (
-	nomoante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
+	nolusante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
 	"io"
 	"net/http"
 	"os"
@@ -523,8 +523,8 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	anteHandler, err := nomoante.NewAnteHandler(
-		nomoante.HandlerOptions{
+	anteHandler, err := nolusante.NewAnteHandler(
+		nolusante.HandlerOptions{
 			AccountKeeper:   app.AccountKeeper,
 			BankKeeper:      app.BankKeeper,
 			SuspendKeeper:	 app.SuspendKeeper,

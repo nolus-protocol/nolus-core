@@ -6,17 +6,17 @@ import (
 	type2 "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
-type NomoSuspendDecorator struct {
+type NolusSuspendDecorator struct {
 	sk SuspendKeeper
 }
 
-func NewSuspendDecorator(sk SuspendKeeper) NomoSuspendDecorator {
-	return NomoSuspendDecorator{
+func NewSuspendDecorator(sk SuspendKeeper) NolusSuspendDecorator {
+	return NolusSuspendDecorator{
 		sk: sk,
 	}
 }
 
-func (nsd NomoSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (nsd NolusSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	if simulate {
 		return next(ctx, tx, simulate)
 	}
