@@ -7,12 +7,14 @@ workspace {
             nolus = softwareSystem "Nolus" {
                 validatornode = group "Validator/Sentry Node" {
                     cosmosapp = container "Cosmos App" {
-                        bank = component "Bank"
                         tax_agent = component "Tax Agent"
                         minter = component "Minter"
+                        distributor = component "Distributor"
+                        reserve_proxy = component "Reserve Vault Proxy"
 
-                        tax_agent -> bank "distribute the transaction gas"
-                        minter -> bank "mint amount on each block"
+                        tax_agent -> distributor "distribute the transaction gas"
+                        tax_agent -> reserve_proxy "send extra fee"
+                        minter -> distributor "mint amount on each block"
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
@@ -86,10 +88,11 @@ workspace {
             title "Tax & Inflation distribution"
 
             user -> tax_agent "send transaction"
-            tax_agent -> reserve_vault "get Vault address"
-            tax_agent -> bank "send extra fee to the Vault address"
-            tax_agent -> bank "send remained gas to the Collector address"
-            minter -> bank "[on block end] send newly minted coins to the Collector address"
+            tax_agent -> reserve_proxy "send extra fee"
+            reserve_proxy -> reserve_vault "send extra fee"
+            tax_agent -> distributor "send remained gas"
+            minter -> distributor "send newly minted coins"
+            distributor -> distributor "distribute to the delegators"
         }
 
         dynamic contracts oracle_msgs {
