@@ -5,7 +5,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "setup-proto": "sh scripts/get-proto.sh && sh scripts/define-custom-proto.sh"
   },
   "dependencies": {
     "@cosmjs/stargate": "0.26.0",
@@ -21,6 +22,7 @@
     "ts-jest": "^27.0.7",
     "ts-loader": "^9.2.6",
     "ts-node": "^8",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "ts-proto": "^1.80.1"
   }
 }

@@ -3,7 +3,7 @@ import {assertIsBroadcastTxSuccess, Coin, isBroadcastTxFailure} from "@cosmjs/st
 import {DEFAULT_FEE, getPeriodicClient, getPeriodicWallet, getValidatorWallet} from "../util/clients";
 import {AccountData} from "@cosmjs/proto-signing";
 
-describe('vesting transfers', () => {
+describe('periodic vesting transfers', () => {
     const VESTED_AMOUNT: Coin = {denom: "unolus", amount: "136600"}; // + 63 remainder, if needed for taxes
     let periodicAccount: AccountData;
     let validatorAccount: AccountData;

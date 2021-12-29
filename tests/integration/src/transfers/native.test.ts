@@ -6,7 +6,8 @@ import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser2Wallet,
 describe("Native transfers", () => {
     test("Validator has positive balance", async () => {
         const client: CosmWasmClient = await CosmWasmClient.connect(process.env.NODE_URL as string);
-        const balance: Coin = await client.getBalance(process.env.VALIDATOR_ADDR as string, "unolus");
+        const [validatorAccount] = await (await getValidatorWallet()).getAccounts()
+        const balance: Coin = await client.getBalance(validatorAccount.address, "unolus");
 
         console.log(`Validator balance=(${balance.denom}, ${balance.amount})`);
 
