@@ -119,7 +119,7 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	}
 	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
-	mintThreshold := sdk.NewInt(1_000_000) // 1 token
+	mintThreshold := sdk.NewInt(1_300_000) // 1.3 tokens is the max deviation
 	if types.FixedMintedAmount.Sub(mintedCoins).Abs().GT(mintThreshold) || types.FixedMintedAmount.Sub(minter.TotalMinted).Abs().GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- 10^6] returned and in store, actual minted %v, actual in store %v",
 			types.FixedMintedAmount, mintedCoins, minter.TotalMinted)
@@ -160,7 +160,7 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 	}
 }
 
-func Test_CalcTokens_WhenMintingAllTokens_OutputsExpectedTokensWithinEpsilon(t *testing.T) {
+func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.T) {
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
 	monthsSoFar := timeOffset / nanoSecondsInMonth.TruncateInt64()
@@ -183,6 +183,7 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExpectedTokensWithinEpsilon(t *
 	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
 	require.Equal(t, types.MintingCap, minter.TotalMinted)
+	require.Equal(t, minter.TotalMinted, mintedCoins)
 }
 
 func Test_CalcTokens_WhenGivenBlockWithDiffBiggerThanMax_MaxMintedTokensAreCreated(t *testing.T) {
