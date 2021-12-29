@@ -1,37 +1,32 @@
-import {
-    CosmWasmClient
-} from "@cosmjs/cosmwasm-stargate";
-import {
-    assertIsBroadcastTxSuccess,
-    isBroadcastTxFailure
-} from "@cosmjs/stargate";
-import {
-    getPeriodicClient,
-    getPeriodicWallet
-} from "../util/clients";
-describe('vesting transfers', () => {
-    test('vesting account has positive balance', async () => {
-        const client = await CosmWasmClient.connect(process.env.NODE_URL as string)
-	const balance = await client.getBalance(process.env.PERIODIC_VEST_ADDR as string, "nolus");
-        expect(BigInt(balance.amount) > 0).toBeTruthy()
-    }) 
+import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
+import {assertIsBroadcastTxSuccess, Coin, isBroadcastTxFailure} from "@cosmjs/stargate";
+import {DEFAULT_FEE, getPeriodicClient, getPeriodicWallet, getValidatorWallet} from "../util/clients";
+import {AccountData} from "@cosmjs/proto-signing";
 
-    test('vesting account can send tokens', async () => {
-        const wallet = await getPeriodicWallet();
-        const client = await getPeriodicClient();
-        const [firstAccount] = await wallet.getAccounts();
-        const amount = {
-            denom: "nolus",
-            amount: "1000",
-        };
-        const fee = {
-            amount: [{
-                denom: "nolus",
-                amount: "12"
-            }],
-            gas: "100000"
-        };
-        const result = await client.sendTokens(firstAccount.address, process.env.USR_1_ADDR as string, [amount], fee, "Testing send transaction");
+describe('vesting transfers', () => {
+    const VESTED_AMOUNT: Coin = {denom: "unolus", amount: "136600"}; // + 63 remainder, if needed for taxes
+    let periodicAccount: AccountData;
+    let validatorAccount: AccountData;
+    let periodicClient: SigningCosmWasmClient;
+
+    beforeEach(async () => {
+        [periodicAccount] = await (await getPeriodicWallet()).getAccounts();
+        [validatorAccount] = await (await getValidatorWallet()).getAccounts();
+        periodicClient = await getPeriodicClient();
+    })
+
+    test('periodic vesting account has positive balance', async () => {
+        const balance = await periodicClient.getBalance(periodicAccount.address, "unolus");
+        expect(BigInt(balance.amount) > 0).toBeTruthy()
+    })
+
+    test('periodic account\'s vested amount can be send', async () => {
+        let result = await periodicClient.sendTokens(periodicAccount.address, validatorAccount.address, [VESTED_AMOUNT], DEFAULT_FEE)
+        assertIsBroadcastTxSuccess(result)
+    })
+
+    test('periodic account\s vesting amount cannot be send', async () => {
+        let result = await periodicClient.sendTokens(periodicAccount.address, validatorAccount.address, [VESTED_AMOUNT], DEFAULT_FEE)
         expect(isBroadcastTxFailure(result)).toBeTruthy();
     })
 })

@@ -40,9 +40,9 @@ create_vested_account() {
   local TILL4H
   TILL4H=$(($(date +%s) + 14400))
   local amnt
+  amnt='546652unolus'
+  row="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(($(date +%s) - 3600))\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
   add_vesting_account "$row" "$HOME_DIR"
-  amnt='546652nolus'
-  row="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(date +%s)\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
 }
 
 prepare_env() {
