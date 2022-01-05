@@ -1,3 +1,11 @@
+23.12.2021
+==========
+- defined major milestones, due dates and scope
+- going to try providing estimations prior getting a task
+- confirmed with the product owner that the lending contract will get the necessary amount of crypto from the Nolus Loans Treasury. It is not going to hold a reserve of crypto. Upon an ask for lending crypto the Treasury goes to a DEX or CEX to swap stable to crypto. In reverse, the Nolus Reserve swaps crypto for stable on each payment from a customer. Next Nolus versions are going to provide `earn` functionality. The lending contract may prefer to use amounts provided from `earn` contracts to new loans. 
+- amounts received from `earn` contracts may be sent out to an yield aggregator or used for opening new loans
+- repayments of loans are accepted in any of the supported currencies, incl. stable ones
+
 16.12.2021
 ==========
 - [cosmzone][contracts][web-app] identified tasks to complete before the network launch and filed corresponding clickup tickets
