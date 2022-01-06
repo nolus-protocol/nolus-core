@@ -1,6 +1,6 @@
 # Run Nolus Validator and a Tentermint KMS on a AWS EC2
 
-- Status: proposal
+- Status: accepted
 - Deciders: business and dev team
 - Date: 2022-01-05
 - Tags: kms validator tendermint nitro enclave
