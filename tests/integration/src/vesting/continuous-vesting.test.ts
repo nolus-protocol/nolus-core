@@ -41,6 +41,7 @@ describe("continuous vesting", () => {
         assertIsBroadcastTxSuccess(result)
 
         let sendFailTx = await continuousClient.sendTokens(continuousAccount.address, validatorAccount.address, [HALF_AMOUNT], DEFAULT_FEE);
+        console.log(sendFailTx)
         expect(isBroadcastTxFailure(sendFailTx)).toBeTruthy()
         await expect(sendFailTx.rawLog).toMatch(/^.*smaller than 5000unolus: insufficient funds.*/)
         await sleep(4000) // sleep for 4000 seconds
