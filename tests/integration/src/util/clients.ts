@@ -11,6 +11,8 @@ import {
 } from "cosmjs-types/cosmwasm/wasm/v1/tx";
 import {defaultRegistryTypes} from "@cosmjs/stargate";
 import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "./codec/cosmos/vesting/v1beta1/tx";
+import {generateMnemonic, mnemonicToSeedSync} from "bip39";
+import {fromSeed} from "bip32";
 
 let validatorPrivKey = fromHex(process.env.VALIDATOR_PRIV_KEY as string);
 let periodicPrivKey = fromHex(process.env.PERIODIC_PRIV_KEY as string);
@@ -24,12 +26,20 @@ export const DEFAULT_FEE = {
     gas: "100000"
 };
 
+export const NOLUS_PREFIX = "nolus";
+
 export async function getWallet(privateKey: Uint8Array): Promise<DirectSecp256k1Wallet> {
-    return await DirectSecp256k1Wallet.fromKey(privateKey, "nolus");
+    return await DirectSecp256k1Wallet.fromKey(privateKey, NOLUS_PREFIX);
 }
 
-export async function getClient(privateKey: Uint8Array): Promise<SigningCosmWasmClient> {
-    return await SigningCosmWasmClient.connectWithSigner(process.env.NODE_URL as string, await getWallet(privateKey), getSignerOptions());
+export async function getClientWithKey(privateKey: Uint8Array): Promise<SigningCosmWasmClient> {
+    const wallet = await getWallet(privateKey);
+    return getClient(wallet);
+}
+
+export async function getClient(wallet: DirectSecp256k1Wallet): Promise<SigningCosmWasmClient> {
+    return await SigningCosmWasmClient.connectWithSigner(process.env.NODE_URL as string, wallet, getSignerOptions());
+
 }
 
 export async function getValidatorWallet(): Promise<DirectSecp256k1Wallet> {
@@ -37,7 +47,7 @@ export async function getValidatorWallet(): Promise<DirectSecp256k1Wallet> {
 }
 
 export async function getValidatorClient(): Promise<SigningCosmWasmClient> {
-    return await getClient(validatorPrivKey);
+    return await getClientWithKey(validatorPrivKey);
 }
 
 export async function getPeriodicWallet(): Promise<DirectSecp256k1Wallet> {
@@ -45,7 +55,7 @@ export async function getPeriodicWallet(): Promise<DirectSecp256k1Wallet> {
 }
 
 export async function getPeriodicClient(): Promise<SigningCosmWasmClient> {
-    return await getClient(periodicPrivKey);
+    return await getClientWithKey(periodicPrivKey);
 }
 
 export async function getUser2Wallet(): Promise<DirectSecp256k1Wallet> {
@@ -53,7 +63,7 @@ export async function getUser2Wallet(): Promise<DirectSecp256k1Wallet> {
 }
 
 export async function getUser2Client(): Promise<SigningCosmWasmClient> {
-    return await getClient(user2PrivKey);
+    return await getClientWithKey(user2PrivKey);
 }
 
 export async function getUser1Wallet(): Promise<DirectSecp256k1Wallet> {
@@ -61,16 +71,30 @@ export async function getUser1Wallet(): Promise<DirectSecp256k1Wallet> {
 }
 
 export async function getUser1Client(): Promise<SigningCosmWasmClient> {
-    return await getClient(user1PrivKey);
+    return await getClientWithKey(user1PrivKey);
 }
 
+export async function createWallet(): Promise<DirectSecp256k1Wallet> {
+    const privateKey = seedToPrivateKey(generateMnemonic(256))
+    return await DirectSecp256k1Wallet.fromKey(privateKey, NOLUS_PREFIX)
+}
+
+function seedToPrivateKey(mnemonic: string, hdPath = 'm/44\'/118\'/0\'/0/0'): Buffer {
+    const seed = mnemonicToSeedSync(mnemonic)
+    const masterKey = fromSeed(seed)
+    const { privateKey } = masterKey.derivePath(hdPath)
+    if (privateKey === undefined) {
+        throw new Error("Illegal state reached");
+    }
+    return privateKey
+}
 
 export async function getDelayedVestingWallet(): Promise<DirectSecp256k1Wallet> {
     return await getWallet(delayedVestingPrivKey);
 }
 
 export async function getDelayedVestingClient(): Promise<SigningCosmWasmClient> {
-    return await getClient(delayedVestingPrivKey);
+    return await getClientWithKey(delayedVestingPrivKey);
 }
 
 function getSignerOptions(): SigningCosmWasmClientOptions {

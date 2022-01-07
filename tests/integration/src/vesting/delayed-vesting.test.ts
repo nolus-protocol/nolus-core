@@ -10,8 +10,8 @@ import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "../util/codec/cosmos/vesting/v1beta1/tx";
 
 import Long from "long";
-import {isBroadcastTxFailure} from "@cosmjs/stargate/build/stargateclient";
 import {assertIsBroadcastTxSuccess} from "@cosmjs/stargate";
+import {sleep} from "../util/utils";
 
 describe("delayed vesting", () => {
     let validatorClient: SigningCosmWasmClient;
@@ -43,7 +43,7 @@ describe("delayed vesting", () => {
 
         let broadcast = () => delayedClient.sendTokens(delayedAccount.address, validatorAccount.address, DEFAULT_FEE.amount, DEFAULT_FEE)
         await expect(broadcast).rejects.toThrow(/^.*insufficient funds: insufficient funds.*/)
-        await new Promise(resolve => setTimeout(resolve, 7000)) // sleep for 7 seconds
+        await sleep(7000) // sleep for 7 seconds
         assertIsBroadcastTxSuccess(await delayedClient.sendTokens(delayedAccount.address, validatorAccount.address, DEFAULT_FEE.amount, DEFAULT_FEE))
     })
 
