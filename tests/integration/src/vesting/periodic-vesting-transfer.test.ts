@@ -1,7 +1,8 @@
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {assertIsBroadcastTxSuccess, Coin, isBroadcastTxFailure} from "@cosmjs/stargate";
-import {DEFAULT_FEE, getPeriodicClient, getPeriodicWallet, getValidatorWallet} from "../util/clients";
+import {getPeriodicClient, getPeriodicWallet, getValidatorWallet} from "../util/clients";
 import {AccountData} from "@cosmjs/proto-signing";
+import {DEFAULT_FEE} from "../util/utils";
 
 describe('periodic vesting transfers', () => {
     const VESTED_AMOUNT: Coin = {denom: "unolus", amount: "136600"}; // + 63 remainder, if needed for taxes

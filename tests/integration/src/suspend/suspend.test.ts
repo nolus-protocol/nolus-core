@@ -1,7 +1,6 @@
 import {MsgChangeSuspended, protobufPackage} from "../util/codec/nolus/suspend/v1beta1/tx";
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {
-    DEFAULT_FEE,
     getGenesisUser1Client,
     getGenesisUser1Wallet,
     getUser1Wallet,
@@ -14,6 +13,7 @@ import {getSuspendQueryClient} from "./suspend-client";
 import {QueryClientImpl} from "../util/codec/nolus/suspend/v1beta1/query";
 import {AccountData} from "@cosmjs/proto-signing";
 import {isBroadcastTxFailure} from "@cosmjs/stargate";
+import {DEFAULT_FEE} from "../util/utils";
 
 
 describe("suspend module", () => {

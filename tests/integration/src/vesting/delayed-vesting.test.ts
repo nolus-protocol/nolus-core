@@ -1,5 +1,4 @@
 import {
-    DEFAULT_FEE,
     getDelayedVestingClient,
     getDelayedVestingWallet,
     getValidatorClient,
@@ -11,7 +10,7 @@ import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "../uti
 
 import Long from "long";
 import {assertIsBroadcastTxSuccess} from "@cosmjs/stargate";
-import {sleep} from "../util/utils";
+import {DEFAULT_FEE, sleep} from "../util/utils";
 
 describe("delayed vesting", () => {
     let validatorClient: SigningCosmWasmClient;
