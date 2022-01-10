@@ -22,7 +22,7 @@ func (nsd NolusSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 	}
 
 	state := nsd.sk.GetState(ctx)
-	if state.Suspended && (state.BlockHeight == 0 || ctx.BlockHeight() > state.BlockHeight) {
+	if state.Suspended && ctx.BlockHeight() > state.BlockHeight {
 		includesSuspend := false
 		for _, msg := range tx.GetMsgs() {
 			if _, ok := msg.(*suspendTypes.MsgChangeSuspended); ok {
