@@ -1,20 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-command -v common-util.sh >/dev/null 2>&1 || {
-  echo >&2 "scripts are not found in \$PATH."
-  exit 1
-}
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
-source common-util.sh
-source create-vesting-account.sh
+source "$SCRIPT_DIR"/common-util.sh
+source "$SCRIPT_DIR"/create-vesting-account.sh
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
     rm -rf "$TMPDIR"
-  fi
-  if [[ -n "${ORIG_DIR:-}" ]]; then
-    cd "$ORIG_DIR"
   fi
   exit
 }
@@ -75,21 +69,19 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-update_genesis() {
-  jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
-}
-
 # validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
   exit 1
 }
 
-ORIG_DIR=$(pwd)
-cd "$TMPDIR"
-run_cmd "$MODE" "." init $MONIKER --chain-id "$CHAIN_ID"
-run_cmd "$MODE" "." config keyring-backend "$KEYRING"
-run_cmd "$MODE" "." config chain-id "$CHAIN_ID"
+update_genesis() {
+  jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
+}
+
+run_cmd "$MODE" "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID"
+run_cmd "$MODE" "$TMPDIR" config keyring-backend "$KEYRING"
+run_cmd "$MODE" "$TMPDIR" config chain-id "$CHAIN_ID"
 
 # Change parameter token denominations to NATIVE_CURRENCY
 update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'
@@ -106,10 +98,9 @@ if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
     if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
       add_vesting_account "$row" "$TMPDIR"
     else
-      run_cmd "$MODE" "." add-genesis-account "$address" "$amount"
+      run_cmd "$MODE" "$TMPDIR" add-genesis-account "$address" "$amount"
     fi
   done
 fi
 
-cd "$ORIG_DIR"
 cp "$TMPDIR/config/genesis.json" "$OUTPUT_FILE"

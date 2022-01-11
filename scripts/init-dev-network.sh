@@ -2,21 +2,9 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-echo $SCRIPT_DIR
 
 source $SCRIPT_DIR/internal/local.sh
 source $SCRIPT_DIR/internal/accounts.sh
-
-ORIG_DIR=$(pwd)
-
-cleanup() {
-  if [ -n "${ORIG_DIR:-}" ]; then
-    cd "$ORIG_DIR"
-    exit
-  fi
-}
-
-trap cleanup INT TERM EXIT
 
 VALIDATORS=1
 IP_ADDRESSES=()
@@ -119,6 +107,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 ACCOUNTS_FILE="$OUTPUT_DIR/accounts.json"
+PROTO_GENESIS_FILE="$OUTPUT_DIR/penultimate-genesis.json"
 
 # Init validator nodes, generate validator accounts and collect their addresses
 #
@@ -141,26 +130,6 @@ gen_pre_genesis() {
   echo ""
 }
 
-init_genesis() {
-  rm -rf keygenerator
-  mkdir keygenerator
-  ACCOUNTS_FILE="accounts.json"
-  echo '[]' > "$ACCOUNTS_FILE"
-  run_cmd "$MODE" "keygenerator" init "key-gen" --chain-id "nolus-private"
-  for i in $(seq "$VALIDATORS"); do
-    local out
-    out=$(run_cmd "$MODE" "keygenerator" keys add "val_$i" --keyring-backend test --output json)
-    echo "$out"| jq -r .mnemonic > "val_${i}_mnemonic"
-    address=$(run_cmd "$MODE" "keygenerator" keys show -a "val_${i}" --keyring-backend test)
-    append=$(jq ". += [{ \"address\": \"$address\", \"amount\":  \"$VAL_TOKENS\"}]" < "$ACCOUNTS_FILE")
-    echo "$append" > "$ACCOUNTS_FILE"
-  done
-
-  penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" --output "penultimate-genesis.json" --mode "$MODE"
-
-  rm "$ACCOUNTS_FILE"
-}
-
 init_local() {
   rm -rf gentxs
   mkdir gentxs
@@ -169,7 +138,7 @@ init_local() {
     if [[ $CUSTOM_IPS = true ]]; then
       IP="--ip ${IP_ADDRESSES[$(("$i" - 1))]}"
     fi
-    init-validator-node.sh -g "penultimate-genesis.json" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP" --mode "$MODE"
+    init-validator-node.sh -g "$PROTO_GENESIS_FILE" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP" --mode "$MODE"
     cp -a "node${i}/config/gentx/." "gentxs"
   done
 
@@ -206,6 +175,8 @@ fi
 
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
+"$SCRIPT_DIR"/penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" \
+  --output "$PROTO_GENESIS_FILE"
 
 #gen_pre_genesis
 #init_genesis
