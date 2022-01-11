@@ -76,6 +76,7 @@ command -v jq >/dev/null 2>&1 || {
 }
 
 GENESIS_FILE="$TMPDIR/config/genesis.json"
+GENESIS_TMP_FILE="$TMPDIR/config/genesis-tmp.json"
 
 run_cmd "$MODE" "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID"
 run_cmd "$MODE" "$TMPDIR" config keyring-backend "$KEYRING"
@@ -87,7 +88,8 @@ cat "$GENESIS_FILE" \
   | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"' \
   | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
   | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
-  | jq '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"' > "$GENESIS_FILE"
+  | jq '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"' > "$GENESIS_TMP_FILE"
+mv "$GENESIS_TMP_FILE" "$GENESIS_FILE"
 
 if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do

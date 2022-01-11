@@ -15,8 +15,8 @@ MONIKER="test-moniker-"
 MODE="local"
 KEYRING="test"
 NATIVE_CURRENCY="unolus"
-VAL_TOKENS="1000000000unolus"
-VAL_STAKE="1000000unolus"
+VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
+VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
 OUTPUT_DIR="dev-net"
 
@@ -157,7 +157,7 @@ gen_accounts_spec() {
 
   local accounts="[]"
   for address in $addresses; do
-    accounts=$(echo "$accounts" | add_account "$address" "10$NATIVE_CURRENCY")
+    accounts=$(echo "$accounts" | add_account "$address" "$VAL_TOKENS")
   done
   echo "$accounts" > "$file"
 }
