@@ -75,20 +75,19 @@ command -v jq >/dev/null 2>&1 || {
   exit 1
 }
 
-update_genesis() {
-  jq $1 <"$TMPDIR/config/genesis.json" >"$TMPDIR/config/tmp_genesis.json" && mv "$TMPDIR/config/tmp_genesis.json" "$TMPDIR/config/genesis.json"
-}
+GENESIS_FILE="$TMPDIR/config/genesis.json"
 
 run_cmd "$MODE" "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID"
 run_cmd "$MODE" "$TMPDIR" config keyring-backend "$KEYRING"
 run_cmd "$MODE" "$TMPDIR" config chain-id "$CHAIN_ID"
 
 # Change parameter token denominations to NATIVE_CURRENCY
-update_genesis '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"'
-update_genesis '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
-update_genesis '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"'
-update_genesis '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"'
+cat "$GENESIS_FILE" \
+  | jq '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"' \
+  | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"' \
+  | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
+  | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
+  | jq '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"' > "$GENESIS_FILE"
 
 if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do
@@ -103,4 +102,4 @@ if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
   done
 fi
 
-cp "$TMPDIR/config/genesis.json" "$OUTPUT_FILE"
+cp "$GENESIS_FILE" "$OUTPUT_FILE"
