@@ -3,9 +3,6 @@ set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
-source $SCRIPT_DIR/internal/local.sh
-source $SCRIPT_DIR/internal/accounts.sh
-
 VALIDATORS=1
 IP_ADDRESSES=()
 CUSTOM_IPS=false
@@ -106,8 +103,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-ACCOUNTS_FILE="$OUTPUT_DIR/accounts.json"
-PROTO_GENESIS_FILE="$OUTPUT_DIR/penultimate-genesis.json"
+source $SCRIPT_DIR/internal/cmd.sh
+source $SCRIPT_DIR/internal/local.sh
+init_vars "$CHAIN_ID"
+
+source $SCRIPT_DIR/internal/accounts.sh
+source $SCRIPT_DIR/internal/genesis.sh
 
 # Init validator nodes, generate validator accounts and collect their addresses
 #
@@ -126,8 +127,15 @@ init_nodes() {
   done
 }
 
-gen_pre_genesis() {
-  echo ""
+init_validators() {
+  local proto_genesis_file="$1"
+
+  for i in $(seq "$VALIDATORS"); do
+    local node_id="dev-validator-$i"
+
+    local create_validator_tx=$(gen_validator "$OUTPUT_DIR" "$node_id" "$proto_genesis_file" "$VAL_STAKE")
+    echo "$create_validator_tx"
+  done
 }
 
 init_local() {
@@ -173,11 +181,16 @@ if [[ "$CUSTOM_IPS" = true && "${#IP_ADDRESSES[@]}" -ne "$VALIDATORS" ]]; then
   exit 1
 fi
 
+ACCOUNTS_FILE="$OUTPUT_DIR/accounts.json"
+PROTO_GENESIS_FILE="$OUTPUT_DIR/penultimate-genesis.json"
+FINAL_GENESIS_FILE="$OUTPUT_DIR/genesis.json"
+
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
 "$SCRIPT_DIR"/penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" \
   --output "$PROTO_GENESIS_FILE"
+create_validator_txs="$(init_validators $PROTO_GENESIS_FILE)"
+integrate_genesis_txs "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 
-#gen_pre_genesis
 #init_genesis
 #init_local
