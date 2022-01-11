@@ -4,12 +4,6 @@ set -euxo pipefail
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 echo $SCRIPT_DIR
 
-#command -v common-util.sh >/dev/null 2>&1 || {
-#  echo >&2 "scripts are not found in \$PATH."
-#  exit 1
-#}
-
-#source common-util.sh
 source $SCRIPT_DIR/internal/local.sh
 source $SCRIPT_DIR/internal/accounts.sh
 
@@ -124,19 +118,27 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+ACCOUNTS_FILE="$OUTPUT_DIR/accounts.json"
+
+# Init validator nodes, generate validator accounts and collect their addresses
+#
+# The nodes are placed in sub directories of $OUTPUT_DIR
+# The validator addresses are printed on the standard output one at a line
 init_nodes() {
   rm -fr "$OUTPUT_DIR"
   mkdir "$OUTPUT_DIR"
 
-  local accounts="[]"
   for i in $(seq "$VALIDATORS"); do
     local node_id="dev-validator-$i"
 
     deploy "$OUTPUT_DIR" "$node_id" "$CHAIN_ID"
     local address=$(gen_account "$OUTPUT_DIR" "$node_id")
-    accounts=$(echo "$accounts" | add_account "$address" "0")
+    echo "$address"
   done
-  echo "$accounts"
+}
+
+gen_pre_genesis() {
+  echo ""
 }
 
 init_genesis() {
@@ -180,6 +182,17 @@ init_local() {
   done
 }
 
+gen_accounts_spec() {
+  local addresses="$1"
+  local file="$2"
+
+  local accounts="[]"
+  for address in $addresses; do
+    accounts=$(echo "$accounts" | add_account "$address" "10$NATIVE_CURRENCY")
+  done
+  echo "$accounts" > "$file"
+}
+
 ## validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
@@ -191,10 +204,9 @@ if [[ "$CUSTOM_IPS" = true && "${#IP_ADDRESSES[@]}" -ne "$VALIDATORS" ]]; then
   exit 1
 fi
 
-#rm -rf "$OUTPUT_DIR"
-#mkdir -p "$OUTPUT_DIR"
-#cd "$OUTPUT_DIR"
+addresses="$(init_nodes)"
+gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
 
-init_nodes
+#gen_pre_genesis
 #init_genesis
 #init_local
