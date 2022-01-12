@@ -9,7 +9,8 @@ if [[ -n ${ROOT_DIR+} ]]; then
 fi
 
 TESTS_DIR="$ROOT_DIR/tests/integration"
-HOME_DIR="$ROOT_DIR/networks/nolus/node1"
+NET_ROOT_DIR="$ROOT_DIR/networks/nolus"
+HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
 
@@ -46,7 +47,7 @@ create_vested_account() {
 }
 
 prepare_env() {
-  init-test-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$ROOT_DIR/networks/nolus" 2>&1
+  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$NET_ROOT_DIR" 2>&1
   edit-configuration.sh --home "$HOME_DIR" \
     --enable-api false --enable-grpc false --enable-grpc-web false --timeout-commit '1s'
   create_ibc_network
@@ -56,11 +57,11 @@ prepare_env() {
   cosmzoned keys add test-user-2 --keyring-backend "test" --home "$HOME_DIR" # force no password
   cosmzoned keys add test-delayed-vesting --keyring-backend "test" --home "$HOME_DIR" # force no password
 
-  VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys  export validator-key --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys  export periodic-vesting-account --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys  export test-user-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys  export test-user-2 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  DELAYED_VESTING_PRIV_KEY=$(echo 'y' | cosmzoned keys  export test-delayed-vesting --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys export dev-validator-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys export periodic-vesting-account --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-2 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  DELAYED_VESTING_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-delayed-vesting --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
   DOT_ENV=$(cat <<-EOF
 NODE_URL=http://localhost:26657
 VALIDATOR_PRIV_KEY=${VALIDATOR_PRIV_KEY}
@@ -79,9 +80,10 @@ EOF
 }
 
 create_ibc_network() {
-    local MARS_HOME_DIR
-    MARS_HOME_DIR="$ROOT_DIR/networks/ibc_network/node1"
-    init-test-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars' --chain-id 'mars-private' --output "$ROOT_DIR/networks/ibc_network"
+    local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
+    local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
+    init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
+      --chain-id 'mars-private' --output "$MARS_ROOT_DIR"
     edit-configuration.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \

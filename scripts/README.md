@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-In order to use the scripts you must add the `scripts` directory in your `PATH` variable. This is done so that shell scripts can be made as `source <script>.sh` i.e. in a directory agnostic way.  
+The binary `cosmzoned` must be on the system path to allow scripts to run it.
 
 ## penultimate-genesis.sh
 
