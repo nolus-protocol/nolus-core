@@ -113,11 +113,13 @@ while [[ $# -gt 0 ]]; do
 done
 
 source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/internal/config.sh
 source "$SCRIPT_DIR"/internal/local.sh
 init_local_sh "$OUTPUT_DIR" "$CHAIN_ID"
 
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
+
 
 # Init validator nodes, generate validator accounts and collect their addresses
 #
@@ -127,7 +129,7 @@ init_nodes() {
   for i in $(seq "$VALIDATORS"); do
     local node_id=$(node_id "$i")
 
-    deploy "$node_id"
+    deploy "$node_id" "$i"
     local address=$(gen_account "$node_id")
     echo "$address"
   done

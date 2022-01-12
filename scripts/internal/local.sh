@@ -5,6 +5,9 @@ set -euxo pipefail
 local_root_dir=""
 local_chain_id=""
 # end "instance" variables
+LOCAL_BASE_RPC_PORT=26654
+LOCAL_BASE_P2P_PORT=26653
+LOCAL_BASE_PROXY_PORT=26655
 
 init_local_sh() {
   local_root_dir="$1"
@@ -16,11 +19,19 @@ init_local_sh() {
 
 deploy() {
   local node_id="$1"
+  local node_index="$2"
+
   local node_dir=$(node_dir $node_id)
   rm -fr "$node_dir"
   mkdir "$node_dir"
 
   run_cmd "$node_dir" init "$node_id" --chain-id "$local_chain_id" 1>/dev/null
+  update_app "$node_dir" '."api"."enable"' "false"
+  update_app "$node_dir" '."grpc"."enable"' "false"
+  update_app "$node_dir" '."grpc-web"."enable"' "false"
+  update_config "$node_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'`rpc_port $node_index`'"'
+  update_config "$node_dir" '."p2p"."laddr"' '"tcp://0.0.0.0:'`p2p_port $node_index`'"'
+  update_config "$node_dir" '."proxy_app"' '"tcp://127.0.0.1:'`proxy_port $node_index`'"'
 }
 
 gen_account() {
@@ -65,4 +76,22 @@ propagate_genesis() {
 #####################
 node_dir() {
   echo "$local_root_dir/$1"
+}
+
+rpc_port() {
+  port $LOCAL_BASE_RPC_PORT $@
+}
+
+p2p_port() {
+  port $LOCAL_BASE_P2P_PORT $@
+}
+
+proxy_port() {
+  port $LOCAL_BASE_PROXY_PORT $@
+}
+
+port() {
+  local base_port=$1
+  local index=$2
+  echo $((base_port + index*3))
 }

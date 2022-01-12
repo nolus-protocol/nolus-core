@@ -13,13 +13,15 @@ Sample usage:
   penultimate-genesis.sh --output "proto-genesis.json"
 ```
 
-## init-test-network.sh
+## init-dev-network.sh
 
-Initialize the directory structure for 1 or more validators. Internally it invokes calls to `penultimate-genesis.sh` to create a proto genesis. It then initializes validator nodes via `init-validator-node.sh` by also passing them the previously generated proto-genesis and finally, it creates a final genesis by combining the generated gentx transactions via `collect-validator-gentxs.sh`.
+Initialize one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
+
+The nodes are ready to be started.
 
 Sample usage which generates 2 validator nodes:
 ```shell
-init-validator-node.sh -v 2 --output validator_setup
+init-dev-node.sh -v 2 --output validators
 ```
 
 ## init-validator-node.sh

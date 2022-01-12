@@ -48,8 +48,7 @@ create_vested_account() {
 
 prepare_env() {
   init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$NET_ROOT_DIR" 2>&1
-  edit-configuration.sh --home "$HOME_DIR" \
-    --enable-api false --enable-grpc false --enable-grpc-web false --timeout-commit '1s'
+  edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
   create_ibc_network
 
   create_vested_account

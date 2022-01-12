@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euxo pipefail
 
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source "$SCRIPT_DIR"/internal/config.sh
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -97,72 +99,65 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-
-update_app () {
-      tomlq -t "$1=$2" < "$HOME_DIR/config/app.toml" > "$HOME_DIR/config/app.toml.tmp"
-      mv "$HOME_DIR/config/app.toml.tmp" "$HOME_DIR/config/app.toml"
-}
-
-update_config () {
-      tomlq -t "$1=$2" < "$HOME_DIR/config/config.toml" > "$HOME_DIR/config/config.toml.tmp"
-      mv "$HOME_DIR/config/config.toml.tmp" "$HOME_DIR/config/config.toml"
-}
-
-
-command -v tomlq > /dev/null 2>&1 || { echo >&2 "tomlq not installed. More info: https://tomlq.readthedocs.io/en/latest/installation.html"; exit 1; }
-
-
 if [[ -z "$HOME_DIR" ]]; then
   echo "HOME_DIR is unset"
    exit 1
 fi
 
+update_app_home() {
+  update_app "$HOME_DIR" $@
+}
+
+update_config_home() {
+  update_config "$HOME_DIR" $@
+}
+
 if [[ -n "${MINIMUM_GAS_PRICES+x}" ]]; then
-  update_app '."minimum-gas-prices"' "\"$MINIMUM_GAS_PRICES\""
+  update_app_home '."minimum-gas-prices"' "\"$MINIMUM_GAS_PRICES\""
 fi
 
 if [[ -n "${ENABLE_API+x}" ]]; then
-  update_app '."api"."enable"' "$ENABLE_API"
+  update_app_home '."api"."enable"' "$ENABLE_API"
 fi
 
 if [[ -n "${API_ADDRESS+x}" ]]; then
-  update_app '."api"."address"' "\"$API_ADDRESS\""
+  update_app_home '."api"."address"' "\"$API_ADDRESS\""
 fi
 
 if [[ -n "${ENABLE_GRPC+x}" ]]; then
-  update_app '."grpc"."enable"' "$ENABLE_GRPC"
+  update_app_home '."grpc"."enable"' "$ENABLE_GRPC"
 fi
 
 if [[ -n "${GRPC_ADDRESS+x}" ]]; then
-  update_app '."grpc"."address"' "\"$GRPC_ADDRESS\""
+  update_app_home '."grpc"."address"' "\"$GRPC_ADDRESS\""
 fi
 
 if [[ -n "${ENABLE_GRPC_WEB+x}" ]]; then
-  update_app '."grpc-web"."enable"' "$ENABLE_GRPC_WEB"
+  update_app_home '."grpc-web"."enable"' "$ENABLE_GRPC_WEB"
 fi
 
 if [[ -n "${GRPC_WEB_ADDRESS+x}" ]]; then
-  update_app '."grpc-web"."address"' "\"$GRPC_WEB_ADDRESS\""
+  update_app_home '."grpc-web"."address"' "\"$GRPC_WEB_ADDRESS\""
 fi
 
 
 
 if [[ -n "${PROXY_APP_ADDRESS+x}" ]]; then
-  update_config '."proxy_app"' "\"$PROXY_APP_ADDRESS\""
+  update_config_home '."proxy_app"' "\"$PROXY_APP_ADDRESS\""
 fi
 
 if [[ -n "${TENDERMINT_RPC_ADDRESS+x}" ]]; then
-  update_config '."rpc"."laddr"' "\"$TENDERMINT_RPC_ADDRESS\""
+  update_config_home '."rpc"."laddr"' "\"$TENDERMINT_RPC_ADDRESS\""
 fi
 
 if [[ -n "${TENDERMINT_P2P_ADDRESS+x}" ]]; then
-  update_config '."p2p"."laddr"' "\"$TENDERMINT_P2P_ADDRESS\""
+  update_config_home '."p2p"."laddr"' "\"$TENDERMINT_P2P_ADDRESS\""
 fi
 
 if [[ -n "${PERSISTENT_PEERS+x}" ]]; then
-  update_config '."p2p"."laddr"' "\"$PERSISTENT_PEERS\""
+  update_config_home '."p2p"."laddr"' "\"$PERSISTENT_PEERS\""
 fi
 
 if [[ -n "${TIMEOUT_COMMIT+x}" ]]; then
-  update_config '."consensus"."timeout_commit"'  "\"$TIMEOUT_COMMIT\""
+  update_config_home '."consensus"."timeout_commit"'  "\"$TIMEOUT_COMMIT\""
 fi
