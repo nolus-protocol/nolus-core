@@ -112,12 +112,12 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-source $SCRIPT_DIR/internal/cmd.sh
-source $SCRIPT_DIR/internal/local.sh
+source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/internal/local.sh
 init_vars "$CHAIN_ID"
 
-source $SCRIPT_DIR/internal/accounts.sh
-source $SCRIPT_DIR/internal/genesis.sh
+source "$SCRIPT_DIR"/internal/accounts.sh
+source "$SCRIPT_DIR"/internal/genesis.sh
 
 # Init validator nodes, generate validator accounts and collect their addresses
 #
@@ -187,9 +187,7 @@ FINAL_GENESIS_FILE="$OUTPUT_DIR/genesis.json"
 
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
-"$SCRIPT_DIR"/penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" \
-  --output "$PROTO_GENESIS_FILE"
-# generate_proto_genesis
+generate_proto_genesis "$GENESIS_HOME_DIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE"
 create_validator_txs="$(init_validators $PROTO_GENESIS_FILE)"
 integrate_genesis_txs "$GENESIS_HOME_DIR" "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 propagate_genesis_all "$FINAL_GENESIS_FILE"

@@ -3,8 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
-source "$SCRIPT_DIR"/common-util.sh
 source "$SCRIPT_DIR"/create-vesting-account.sh
+source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/internal/genesis.sh
 
 cleanup() {
   if [[ -n "${TMPDIR:-}" ]]; then
@@ -75,33 +76,4 @@ command -v jq >/dev/null 2>&1 || {
   exit 1
 }
 
-GENESIS_FILE="$TMPDIR/config/genesis.json"
-GENESIS_TMP_FILE="$TMPDIR/config/genesis-tmp.json"
-
-run_cmd "$MODE" "$TMPDIR" init $MONIKER --chain-id "$CHAIN_ID"
-run_cmd "$MODE" "$TMPDIR" config keyring-backend "$KEYRING"
-run_cmd "$MODE" "$TMPDIR" config chain-id "$CHAIN_ID"
-
-# Change parameter token denominations to NATIVE_CURRENCY
-cat "$GENESIS_FILE" \
-  | jq '.app_state["staking"]["params"]["bond_denom"]="'"$NATIVE_CURRENCY"'"' \
-  | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$NATIVE_CURRENCY"'"' \
-  | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
-  | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$NATIVE_CURRENCY"'"' \
-  | jq '.app_state["mint"]["params"]["mint_denom"]="'"$NATIVE_CURRENCY"'"' > "$GENESIS_TMP_FILE"
-mv "$GENESIS_TMP_FILE" "$GENESIS_FILE"
-
-if [[ -n "${ACCOUNTS_FILE+x}" ]]; then
-  for i in $(jq '. | keys | .[]' "$ACCOUNTS_FILE"); do
-    row=$(jq ".[$i]" "$ACCOUNTS_FILE")
-    address=$(jq -r '.address' <<<"$row")
-    amount=$(jq -r '.amount' <<<"$row")
-    if [[ "$(jq -r '.vesting' <<<"$row")" != 'null' ]]; then
-      add_vesting_account "$row" "$TMPDIR"
-    else
-      run_cmd "$MODE" "$TMPDIR" add-genesis-account "$address" "$amount"
-    fi
-  done
-fi
-
-cp "$GENESIS_FILE" "$OUTPUT_FILE"
+generate_proto_genesis "$TMPDIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE"
