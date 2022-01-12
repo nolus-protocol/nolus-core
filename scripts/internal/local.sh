@@ -2,30 +2,30 @@
 set -euxo pipefail
 
 # start "instance" variables
+local_root_dir=""
 local_chain_id=""
 # end "instance" variables
 
-init_vars() {
-  local_chain_id="$1"
+init_local_sh() {
+  local_root_dir="$1"
+  local_chain_id="$2"
+
+  rm -fr "$local_root_dir"
+  mkdir -p "$local_root_dir"
 }
 
 deploy() {
-  local root_dir="$1"
-  local node_id="$2"
-  local chain_id="$3"
-
-  local node_dir="$root_dir/$node_id"
+  local node_id="$1"
+  local node_dir=$(node_dir $node_id)
   rm -fr "$node_dir"
   mkdir "$node_dir"
 
-  run_cmd "$node_dir" init "$node_id" --chain-id "$chain_id" 1>/dev/null
+  run_cmd "$node_dir" init "$node_id" --chain-id "$local_chain_id" 1>/dev/null
 }
 
 gen_account() {
-  local root_dir="$1"
-  local node_id="$2"
-
-  local node_dir="$root_dir/$node_id"
+  local node_id="$1"
+  local node_dir=$(node_dir $node_id)
 
   local add_key_out=$(run_cmd "$node_dir" keys add "$node_id" --keyring-backend test --output json 1>/dev/null)
   #TBD keep the mnemonic if necessary
@@ -35,13 +35,12 @@ gen_account() {
 
 # outputs the generated create validator transaction to the standard output
 gen_validator() {
-  local root_dir="$1"
-  local node_id="$2"
-  local genesis_file="$3"
-  local stake="$4"
+  local node_id="$1"
+  local genesis_file="$2"
+  local stake="$3"
   # local ip_address="$5"
 
-  local node_dir="$root_dir/$node_id"
+  local node_dir=$(node_dir $node_id)
   local tx_out_file="$node_dir/config/gentx_out.json"
 
   cp "$genesis_file" "$node_dir/config/genesis.json"
@@ -55,9 +54,15 @@ gen_validator() {
 }
 
 propagate_genesis() {
-  local root_dir="$1"
-  local node_id="$2"
-  local genesis_file="$3"
+  local node_id="$1"
+  local genesis_file="$2"
 
-  cp "$genesis_file" "$root_dir/$node_id/config/genesis.json"
+  cp "$genesis_file" "$(node_dir $node_id)/config/genesis.json"
+}
+
+#####################
+# private functions #
+#####################
+node_dir() {
+  echo "$local_root_dir/$1"
 }

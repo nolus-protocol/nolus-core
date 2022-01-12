@@ -114,7 +114,7 @@ done
 
 source "$SCRIPT_DIR"/internal/cmd.sh
 source "$SCRIPT_DIR"/internal/local.sh
-init_vars "$CHAIN_ID"
+init_local_sh "$OUTPUT_DIR" "$CHAIN_ID"
 
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
@@ -124,14 +124,11 @@ source "$SCRIPT_DIR"/internal/genesis.sh
 # The nodes are placed in sub directories of $OUTPUT_DIR
 # The validator addresses are printed on the standard output one at a line
 init_nodes() {
-  rm -fr "$OUTPUT_DIR"
-  mkdir "$OUTPUT_DIR"
-
   for i in $(seq "$VALIDATORS"); do
     local node_id=$(node_id "$i")
 
-    deploy "$OUTPUT_DIR" "$node_id" "$CHAIN_ID"
-    local address=$(gen_account "$OUTPUT_DIR" "$node_id")
+    deploy "$node_id"
+    local address=$(gen_account "$node_id")
     echo "$address"
   done
 }
@@ -153,7 +150,7 @@ init_validators() {
   for i in $(seq "$VALIDATORS"); do
     local node_id=$(node_id "$i")
 
-    local create_validator_tx=$(gen_validator "$OUTPUT_DIR" "$node_id" "$proto_genesis_file" "$VAL_STAKE")
+    local create_validator_tx=$(gen_validator "$node_id" "$proto_genesis_file" "$VAL_STAKE")
     echo "$create_validator_tx"
   done
 }
@@ -162,7 +159,7 @@ propagate_genesis_all() {
   local genesis_file="$1"
 
   for i in $(seq "$VALIDATORS"); do
-    propagate_genesis "$OUTPUT_DIR" $(node_id "$i") "$genesis_file"
+    propagate_genesis $(node_id "$i") "$genesis_file"
   done
 }
 
