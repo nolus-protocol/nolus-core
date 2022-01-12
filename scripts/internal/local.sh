@@ -53,3 +53,11 @@ gen_validator() {
   run_cmd "$node_dir" gentx "$node_id" "$stake" --keyring-backend test --chain-id "$local_chain_id" --output-document "$tx_out_file" 1>/dev/null
   cat "$tx_out_file"
 }
+
+propagate_genesis() {
+  local root_dir="$1"
+  local node_id="$2"
+  local genesis_file="$3"
+
+  cp "$genesis_file" "$root_dir/$node_id/config/genesis.json"
+}

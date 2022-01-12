@@ -119,22 +119,11 @@ init_nodes() {
   mkdir "$OUTPUT_DIR"
 
   for i in $(seq "$VALIDATORS"); do
-    local node_id="dev-validator-$i"
+    local node_id=$(node_id "$i")
 
     deploy "$OUTPUT_DIR" "$node_id" "$CHAIN_ID"
     local address=$(gen_account "$OUTPUT_DIR" "$node_id")
     echo "$address"
-  done
-}
-
-init_validators() {
-  local proto_genesis_file="$1"
-
-  for i in $(seq "$VALIDATORS"); do
-    local node_id="dev-validator-$i"
-
-    local create_validator_tx=$(gen_validator "$OUTPUT_DIR" "$node_id" "$proto_genesis_file" "$VAL_STAKE")
-    echo "$create_validator_tx"
   done
 }
 
@@ -170,6 +159,29 @@ gen_accounts_spec() {
   echo "$accounts" > "$file"
 }
 
+init_validators() {
+  local proto_genesis_file="$1"
+
+  for i in $(seq "$VALIDATORS"); do
+    local node_id=$(node_id "$i")
+
+    local create_validator_tx=$(gen_validator "$OUTPUT_DIR" "$node_id" "$proto_genesis_file" "$VAL_STAKE")
+    echo "$create_validator_tx"
+  done
+}
+
+propagate_genesis_all() {
+  local genesis_file="$1"
+
+  for i in $(seq "$VALIDATORS"); do
+    propagate_genesis "$OUTPUT_DIR" $(node_id "$i") "$genesis_file"
+  done
+}
+
+node_id() {
+  echo "dev-validator-$1"
+}
+
 ## validate dependencies are installed
 command -v jq >/dev/null 2>&1 || {
   echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
@@ -191,6 +203,6 @@ gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
   --output "$PROTO_GENESIS_FILE"
 create_validator_txs="$(init_validators $PROTO_GENESIS_FILE)"
 integrate_genesis_txs "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
-
+propagate_genesis_all "$FINAL_GENESIS_FILE"
 #init_genesis
 #init_local
