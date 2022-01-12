@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
+cleanup() {
+  if [[ -n "${GENESIS_HOME_DIR:-}" ]]; then
+    rm -rf "$GENESIS_HOME_DIR"
+  fi
+  exit
+}
+trap cleanup INT TERM EXIT
+
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
 VALIDATORS=1
@@ -16,6 +24,7 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
 OUTPUT_DIR="dev-net"
+GENESIS_HOME_DIR=$(mktemp -d)
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -127,27 +136,6 @@ init_nodes() {
   done
 }
 
-init_local() {
-  rm -rf gentxs
-  mkdir gentxs
-  for i in $(seq "$VALIDATORS"); do
-    IP=""
-    if [[ $CUSTOM_IPS = true ]]; then
-      IP="--ip ${IP_ADDRESSES[$(("$i" - 1))]}"
-    fi
-    init-validator-node.sh -g "$PROTO_GENESIS_FILE" -d "node${i}" --moniker "validator-${i}" --mnemonic "$(cat "val_${i}_mnemonic")" --stake "$VAL_STAKE" "$IP" --mode "$MODE"
-    cp -a "node${i}/config/gentx/." "gentxs"
-  done
-
-  collect-validator-gentxs.sh --collector "node1" --gentxs "gentxs" --mode "$MODE"
-  cp "node1/config/genesis.json" "genesis.json"
-
-  # collect the generated messages in validator 1's node for collection and propagate the resulting genesis file
-  for i in $(seq 2 "$VALIDATORS"); do
-    cp "genesis.json" "node${i}/config/"
-  done
-}
-
 gen_accounts_spec() {
   local addresses="$1"
   local file="$2"
@@ -201,8 +189,7 @@ addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
 "$SCRIPT_DIR"/penultimate-genesis.sh --chain-id "$CHAIN_ID" --accounts "$ACCOUNTS_FILE" --currency "$NATIVE_CURRENCY" \
   --output "$PROTO_GENESIS_FILE"
+# generate_proto_genesis
 create_validator_txs="$(init_validators $PROTO_GENESIS_FILE)"
-integrate_genesis_txs "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
+integrate_genesis_txs "$GENESIS_HOME_DIR" "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 propagate_genesis_all "$FINAL_GENESIS_FILE"
-#init_genesis
-#init_local

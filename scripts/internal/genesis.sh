@@ -2,16 +2,17 @@
 set -euxo pipefail
 
 integrate_genesis_txs() {
-  local genesis_in_file="$1"
-  local txs="$2"
-  local genesis_out_file="$3"
+  local genesis_home_dir="$1"
+  local genesis_in_file="$2"
+  local txs="$3"
+  local genesis_out_file="$4"
 
-  local work_dir=$(mktemp -d)
-  local genesis_file="$work_dir"/config/genesis.json
-  mkdir "$work_dir"/config
+  local genesis_basedir="$genesis_home_dir"/config
+  local genesis_file="$genesis_basedir"/genesis.json
+  mkdir "$genesis_basedir"
   cp "$genesis_in_file" "$genesis_file"
 
-  local txs_dir="$work_dir"/txs
+  local txs_dir="$genesis_home_dir"/txs
   {
     mkdir "$txs_dir"
     local index=0
@@ -21,8 +22,6 @@ integrate_genesis_txs() {
     done
   }
 
-  run_cmd "$work_dir" collect-gentxs --gentx-dir "$txs_dir"
+  run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
   cp "$genesis_file" "$genesis_out_file"
-  
-  rm -fr "$work_dir"
 }
