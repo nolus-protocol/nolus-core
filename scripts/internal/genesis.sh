@@ -61,8 +61,8 @@ fix_token_denominations() {
 
   local genesis_tmp_file="$genesis_file".tmp
 
-  cat "$genesis_file" \
-    | jq '.app_state["staking"]["params"]["bond_denom"]="'"$currency"'"' \
+  < "$genesis_file" \
+    jq '.app_state["staking"]["params"]["bond_denom"]="'"$currency"'"' \
     | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \

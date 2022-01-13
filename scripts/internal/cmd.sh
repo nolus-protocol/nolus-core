@@ -11,7 +11,7 @@ run_cmd() {
   local home="$1"
   shift
 
-  "$CMD" $@ --home "$home" 2>&1
+  "$CMD" "$@" --home "$home" 2>&1
 }
 
 

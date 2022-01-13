@@ -105,11 +105,11 @@ if [[ -z "$HOME_DIR" ]]; then
 fi
 
 update_app_home() {
-  update_app "$HOME_DIR" $@
+  update_app "$HOME_DIR" "$@"
 }
 
 update_config_home() {
-  update_config "$HOME_DIR" $@
+  update_config "$HOME_DIR" "$@"
 }
 
 if [[ -n "${MINIMUM_GAS_PRICES+x}" ]]; then

@@ -21,8 +21,6 @@ OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
 TMPDIR=$(mktemp -d)
-MONIKER="localtestnet"
-KEYRING="test"
 NATIVE_CURRENCY="unolus"
 
 POSITIONAL=()

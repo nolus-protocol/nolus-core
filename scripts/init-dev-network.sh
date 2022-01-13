@@ -16,9 +16,7 @@ IP_ADDRESSES=()
 CUSTOM_IPS=false
 POSITIONAL=()
 
-MONIKER="test-moniker-"
 MODE="local"
-KEYRING="test"
 NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -80,7 +78,7 @@ while [[ $# -gt 0 ]]; do
     ;;
 
   -ips)
-    for i in $(echo "$2" | sed "s/,/ /g"); do
+    for i in ${2//,/ }; do
       IP_ADDRESSES+=("$i")
     done
     CUSTOM_IPS=true
@@ -127,10 +125,12 @@ source "$SCRIPT_DIR"/internal/genesis.sh
 # The validator addresses are printed on the standard output one at a line
 init_nodes() {
   for i in $(seq "$VALIDATORS"); do
-    local node_id=$(node_id "$i")
+    local node_id
+    node_id=$(node_id "$i")
 
     deploy "$node_id" "$i"
-    local address=$(gen_account "$node_id")
+    local address
+    address=$(gen_account "$node_id")
     echo "$address"
   done
 }
@@ -150,9 +150,11 @@ init_validators() {
   local proto_genesis_file="$1"
 
   for i in $(seq "$VALIDATORS"); do
-    local node_id=$(node_id "$i")
+    local node_id
+    node_id=$(node_id "$i")
 
-    local create_validator_tx=$(gen_validator "$node_id" "$proto_genesis_file" "$VAL_STAKE")
+    local create_validator_tx
+    create_validator_tx=$(gen_validator "$node_id" "$proto_genesis_file" "$VAL_STAKE")
     echo "$create_validator_tx"
   done
 }
@@ -161,7 +163,7 @@ propagate_genesis_all() {
   local genesis_file="$1"
 
   for i in $(seq "$VALIDATORS"); do
-    propagate_genesis $(node_id "$i") "$genesis_file"
+    propagate_genesis "$(node_id "$i")" "$genesis_file"
   done
 }
 
@@ -187,6 +189,6 @@ FINAL_GENESIS_FILE="$OUTPUT_DIR/genesis.json"
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
 generate_proto_genesis "$GENESIS_HOME_DIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE"
-create_validator_txs="$(init_validators $PROTO_GENESIS_FILE)"
+create_validator_txs="$(init_validators "$PROTO_GENESIS_FILE")"
 integrate_genesis_txs "$GENESIS_HOME_DIR" "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 propagate_genesis_all "$FINAL_GENESIS_FILE"
