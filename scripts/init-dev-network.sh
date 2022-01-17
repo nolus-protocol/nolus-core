@@ -125,12 +125,9 @@ source "$SCRIPT_DIR"/internal/genesis.sh
 # The validator addresses are printed on the standard output one at a line
 init_nodes() {
   for i in $(seq "$VALIDATORS"); do
-    local node_id
-    node_id=$(node_id "$i")
-
-    deploy "$node_id" "$i"
+    deploy "$i"
     local address
-    address=$(gen_account "$node_id")
+    address=$(gen_account "$i")
     echo "$address"
   done
 }
@@ -150,11 +147,8 @@ init_validators() {
   local proto_genesis_file="$1"
 
   for i in $(seq "$VALIDATORS"); do
-    local node_id
-    node_id=$(node_id "$i")
-
     local create_validator_tx
-    create_validator_tx=$(gen_validator "$node_id" "$proto_genesis_file" "$VAL_STAKE")
+    create_validator_tx=$(gen_validator "$i" "$proto_genesis_file" "$VAL_STAKE")
     echo "$create_validator_tx"
   done
 }
@@ -163,12 +157,8 @@ propagate_genesis_all() {
   local genesis_file="$1"
 
   for i in $(seq "$VALIDATORS"); do
-    propagate_genesis "$(node_id "$i")" "$genesis_file"
+    propagate_genesis "$i" "$genesis_file"
   done
-}
-
-node_id() {
-  echo "dev-validator-$1"
 }
 
 ## validate dependencies are installed

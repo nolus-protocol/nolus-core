@@ -19,13 +19,15 @@ init_local_sh() {
 }
 
 deploy() {
-  local node_id="$1"
-  local node_index="$2"
+  local node_index="$1"
 
   local node_dir
-  node_dir=$(node_dir "$node_id")
+  node_dir=$(node_dir "$node_index")
   rm -fr "$node_dir"
   mkdir "$node_dir"
+
+  local node_id
+  node_id=$(node_id "$node_index")
 
   run_cmd "$node_dir" init "$node_id" --chain-id "$local_chain_id" 1>/dev/null
   update_app "$node_dir" '."api"."enable"' "false"
@@ -40,7 +42,7 @@ deploy() {
   update_config "$node_dir" '."p2p"."allow_duplicate_ip"' 'true'
 
   local p2p_first_node_id
-  p2p_first_node_id=$(tendermint_node_id "$node_id")
+  p2p_first_node_id=$(tendermint_node_id 1)
   local p2p_first_host_port
   p2p_first_host_port=$(p2p_host_port 1)
   update_config "$node_dir" '."p2p"."persistent_peers"' '"'"$p2p_first_node_id@$p2p_first_host_port"'"'
@@ -49,9 +51,11 @@ deploy() {
 }
 
 gen_account() {
-  local node_id="$1"
+  local node_index="$1"
   local node_dir
-  node_dir=$(node_dir "$node_id")
+  node_dir=$(node_dir "$node_index")
+  local node_id
+  node_id=$(node_id "$node_index")
 
   run_cmd "$node_dir" keys add "$node_id" --keyring-backend test --output json 1>/dev/null
   run_cmd "$node_dir" keys show -a "$node_id" --keyring-backend test
@@ -59,13 +63,15 @@ gen_account() {
 
 # outputs the generated create validator transaction to the standard output
 gen_validator() {
-  local node_id="$1"
+  local node_index="$1"
   local genesis_file="$2"
   local stake="$3"
   # local ip_address="$5"
-
   local node_dir
-  node_dir=$(node_dir "$node_id")
+  node_dir=$(node_dir "$node_index")
+  local node_id
+  node_id=$(node_id "$node_index")
+
   local tx_out_file="$node_dir/config/gentx_out.json"
 
   cp "$genesis_file" "$node_dir/config/genesis.json"
@@ -79,8 +85,10 @@ gen_validator() {
 }
 
 propagate_genesis() {
-  local node_id="$1"
+  local node_index="$1"
   local genesis_file="$2"
+  local node_id
+  node_id=$(node_id "$node_index")
 
   cp "$genesis_file" "$(node_dir "$node_id")/config/genesis.json"
 }
@@ -89,7 +97,14 @@ propagate_genesis() {
 # private functions #
 #####################
 node_dir() {
-  echo "$local_root_dir/$1"
+  local node_index=$1
+  local node_id
+  node_id=$(node_id "$node_index")
+  echo "$local_root_dir/$node_id"
+}
+
+node_id() {
+  echo "dev-validator-$1"
 }
 
 rpc_port() {
