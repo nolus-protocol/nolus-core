@@ -9,10 +9,12 @@ stages:
   - prep
   - build
   - test
+  - deploy
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/nolus"
   AWS_REGISTRY_ID: "013603813222"
+  ARTIFACT_BUCKET: "nolus-artifact-bucket"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
@@ -136,3 +138,90 @@ test-integration:
   script:
     - export PATH="$(pwd)/target/release:$PATH:$(pwd)/scripts"
     - make test-integration
+
+copy-binary-s3:
+  stage: deploy
+  needs: [ "build-binary" ]
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
+  rules:
+    - if:  $DEV_DEPLOY == "true"
+      when: on_success
+
+
+copy-scripts-s3:
+  stage: deploy
+  needs: [ "build-binary" ]
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws s3 sync scripts s3://$ARTIFACT_BUCKET/scripts
+  rules:
+    - if:  $DEV_DEPLOY == "true"
+      when: on_success
+
+sync-s3-binary:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws ssm send-command \
+      --target "Key=tag:Name,Values=dev-network-worker" \
+      --document-name "AWS-RunShellScript" \
+      --parameters commands='aws s3 cp s3://$ARTIFACT_BUCKET/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned' \
+      --output text --query "Command.CommandId"
+  rules:
+    - if: $DEV_DEPLOY == "true"
+      when: on_success
+
+sync-s3-scripts:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws ssm send-command \
+      --target "Key=tag:Name,Values=dev-network-worker" \
+      --document-name "AWS-RunShellScript" \
+      --parameters commands='aws s3 sync s3://$ARTIFACT_BUCKET/scripts/ /opt/deploy/scripts' \
+      --output text --query "Command.CommandId"
+  rules:
+    - if: $DEV_DEPLOY == "true"
+      when: on_success
+
+
+execute-dev-scripts:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - AWS_SSM_RUN_COMMAND_ID=$(aws ssm send-command \
+      --target "Key=tag:Name,Values=dev-network-worker" \
+      --document-name "AWS-RunShellScript" \
+      --parameters commands='/opt/deploy/scripts/init-dev-network.sh -v 3 --output validators' && 
+          cosmzoned start --home validators/dev-validator-1/ &
+          cosmzoned start --home validators/dev-validator-2/ &
+          cosmzoned start --home validators/dev-validator-3/ & \
+      --output text --query "Command.CommandId")
+    - aws ssm list-command-invocations \
+      --command-id $AWS_SSM_RUN_COMMAND_ID \
+      --details
+  rules:
+    - if: $DEV_DEPLOY == "true"
+      when: on_success
