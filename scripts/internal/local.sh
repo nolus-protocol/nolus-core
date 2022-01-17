@@ -87,10 +87,8 @@ gen_validator() {
 propagate_genesis() {
   local node_index="$1"
   local genesis_file="$2"
-  local node_id
-  node_id=$(node_id "$node_index")
 
-  cp "$genesis_file" "$(node_dir "$node_id")/config/genesis.json"
+  cp "$genesis_file" "$(node_dir "$node_index")/config/genesis.json"
 }
 
 #####################
