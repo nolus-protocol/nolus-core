@@ -13,7 +13,9 @@ export interface QuerySuspendResponse {
   state?: SuspendedState;
 }
 
-const baseQuerySuspendRequest: object = {};
+function createBaseQuerySuspendRequest(): QuerySuspendRequest {
+  return {};
+}
 
 export const QuerySuspendRequest = {
   encode(
@@ -26,7 +28,7 @@ export const QuerySuspendRequest = {
   decode(input: _m0.Reader | Uint8Array, length?: number): QuerySuspendRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQuerySuspendRequest } as QuerySuspendRequest;
+    const message = createBaseQuerySuspendRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -39,8 +41,7 @@ export const QuerySuspendRequest = {
   },
 
   fromJSON(_: any): QuerySuspendRequest {
-    const message = { ...baseQuerySuspendRequest } as QuerySuspendRequest;
-    return message;
+    return {};
   },
 
   toJSON(_: QuerySuspendRequest): unknown {
@@ -51,12 +52,14 @@ export const QuerySuspendRequest = {
   fromPartial<I extends Exact<DeepPartial<QuerySuspendRequest>, I>>(
     _: I
   ): QuerySuspendRequest {
-    const message = { ...baseQuerySuspendRequest } as QuerySuspendRequest;
+    const message = createBaseQuerySuspendRequest();
     return message;
   },
 };
 
-const baseQuerySuspendResponse: object = {};
+function createBaseQuerySuspendResponse(): QuerySuspendResponse {
+  return { state: undefined };
+}
 
 export const QuerySuspendResponse = {
   encode(
@@ -75,7 +78,7 @@ export const QuerySuspendResponse = {
   ): QuerySuspendResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseQuerySuspendResponse } as QuerySuspendResponse;
+    const message = createBaseQuerySuspendResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -91,12 +94,11 @@ export const QuerySuspendResponse = {
   },
 
   fromJSON(object: any): QuerySuspendResponse {
-    const message = { ...baseQuerySuspendResponse } as QuerySuspendResponse;
-    message.state =
-      object.state !== undefined && object.state !== null
+    return {
+      state: isSet(object.state)
         ? SuspendedState.fromJSON(object.state)
-        : undefined;
-    return message;
+        : undefined,
+    };
   },
 
   toJSON(message: QuerySuspendResponse): unknown {
@@ -111,7 +113,7 @@ export const QuerySuspendResponse = {
   fromPartial<I extends Exact<DeepPartial<QuerySuspendResponse>, I>>(
     object: I
   ): QuerySuspendResponse {
-    const message = { ...baseQuerySuspendResponse } as QuerySuspendResponse;
+    const message = createBaseQuerySuspendResponse();
     message.state =
       object.state !== undefined && object.state !== null
         ? SuspendedState.fromPartial(object.state)
@@ -185,4 +187,8 @@ export type Exact<P, I extends P> = P extends Builtin
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

@@ -13,7 +13,7 @@ import {defaultRegistryTypes} from "@cosmjs/stargate";
 import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "./codec/cosmos/vesting/v1beta1/tx";
 import {generateMnemonic, mnemonicToSeedSync} from "bip39";
 import {fromSeed} from "bip32";
-import {MsgChangeSuspended, protobufPackage as suspendPackage} from "./codec/nolus/suspend/v1beta1/tx";
+import {MsgSuspend, MsgUnsuspend, protobufPackage as suspendPackage} from "./codec/nolus/suspend/v1beta1/tx";
 import {QuerySuspendRequest} from "./codec/nolus/suspend/v1beta1/query";
 
 let validatorPrivKey = fromHex(process.env.VALIDATOR_PRIV_KEY as string);
@@ -114,7 +114,8 @@ function getSignerOptions(): SigningCosmWasmClientOptions {
         ["/cosmwasm.wasm.v1.MsgInstantiateContract", MsgInstantiateContract],
         ["/cosmwasm.wasm.v1.MsgUpdateAdmin", MsgUpdateAdmin],
         [`/${vestingPackage}.MsgCreateVestingAccount`, MsgCreateVestingAccount],
-        [`/${suspendPackage}.MsgChangeSuspended`, MsgChangeSuspended],
+        [`/${suspendPackage}.MsgSuspend`, MsgSuspend],
+        [`/${suspendPackage}.MsgUnsuspend`, MsgUnsuspend],
         [`/${suspendPackage}.QuerySuspendRequest`, QuerySuspendRequest],
     ]);
     return {registry: customRegistry}

@@ -38,7 +38,7 @@ func (k Keeper) SetState(ctx sdk.Context, state types.SuspendedState) {
 	store.Set(types.SuspendStateKey, b)
 }
 
-func (k Keeper) ChangeSuspendedState(ctx sdk.Context, msg *types.MsgChangeSuspended) error {
+func (k Keeper) SetSuspendState(ctx sdk.Context, suspended bool, fromAddr string, blockHeight int64) error {
 	state := k.GetState(ctx)
 	if len(state.AdminAddress) == 0 {
 		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "No admin address is set")
@@ -47,15 +47,15 @@ func (k Keeper) ChangeSuspendedState(ctx sdk.Context, msg *types.MsgChangeSuspen
 	if err != nil {
 		return err
 	}
-	fromAcc, err := sdk.AccAddressFromBech32(msg.FromAddress)
+	fromAcc, err := sdk.AccAddressFromBech32(fromAddr)
 	if err != nil {
 		return err
 	}
 	if !adminAcc.Equals(fromAcc) {
-		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to change suspended state", msg.FromAddress)
+		return sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to change suspended state", fromAddr)
 	}
-	state.Suspended = msg.Suspended
-	state.BlockHeight = msg.BlockHeight
+	state.Suspended = suspended
+	state.BlockHeight = blockHeight
 	k.SetState(ctx, state)
 	return nil
 }

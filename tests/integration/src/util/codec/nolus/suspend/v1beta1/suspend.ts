@@ -10,11 +10,9 @@ export interface SuspendedState {
   adminAddress: string;
 }
 
-const baseSuspendedState: object = {
-  suspended: false,
-  blockHeight: Long.ZERO,
-  adminAddress: "",
-};
+function createBaseSuspendedState(): SuspendedState {
+  return { suspended: false, blockHeight: Long.ZERO, adminAddress: "" };
+}
 
 export const SuspendedState = {
   encode(
@@ -36,7 +34,7 @@ export const SuspendedState = {
   decode(input: _m0.Reader | Uint8Array, length?: number): SuspendedState {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseSuspendedState } as SuspendedState;
+    const message = createBaseSuspendedState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -58,20 +56,15 @@ export const SuspendedState = {
   },
 
   fromJSON(object: any): SuspendedState {
-    const message = { ...baseSuspendedState } as SuspendedState;
-    message.suspended =
-      object.suspended !== undefined && object.suspended !== null
-        ? Boolean(object.suspended)
-        : false;
-    message.blockHeight =
-      object.blockHeight !== undefined && object.blockHeight !== null
+    return {
+      suspended: isSet(object.suspended) ? Boolean(object.suspended) : false,
+      blockHeight: isSet(object.blockHeight)
         ? Long.fromString(object.blockHeight)
-        : Long.ZERO;
-    message.adminAddress =
-      object.adminAddress !== undefined && object.adminAddress !== null
+        : Long.ZERO,
+      adminAddress: isSet(object.adminAddress)
         ? String(object.adminAddress)
-        : "";
-    return message;
+        : "",
+    };
   },
 
   toJSON(message: SuspendedState): unknown {
@@ -87,7 +80,7 @@ export const SuspendedState = {
   fromPartial<I extends Exact<DeepPartial<SuspendedState>, I>>(
     object: I
   ): SuspendedState {
-    const message = { ...baseSuspendedState } as SuspendedState;
+    const message = createBaseSuspendedState();
     message.suspended = object.suspended ?? false;
     message.blockHeight =
       object.blockHeight !== undefined && object.blockHeight !== null
@@ -130,4 +123,8 @@ export type Exact<P, I extends P> = P extends Builtin
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

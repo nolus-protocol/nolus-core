@@ -34,7 +34,7 @@ func CmdChangeSuspend() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgChangeSuspended(
+			msg := types.NewMsgSuspend(
 				clientCtx.GetFromAddress().String(),
 				argSuspend,
 				argBlockHeight,

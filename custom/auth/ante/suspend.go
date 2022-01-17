@@ -23,13 +23,13 @@ func (nsd NolusSuspendDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate
 
 	state := nsd.sk.GetState(ctx)
 	if state.Suspended && ctx.BlockHeight() > state.BlockHeight {
-		includesSuspend := false
+		includesUnsuspend := false
 		for _, msg := range tx.GetMsgs() {
-			if _, ok := msg.(*suspendTypes.MsgChangeSuspended); ok {
-				includesSuspend = true
+			if _, ok := msg.(*suspendTypes.MsgUnsuspend); ok {
+				includesUnsuspend = true
 			}
 		}
-		if includesSuspend {
+		if includesUnsuspend {
 			return next(ctx, tx, simulate)
 		} else {
 			return ctx, sdkerrors.Wrap(suspendTypes.ErrSuspended, "unauthorized")

@@ -1,4 +1,4 @@
-import {MsgChangeSuspended, protobufPackage} from "../util/codec/nolus/suspend/v1beta1/tx";
+import {MsgSuspend, MsgUnsuspend, protobufPackage} from "../util/codec/nolus/suspend/v1beta1/tx";
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {
     getGenesisUser1Client,
@@ -10,7 +10,7 @@ import {
 import Long from "long";
 import {EncodeObject} from "@cosmjs/proto-signing/build/registry";
 import {getSuspendQueryClient} from "./suspend-client";
-import {QueryClientImpl} from "../util/codec/nolus/suspend/v1beta1/query";
+import {Query} from "../util/codec/nolus/suspend/v1beta1/query";
 import {AccountData} from "@cosmjs/proto-signing";
 import {isBroadcastTxFailure} from "@cosmjs/stargate";
 import {DEFAULT_FEE} from "../util/utils";
@@ -22,7 +22,7 @@ describe("suspend module", () => {
     let validatorAccount: AccountData
     let genUserClient: SigningCosmWasmClient;
     let genUserAccount: AccountData
-    let suspendQueryClient: QueryClientImpl
+    let suspendQueryClient: Query
 
     beforeEach(async () => {
         validatorClient = await getValidatorClient();
@@ -33,13 +33,13 @@ describe("suspend module", () => {
     })
 
     afterAll(async () => {
-        const suspendedMsg = asMsgChangeSuspended(validatorAccount, false, 0);
+        const suspendedMsg = asMsgUnsuspend(validatorAccount);
         await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
     })
 
     describe("given admin account signer", () => {
         test("suspended state can be enabled and then disabled", async () => {
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, 1);
+            const suspendedMsg = asMsgSuspend(validatorAccount, 1);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
             let suspendResponse = await suspendQueryClient.SuspendedState({});
@@ -47,18 +47,17 @@ describe("suspend module", () => {
             expect(suspendResponse.state?.suspended).toBeTruthy();
             expect(suspendResponse.state?.blockHeight).toEqual(Long.fromNumber(1));
 
-            const unsuspendedMsg = asMsgChangeSuspended(validatorAccount, false, 2);
+            const unsuspendedMsg = asMsgUnsuspend(validatorAccount);
             await validatorClient.signAndBroadcast(validatorAccount.address, [unsuspendedMsg], DEFAULT_FEE);
 
             suspendResponse = await suspendQueryClient.SuspendedState({});
             expect(suspendResponse.state).toBeDefined();
             expect(suspendResponse.state?.suspended).toBeFalsy();
-            expect(suspendResponse.state?.blockHeight).toEqual(Long.fromNumber(2));
         })
 
         test("when suspended and height reached then other transactions are unauthorized", async () => {
             let currentHeight = await validatorClient.getHeight();
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, currentHeight + 1);
+            const suspendedMsg = asMsgSuspend(validatorAccount, currentHeight + 1);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
             const broadcast = () => validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
@@ -67,19 +66,19 @@ describe("suspend module", () => {
 
         test("when suspended but height is not reached then other transactions are authorized", async () => {
             let currentHeight = await validatorClient.getHeight();
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, currentHeight + 1000);
+            const suspendedMsg = asMsgSuspend(validatorAccount, currentHeight + 1000);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
             const result = await validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
             expect(isBroadcastTxFailure(result)).toBeFalsy()
         })
 
-        test("when suspended can send multiple messages when one of them is MsgChangeSuspend", async () => {
+        test("when suspended can send multiple messages when one of them is MsgUnsuspend", async () => {
             let currentHeight = await validatorClient.getHeight();
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, currentHeight);
+            const suspendedMsg = asMsgSuspend(validatorAccount, currentHeight);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            const unsuspendMsg = asMsgChangeSuspended(validatorAccount, false, 0);
+            const unsuspendMsg = asMsgUnsuspend(validatorAccount);
             const [user1Account] = await (await getUser1Wallet()).getAccounts()
 
             const fullTransferMsg1 = dummyMsgTransfer(validatorAccount, genUserAccount);
@@ -96,48 +95,48 @@ describe("suspend module", () => {
     describe("given non admin account signer", () => {
         test("state suspended cannot be changed", async () => {
             // ensure state cannot be modified while being in state suspended
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, 0);
+            const suspendedMsg = asMsgSuspend(validatorAccount, 0);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            let invalidMsg = asMsgChangeSuspended(genUserAccount, false, 1);
+            let invalidMsg = asMsgUnsuspend(genUserAccount);
             let result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
             expect(isBroadcastTxFailure(result)).toBeTruthy();
 
             // ensure state cannot be modified while also being in state unsuspended
-            const unSuspendedMsg = asMsgChangeSuspended(validatorAccount, false, 0);
-            await validatorClient.signAndBroadcast(validatorAccount.address, [unSuspendedMsg], DEFAULT_FEE);
+            const unsuspendedMsg = asMsgUnsuspend(validatorAccount);
+            await validatorClient.signAndBroadcast(validatorAccount.address, [unsuspendedMsg], DEFAULT_FEE);
 
 
-            invalidMsg = asMsgChangeSuspended(genUserAccount, false, 1);
+            invalidMsg = asMsgUnsuspend(genUserAccount);
             result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
             expect(isBroadcastTxFailure(result)).toBeTruthy();
         })
 
         test("state height cannot be changed", async () => {
-            let invalidMsg = asMsgChangeSuspended(genUserAccount, false, 100);
+            let invalidMsg = asMsgSuspend(genUserAccount, 100);
             let result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
             expect(isBroadcastTxFailure(result)).toBeTruthy();
         })
 
         test("message cannot be send with forged from address", async () => {
-            let invalidMsg = asMsgChangeSuspended(validatorAccount, false, 100);
+            let invalidMsg = asMsgSuspend(validatorAccount, 100);
             let broadcast = () => genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE);
             await expect(broadcast).rejects.toThrow(/^Broadcasting transaction failed with code 8*/)
         })
 
         test("when suspended and height reached then other transactions are unauthorized", async () => {
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, 0);
+            const suspendedMsg = asMsgSuspend(validatorAccount, 0);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
             const broadcast = () => genUserClient.sendTokens(genUserAccount.address, validatorAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
             await expect(broadcast).rejects.toThrow(/^.*unauthorized: node is suspended$/)
         })
 
-        test("when suspended cannot bypass it by sending multiple messages including MsgChangeSuspend", async () => {
-            const suspendedMsg = asMsgChangeSuspended(validatorAccount, true, 0);
+        test("when suspended cannot bypass it by sending multiple messages including MsgSuspend and MsgUnsuspend", async () => {
+            const suspendedMsg = asMsgSuspend(validatorAccount, 0);
             await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
 
-            const unsuspendMsg = asMsgChangeSuspended(genUserAccount, false, 0);
+            const unsuspendMsg = asMsgUnsuspend(genUserAccount);
             const [user1Account] = await (await getUser1Wallet()).getAccounts()
 
             const fullTransferMsg1 = dummyMsgTransfer(genUserAccount, validatorAccount)
@@ -149,14 +148,23 @@ describe("suspend module", () => {
         })
     })
 
-    function asMsgChangeSuspended(fromAddress: AccountData, suspended: boolean, blockHeight: number): EncodeObject {
-        const suspendMsg: MsgChangeSuspended = {
+    function asMsgSuspend(fromAddress: AccountData, blockHeight: number): EncodeObject {
+        const suspendMsg: MsgSuspend = {
             fromAddress: fromAddress.address,
-            suspended,
             blockHeight: Long.fromNumber(blockHeight)
         }
         return {
-            typeUrl: `/${protobufPackage}.MsgChangeSuspended`,
+            typeUrl: `/${protobufPackage}.MsgSuspend`,
+            value: suspendMsg,
+        };
+    }
+
+    function asMsgUnsuspend(fromAddress: AccountData): EncodeObject {
+        const suspendMsg: MsgUnsuspend = {
+            fromAddress: fromAddress.address
+        }
+        return {
+            typeUrl: `/${protobufPackage}.MsgUnsuspend`,
             value: suspendMsg,
         };
     }
