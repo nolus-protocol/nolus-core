@@ -64,12 +64,12 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	"github.com/cosmos/ibc-go/v2/modules/apps/transfer"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v2/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v2/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v2/modules/core"
 	ibcporttypes "github.com/cosmos/ibc-go/v2/modules/core/05-port/types"
+	ibchost "github.com/cosmos/ibc-go/v2/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v2/modules/core/keeper"
 	"github.com/spf13/cast"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -457,6 +457,7 @@ func New(
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper),
+		suspendModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 

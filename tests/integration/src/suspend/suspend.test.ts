@@ -1,19 +1,13 @@
 import {MsgSuspend, MsgUnsuspend, protobufPackage} from "../util/codec/nolus/suspend/v1beta1/tx";
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
-import {
-    getGenesisUser1Client,
-    getGenesisUser1Wallet,
-    getUser1Wallet,
-    getValidatorClient,
-    getValidatorWallet
-} from "../util/clients";
+import {createWallet, getClient, getUser1Wallet, getValidatorClient, getValidatorWallet} from "../util/clients";
 import Long from "long";
 import {EncodeObject} from "@cosmjs/proto-signing/build/registry";
 import {getSuspendQueryClient} from "./suspend-client";
 import {Query} from "../util/codec/nolus/suspend/v1beta1/query";
 import {AccountData} from "@cosmjs/proto-signing";
 import {isBroadcastTxFailure} from "@cosmjs/stargate";
-import {DEFAULT_FEE} from "../util/utils";
+import {DEFAULT_FEE, TEN_NOLUS} from "../util/utils";
 
 
 describe("suspend module", () => {
@@ -24,15 +18,19 @@ describe("suspend module", () => {
     let genUserAccount: AccountData
     let suspendQueryClient: Query
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         validatorClient = await getValidatorClient();
         [validatorAccount] = await (await getValidatorWallet()).getAccounts();
-        genUserClient = await getGenesisUser1Client();
-        [genUserAccount] = await (await getGenesisUser1Wallet()).getAccounts()
+        let genWallet = await createWallet();
+        [genUserAccount] = await genWallet.getAccounts()
+        genUserClient = await getClient(genWallet);
         suspendQueryClient = await getSuspendQueryClient(process.env.NODE_URL as string);
+
+        // create & fund account
+        await validatorClient.sendTokens(validatorAccount.address, genUserAccount.address, TEN_NOLUS, DEFAULT_FEE);
     })
 
-    afterAll(async () => {
+    afterEach(async () => {
         const suspendedMsg = asMsgUnsuspend(validatorAccount);
         await validatorClient.signAndBroadcast(validatorAccount.address, [suspendedMsg], DEFAULT_FEE);
     })

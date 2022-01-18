@@ -49,6 +49,10 @@ create_vested_account() {
 prepare_env() {
   init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$NET_ROOT_DIR" 2>&1
   edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
+  # TODO Set suspend admin in a better wau
+  jq '.app_state["suspend"]["state"]["admin_address"]="'"$(cosmzoned keys show dev-validator-1 -a --home networks/nolus/dev-validator-1 --keyring-backend test)"'"' > tmp-genesis.json < "$HOME_DIR/config/genesis.json"
+  mv tmp-genesis.json "$HOME_DIR/config/genesis.json"
+
   create_ibc_network
 
   create_vested_account
