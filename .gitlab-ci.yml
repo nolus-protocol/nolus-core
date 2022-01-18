@@ -72,7 +72,7 @@ download-wasmvm-lib:
     - mkdir -p $WASMVM_DIR
   script:
    - if [ ! -f "$WASMVM_LOCAL_PATH" ] || \
-        ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH") | grep "$WASMVM_LIB_SHA256" - );
+        ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$WASMVM_LIB_SHA256" - );
      then
         wget -O $WASMVM_LOCAL_PATH $WASMVM_URL;
      fi
