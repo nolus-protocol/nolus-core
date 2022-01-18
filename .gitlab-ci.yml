@@ -66,12 +66,16 @@ download-wasmvm-lib:
       - $WASMVM_REL_DIR
   variables:
     WASMVM_LIB: "libwasmvm_muslc.a"
-    WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/v1.0.0-beta5/$WASMVM_LIB"
+    WASMVM_URL: "https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION/$WASMVM_LIB"
     WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
   before_script:
     - mkdir -p $WASMVM_DIR
   script:
-   - if [ ! -f "$WASMVM_LOCAL_PATH" ]; then wget -O $WASMVM_LOCAL_PATH $WASMVM_URL; fi
+   - if [ ! -f "$WASMVM_LOCAL_PATH" ] || \
+        ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH") | grep "$WASMVM_LIB_SHA256" - );
+     then
+        wget -O $WASMVM_LOCAL_PATH $WASMVM_URL;
+     fi
 
 build-binary:
   stage: build
