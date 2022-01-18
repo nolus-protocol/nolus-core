@@ -76,7 +76,7 @@ download-wasmvm-lib:
    - if [ ! -f "$WASMVM_LOCAL_PATH" ]; then wget -O $WASMVM_LOCAL_PATH $WASMVM_URL; fi
 
 build-binary:
-  stage: build
+  stage: buildess
   extends:
     - .go-build
   script:
