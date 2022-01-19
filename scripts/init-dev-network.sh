@@ -22,6 +22,7 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
 OUTPUT_DIR="dev-net"
+SUSPEND_ADMIN=""
 GENESIS_HOME_DIR=$(mktemp -d)
 
 while [[ $# -gt 0 ]]; do
@@ -38,6 +39,7 @@ while [[ $# -gt 0 ]]; do
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
     [-ips <ip_addrs>]
+    [--suspend-admin <bech32address>]
     [-m|--mode <local|docker>]
     [-o|--output <output_dir>]" "$0"
     exit 0
@@ -85,7 +87,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-
+  --suspend-admin)
+    SUSPEND_ADMIN="$2"
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -178,7 +184,7 @@ FINAL_GENESIS_FILE="$OUTPUT_DIR/genesis.json"
 
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
-generate_proto_genesis "$GENESIS_HOME_DIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE"
+generate_proto_genesis "$GENESIS_HOME_DIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE" "$SUSPEND_ADMIN"
 create_validator_txs="$(init_validators "$PROTO_GENESIS_FILE")"
 integrate_genesis_txs "$GENESIS_HOME_DIR" "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 propagate_genesis_all "$FINAL_GENESIS_FILE"

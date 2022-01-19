@@ -7,13 +7,15 @@ generate_proto_genesis() {
   local accounts_file="$3"
   local currency="$4"
   local proto_genesis_file="$5"
+  local suspend_admin="$6"
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config keyring-backend test
   run_cmd "$genesis_home_dir" config chain-id "$chain_id"
 
   local genesis_file="$genesis_home_dir/config/genesis.json"
-  fix_token_denominations "$genesis_file" "$currency"
+  set_token_denominations "$genesis_file" "$currency"
+  set_suspend_admin "$genesis_file" "$suspend_admin"
 
   if [[ -n "${accounts_file+x}" ]]; then
     for i in $(jq '. | keys | .[]' "$accounts_file"); do
@@ -55,7 +57,7 @@ integrate_genesis_txs() {
   cp "$genesis_file" "$genesis_out_file"
 }
 
-fix_token_denominations() {
+set_token_denominations() {
   local genesis_file="$1"
   local currency="$2"
 
@@ -67,5 +69,15 @@ fix_token_denominations() {
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["mint"]["params"]["mint_denom"]="'"$currency"'"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+set_suspend_admin() {
+  local genesis_file="$1"
+  local suspend_admin="$2"
+  local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["suspend"]["state"]["admin_address"]="'"$suspend_admin"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }

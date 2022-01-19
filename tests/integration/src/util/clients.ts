@@ -21,6 +21,7 @@ let periodicPrivKey = fromHex(process.env.PERIODIC_PRIV_KEY as string);
 let user1PrivKey = fromHex(process.env.USR_1_PRIV_KEY as string);
 let user2PrivKey = fromHex(process.env.USR_2_PRIV_KEY as string);
 let delayedVestingPrivKey = fromHex(process.env.DELAYED_VESTING_PRIV_KEY as string);
+let suspendAdminPrivKey = fromHex(process.env.SUSPEND_ADMIN_PRIV_KEY as string);
 
 
 export const NOLUS_PREFIX = "nolus";
@@ -69,6 +70,14 @@ export async function getUser1Wallet(): Promise<DirectSecp256k1Wallet> {
 
 export async function getUser1Client(): Promise<SigningCosmWasmClient> {
     return await getClientWithKey(user1PrivKey);
+}
+
+export async function getSuspendAdminWallet(): Promise<DirectSecp256k1Wallet> {
+    return await getWallet(suspendAdminPrivKey);
+}
+
+export async function getSuspendAdminClient(): Promise<SigningCosmWasmClient> {
+    return await getClientWithKey(suspendAdminPrivKey);
 }
 
 export async function createWallet(): Promise<DirectSecp256k1Wallet> {

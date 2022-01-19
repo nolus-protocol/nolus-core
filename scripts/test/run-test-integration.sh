@@ -47,11 +47,13 @@ create_vested_account() {
 }
 
 prepare_env() {
-  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$NET_ROOT_DIR" 2>&1
+  # note that the suspend admin account will be deleted by the init-dev-network script, so we first need to save his private key for later use in the tests
+  local suspend_admin_output
+  suspend_admin_output="$(cosmzoned keys add suspend-admin --keyring-backend "test" --home "$HOME_DIR" --output json)"
+  SUSPEND_ADMIN_ADDR="$(echo "$suspend_admin_output" | jq -r '.address')"
+  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)"
+  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
   edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
-  # TODO Set suspend admin in a better wau
-  jq '.app_state["suspend"]["state"]["admin_address"]="'"$(cosmzoned keys show dev-validator-1 -a --home networks/nolus/dev-validator-1 --keyring-backend test)"'"' > tmp-genesis.json < "$HOME_DIR/config/genesis.json"
-  mv tmp-genesis.json "$HOME_DIR/config/genesis.json"
 
   create_ibc_network
 
@@ -72,6 +74,7 @@ USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
 PERIODIC_PRIV_KEY=${PERIODIC_PRIV_KEY}
 DELAYED_VESTING_PRIV_KEY=${DELAYED_VESTING_PRIV_KEY}
+SUSPEND_ADMIN_PRIV_KEY=${SUSPEND_ADMIN_PRIV_KEY}
 IBC_TOKEN=${IBC_TOKEN}
 EOF
   )
