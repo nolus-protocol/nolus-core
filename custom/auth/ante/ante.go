@@ -1,6 +1,8 @@
 package ante
 
 import (
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
@@ -11,11 +13,13 @@ import (
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
-	AccountKeeper   AccountKeeper
-	BankKeeper      types.BankKeeper
-	SuspendKeeper   SuspendKeeper
-	SignModeHandler authsigning.SignModeHandler
-	SigGasConsumer  func(meter sdk.GasMeter, sig signing.SignatureV2, params types.Params) error
+	AccountKeeper     AccountKeeper
+	BankKeeper        types.BankKeeper
+	SuspendKeeper     SuspendKeeper
+	SignModeHandler   authsigning.SignModeHandler
+	TxCounterStoreKey sdk.StoreKey
+	WasmConfig        wasmTypes.WasmConfig
+	SigGasConsumer    func(meter sdk.GasMeter, sig signing.SignatureV2, params types.Params) error
 }
 
 // NewAnteHandler returns an AnteHandler that checks and increments sequence
@@ -40,7 +44,10 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	anteDecorators := []sdk.AnteDecorator{
+		// based on the sdk antehandlers https://github.com/cosmos/cosmos-sdk/blob/v0.44.5/x/auth/ante/ante.go
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
+		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
+		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
 		ante.NewRejectExtensionOptionsDecorator(),
 		NewSuspendDecorator(options.SuspendKeeper),
 		ante.NewMempoolFeeDecorator(),
