@@ -174,7 +174,12 @@ command -v jq >/dev/null 2>&1 || {
 }
 
 if [[ "$CUSTOM_IPS" = true && "${#IP_ADDRESSES[@]}" -ne "$VALIDATORS" ]]; then
-  echo >&2 "non matching ip addesses"
+  echo >&2 "non matching ip addresses"
+  exit 1
+fi
+
+if [[ -z "$SUSPEND_ADMIN" ]]; then
+  echo >&2 "Suspend admin was not set"
   exit 1
 fi
 

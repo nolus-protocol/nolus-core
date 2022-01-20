@@ -89,7 +89,7 @@ create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
     init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
-      --chain-id 'mars-private' --output "$MARS_ROOT_DIR"
+      --chain-id 'mars-private' --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' --output "$MARS_ROOT_DIR"
     edit-configuration.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
