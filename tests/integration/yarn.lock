@@ -3046,10 +3046,10 @@ ts-proto-descriptors@^1.2.1:
     long "^4.0.0"
     protobufjs "^6.8.8"
 
-ts-proto@^1.80.1:
-  version "1.96.1"
-  resolved "https://registry.npmjs.org/ts-proto/-/ts-proto-1.96.1.tgz"
-  integrity sha512-Tji2/afX5AbAs9xTr+JbKt9SoJw3Kp3+gjnjursjazS5jyz92H+dpYXcxeqCOH3rjApn684ml/rgC+zkQ3HXzw==
+ts-proto@^1.101.0:
+  version "1.101.0"
+  resolved "https://registry.npmjs.org/ts-proto/-/ts-proto-1.101.0.tgz"
+  integrity sha512-XUV0WKQ3icHMToOOpUjf0RCKF9md+Lu9TV00LQlZ6ailJhbBqLh0BXQJ1PFUGxEW8YV65Wc/N8vAir152OE2Sg==
   dependencies:
     "@types/object-hash" "^1.3.0"
     dataloader "^1.4.0"

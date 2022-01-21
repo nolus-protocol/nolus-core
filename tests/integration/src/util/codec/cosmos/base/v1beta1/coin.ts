@@ -73,16 +73,10 @@ export const Coin = {
   },
 
   fromJSON(object: any): Coin {
-    const message = createBaseCoin();
-    message.denom =
-      object.denom !== undefined && object.denom !== null
-        ? String(object.denom)
-        : "";
-    message.amount =
-      object.amount !== undefined && object.amount !== null
-        ? String(object.amount)
-        : "";
-    return message;
+    return {
+      denom: isSet(object.denom) ? String(object.denom) : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+    };
   },
 
   toJSON(message: Coin): unknown {
@@ -140,16 +134,10 @@ export const DecCoin = {
   },
 
   fromJSON(object: any): DecCoin {
-    const message = createBaseDecCoin();
-    message.denom =
-      object.denom !== undefined && object.denom !== null
-        ? String(object.denom)
-        : "";
-    message.amount =
-      object.amount !== undefined && object.amount !== null
-        ? String(object.amount)
-        : "";
-    return message;
+    return {
+      denom: isSet(object.denom) ? String(object.denom) : "",
+      amount: isSet(object.amount) ? String(object.amount) : "",
+    };
   },
 
   toJSON(message: DecCoin): unknown {
@@ -201,10 +189,9 @@ export const IntProto = {
   },
 
   fromJSON(object: any): IntProto {
-    const message = createBaseIntProto();
-    message.int =
-      object.int !== undefined && object.int !== null ? String(object.int) : "";
-    return message;
+    return {
+      int: isSet(object.int) ? String(object.int) : "",
+    };
   },
 
   toJSON(message: IntProto): unknown {
@@ -254,10 +241,9 @@ export const DecProto = {
   },
 
   fromJSON(object: any): DecProto {
-    const message = createBaseDecProto();
-    message.dec =
-      object.dec !== undefined && object.dec !== null ? String(object.dec) : "";
-    return message;
+    return {
+      dec: isSet(object.dec) ? String(object.dec) : "",
+    };
   },
 
   toJSON(message: DecProto): unknown {
@@ -305,4 +291,8 @@ export type Exact<P, I extends P> = P extends Builtin
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
+}
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
 }

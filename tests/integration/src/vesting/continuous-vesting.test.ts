@@ -1,11 +1,11 @@
-import {createWallet, DEFAULT_FEE, getClient, getValidatorClient, getValidatorWallet} from "../util/clients";
+import {createWallet, getClient, getValidatorClient, getValidatorWallet} from "../util/clients";
 import {AccountData, EncodeObject} from "@cosmjs/proto-signing";
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
 import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "../util/codec/cosmos/vesting/v1beta1/tx";
 
 import Long from "long";
 import {assertIsBroadcastTxSuccess, isBroadcastTxFailure} from "@cosmjs/stargate";
-import {sleep} from "../util/utils";
+import {DEFAULT_FEE, sleep} from "../util/utils";
 import {Coin} from "../util/codec/cosmos/base/v1beta1/coin";
 
 describe("continuous vesting", () => {

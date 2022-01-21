@@ -1,0 +1,27 @@
+syntax = "proto3";
+package nolus.suspend.v1beta1;
+
+import "nolus/suspend/v1beta1/suspend.proto";
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+// this line is used by starport scaffolding # 1
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types";
+
+// Query defines the gRPC querier service.
+service Query {
+  // this line is used by starport scaffolding # 2
+  rpc SuspendedState(QuerySuspendRequest) returns (QuerySuspendResponse) {
+    option (google.api.http).get = "/nolus/suspend/v1beta1/state";
+  }
+
+}
+
+// QueryParamsRequest is the request type for the Query/Params RPC method.
+message QuerySuspendRequest {}
+
+// QueryParamsResponse is the response type for the Query/Params RPC method.
+message QuerySuspendResponse {
+  SuspendedState state = 1 [(gogoproto.nullable) = false];
+}
+// this line is used by starport scaffolding # 3

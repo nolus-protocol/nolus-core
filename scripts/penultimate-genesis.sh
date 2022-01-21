@@ -20,6 +20,7 @@ CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
 MODE="local"
 ACCOUNTS_FILE=""
+SUSPEND_ADMIN=""
 TMPDIR=$(mktemp -d)
 NATIVE_CURRENCY="unolus"
 
@@ -48,6 +49,11 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --suspend-admin)
+    SUSPEND_ADMIN="$2"
+    shift
+    shift
+    ;;
   -m | --mode)
     MODE="$2"
     [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
@@ -58,7 +64,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [-m|--mode <local|docker>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>] [-m|--mode <local|docker>]"
     exit 0
     ;;
   *) # unknown option
@@ -74,4 +80,4 @@ command -v jq >/dev/null 2>&1 || {
   exit 1
 }
 
-generate_proto_genesis "$TMPDIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE"
+generate_proto_genesis "$TMPDIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"

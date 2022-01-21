@@ -4,7 +4,7 @@ TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::'
 LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
-NOMO_BINARY=cosmozoned
+NOLUS_BINARY=cosmozoned
 FUZZ_NUM_SEEDS ?= 2
 FUZZ_NUM_RUNS_PER_SEED ?= 3
 FUZZ_NUM_BLOCKS ?= 100
@@ -42,7 +42,7 @@ ifeq ($(LEDGER_ENABLED),true)
 	endif
 endif
 
-ifeq (cleveldb,$(findstring cleveldb,$(NOMO_BUILD_OPTIONS)))
+ifeq (cleveldb,$(findstring cleveldb,$(NOLUS_BUILD_OPTIONS)))
 	build_tags += gcc
 endif
 build_tags += $(BUILD_TAGS)
@@ -54,7 +54,7 @@ comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
 ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=nolus \
-			-X github.com/cosmos/cosmos-sdk/version.AppName=${NOMO_BINARY} \
+			-X github.com/cosmos/cosmos-sdk/version.AppName=${NOLUS_BINARY} \
 			-X github.com/cosmos/cosmos-sdk/version.Version=$(VERSION) \
 			-X github.com/cosmos/cosmos-sdk/version.Commit=$(COMMIT) \
 			-X "github.com/cosmos/cosmos-sdk/version.BuildTags=$(build_tags_comma_sep)" \

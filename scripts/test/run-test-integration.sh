@@ -47,8 +47,14 @@ create_vested_account() {
 }
 
 prepare_env() {
-  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --output "$NET_ROOT_DIR" 2>&1
+  # note that the suspend admin account will be deleted by the init-dev-network script, so we first need to save his private key for later use in the tests
+  local suspend_admin_output
+  suspend_admin_output="$(cosmzoned keys add suspend-admin --keyring-backend "test" --home "$HOME_DIR" --output json)"
+  SUSPEND_ADMIN_ADDR="$(echo "$suspend_admin_output" | jq -r '.address')"
+  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)"
+  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
   edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
+
   create_ibc_network
 
   create_vested_account
@@ -68,6 +74,7 @@ USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
 PERIODIC_PRIV_KEY=${PERIODIC_PRIV_KEY}
 DELAYED_VESTING_PRIV_KEY=${DELAYED_VESTING_PRIV_KEY}
+SUSPEND_ADMIN_PRIV_KEY=${SUSPEND_ADMIN_PRIV_KEY}
 IBC_TOKEN=${IBC_TOKEN}
 EOF
   )
@@ -82,7 +89,7 @@ create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
     init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
-      --chain-id 'mars-private' --output "$MARS_ROOT_DIR"
+      --chain-id 'mars-private' --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' --output "$MARS_ROOT_DIR"
     edit-configuration.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
