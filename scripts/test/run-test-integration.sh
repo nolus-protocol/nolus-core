@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euxo pipefail
 
+THIS_SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+SCRIPTS_DIR="$THIS_SCRIPT_DIR"/..
+source "$SCRIPTS_DIR"/create-vesting-account.sh
+
 ROOT_DIR=$1
 shift
 if [[ -n ${ROOT_DIR+} ]]; then
@@ -13,13 +17,6 @@ NET_ROOT_DIR="$ROOT_DIR/networks/nolus"
 HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
-
-command -v create-vesting-account.sh >/dev/null 2>&1 || {
-  echo >&2 "scripts are not found in \$PATH."
-  exit 1
-}
-
-source "create-vesting-account.sh"
 
 cleanup() {
   if [ -n "${COSMZONED_PID:-}" ]; then
@@ -52,8 +49,8 @@ prepare_env() {
   suspend_admin_output="$(cosmzoned keys add suspend-admin --keyring-backend "test" --home "$HOME_DIR" --output json)"
   SUSPEND_ADMIN_ADDR="$(echo "$suspend_admin_output" | jq -r '.address')"
   SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)"
-  init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
-  edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
+  "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
+  "$SCRIPTS_DIR"/edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
 
   create_ibc_network
 
@@ -88,9 +85,9 @@ EOF
 create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
-    init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
+    "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
       --chain-id 'mars-private' --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' --output "$MARS_ROOT_DIR"
-    edit-configuration.sh --home "$MARS_HOME_DIR" \
+    "$SCRIPTS_DIR"/edit-configuration.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
       --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \
