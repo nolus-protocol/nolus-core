@@ -30,7 +30,7 @@ describe("continuous vesting", () => {
             fromAddress: validatorAccount.address,
             toAddress: continuousAccount.address,
             amount: [FULL_AMOUNT],
-            endTime: Long.fromNumber((new Date().getTime() / 1000) + 7), // 7 seconds
+            endTime: Long.fromNumber((new Date().getTime() / 1000) + 12), // 12 seconds
             delayed: false,
         }
         const encodedMsg: EncodeObject = {
@@ -44,7 +44,7 @@ describe("continuous vesting", () => {
         console.log(sendFailTx)
         expect(isBroadcastTxFailure(sendFailTx)).toBeTruthy()
         await expect(sendFailTx.rawLog).toMatch(/^.*smaller than 5000unolus: insufficient funds.*/)
-        await sleep(4000) // sleep for 4000 seconds
+        await sleep(6000) // sleep for 6000 seconds
         assertIsBroadcastTxSuccess(await continuousClient.sendTokens(continuousAccount.address, validatorAccount.address, [HALF_AMOUNT], DEFAULT_FEE))
     })
 
