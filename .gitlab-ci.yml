@@ -171,14 +171,17 @@ deploy-from-s3:
     entrypoint: [ "" ]
   script:
     - aws --version
-    - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://$ARTIFACT_BUCKET/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$binaries" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$binaries\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
-    - scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 sync s3://$ARTIFACT_BUCKET/scripts/ /opt/deploy/scripts'"'"'"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 sync s3://nolus-artifact-bucket/scripts/ /opt/deploy/scripts'"'"'"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$scripts" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$scripts\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+  dependencies:
+    - copy-binary-scripts-s3
   only:
     - main
+
 
 
 
@@ -191,6 +194,8 @@ execute-dev-scripts:
     - aws --version
     - script_status=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["/opt/deploy/scripts/init-dev-network.sh -v 3 --output validators'"'"' && "," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-1/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-2/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-3/ & "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$script_status" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$scripts_status\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+    - "[[ $(aws ssm list-command-invocations --command-id \"$scrips_status\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+  dependencies:
+    - deploy-from-s3
   only:
     - main
