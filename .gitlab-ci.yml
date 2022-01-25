@@ -9,10 +9,13 @@ stages:
   - prep
   - build
   - test
+  - deploy
 
 variables:
   CI_OCI_REGISTRY: "public.ecr.aws/nolus"
   AWS_REGISTRY_ID: "013603813222"
+  AWS_DEV_INSTANCE_ID: "i-0307d4bb453d880f3"
+  ARTIFACT_BUCKET: "nolus-artifact-bucket"
 # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
@@ -143,3 +146,51 @@ test-integration:
   script:
     - export PATH="$(pwd)/target/release:$PATH:$(pwd)/scripts"
     - make test-integration
+
+copy-binary-scripts-s3:
+  stage: deploy
+  needs: [ "build-binary" ]
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - aws configure set region $AWS_DEFAULT_REGION
+    - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
+    - aws s3 sync scripts s3://$ARTIFACT_BUCKET/scripts
+  only:
+    - main
+
+
+
+
+deploy-from-s3:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://$ARTIFACT_BUCKET/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$binaries" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$binaries\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+    - scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 sync s3://$ARTIFACT_BUCKET/scripts/ /opt/deploy/scripts'"'"'"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$scripts" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$scripts\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+  only:
+    - main
+
+
+
+execute-dev-scripts:
+  stage: deploy
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    - aws --version
+    - script_status=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["/opt/deploy/scripts/init-dev-network.sh -v 3 --output validators'"'"' && "," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-1/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-2/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-3/ & "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$script_status" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$scripts_status\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
+  only:
+    - main
