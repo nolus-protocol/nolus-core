@@ -15,6 +15,7 @@ fi
 TESTS_DIR="$ROOT_DIR/tests/integration"
 NET_ROOT_DIR="$ROOT_DIR/networks/nolus"
 HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
+USER_DIR="$ROOT_DIR/users/test-integration"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
 
@@ -33,8 +34,8 @@ cleanup() {
 trap cleanup INT TERM EXIT
 
 create_vested_account() {
-  cosmzoned keys add periodic-vesting-account --keyring-backend "test"  --home "$HOME_DIR"
-  PERIODIC_VEST=$(cosmzoned keys show periodic-vesting-account -a --home "$HOME_DIR" --keyring-backend "test")
+  cosmzoned keys add periodic-vesting-account --keyring-backend "test"  --home "$USER_DIR"
+  PERIODIC_VEST=$(cosmzoned keys show periodic-vesting-account -a --home "$USER_DIR" --keyring-backend "test")
   local TILL4H
   TILL4H=$(($(date +%s) + 14400))
   local amnt
@@ -46,24 +47,28 @@ create_vested_account() {
 prepare_env() {
   # note that the suspend admin account will be deleted by the init-dev-network script, so we first need to save his private key for later use in the tests
   local suspend_admin_output
-  suspend_admin_output="$(cosmzoned keys add suspend-admin --keyring-backend "test" --home "$HOME_DIR" --output json)"
-  SUSPEND_ADMIN_ADDR="$(echo "$suspend_admin_output" | jq -r '.address')"
-  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)"
+  suspend_admin_output="$(cosmzoned keys add suspend-admin --keyring-backend "test" --home "$USER_DIR" --output json)"
+  SUSPEND_ADMIN_ADDR="$(cosmzoned keys show suspend-admin -a --keyring-backend "test" --home "$USER_DIR")"
+  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)"
+# TBD switch to using 'local' network - a single node locally run network with all ports opened
   "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
+# TBD incorporate it in the local network node configuration
   "$SCRIPTS_DIR"/edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
 
   create_ibc_network
 
+# TBD do create vesting accounts feeding `init-dev-network` with necessary account data
   create_vested_account
-  cosmzoned keys add test-user-1 --keyring-backend "test" --home "$HOME_DIR" # force no password
-  cosmzoned keys add test-user-2 --keyring-backend "test" --home "$HOME_DIR" # force no password
-  cosmzoned keys add test-delayed-vesting --keyring-backend "test" --home "$HOME_DIR" # force no password
+  cosmzoned keys add test-user-1 --keyring-backend "test" --home "$USER_DIR" # force no password
+  cosmzoned keys add test-user-2 --keyring-backend "test" --home "$USER_DIR" # force no password
+  cosmzoned keys add test-delayed-vesting --keyring-backend "test" --home "$USER_DIR" # force no password
 
+#TBD switch to USER_DIR once the validator account gets created at the user side
   VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys export dev-validator-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys export periodic-vesting-account --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-2 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
-  DELAYED_VESTING_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-delayed-vesting --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys export periodic-vesting-account --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
+  USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-1 --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
+  USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-2 --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
+  DELAYED_VESTING_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-delayed-vesting --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
   DOT_ENV=$(cat <<-EOF
 NODE_URL=http://localhost:26657
 VALIDATOR_PRIV_KEY=${VALIDATOR_PRIV_KEY}
@@ -96,6 +101,7 @@ create_ibc_network() {
     MARS_PID=$!
 }
 
+rm -fr $(USER_DIR)
 prepare_env
 
 

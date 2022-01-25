@@ -6,4 +6,5 @@ target/
 **/validator_setup
 scripts/genesis.json
 networks/
+users/
 coverage.txt
