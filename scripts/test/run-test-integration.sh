@@ -101,7 +101,7 @@ create_ibc_network() {
     MARS_PID=$!
 }
 
-rm -fr $(USER_DIR)
+rm -fr "$USER_DIR"
 prepare_env
 
 
