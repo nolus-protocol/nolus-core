@@ -46,6 +46,6 @@ describe("continuous vesting", () => {
         await expect(sendFailTx.rawLog).toMatch(/^.*smaller than 5000unolus: insufficient funds.*/)
         await sleep(6000) // sleep for 6000 seconds
         assertIsBroadcastTxSuccess(await continuousClient.sendTokens(continuousAccount.address, validatorAccount.address, [HALF_AMOUNT], DEFAULT_FEE))
-    })
+    }, 30000)
 
 })
