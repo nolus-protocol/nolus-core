@@ -1,16 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
 
-cleanup() {
-  if [[ -n "${GENESIS_HOME_DIR:-}" ]]; then
-    rm -rf "$GENESIS_HOME_DIR"
-  fi
-  exit
-}
-trap cleanup INT TERM EXIT
-
-SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-
 VALIDATORS=1
 IP_ADDRESSES=()
 CUSTOM_IPS=false
@@ -22,7 +12,7 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
 OUTPUT_DIR="dev-net"
 SUSPEND_ADMIN=""
-GENESIS_HOME_DIR=$(mktemp -d)
+
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -105,6 +95,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+
 source "$SCRIPT_DIR"/internal/cmd.sh
 source "$SCRIPT_DIR"/internal/config-validator-dev.sh
 init_config_validator_dev_sh "$SCRIPT_DIR" "$OUTPUT_DIR"
@@ -114,6 +106,12 @@ init_local_sh "$OUTPUT_DIR" "$CHAIN_ID"
 
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
+
+cleanup() {
+  cleanup_genesis_sh
+  exit
+}
+trap cleanup INT TERM EXIT
 
 
 # Init validator nodes, generate validator accounts and collect their addresses
@@ -180,7 +178,7 @@ FINAL_GENESIS_FILE="$OUTPUT_DIR/genesis.json"
 
 addresses="$(init_nodes)"
 gen_accounts_spec "$addresses" "$ACCOUNTS_FILE"
-generate_proto_genesis "$GENESIS_HOME_DIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE" "$SUSPEND_ADMIN"
+generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$PROTO_GENESIS_FILE" "$SUSPEND_ADMIN"
 create_validator_txs="$(init_validators "$PROTO_GENESIS_FILE")"
-integrate_genesis_txs "$GENESIS_HOME_DIR" "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
+integrate_genesis_txs "$PROTO_GENESIS_FILE" "$create_validator_txs" "$FINAL_GENESIS_FILE"
 propagate_genesis_all "$FINAL_GENESIS_FILE"

@@ -1,13 +1,22 @@
 #!/bin/bash
 set -euxo pipefail
 
+# start "instance" variables
+genesis_home_dir=$(mktemp -d)
+# end "instance" variables
+
+cleanup_genesis_sh() {
+  if [[ -n "${genesis_home_dir:-}" ]]; then
+    rm -rf "$genesis_home_dir"
+  fi
+}
+
 generate_proto_genesis() {
-  local genesis_home_dir="$1"
-  local chain_id="$2"
-  local accounts_file="$3"
-  local currency="$4"
-  local proto_genesis_file="$5"
-  local suspend_admin="$6"
+  local chain_id="$1"
+  local accounts_file="$2"
+  local currency="$3"
+  local proto_genesis_file="$4"
+  local suspend_admin="$5"
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config keyring-backend test
@@ -34,10 +43,9 @@ generate_proto_genesis() {
 }
 
 integrate_genesis_txs() {
-  local genesis_home_dir="$1"
-  local genesis_in_file="$2"
-  local txs="$3"
-  local genesis_out_file="$4"
+  local genesis_in_file="$1"
+  local txs="$2"
+  local genesis_out_file="$3"
 
   local genesis_basedir="$genesis_home_dir"/config
   local genesis_file="$genesis_basedir"/genesis.json
@@ -57,6 +65,9 @@ integrate_genesis_txs() {
   cp "$genesis_file" "$genesis_out_file"
 }
 
+#####################
+# private functions #
+#####################
 set_token_denominations() {
   local genesis_file="$1"
   local currency="$2"

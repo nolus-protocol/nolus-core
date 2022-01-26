@@ -8,9 +8,7 @@ source "$SCRIPT_DIR"/internal/cmd.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
 
 cleanup() {
-  if [[ -n "${TMPDIR:-}" ]]; then
-    rm -rf "$TMPDIR"
-  fi
+  cleanup_genesis_sh
   exit
 }
 
@@ -20,7 +18,6 @@ CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
 ACCOUNTS_FILE=""
 SUSPEND_ADMIN=""
-TMPDIR=$(mktemp -d)
 NATIVE_CURRENCY="unolus"
 
 POSITIONAL=()
@@ -70,4 +67,4 @@ command -v jq >/dev/null 2>&1 || {
   exit 1
 }
 
-generate_proto_genesis "$TMPDIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"
+generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"
