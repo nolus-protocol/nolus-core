@@ -171,7 +171,7 @@ deploy-from-s3:
     entrypoint: [ "" ]
   script:
     - aws --version
-    - yum install -jq -y
+    - yum install jq -y
     - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$binaries" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$binaries\"  | jq '.CommandInvocations[].Status' | xargs ) == \"Failed\" ]];"
