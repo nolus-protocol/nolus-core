@@ -1,6 +1,9 @@
 #!/bin/bash
 set -euxo pipefail
 
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source "$SCRIPT_DIR"/cmd.sh
+
 # start "instance" variables
 local_root_dir=""
 local_chain_id=""
