@@ -33,13 +33,13 @@ Sample usage:
 init-validator-node.sh -g "penultimate-genesis.json" -d "node1" --moniker "validator-1" --mnemonic "<24 words mnemonic>"
 ```
 
-## edit-configuration.sh
+## Edit Configuration
 
 Edits full node configuration files such as `app.toml` and `config.toml`.
 
 Sample usage:
 ```shell
-edit-configuration.sh --home ./validator_setup/node1 --enable-api true
+config/edit.sh --home ./validator_setup/node1 --enable-api true
 ```
 
 ## create-vesting-account.sh

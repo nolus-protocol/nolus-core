@@ -1,8 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-THIS_SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-SCRIPTS_DIR="$THIS_SCRIPT_DIR"/..
+SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/.. && pwd)
 source "$SCRIPTS_DIR"/create-vesting-account.sh
 
 ROOT_DIR=$1
@@ -53,7 +52,7 @@ prepare_env() {
 # TBD switch to using 'local' network - a single node locally run network with all ports opened
   "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
 # TBD incorporate it in the local network node configuration
-  "$SCRIPTS_DIR"/edit-configuration.sh --home "$HOME_DIR" --timeout-commit '1s'
+  "$SCRIPTS_DIR"/config/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
   create_ibc_network
 
@@ -70,7 +69,7 @@ prepare_env() {
   USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-2 --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
   DELAYED_VESTING_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-delayed-vesting --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
   DOT_ENV=$(cat <<-EOF
-NODE_URL=http://localhost:26657
+NODE_URL=http://localhost:26612
 VALIDATOR_PRIV_KEY=${VALIDATOR_PRIV_KEY}
 USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
@@ -92,7 +91,7 @@ create_ibc_network() {
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
     "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
       --chain-id 'mars-private' --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' --output "$MARS_ROOT_DIR"
-    "$SCRIPTS_DIR"/edit-configuration.sh --home "$MARS_HOME_DIR" \
+    "$SCRIPTS_DIR"/config/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
       --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \

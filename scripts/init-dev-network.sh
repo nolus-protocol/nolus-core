@@ -117,7 +117,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 source "$SCRIPT_DIR"/internal/cmd.sh
-source "$SCRIPT_DIR"/internal/config.sh
+source "$SCRIPT_DIR"/internal/config-validator-dev.sh
+init_config_validator_dev_sh "$SCRIPT_DIR" "$OUTPUT_DIR"
+
 source "$SCRIPT_DIR"/internal/local.sh
 init_local_sh "$OUTPUT_DIR" "$CHAIN_ID"
 
@@ -131,7 +133,7 @@ source "$SCRIPT_DIR"/internal/genesis.sh
 # The validator addresses are printed on the standard output one at a line
 init_nodes() {
   for i in $(seq "$VALIDATORS"); do
-    deploy "$i"
+    config "$i"
     local address
     address=$(gen_account "$i")
     echo "$address"
