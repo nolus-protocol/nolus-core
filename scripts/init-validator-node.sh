@@ -1,19 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
-command -v common-util.sh >/dev/null 2>&1 || {
-  echo >&2 "scripts are not found in \$PATH."
-  exit 1
-}
-
-source common-util.sh
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source "$SCRIPT_DIR"/internal/cmd.sh
 
 GENESIS="genesis.json"
 IP_ADDRESS=""
 MNEMONIC=""
 NODE_DIR=""
 MONIKER="test-moniker"
-MODE="local"
 STAKE="1000000unolus"
 KEYRING="test"
 
@@ -30,8 +25,7 @@ while [[ $# -gt 0 ]]; do
     [-d|--directory <full_node_directory>]
     [--mnemonic <mnemonic>]
     [--moniker <moniker>]
-    [--stake <validator_stake>]
-    [-m|--mode <local|docker>]" "$0"
+    [--stake <validator_stake>]" "$0"
     exit 0
     ;;
   -g | --genesis)
@@ -41,15 +35,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   --ip)
     IP_ADDRESS="$2"
-    shift
-    shift
-    ;;
-  -m | --mode)
-    MODE="$2"
-    [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
-      echo >&2 "mode must be either local or docker"
-      exit 1
-    }
     shift
     shift
     ;;
@@ -108,13 +93,13 @@ WORKING_DIR=$(pwd)
 rm -rf "$NODE_DIR"
 mkdir -p "$NODE_DIR"
 
-run_cmd "$MODE" "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
+run_cmd "$NODE_DIR" init "$MONIKER" --chain-id "$CHAINID"
 cp "$GENESIS" "$NODE_DIR/config/genesis.json"
 
-run_cmd "$MODE" "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
+run_cmd "$NODE_DIR" keys add --recover "validator-key" --keyring-backend "$KEYRING" <<< "$MNEMONIC"
 IP=""
 if [[ -n "${IP_ADDRESS+}" ]]; then
   IP="--ip $IP_ADDRESS"
 fi
-run_cmd "$MODE" "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
+run_cmd "$NODE_DIR" gentx "validator-key" "$STAKE" --keyring-backend "$KEYRING" --chain-id "$CHAINID" $IP
 cd "$WORKING_DIR"

@@ -18,7 +18,6 @@ trap cleanup INT TERM EXIT
 
 CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
-MODE="local"
 ACCOUNTS_FILE=""
 SUSPEND_ADMIN=""
 TMPDIR=$(mktemp -d)
@@ -54,17 +53,8 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  -m | --mode)
-    MODE="$2"
-    [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
-      echo >&2 "mode must be either local or docker"
-      exit 1
-    }
-    shift
-    shift
-    ;;
   --help)
-    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>] [-m|--mode <local|docker>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>]"
     exit 0
     ;;
   *) # unknown option

@@ -16,7 +16,6 @@ IP_ADDRESSES=()
 CUSTOM_IPS=false
 POSITIONAL=()
 
-MODE="local"
 NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -40,7 +39,6 @@ while [[ $# -gt 0 ]]; do
     [--validator-stake <tokens_val_will_stake>]
     [-ips <ip_addrs>]
     [--suspend-admin <bech32address>]
-    [-m|--mode <local|docker>]
     [-o|--output <output_dir>]" "$0"
     exit 0
     ;;
@@ -89,15 +87,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   --suspend-admin)
     SUSPEND_ADMIN="$2"
-    shift
-    shift
-    ;;
-  -m | --mode)
-    MODE="$2"
-    [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
-      echo >&2 "mode must be either local or docker"
-      exit 1
-    }
     shift
     shift
     ;;
