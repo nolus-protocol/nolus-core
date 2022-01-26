@@ -61,10 +61,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# validate dependencies are installed
-command -v jq >/dev/null 2>&1 || {
-  echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
-  exit 1
-}
-
 generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"

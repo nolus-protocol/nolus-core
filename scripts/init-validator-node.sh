@@ -3,6 +3,7 @@ set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 source "$SCRIPT_DIR"/internal/cmd.sh
+"$SCRIPT_DIR"/internal/check-jq.sh
 
 GENESIS="genesis.json"
 IP_ADDRESS=""
@@ -64,13 +65,6 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
-
-## validate dependencies are installed
-command -v jq >/dev/null 2>&1 || {
-  echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
-  exit 1
-}
-
 
 if [[ -z "$NODE_DIR" ]]; then
   echo "NODE_DIR is unset"
