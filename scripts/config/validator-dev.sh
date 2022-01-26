@@ -34,7 +34,7 @@ update_app "$home_dir" '."grpc"."enable"' "false"
 update_app "$home_dir" '."grpc-web"."enable"' "false"
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"'
-update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$PROXY_PORT"'"'
+update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"'
 update_config "$home_dir" '."p2p"."addr_book_strict"' 'false'
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true'
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"'
