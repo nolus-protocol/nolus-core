@@ -155,7 +155,7 @@ copy-binary-scripts-s3:
     entrypoint: [ "" ]
   script:
     - aws --version
-    - yum install -y tar
+    - yum install -y tar gzip
     - tar -czvf scripts.tar.gz scripts/
     - aws configure set region $AWS_DEFAULT_REGION
     - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
@@ -202,7 +202,7 @@ execute-dev-scripts:
     - initialize_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":["/opt/deploy/scripts/"],"executionTimeout":["3600"],"commands":[" export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh -v 3 --output validators --suspend-admin 'nolusalabala' "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$initialize_network" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$initialize_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - restart_cosmos_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["systemctl restart cosmzoned-dev-validator-1.service && systemctl restart cosmzoned-dev-validator-2.service && systemctl restart cosmzoned-dev-validator-3.service "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
+    - restart_cosmos_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["systemctl restart cosmzoned-dev-validator-1.service && sleep 5 && systemctl restart cosmzoned-dev-validator-2.service && sleep 5 && systemctl restart cosmzoned-dev-validator-3.service "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$restart_cosmos_network" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$restart_cosmos_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
 
