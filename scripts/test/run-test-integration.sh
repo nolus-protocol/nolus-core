@@ -14,6 +14,7 @@ fi
 TESTS_DIR="$ROOT_DIR/tests/integration"
 NET_ROOT_DIR="$ROOT_DIR/networks/nolus"
 HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
+VAL_ACCOUNTS_DIR="$NET_ROOT_DIR/val-accounts"
 USER_DIR="$ROOT_DIR/users/test-integration"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 LOG_DIR="/tmp"
@@ -50,7 +51,9 @@ prepare_env() {
   SUSPEND_ADMIN_ADDR="$(cosmzoned keys show suspend-admin -a --keyring-backend "test" --home "$USER_DIR")"
   SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | cosmzoned keys export suspend-admin --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)"
 # TBD switch to using 'local' network - a single node locally run network with all ports opened
-  "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" --suspend-admin "$SUSPEND_ADMIN_ADDR"  --output "$NET_ROOT_DIR" 2>&1
+  "$SCRIPTS_DIR"/init-dev-network.sh --validators_dir "$NET_ROOT_DIR" -v 1 --validator_accounts_dir "$VAL_ACCOUNTS_DIR" \
+      --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" \
+      --suspend-admin "$SUSPEND_ADMIN_ADDR" 2>&1
 # TBD incorporate it in the local network node configuration
   "$SCRIPTS_DIR"/config/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
@@ -62,8 +65,8 @@ prepare_env() {
   cosmzoned keys add test-user-2 --keyring-backend "test" --home "$USER_DIR" # force no password
   cosmzoned keys add test-delayed-vesting --keyring-backend "test" --home "$USER_DIR" # force no password
 
-#TBD switch to USER_DIR once the validator account gets created at the user side
-  VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys export dev-validator-1 --unsafe --unarmored-hex --home "$HOME_DIR" --keyring-backend "test" 2>&1)
+  VALIDATOR_KEY_NAME=$(cosmzoned keys list --list-names --home "$VAL_ACCOUNTS_DIR")
+  VALIDATOR_PRIV_KEY=$(echo 'y' | cosmzoned keys export "$VALIDATOR_KEY_NAME" --unsafe --unarmored-hex --home "$VAL_ACCOUNTS_DIR" --keyring-backend "test" 2>&1)
   PERIODIC_PRIV_KEY=$(echo 'y' | cosmzoned keys export periodic-vesting-account --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
   USR_1_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-1 --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
   USR_2_PRIV_KEY=$(echo 'y' | cosmzoned keys export test-user-2 --unsafe --unarmored-hex --home "$USER_DIR" --keyring-backend "test" 2>&1)
@@ -89,8 +92,11 @@ EOF
 create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
-    "$SCRIPTS_DIR"/init-dev-network.sh -v 1 --currency 'mars' --validator-tokens '100000000000mars' --validator-stake '1000000mars'\
-      --chain-id 'mars-private' --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' --output "$MARS_ROOT_DIR"
+    local MARS_VAL_ACCOUNTS_DIR="$MARS_ROOT_DIR/val-accounts"
+    "$SCRIPTS_DIR"/init-dev-network.sh --currency 'mars' --chain-id 'mars-private' \
+      --validators_dir "$MARS_ROOT_DIR" -v 1 --validator_accounts_dir "$MARS_VAL_ACCOUNTS_DIR" \
+      --validator-tokens '100000000000mars' --validator-stake '1000000mars' \
+      --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k'
     "$SCRIPTS_DIR"/config/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \

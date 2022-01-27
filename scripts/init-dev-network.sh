@@ -9,7 +9,9 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
+VAL_ROOT_DIR="networks/nolus"
 VALIDATORS=1
+VAL_ACCOUNTS_DIR="$VAL_ROOT_DIR/val-accounts"
 IP_ADDRESSES=()
 CUSTOM_IPS=false
 POSITIONAL=()
@@ -18,7 +20,6 @@ NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
-OUTPUT_DIR="dev-net"
 SUSPEND_ADMIN=""
 
 
@@ -31,18 +32,25 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--chain_id <string>]
+    [--validators_dir <validators_root_dir>]
     [-v|--validators <number>]
+    [--validator_accounts_dir <validator_accounts_dir>]
     [--currency <native_currency>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
     [-ips <ip_addrs>]
-    [--suspend-admin <bech32address>]
-    [-o|--output <output_dir>]" "$0"
+    [--suspend-admin <bech32address>]" "$0"
     exit 0
     ;;
 
    --chain-id)
     CHAIN_ID="$2"
+    shift
+    shift
+    ;;
+
+   --validators_dir)
+    VAL_ROOT_DIR="$2"
     shift
     shift
     ;;
@@ -53,6 +61,12 @@ while [[ $# -gt 0 ]]; do
       echo >&2 "validators must be a positive number"
       exit 1
     }
+    shift
+    shift
+    ;;
+
+   --validator_accounts_dir)
+    VAL_ACCOUNTS_DIR="$2"
     shift
     shift
     ;;
@@ -89,12 +103,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  -o | --output)
-    OUTPUT_DIR="$2"
-    shift
-    shift
-    ;;
-
   *) # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift              # past argument
@@ -114,8 +122,7 @@ if [[ -z "$SUSPEND_ADMIN" ]]; then
 fi
 
 source "$SCRIPT_DIR"/internal/config-validator-dev.sh
-init_config_validator_dev_sh "$SCRIPT_DIR" "$OUTPUT_DIR"
+init_config_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-
-init_network "$OUTPUT_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE"
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE"

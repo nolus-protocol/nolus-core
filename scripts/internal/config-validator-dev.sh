@@ -13,6 +13,9 @@ init_config_validator_dev_sh() {
   config_validator_dev_root_dir="$2"
 }
 
+#
+# Return the node ids and validator public keys printed on the standard output delimited with a space.
+#
 config() {
   set -euxo pipefail
   local node_index="$1"
@@ -24,8 +27,18 @@ config() {
   local node_base_port
   node_base_port=$(node_base_port "$node_index")
 
-  config_validator_dev_prev_node_id=$("$config_validator_dev_scripts_home_dir"/config/validator-dev.sh "$home_dir" "$node_moniker" \
+  local node_id_val_pub_key
+  node_id_val_pub_key=$("$config_validator_dev_scripts_home_dir"/config/validator-dev.sh "$home_dir" "$node_moniker" \
                                           "$node_base_port" "$config_validator_dev_prev_node_id")
+  read -r config_validator_dev_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
+  echo "$node_id_val_pub_key"
+}
+
+propagate_genesis() {
+  local node_index="$1"
+  local genesis_file="$2"
+
+  cp "$genesis_file" "$(home_dir "$node_index")/config/genesis.json"
 }
 
 #####################

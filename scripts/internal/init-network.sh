@@ -12,7 +12,7 @@ source "$SCRIPT_DIR"/accounts.sh
 source "$SCRIPT_DIR"/genesis.sh
 
 init_network() {
-  local output_dir="$1"
+  local val_accounts_dir="$1"
   local validators="$2"
   local chain_id="$3"
   local native_currency="$4"
@@ -20,16 +20,17 @@ init_network() {
   local val_tokens="$6"
   local val_stake="$7"
   
-  local accounts_file="$output_dir/accounts.json"
-  local proto_genesis_file="$output_dir/penultimate-genesis.json"
-  local final_genesis_file="$output_dir/genesis.json"
+  local accounts_file="$val_accounts_dir/accounts.json"
+  local proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
+  local final_genesis_file="$val_accounts_dir/genesis.json"
 
 
-  init_local_sh "$output_dir" "$chain_id"
-  addresses="$(init_nodes "$validators")"
-  gen_accounts_spec "$addresses" "$accounts_file" "$val_tokens"
+  init_local_sh "$val_accounts_dir" "$chain_id"
+  node_id_and_val_pubkeys="$(setup_nodes "$validators")"
+  val_addrs="$(gen_val_accounts "$node_id_and_val_pubkeys")"
+  gen_accounts_spec "$val_addrs" "$accounts_file" "$val_tokens"
   generate_proto_genesis "$chain_id" "$accounts_file" "$native_currency" "$proto_genesis_file" "$suspend_admin"
-  create_validator_txs="$(init_validators "$proto_genesis_file" "$validators" "$val_stake")"
+  create_validator_txs="$(init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
   propagate_genesis_all "$final_genesis_file" "$validators"
 }
@@ -38,27 +39,36 @@ init_network() {
 # private functions #
 #####################
 
-# Init validator nodes, generate validator accounts and collect their addresses
+# Setup validator nodes and collect their ids and validator public keys
 #
-# The nodes are placed in sub directories of $OUTPUT_DIR
-# The validator addresses are printed on the standard output one at a line
-init_nodes() {
+# The nodes are installed and configured depending on the sourced implementation script.
+# The node ids and validator public keys are printed on the standard output one at a line.
+setup_nodes() {
+  set -euxo pipefail
   local validators="$1"
   for i in $(seq "$validators"); do
     config "$i"
+  done
+}
+
+gen_val_accounts() {
+  local node_id_and_val_pubkeys="$1"
+  for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
+    local node_id
+    read -r node_id __val_pub_key <<< $node_id_and_val_pubkey
     local address
-    address=$(gen_account "$i")
+    address=$(gen_val_account "$node_id")
     echo "$address"
   done
 }
 
 gen_accounts_spec() {
-  local addresses="$1"
+  local val_addrs="$1"
   local file="$2"
   local val_tokens="$3"
 
   local accounts="[]"
-  for address in $addresses; do
+  for address in $val_addrs; do
     accounts=$(echo "$accounts" | add_account "$address" "$val_tokens")
   done
   echo "$accounts" > "$file"
@@ -66,12 +76,15 @@ gen_accounts_spec() {
 
 init_validators() {
   local proto_genesis_file="$1"
-  local validators="$2"
+  local node_id_and_val_pubkeys="$2"
   local val_stake="$3"
 
-  for i in $(seq "$validators"); do
+  for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
+    local node_id
+    local val_pub_key
+    read -r node_id val_pub_key <<< $node_id_and_val_pubkey
     local create_validator_tx
-    create_validator_tx=$(gen_validator "$i" "$proto_genesis_file" "$val_stake")
+    create_validator_tx=$(gen_validator "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
     echo "$create_validator_tx"
   done
 }
