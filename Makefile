@@ -4,7 +4,7 @@ TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::'
 LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
-NOLUS_BINARY=cosmozoned
+NOLUS_BINARY=nolusd
 FUZZ_NUM_SEEDS ?= 2
 FUZZ_NUM_RUNS_PER_SEED ?= 3
 FUZZ_NUM_BLOCKS ?= 100

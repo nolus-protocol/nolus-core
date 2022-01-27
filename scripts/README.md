@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-The binary `cosmzoned` must be on the system path to allow scripts to run it.
+The binary `nolusd` must be on the system path to allow scripts to run it.
 
 ## penultimate-genesis.sh
 
@@ -26,7 +26,7 @@ init-dev-node.sh -v 2 --output validators
 
 ## init-validator-node.sh
 
-Generate full node file structure by receiving a penultimate genesis and validator specific configurations. The script calls `cosmzoned gentx` thus it will have a gentx file in the `<node_dir>/config/gentx` directory.
+Generate full node file structure by receiving a penultimate genesis and validator specific configurations. The script calls `nolusd gentx` thus it will have a gentx file in the `<node_dir>/config/gentx` directory.
 
 Sample usage:
 ```shell
