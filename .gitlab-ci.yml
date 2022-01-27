@@ -16,7 +16,7 @@ variables:
   AWS_REGISTRY_ID: "013603813222"
   AWS_DEV_INSTANCE_ID: "i-0307d4bb453d880f3"
   ARTIFACT_BUCKET: "nolus-artifact-bucket"
-# https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
+  # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
 
   NOLUS_BUILDER_REPO: "builder"
@@ -39,11 +39,11 @@ prep-builder:check-exist:
     name: amazon/aws-cli
     entrypoint: [""]
   script:
-    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID 
-          --repository-name $NOLUS_BUILDER_REPO --region us-east-1 
-          --image-ids=imageTag=$NOLUS_BUILDER_TAG ; 
+    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
+      --repository-name $NOLUS_BUILDER_REPO --region us-east-1
+      --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
       then
-        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
+      echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
       fi
   artifacts:
     reports:
@@ -76,12 +76,12 @@ download-wasmvm-lib:
   before_script:
     - mkdir -p $WASMVM_DIR
   script:
-   - wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
-   - if [ ! -f "$WASMVM_LOCAL_PATH" ] ||
-        ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$wasmvm_lib_checksum" - );
-     then
-        wget -O $WASMVM_LOCAL_PATH $WASMVM_URL;
-     fi
+    - wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
+    - if [ ! -f "$WASMVM_LOCAL_PATH" ] ||
+      ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$wasmvm_lib_checksum" - );
+      then
+      wget -O $WASMVM_LOCAL_PATH $WASMVM_URL;
+      fi
 
 build-binary:
   stage: build
@@ -155,9 +155,11 @@ copy-binary-scripts-s3:
     entrypoint: [ "" ]
   script:
     - aws --version
+    - yum install -y tar
+    - tar -czvf scripts.tar.gz scripts/
     - aws configure set region $AWS_DEFAULT_REGION
     - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
-    - aws s3 sync scripts s3://$ARTIFACT_BUCKET/scripts
+    - aws s3 cp scripts.tar.gz s3://$ARTIFACT_BUCKET/scripts.tar.gz
   only:
     - main
 
@@ -175,9 +177,12 @@ deploy-from-s3:
     - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/binaries/cosmzoned /usr/bin/ && chmod +x /usr/bin/cosmzoned"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
     - aws ssm wait command-executed  --command-id "$binaries" --instance-id $AWS_DEV_INSTANCE_ID
     - "[[ $(aws ssm list-command-invocations --command-id \"$binaries\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 sync s3://nolus-artifact-bucket/scripts/ /opt/deploy/scripts'"'"'"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$scripts" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$scripts\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - copy_scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/scripts.tar.gz /opt/deploy/"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$copy_scripts" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$copy_scripts\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - unarchive_scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["tar -xvf /opt/deploy/scripts.tar.gz -C /opt/deploy/"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$unarchive_scripts" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$unarchive_scripts\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
   dependencies:
     - copy-binary-scripts-s3
   only:
@@ -194,9 +199,13 @@ execute-dev-scripts:
   script:
     - aws --version
     - yum install jq -y
-    - script_status=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["/opt/deploy/scripts/init-dev-network.sh -v 3 --output validators'"'"' && "," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-1/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-2/ &"," cosmzoned start --home /opt/deploy/scripts/validators/dev-validator-3/ & "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$script_status" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$scrips_status\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - initialize_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":["/opt/deploy/scripts/"],"executionTimeout":["3600"],"commands":[" export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh -v 3 --output validators --suspend-admin 'nolusalabala' "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$initialize_network" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$initialize_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - restart_cosmos_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["systemctl restart cosmzoned-dev-validator-1.service && systemctl restart cosmzoned-dev-validator-2.service && systemctl restart cosmzoned-dev-validator-3.service "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
+    - aws ssm wait command-executed  --command-id "$restart_cosmos_network" --instance-id $AWS_DEV_INSTANCE_ID
+    - "[[ $(aws ssm list-command-invocations --command-id \"$restart_cosmos_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+
   dependencies:
     - deploy-from-s3
   only:
