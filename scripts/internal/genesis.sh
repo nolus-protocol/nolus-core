@@ -27,8 +27,8 @@ generate_proto_genesis() {
   run_cmd "$genesis_home_dir" config chain-id "$chain_id"
 
   local genesis_file="$genesis_home_dir/config/genesis.json"
-  set_token_denominations "$genesis_file" "$currency"
-  set_suspend_admin "$genesis_file" "$suspend_admin"
+  __set_token_denominations "$genesis_file" "$currency"
+  __set_suspend_admin "$genesis_file" "$suspend_admin"
 
   if [[ -n "${accounts_file+x}" ]]; then
     for i in $(jq '. | keys | .[]' "$accounts_file"); do
@@ -72,7 +72,7 @@ integrate_genesis_txs() {
 #####################
 # private functions #
 #####################
-set_token_denominations() {
+__set_token_denominations() {
   local genesis_file="$1"
   local currency="$2"
 
@@ -87,7 +87,7 @@ set_token_denominations() {
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
-set_suspend_admin() {
+__set_suspend_admin() {
   local genesis_file="$1"
   local suspend_admin="$2"
   local genesis_tmp_file="$genesis_file".tmp

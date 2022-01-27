@@ -21,11 +21,11 @@ config() {
   local node_index="$1"
 
   local home_dir
-  home_dir=$(home_dir "$node_index")
+  home_dir=$(__home_dir "$node_index")
   local node_moniker
-  node_moniker=$(node_moniker "$node_index")
+  node_moniker=$(__node_moniker "$node_index")
   local node_base_port
-  node_base_port=$(node_base_port "$node_index")
+  node_base_port=$(__node_base_port "$node_index")
 
   local node_id_val_pub_key
   node_id_val_pub_key=$("$config_validator_dev_scripts_home_dir"/config/validator-dev.sh "$home_dir" "$node_moniker" \
@@ -38,24 +38,24 @@ propagate_genesis() {
   local node_index="$1"
   local genesis_file="$2"
 
-  cp "$genesis_file" "$(home_dir "$node_index")/config/genesis.json"
+  cp "$genesis_file" "$(__home_dir "$node_index")/config/genesis.json"
 }
 
 #####################
 # private functions #
 #####################
-home_dir() {
+__home_dir() {
   local node_index=$1
   local node_id
-  node_id=$(node_moniker "$node_index")
+  node_id=$(__node_moniker "$node_index")
   echo "$config_validator_dev_root_dir/$node_id"
 }
 
-node_moniker() {
+__node_moniker() {
   echo "dev-validator-$1"
 }
 
-node_base_port() {
+__node_base_port() {
   local node_index=$1
   echo $((CONFIG_VALIDATOR_DEV_BASE_PORT + node_index*5))
 }

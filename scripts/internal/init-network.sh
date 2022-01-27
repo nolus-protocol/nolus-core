@@ -26,13 +26,13 @@ init_network() {
 
 
   init_local_sh "$val_accounts_dir" "$chain_id"
-  node_id_and_val_pubkeys="$(setup_nodes "$validators")"
-  val_addrs="$(gen_val_accounts "$node_id_and_val_pubkeys")"
-  gen_accounts_spec "$val_addrs" "$accounts_file" "$val_tokens"
+  node_id_and_val_pubkeys="$(__setup_nodes "$validators")"
+  val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
+  __gen_accounts_spec "$val_addrs" "$accounts_file" "$val_tokens"
   generate_proto_genesis "$chain_id" "$accounts_file" "$native_currency" "$proto_genesis_file" "$suspend_admin"
-  create_validator_txs="$(init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
+  create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
-  propagate_genesis_all "$final_genesis_file" "$validators"
+  __propagate_genesis_all "$final_genesis_file" "$validators"
 }
 
 #####################
@@ -43,7 +43,7 @@ init_network() {
 #
 # The nodes are installed and configured depending on the sourced implementation script.
 # The node ids and validator public keys are printed on the standard output one at a line.
-setup_nodes() {
+__setup_nodes() {
   set -euxo pipefail
   local validators="$1"
   for i in $(seq "$validators"); do
@@ -51,7 +51,7 @@ setup_nodes() {
   done
 }
 
-gen_val_accounts() {
+__gen_val_accounts() {
   local node_id_and_val_pubkeys="$1"
   for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
     local node_id
@@ -62,7 +62,7 @@ gen_val_accounts() {
   done
 }
 
-gen_accounts_spec() {
+__gen_accounts_spec() {
   local val_addrs="$1"
   local file="$2"
   local val_tokens="$3"
@@ -74,7 +74,7 @@ gen_accounts_spec() {
   echo "$accounts" > "$file"
 }
 
-init_validators() {
+__init_validators() {
   local proto_genesis_file="$1"
   local node_id_and_val_pubkeys="$2"
   local val_stake="$3"
@@ -89,7 +89,7 @@ init_validators() {
   done
 }
 
-propagate_genesis_all() {
+__propagate_genesis_all() {
   local genesis_file="$1"
   local validators="$2"
 
