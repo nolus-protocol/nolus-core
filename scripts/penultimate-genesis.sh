@@ -8,9 +8,7 @@ source "$SCRIPT_DIR"/internal/cmd.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
 
 cleanup() {
-  if [[ -n "${TMPDIR:-}" ]]; then
-    rm -rf "$TMPDIR"
-  fi
+  cleanup_genesis_sh
   exit
 }
 
@@ -18,10 +16,8 @@ trap cleanup INT TERM EXIT
 
 CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
-MODE="local"
 ACCOUNTS_FILE=""
 SUSPEND_ADMIN=""
-TMPDIR=$(mktemp -d)
 NATIVE_CURRENCY="unolus"
 
 POSITIONAL=()
@@ -54,17 +50,8 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  -m | --mode)
-    MODE="$2"
-    [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
-      echo >&2 "mode must be either local or docker"
-      exit 1
-    }
-    shift
-    shift
-    ;;
   --help)
-    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>] [-m|--mode <local|docker>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>]"
     exit 0
     ;;
   *) # unknown option
@@ -74,10 +61,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# validate dependencies are installed
-command -v jq >/dev/null 2>&1 || {
-  echo >&2 "jq not installed. More info: https://stedolan.github.io/jq/download/"
-  exit 1
-}
-
-generate_proto_genesis "$TMPDIR" "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"
+generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"

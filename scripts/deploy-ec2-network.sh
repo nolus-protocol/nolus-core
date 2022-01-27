@@ -5,7 +5,7 @@ rm -rf ./validator_setup
 ./init-test-network.sh -v 3 -ips '172.28.5.2,172.28.5.3,172.28.5.4'
 
 # make validator 1 apis available to the outside world
-./edit-configuration.sh --home ./validator_setup/node1 --enable-api true --enable-grpc true --enable-grpc-web true --tendermint-rpc-address "tcp://0.0.0.0:26657"
+./config/edit.sh --home ./validator_setup/node1 --enable-api true --enable-grpc true --enable-grpc-web true --tendermint-rpc-address "tcp://0.0.0.0:26657"
 
 ssh -i ./gitlab.pem ec2-user@ec2-35-158-128-53.eu-central-1.compute.amazonaws.com 'sudo rm -rf /tmp/validator_setup'
 scp -i ./gitlab.pem -r ./validator_setup ec2-user@ec2-35-158-128-53.eu-central-1.compute.amazonaws.com:/tmp

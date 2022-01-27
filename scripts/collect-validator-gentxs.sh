@@ -1,32 +1,17 @@
 #!/bin/bash
 set -euxo pipefail
 
-
-command -v common-util.sh >/dev/null 2>&1 || {
-  echo >&2 "scripts are not found in \$PATH."
-  exit 1
-}
-
-source common-util.sh
+SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source "$SCRIPT_DIR"/internal/cmd.sh
 
 COLLECTOR_DIR=""
 GENTXS_FILES_DIR=""
-MODE="local"
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-  -m | --mode)
-    MODE="$2"
-    [[ "$MODE" == "local" || "$MODE" == "docker" ]] || {
-      echo >&2 "mode must be either local or docker"
-      exit 1
-    }
-    shift
-    shift
-    ;;
   --collector)
     COLLECTOR_DIR="$2"
     shift
@@ -38,7 +23,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --help)
-    echo "Usage: collect-validator-gentxs.sh [--collector <collector_idr>] [-gentxs <gentx_dir>] [-m|--mode <local|docker>]"
+    echo "Usage: collect-validator-gentxs.sh [--collector <collector_idr>] [-gentxs <gentx_dir>]"
     exit 0
     ;;
   *) # unknown option
@@ -63,4 +48,4 @@ rm -rf "$COLLECTOR_DIR/config/gentx"
 mkdir "$COLLECTOR_DIR/config/gentx"
 cp -a "$GENTXS_FILES_DIR/." "$COLLECTOR_DIR/config/gentx"
 
-run_cmd "$MODE" "$COLLECTOR_DIR" collect-gentxs
+run_cmd "$COLLECTOR_DIR" collect-gentxs
