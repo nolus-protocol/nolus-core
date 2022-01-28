@@ -36,7 +36,7 @@ trap cleanup INT TERM EXIT
 
 __now_shifted_with_hours() {
   local delta_hours="$1"
-  date --date @$(($(date +%s) + $delta_hours*60*60)) --iso-8601=seconds
+  date -d @$(($(date +%s) + $delta_hours*60*60)) -Iseconds
 }
 create_vested_account() {
   run_cmd "$USER_DIR" keys add periodic-vesting-account --keyring-backend "test"
