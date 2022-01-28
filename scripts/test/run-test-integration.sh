@@ -85,14 +85,14 @@ EOF
   )
   echo "$DOT_ENV" > "$TESTS_DIR/.env"
 
-  run_cmd "$HOME_DIR" start >$LOG_DIR/nolus-run.log 2>&1 &
+  nolusd start --home "$HOME_DIR" >$LOG_DIR/nolus-run.log 2>&1 &
   
   NOLUSD_PID=$!
   sleep 5
 }
 
 create_ibc_network() {
-    local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network/"
+    local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
     local MARS_VAL_ACCOUNTS_DIR="$MARS_ROOT_DIR/val-accounts"
     "$SCRIPTS_DIR"/init-dev-network.sh --currency 'mars' --chain-id 'mars-private' \
@@ -104,7 +104,7 @@ create_ibc_network() {
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
       --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \
       --timeout-commit '1s'
-    run_cmd "$MARS_HOME_DIR" start >$LOG_DIR/mars-run.log 2>&1 &
+    nolusd start --home "$MARS_HOME_DIR" >$LOG_DIR/mars-run.log 2>&1 &
     MARS_PID=$!
 }
 
