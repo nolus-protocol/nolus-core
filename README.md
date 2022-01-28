@@ -1,5 +1,5 @@
-# cosmzone
-**cosmzone** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
+# nolus
+**nolus** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
 
 ## Prerequisites
 
@@ -9,11 +9,11 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
 
 ```
 make install
-scripts/init-dev-network.sh -v 1 --output validators
-cosmzoned start --home "./validators/node1"
+scripts/init-dev-network.sh -v 1
+nolusd start --home "./validators/node1"
 ```
 
-The `make install` command will compile and locally install cosmzoned on your machine. `init-dev-network.sh` generates a node setup (run `init-dev-network.sh --help` for more configuration options) and `cosmzoned start` starts the network. For more details check the [scripts README](./scripts/README.md)
+The `make install` command will compile and locally install nolusd on your machine. `init-dev-network.sh` generates a node setup (run `init-dev-network.sh --help` for more configuration options) and `nolusd start` starts the network. For more details check the [scripts README](./scripts/README.md)
 
 ### Configure
 

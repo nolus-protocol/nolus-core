@@ -1,5 +1,5 @@
 FROM alpine:3.14
-ARG BIN_NAME=cosmzoned
+ARG BIN_NAME=nolusd
 ARG TARGET=release
 
 COPY target/${TARGET}/${BIN_NAME} /usr/bin/
@@ -9,5 +9,5 @@ EXPOSE 26656/tcp
 # tendermint rpc
 EXPOSE 26657/tcp
 
-ENTRYPOINT ["cosmzoned"]
+ENTRYPOINT ["nolusd"]
 CMD ["version"]

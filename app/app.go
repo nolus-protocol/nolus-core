@@ -1,13 +1,14 @@
 package app
 
 import (
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	nolusante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	nolusante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -89,6 +90,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	suspend "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend"
 	suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
@@ -97,7 +99,7 @@ import (
 
 const (
 	AccountAddressPrefix = "nolus"
-	Name                 = "cosmzone"
+	Name                 = "nolus"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
