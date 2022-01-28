@@ -34,15 +34,24 @@ cleanup() {
 
 trap cleanup INT TERM EXIT
 
+__now_shifted_with_hours() {
+  local delta_hours="$1"
+  date --date @$(($(date +%s) + $delta_hours*60*60)) --iso-8601=seconds
+}
 create_vested_account() {
   run_cmd "$USER_DIR" keys add periodic-vesting-account --keyring-backend "test"
   PERIODIC_VEST=$(run_cmd "$USER_DIR" keys show periodic-vesting-account -a --keyring-backend "test")
-  local TILL4H
-  TILL4H=$(($(date +%s) + 14400))
-  local amnt
-  amnt='546652unolus'
-  row="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$(($(date +%s) - 3600))\", \"end-time\": \"$TILL4H\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
-  add_vesting_account "$row" "$HOME_DIR"
+  local start_time
+  start_time=$(__now_shifted_with_hours -1)
+  local end_time
+  end_time=$(__now_shifted_with_hours 4)
+  local amnt="546652"
+  local currency="unolus"
+  local spec
+  spec="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt$currency\", \
+        \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$start_time\", \"end-time\": \"$end_time\", \"amount\": \"$amnt\", \
+                        \"periods\": 4, \"length\": 14400}}"
+  add_vesting_account "$spec" "unolus" "$HOME_DIR"
 }
 
 prepare_env() {
