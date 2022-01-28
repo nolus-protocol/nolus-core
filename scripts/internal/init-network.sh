@@ -7,7 +7,7 @@ cleanup_init_network_sh() {
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
-source "$SCRIPT_DIR"/local.sh
+source "$SCRIPT_DIR"/validators-manager.sh
 source "$SCRIPT_DIR"/accounts.sh
 source "$SCRIPT_DIR"/genesis.sh
 
@@ -25,7 +25,7 @@ init_network() {
   local final_genesis_file="$val_accounts_dir/genesis.json"
 
 
-  init_local_sh "$val_accounts_dir" "$chain_id"
+  init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   node_id_and_val_pubkeys="$(__setup_nodes "$validators")"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
   __gen_accounts_spec "$val_addrs" "$accounts_file" "$val_tokens"
@@ -54,10 +54,10 @@ __setup_nodes() {
 __gen_val_accounts() {
   local node_id_and_val_pubkeys="$1"
   for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
-    local node_id
-    read -r node_id __val_pub_key <<< $node_id_and_val_pubkey
+    local account_name
+    read -r account_name __val_pub_key <<< $node_id_and_val_pubkey
     local address
-    address=$(gen_val_account "$node_id")
+    address=$(gen_val_account "$account_name")
     echo "$address"
   done
 }
@@ -84,7 +84,7 @@ __init_validators() {
     local val_pub_key
     read -r node_id val_pub_key <<< $node_id_and_val_pubkey
     local create_validator_tx
-    create_validator_tx=$(gen_validator "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
+    create_validator_tx=$(gen_val_txn "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
     echo "$create_validator_tx"
   done
 }
