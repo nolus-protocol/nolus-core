@@ -12,8 +12,6 @@ trap cleanup INT TERM EXIT
 VAL_ROOT_DIR="networks/nolus"
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="$VAL_ROOT_DIR/val-accounts"
-IP_ADDRESSES=()
-CUSTOM_IPS=false
 POSITIONAL=()
 
 NATIVE_CURRENCY="unolus"
@@ -89,14 +87,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  -ips)
-    for i in ${2//,/ }; do
-      IP_ADDRESSES+=("$i")
-    done
-    CUSTOM_IPS=true
-    shift
-    shift
-    ;;
   --suspend-admin)
     SUSPEND_ADMIN="$2"
     shift
@@ -110,11 +100,6 @@ while [[ $# -gt 0 ]]; do
 
   esac
 done
-
-if [[ "$CUSTOM_IPS" = true && "${#IP_ADDRESSES[@]}" -ne "$VALIDATORS" ]]; then
-  echo >&2 "non matching ip addresses"
-  exit 1
-fi
 
 if [[ -z "$SUSPEND_ADMIN" ]]; then
   echo >&2 "Suspend admin was not set"
