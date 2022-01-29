@@ -30,7 +30,7 @@ variables:
   NOLUS_NODE_PROD_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${PROD_VERSION}"
 
   NOLUS_INTEGRATION_REPO: "integration"
-  NOLUS_INTEGRATION_TAG: "0.11"
+  NOLUS_INTEGRATION_TAG: "0.12"
   NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
 
 prep-builder:check-exist:
@@ -59,6 +59,7 @@ prep-builder:
     KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
 
+# TBD integrate the following job as part of the builder image setup
 download-wasmvm-lib:
   stage: build
   image: "${NOLUS_BUILDER_IMAGE}"

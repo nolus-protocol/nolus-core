@@ -1,8 +1,9 @@
-FROM alpine:3.14
+FROM alpine:3.15
 
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
 
-RUN apk add --no-cache git python3 py3-pip
+#coreutils is added due to not supported ISO8601 by `date` busybox version
+RUN apk add --no-cache git python3 py3-pip coreutils
 RUN pip install tomlq
 RUN apk add --update make bash nodejs yarn jq
 
