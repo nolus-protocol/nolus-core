@@ -33,7 +33,12 @@ variables:
   NOLUS_INTEGRATION_TAG: "0.12"
   NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
 
-prep-builder:check-exist:
+  prep-builder:debug:
+  stage: prep
+  script:
+    - echo "${FAUCET_MNEMONIC_DEV}"
+
+  prep-builder:check-exist:
   stage: prep
   image:
     name: amazon/aws-cli
