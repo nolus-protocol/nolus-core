@@ -2,6 +2,8 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/internal/accounts.sh
 
 cleanup() {
   cleanup_init_network_sh
@@ -19,7 +21,8 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
 SUSPEND_ADMIN=""
-
+FAUCET_MNEMONIC=""
+FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -37,7 +40,10 @@ while [[ $# -gt 0 ]]; do
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
     [-ips <ip_addrs>]
-    [--suspend-admin <bech32address>]" "$0"
+    [--suspend-admin <bech32address>]
+    [--faucet-mnemonic <mnemonic_phrase>]
+    [--faucet-tokens <initial_balance>]"
+     "$0"
     exit 0
     ;;
 
@@ -93,6 +99,16 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --faucet-mnemonic)
+    FAUCET_MNEMONIC="$2"
+    shift
+    shift
+    ;;
+  --faucet-tokens)
+    FAUCET_TOKENS="$2"
+    shift
+    shift
+    ;;
   *) # unknown option
     POSITIONAL+=("$1") # save it in an array for later
     shift              # past argument
@@ -101,16 +117,40 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ -z "$SUSPEND_ADMIN" ]]; then
-  echo >&2 "Suspend admin was not set"
-  exit 1
-fi
+__verify_mandatory() {
+  local value="$1"
+  local description="$2"
+
+  if [[ -z "$value" ]]; then
+    echo >&2 "$description was not set"
+    exit 1
+  fi
+}
+
+__add_faucet_account() {
+  local mnemonic="$1"
+  local amount="$2"
+
+  local account_name="faucet"
+  local tmp_faucet_dir
+  tmp_faucet_dir="$(mktemp -d)"
+  run_cmd "$tmp_faucet_dir" keys add --recover "$account_name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
+  local addr
+  addr="$(run_cmd "$tmp_faucet_dir" keys show "$account_name" -a --keyring-backend test)"
+  add_account "$addr" "$amount"
+}
+
+
+__verify_mandatory "$SUSPEND_ADMIN" "Suspend admin"
+__verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 
 # TBD open a few sample private investor accounts
 # TBD open admin accounts, e.g. a treasury and a suspender
 #  and pass them to init_network
+accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
+
 source "$SCRIPT_DIR"/internal/config-validator-dev.sh
 init_config_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "[]"
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"

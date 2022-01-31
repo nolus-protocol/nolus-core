@@ -18,6 +18,7 @@ HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
 VAL_ACCOUNTS_DIR="$NET_ROOT_DIR/val-accounts"
 USER_DIR="$ROOT_DIR/users/test-integration"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
+NLS_CURRENCY="unolus"
 LOG_DIR="/tmp"
 
 cleanup() {
@@ -46,12 +47,11 @@ create_vested_account() {
   local end_time
   end_time=$(__now_shifted_with_hours 4)
   local amnt="546652"
-  local currency="unolus"
   local spec
-  spec="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt$currency\", \
+  spec="{\"address\": \"$PERIODIC_VEST\", \"amount\": \"$amnt$NLS_CURRENCY\", \
         \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$start_time\", \"end-time\": \"$end_time\", \"amount\": \"$amnt\", \
                         \"periods\": 4, \"length\": 14400}}"
-  add_vesting_account "$spec" "unolus" "$HOME_DIR"
+  add_vesting_account "$spec" "$NLS_CURRENCY" "$HOME_DIR"
 }
 
 prepare_env() {
@@ -62,8 +62,11 @@ prepare_env() {
   SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | nolusd keys export suspend-admin --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1 )"
 # TBD switch to using 'local' network - a single node locally run network with all ports opened
   "$SCRIPTS_DIR"/init-dev-network.sh --validators_dir "$NET_ROOT_DIR" -v 1 --validator_accounts_dir "$VAL_ACCOUNTS_DIR" \
-      --validator-tokens "100000000000unolus,1000000000$IBC_TOKEN" \
-      --suspend-admin "$SUSPEND_ADMIN_ADDR" 2>&1
+      --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" \
+      --suspend-admin "$SUSPEND_ADMIN_ADDR" \
+      --faucet-mnemonic "crop affair angry miracle typical burst submit grit cage body found near dinner reveal hour true diamond move tackle scene record tone bus parent" \
+      --faucet-amount "1000000000$NLS_CURRENCY" \
+      2>&1
 # TBD incorporate it in the local network node configuration
   "$SCRIPTS_DIR"/config/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
@@ -107,7 +110,9 @@ create_ibc_network() {
     "$SCRIPTS_DIR"/init-dev-network.sh --currency 'mars' --chain-id 'mars-private' \
       --validators_dir "$MARS_ROOT_DIR" -v 1 --validator_accounts_dir "$MARS_VAL_ACCOUNTS_DIR" \
       --validator-tokens '100000000000mars' --validator-stake '1000000mars' \
-      --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k'
+      --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' \
+      --faucet-mnemonic "gas glow catch admit reopen emerge worry point industry sugar industry deliver soccer example elegant mystery target turn horn talk kiwi chimney front gadget" \
+      --faucet-amount "1000000000mars"
     "$SCRIPTS_DIR"/config/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
