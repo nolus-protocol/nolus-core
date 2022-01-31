@@ -25,12 +25,16 @@ HOST="127.0.0.1"
 P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
 PROXY_PORT=$((base_port+2))
+API_PORT=$((base_port+3))
 
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
 
 run_cmd "$home_dir" init "$node_moniker" 1>/dev/null
-update_app "$home_dir" '."api"."enable"' "false"
+# although the API endpoint is deprecated it is still required by Keplr
+# TBD reevaluate the necessity to remain open
+update_app "$home_dir" '."api"."enable"' "true"
+update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"'
 update_app "$home_dir" '."grpc"."enable"' "false"
 update_app "$home_dir" '."grpc-web"."enable"' "false"
 
