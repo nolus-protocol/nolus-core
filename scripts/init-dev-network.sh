@@ -106,8 +106,11 @@ if [[ -z "$SUSPEND_ADMIN" ]]; then
   exit 1
 fi
 
+# TBD open a few sample private investor accounts
+# TBD open admin accounts, e.g. a treasury and a suspender
+#  and pass them to init_network
 source "$SCRIPT_DIR"/internal/config-validator-dev.sh
 init_config_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE"
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "[]"

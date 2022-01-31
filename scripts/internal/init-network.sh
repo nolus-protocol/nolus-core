@@ -19,6 +19,7 @@ init_network() {
   local suspend_admin="$5"
   local val_tokens="$6"
   local val_stake="$7"
+  local genesis_accounts_spec="$8"
   
   local accounts_file="$val_accounts_dir/accounts.json"
   local proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
@@ -28,8 +29,9 @@ init_network() {
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   node_id_and_val_pubkeys="$(__setup_nodes "$validators")"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
-  __gen_accounts_spec "$val_addrs" "$accounts_file" "$val_tokens"
-  generate_proto_genesis "$chain_id" "$accounts_file" "$native_currency" "$proto_genesis_file" "$suspend_admin"
+  local accounts_spec="$genesis_accounts_spec"
+  accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
+  generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file" "$suspend_admin"
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
   __propagate_genesis_all "$final_genesis_file" "$validators"
@@ -62,16 +64,15 @@ __gen_val_accounts() {
   done
 }
 
-__gen_accounts_spec() {
-  local val_addrs="$1"
-  local file="$2"
+__add_val_accounts() {
+  local account_spec="$1"
+  local val_addrs="$2"
   local val_tokens="$3"
 
-  local accounts="[]"
   for address in $val_addrs; do
-    accounts=$(echo "$accounts" | add_account "$address" "$val_tokens")
+    account_spec=$(echo "$account_spec" | add_account "$address" "$val_tokens")
   done
-  echo "$accounts" > "$file"
+  echo "$account_spec"
 }
 
 __init_validators() {

@@ -17,7 +17,7 @@ cleanup_genesis_sh() {
 
 generate_proto_genesis() {
   local chain_id="$1"
-  local accounts_file="$2"
+  local accounts_spec="$2"
   local currency="$3"
   local proto_genesis_file="$4"
   local suspend_admin="$5"
@@ -30,9 +30,8 @@ generate_proto_genesis() {
   __set_token_denominations "$genesis_file" "$currency"
   __set_suspend_admin "$genesis_file" "$suspend_admin"
 
-  for i in $(jq '. | keys | .[]' "$accounts_file"); do
-    row=$(jq ".[$i]" "$accounts_file")
-    add_genesis_account "$row" "$currency" "$genesis_home_dir"
+  for account_spec in $(echo "$accounts_spec" | jq -c '.[]'); do
+    add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done
 
   cp "$genesis_file" "$proto_genesis_file"
