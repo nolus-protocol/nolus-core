@@ -38,7 +38,7 @@ prep-builder:debug:
   script:
     - echo "${FAUCET_MNEMONIC_DEV}"
 
- prep-builder:check-exist:
+prep-builder:check-exist:
   stage: prep
   image:
     name: amazon/aws-cli
