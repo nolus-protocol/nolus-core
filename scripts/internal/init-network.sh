@@ -24,6 +24,10 @@ init_network() {
   local proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
   local final_genesis_file="$val_accounts_dir/genesis.json"
 
+  local acl_bpath=""
+  local treasury_bpath=""
+  # TODO Add proper account
+  local smartcontract_admin_addr="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
 
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   node_id_and_val_pubkeys="$(__setup_nodes "$validators")"
@@ -33,6 +37,7 @@ init_network() {
   generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file" "$suspend_admin"
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
+  add-wasm-genesis-message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr"
   __propagate_genesis_all "$final_genesis_file" "$validators"
 }
 
