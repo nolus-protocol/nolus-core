@@ -11,6 +11,8 @@ source "$SCRIPT_DIR"/validators-manager.sh
 source "$SCRIPT_DIR"/accounts.sh
 source "$SCRIPT_DIR"/genesis.sh
 
+WASM_BIN_PATH="$SCRIPT_DIR/wasmbin"
+
 init_network() {
   local val_accounts_dir="$1"
   local validators="$2"
@@ -24,8 +26,8 @@ init_network() {
   local proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
   local final_genesis_file="$val_accounts_dir/genesis.json"
 
-  local acl_bpath=""
-  local treasury_bpath=""
+  local acl_bpath="$WASM_BIN_PATH/acl.wasm"
+  local treasury_bpath="$WASM_BIN_PATH/treasury.wasm"
   # TODO Add proper account
   local smartcontract_admin_addr="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
 
