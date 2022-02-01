@@ -164,9 +164,6 @@ copy-binary-scripts-s3:
   only:
     - main
 
-
-
-
 deploy-from-s3:
   stage: deploy
   image:
@@ -175,22 +172,13 @@ deploy-from-s3:
   script:
     - aws --version
     - yum install jq -y
-    - binaries=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/binaries/nolusd /usr/bin/ && chmod +x /usr/bin/nolusd"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$binaries" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$binaries\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - copy_scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["aws s3 cp s3://nolus-artifact-bucket/scripts.tar.gz /opt/deploy/"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$copy_scripts" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$copy_scripts\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - unarchive_scripts=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["tar -xvf /opt/deploy/scripts.tar.gz -C /opt/deploy/"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1 --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$unarchive_scripts" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$unarchive_scripts\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/binaries/nolusd /usr/bin/ && chmod +x /usr/bin/nolusd" "$AWS_DEV_INSTANCE_ID"
+    - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/scripts.tar.gz /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
+    - ./scripts/aws/run-shell-script.sh "tar -xvf /opt/deploy/scripts.tar.gz -C /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
   dependencies:
     - copy-binary-scripts-s3
   only:
     - main
-
-
-
 
 execute-dev-scripts:
   stage: deploy
@@ -200,16 +188,10 @@ execute-dev-scripts:
   script:
     - aws --version
     - yum install jq -y
-    - stop_cosmos_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["systemctl stop nolusd-dev-validator-1.service && systemctl stop nolusd-dev-validator-2.service && systemctl stop nolusd-dev-validator-3.service "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$stop_cosmos_network" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$stop_cosmos_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - cmd_main=" export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV' --faucet-tokens '$FAUCET_TOKENS_DEV' "
-    - initialize_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":["/opt/deploy/scripts/"],"executionTimeout":["3600"],"commands":["$cmd_main"]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$initialize_network" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$initialize_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
-    - restart_cosmos_network=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-version "1" --targets '[{"Key":"tag:Name","Values":["dev-network-worker"]}]' --parameters '{"workingDirectory":[""],"executionTimeout":["3600"],"commands":["systemctl restart nolusd-dev-validator-1.service && sleep 5 && systemctl restart nolusd-dev-validator-2.service && sleep 5 && systemctl restart nolusd-dev-validator-3.service "]}' --timeout-seconds 600 --max-concurrency "50" --max-errors "0" --region eu-west-1  --query 'Command.{CommandId:CommandId}' --output text )
-    - aws ssm wait command-executed  --command-id "$restart_cosmos_network" --instance-id $AWS_DEV_INSTANCE_ID
-    - "[[ $(aws ssm list-command-invocations --command-id \"$restart_cosmos_network\" --output json | jq '.CommandInvocations[].Status' | xargs ) == \"Success\" ]];"
+    - ./scripts/aws/run-shell-script.sh "systemctl stop nolusd-dev-validator-1.service && systemctl stop nolusd-dev-validator-2.service && systemctl stop nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
+    - cmd_main="export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV' --faucet-tokens '$FAUCET_TOKENS_DEV' "
+    - ./scripts/aws/run-shell-script.sh "$cmd_main" "$AWS_DEV_INSTANCE_ID"
+    - ./scripts/aws/run-shell-script.sh "systemctl restart nolusd-dev-validator-1.service && sleep 5 && systemctl restart nolusd-dev-validator-2.service && sleep 5 && systemctl restart nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
 
   dependencies:
     - deploy-from-s3

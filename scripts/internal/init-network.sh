@@ -21,7 +21,6 @@ init_network() {
   local val_stake="$7"
   local genesis_accounts_spec="$8"
   
-  local accounts_file="$val_accounts_dir/accounts.json"
   local proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
   local final_genesis_file="$val_accounts_dir/genesis.json"
 
