@@ -8,4 +8,4 @@ aws_cmd=$(aws ssm send-command --document-name "AWS-RunShellScript" --document-v
 
 aws ssm wait command-executed  --command-id "$aws_cmd" --instance-id "$instance_id"
 
-[[ $(aws ssm list-command-invocations --command-id \"$aws_cmd\" --output json  | jq '.CommandInvocations[].Status' | xargs ) == Success ]]
+[[ $(aws ssm list-command-invocations --command-id "$aws_cmd" --output json  | jq '.CommandInvocations[].Status' | xargs ) == Success ]]
