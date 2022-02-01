@@ -16,7 +16,9 @@ ARG WASMVM_LIB="libwasmvm_muslc.a"
 ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
 ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"
 ARG WASMVM_REL_DIR=".wasmvm"
-ARG WASMVM_DIR="$CI_PROJECT_DIR"/"$WASMVM_REL_DIR"
+ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
+# pointing the linker to the dir the library is stored
+ENV WASMVM_DIR=${WASMVM_DIR}
 ARG WASMVM_LOCAL_PATH="$WASMVM_DIR"/"$WASMVM_LIB"
 ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL"/checksums.txt
 
