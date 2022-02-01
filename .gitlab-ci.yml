@@ -20,7 +20,7 @@ variables:
   container: "docker"
 
   NOLUS_BUILDER_REPO: "builder"
-  NOLUS_BUILDER_TAG: "0.2"
+  NOLUS_BUILDER_TAG: "0.3"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
 
   NOLUS_NODE_REPO: "node"
@@ -59,31 +59,6 @@ prep-builder:
     KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
 
-# TBD integrate the following job as part of the builder image setup
-download-wasmvm-lib:
-  stage: build
-  image: "${NOLUS_BUILDER_IMAGE}"
-  extends: .wasmvm-cache-vars
-  cache:
-    key: $WASMVM_CACHE_KEY
-    paths:
-      - $WASMVM_REL_DIR
-  variables:
-    WASMVM_LIB: "libwasmvm_muslc.a"
-    WASMVM_BASE_URL: "https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
-    WASMVM_URL: "$WASMVM_BASE_URL/$WASMVM_LIB"
-    WASMVM_LOCAL_PATH: $WASMVM_DIR/$WASMVM_LIB
-    WASMVM_CHECKSUM_URL: "$WASMVM_BASE_URL/checksums.txt"
-  before_script:
-    - mkdir -p $WASMVM_DIR
-  script:
-    - wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
-    - if [ ! -f "$WASMVM_LOCAL_PATH" ] ||
-      ! ( echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$wasmvm_lib_checksum" - );
-      then
-      wget -O $WASMVM_LOCAL_PATH $WASMVM_URL;
-      fi
-
 build-binary:
   stage: build
   extends:
@@ -93,7 +68,6 @@ build-binary:
   artifacts:
     paths:
       - target/release
-
 
 tag-prod-branch:
   stage: build
