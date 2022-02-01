@@ -1,18 +1,11 @@
 include:
   - '.cicd/go-cache.yml'
-  - '.cicd/wasmvm-cache.yml'
 
 .go-build:
   image: "${NOLUS_BUILDER_IMAGE}"
-  needs: ["download-wasmvm-lib"]
   extends:
     - .go-cache-vars
-    - .wasmvm-cache-vars
   cache:
-    - key: $WASMVM_CACHE_KEY
-      paths:
-        - $WASMVM_REL_DIR
-      policy: pull
     - key: $GOMODCACHE_KEY
       paths:
         - $GOMODCACHE_REL_DIR
@@ -20,6 +13,5 @@ include:
       paths:
         - $GOCACHE_REL_DIR
   before_script:
-    - mkdir -p $WASMVM_DIR
     - mkdir -p $GOMODCACHE_DIR
     - mkdir -p $GOCACHE_DIR

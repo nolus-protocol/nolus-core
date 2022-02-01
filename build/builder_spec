@@ -11,4 +11,18 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
+ARG WASMVM_VERSION="v1.0.0-beta5"
+ARG WASMVM_LIB="libwasmvm_muslc.a"
+ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
+ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"
+ARG WASMVM_REL_DIR=".wasmvm"
+ARG WASMVM_DIR="$CI_PROJECT_DIR"/"$WASMVM_REL_DIR"
+ARG WASMVM_LOCAL_PATH="$WASMVM_DIR"/"$WASMVM_LIB"
+ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL"/checksums.txt
+
+RUN mkdir -p $WASMVM_DIR
+RUN wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
+RUN wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
+RUN echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$wasmvm_lib_checksum"
+
 CMD ["/bin/sh"]
