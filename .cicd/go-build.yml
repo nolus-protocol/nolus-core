@@ -3,7 +3,7 @@ include:
 
 .go-build:
   image: "${NOLUS_BUILDER_IMAGE}"
-    extends:
+  extends:
     - .go-cache-vars
   cache:
     - key: $GOMODCACHE_KEY
