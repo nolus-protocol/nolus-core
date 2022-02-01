@@ -145,7 +145,7 @@ test-integration:
   needs: ["build-binary"]
   image: "${NOLUS_INTEGRATION_IMAGE}"
   script:
-    - export PATH="$(pwd)/target/release:$PATH:$(pwd)/scripts"
+    - export PATH="$(pwd)/target/release"
     - make test-integration
 
 copy-binary-scripts-s3:
@@ -191,7 +191,7 @@ execute-dev-scripts:
     - ./scripts/aws/run-shell-script.sh "systemctl stop nolusd-dev-validator-1.service && systemctl stop nolusd-dev-validator-2.service && systemctl stop nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
     - cmd_main="export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV' --faucet-tokens '$FAUCET_TOKENS_DEV' "
     - ./scripts/aws/run-shell-script.sh "$cmd_main" "$AWS_DEV_INSTANCE_ID"
-    - ./scripts/aws/run-shell-script.sh "systemctl restart nolusd-dev-validator-1.service && sleep 5 && systemctl restart nolusd-dev-validator-2.service && sleep 5 && systemctl restart nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
+    - ./scripts/aws/run-shell-script.sh "systemctl restart nolusd-dev-validator-1.service && systemctl restart nolusd-dev-validator-2.service && systemctl restart nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
 
   dependencies:
     - deploy-from-s3
