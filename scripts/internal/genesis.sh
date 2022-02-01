@@ -100,6 +100,18 @@ integrate_genesis_txs() {
   cp "$genesis_file" "$genesis_out_file"
 }
 
+add-wasm-genesis-message() {
+  local acl_bpath="$1"
+  local treasury_bpath="$2"
+  local admin_addr="$3"
+  local trs_inst='{"acl":"nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"}'
+
+  run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$acl_bpath" --run-as "$admin_addr"
+  run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 1 {} --label acl --run-as "$admin_addr" --admin "$admin_addr"
+  run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$treasury_bpath" --run-as "$admin_addr"
+  run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 2 "$trs_inst" --label treasury --run-as "$admin_addr" --admin "$admin_addr"
+}
+
 #####################
 # private functions #
 #####################
