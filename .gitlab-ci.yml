@@ -70,7 +70,7 @@ build-binary:
     paths:
       - target/release
 
-setup-scripts:
+publish-remote-scripts:
   stage: build
   script:
     - echo "noop"
