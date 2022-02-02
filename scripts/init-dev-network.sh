@@ -150,7 +150,7 @@ __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
-init_config_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
+init_setup_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"

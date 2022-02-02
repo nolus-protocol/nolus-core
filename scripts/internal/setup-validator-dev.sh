@@ -2,15 +2,15 @@
 set -euxo pipefail
 
 # start "instance" variables
-config_validator_dev_scripts_home_dir=""
-config_validator_dev_root_dir=""
-config_validator_dev_prev_node_id=""
+setup_validator_dev_scripts_home_dir=""
+setup_validator_dev_root_dir=""
+setup_validator_dev_prev_node_id=""
 # end "instance" variables
-CONFIG_VALIDATOR_DEV_BASE_PORT=26606
+SETUP_VALIDATOR_DEV_BASE_PORT=26606
 
-init_config_validator_dev_sh() {
-  config_validator_dev_scripts_home_dir="$1"
-  config_validator_dev_root_dir="$2"
+init_setup_validator_dev_sh() {
+  setup_validator_dev_scripts_home_dir="$1"
+  setup_validator_dev_root_dir="$2"
 }
 
 # Setup validator nodes and collect their ids and validator public keys
@@ -20,7 +20,7 @@ init_config_validator_dev_sh() {
 setup_all() {
   local validators_nb="$1"
 
-  # __deploy
+  __deploy
   for i in $(seq "$validators_nb"); do
     config "$i"
   done
@@ -50,9 +50,9 @@ config() {
   node_base_port=$(__node_base_port "$node_index")
 
   local node_id_val_pub_key
-  node_id_val_pub_key=$("$config_validator_dev_scripts_home_dir"/remote/validator-dev.sh "$home_dir" "$node_moniker" \
-                                          "$node_base_port" "$config_validator_dev_prev_node_id")
-  read -r config_validator_dev_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
+  node_id_val_pub_key=$("$setup_validator_dev_scripts_home_dir"/remote/validator-dev.sh "$home_dir" "$node_moniker" \
+                                          "$node_base_port" "$setup_validator_dev_prev_node_id")
+  read -r setup_validator_dev_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
 }
 
@@ -70,7 +70,7 @@ __home_dir() {
   local node_index=$1
   local node_id
   node_id=$(__node_moniker "$node_index")
-  echo "$config_validator_dev_root_dir/$node_id"
+  echo "$setup_validator_dev_root_dir/$node_id"
 }
 
 __node_moniker() {
@@ -79,9 +79,9 @@ __node_moniker() {
 
 __node_base_port() {
   local node_index=$1
-  echo $((CONFIG_VALIDATOR_DEV_BASE_PORT + node_index*5))
+  echo $((SETUP_VALIDATOR_DEV_BASE_PORT + node_index*5))
 }
 
-# __deploy() {
-
-# }
+__deploy() {
+  :
+}
