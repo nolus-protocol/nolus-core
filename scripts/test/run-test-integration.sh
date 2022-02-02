@@ -68,7 +68,7 @@ prepare_env() {
       --faucet-amount "1000000000$NLS_CURRENCY" \
       2>&1
 # TBD incorporate it in the local network node configuration
-  "$SCRIPTS_DIR"/config/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
+  "$SCRIPTS_DIR"/remote/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
   create_ibc_network
 
@@ -113,7 +113,7 @@ create_ibc_network() {
       --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' \
       --faucet-mnemonic "gas glow catch admit reopen emerge worry point industry sugar industry deliver soccer example elegant mystery target turn horn talk kiwi chimney front gadget" \
       --faucet-amount "1000000000mars"
-    "$SCRIPTS_DIR"/config/edit.sh --home "$MARS_HOME_DIR" \
+    "$SCRIPTS_DIR"/remote/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
       --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \
