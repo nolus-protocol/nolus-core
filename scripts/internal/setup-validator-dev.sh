@@ -9,7 +9,9 @@ setup_validator_dev_tmp_dir=""
 setup_validator_dev_prev_node_id=""
 # end "instance" variables
 SETUP_VALIDATOR_DEV_BASE_PORT=26606
-ARTIFACT_S3_BUCKET="nolus-artifact-bucket/dev"
+SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET="nolus-artifact-bucket/dev"
+SETUP_VALIDATOR_DEV_BIN_FILE_ZIP="nolusd.zip"
+SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID="i-0307d4bb453d880f3"
 
 init_setup_validator_dev_sh() {
   setup_validator_dev_scripts_home_dir="$1"
@@ -93,13 +95,23 @@ __node_base_port() {
 }
 
 __deploy() {
-  local bin_file="nolusd.zip"
-  local local_bin="$setup_validator_dev_tmp_dir"/"$bin_file"
+  __upload_to_s3
+  __download_from_s3
+}
+
+__upload_to_s3() {
+  local local_bin="$setup_validator_dev_tmp_dir"/"$SETUP_VALIDATOR_DEV_BIN_FILE_ZIP"
 
   # certificate checks are skiped due to a potential misconfiguration of the HTTP server
   # echo | openssl s_client --showcerts  -connect  gitlab-nomo.credissimo.net:443 returns an error
   # wget as well
   # TBD enable it once the server configuration got fixed
   wget --no-check-certificate -O "$local_bin" "$setup_validator_dev_binary_url" 2>/dev/null
-  aws s3 cp "$local_bin" s3://$ARTIFACT_S3_BUCKET/"$bin_file" 1>&2 2>/dev/null
+  aws s3 cp "$local_bin" s3://"$SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET"/"$SETUP_VALIDATOR_DEV_BIN_FILE_ZIP" 1>&2 2>/dev/null
+}
+
+__download_from_s3() {
+  "$setup_validator_dev_scripts_home_dir"/aws/run-shell-script.sh \
+      "aws s3 cp s3://$SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET/$SETUP_VALIDATOR_DEV_BIN_FILE_ZIP /usr/bin/ && \
+      unzip -j /usr/bin/nolusd" "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID"
 }

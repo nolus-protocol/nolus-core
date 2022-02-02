@@ -69,6 +69,7 @@ build-binary:
     name: "binary"
     paths:
       - target/release
+    public: true
 
 publish-remote-scripts:
   stage: build
