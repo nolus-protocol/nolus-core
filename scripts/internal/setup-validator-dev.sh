@@ -13,6 +13,26 @@ init_config_validator_dev_sh() {
   config_validator_dev_root_dir="$2"
 }
 
+# Setup validator nodes and collect their ids and validator public keys
+#
+# The nodes are installed and configured depending on the sourced implementation script.
+# The node ids and validator public keys are printed on the standard output one at a line.
+setup_all() {
+  local validators_nb="$1"
+  for i in $(seq "$validators_nb"); do
+    config "$i"
+  done
+}
+
+propagate_genesis_all() {
+  local genesis_file="$1"
+  local validators_nb="$2"
+
+  for i in $(seq "$validators_nb"); do
+    propagate_genesis "$i" "$genesis_file"
+  done
+}
+
 #
 # Return the node ids and validator public keys printed on the standard output delimited with a space.
 #

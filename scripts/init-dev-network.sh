@@ -149,7 +149,7 @@ __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 #  and pass them to init_network
 accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
 
-source "$SCRIPT_DIR"/internal/config-validator-dev.sh
+source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_config_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
