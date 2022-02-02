@@ -7,6 +7,7 @@ source "$SCRIPT_DIR"/internal/accounts.sh
 
 cleanup() {
   cleanup_init_network_sh
+  cleanup_setup_validator_dev_sh
   exit
 }
 trap cleanup INT TERM EXIT
@@ -15,6 +16,7 @@ VAL_ROOT_DIR="networks/nolus"
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="$VAL_ROOT_DIR/val-accounts"
 POSITIONAL=()
+GIT_REF_SLUG=main
 
 NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
@@ -32,6 +34,7 @@ while [[ $# -gt 0 ]]; do
   -h | --help)
     printf \
     "Usage: %s
+    [--git-source-ref <branch_or_tag>]
     [--chain_id <string>]
     [--validators_dir <validators_root_dir>]
     [-v|--validators <number>]
@@ -47,6 +50,12 @@ while [[ $# -gt 0 ]]; do
     exit 0
     ;;
 
+   --git-source-ref)
+    GIT_REF_SLUG="$2"
+    shift
+    shift
+    ;;
+  
    --chain-id)
     CHAIN_ID="$2"
     shift
@@ -149,8 +158,11 @@ __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 #  and pass them to init_network
 accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
 
+ARTIFACT_URL="https://gitlab-nomo.credissimo.net/nomo/cosmzone/-/jobs/artifacts/$GIT_REF_SLUG/download?job="
+ARTIFACT_BIN_URL="$ARTIFACT_URL"build-binary
+ARTIFACT_REMOTE_SCRIPTS_URL="$ARTIFACT_URL"publish-remote-scripts
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
-init_setup_validator_dev_sh "$SCRIPT_DIR" "$VAL_ROOT_DIR"
+init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN_URL" "$VAL_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"
