@@ -66,8 +66,17 @@ build-binary:
   script:
     - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
   artifacts:
+    name: "binary"
     paths:
       - target/release
+
+setup-scripts:
+  stage: build
+  artifacts:
+    name: "scripts"
+    paths:
+      - scripts/common
+      - scripts/remote
 
 tag-prod-branch:
   stage: build
