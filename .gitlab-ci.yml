@@ -72,6 +72,8 @@ build-binary:
 
 setup-scripts:
   stage: build
+  script:
+    - :
   artifacts:
     name: "scripts"
     paths:
