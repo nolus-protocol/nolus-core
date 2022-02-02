@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-source "$SCRIPT_DIR"/cmd.sh
+source "$SCRIPT_DIR"/../common/cmd.sh
 
 # start "instance" variables
 val_mngr_home_dir=""

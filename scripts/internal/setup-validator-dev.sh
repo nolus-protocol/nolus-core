@@ -19,6 +19,8 @@ init_config_validator_dev_sh() {
 # The node ids and validator public keys are printed on the standard output one at a line.
 setup_all() {
   local validators_nb="$1"
+
+  # __deploy
   for i in $(seq "$validators_nb"); do
     config "$i"
   done
@@ -48,7 +50,7 @@ config() {
   node_base_port=$(__node_base_port "$node_index")
 
   local node_id_val_pub_key
-  node_id_val_pub_key=$("$config_validator_dev_scripts_home_dir"/config/validator-dev.sh "$home_dir" "$node_moniker" \
+  node_id_val_pub_key=$("$config_validator_dev_scripts_home_dir"/remote/validator-dev.sh "$home_dir" "$node_moniker" \
                                           "$node_base_port" "$config_validator_dev_prev_node_id")
   read -r config_validator_dev_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
@@ -79,3 +81,7 @@ __node_base_port() {
   local node_index=$1
   echo $((CONFIG_VALIDATOR_DEV_BASE_PORT + node_index*5))
 }
+
+# __deploy() {
+
+# }

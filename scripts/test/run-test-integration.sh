@@ -3,7 +3,7 @@ set -euxo pipefail
 
 SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/.. && pwd)
 source "$SCRIPTS_DIR"/create-vesting-account.sh
-source "$SCRIPTS_DIR"/internal/cmd.sh
+source "$SCRIPTS_DIR"/common/cmd.sh
 
 ROOT_DIR=$1
 shift

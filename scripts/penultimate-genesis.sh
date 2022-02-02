@@ -4,7 +4,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 
 source "$SCRIPT_DIR"/create-vesting-account.sh
-source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/genesis.sh
 
 cleanup() {

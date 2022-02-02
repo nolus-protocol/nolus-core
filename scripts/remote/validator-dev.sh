@@ -14,7 +14,7 @@ set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 source "$SCRIPT_DIR"/lib/lib.sh
-source "$SCRIPT_DIR"/../internal/cmd.sh
+source "$SCRIPT_DIR"/../common/cmd.sh
 
 home_dir="$1"
 node_moniker="$2"

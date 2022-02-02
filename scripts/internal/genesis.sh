@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-source "$SCRIPT_DIR"/cmd.sh
+source "$SCRIPT_DIR"/../common/cmd.sh
 "$SCRIPT_DIR"/check-jq.sh
 
 # start "instance" variables
