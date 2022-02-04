@@ -64,31 +64,34 @@ build-binary:
   extends:
     - .go-build
   script:
-    - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
+    - echo "CI_COMMIT_TAG = $CI_COMMIT_TAG"
+    - echo "CI_COMMIT_REF_SLUG = $CI_COMMIT_REF_SLUG"
+    - make build
+    # - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
+    # - tar -C target/release/ -czvf nolus.tar.gz
   artifacts:
     name: "binary"
     paths:
       - target/release
-    public: true
 
-publish-remote-scripts:
-  stage: build
-  script:
-    - echo "noop"
-  artifacts:
-    name: "scripts"
-    paths:
-      - scripts/common
-      - scripts/remote
+# publish-remote-scripts:
+#   stage: build
+#   script:
+#     - echo "noop"
+#   artifacts:
+#     name: "scripts"
+#     paths:
+#       - scripts/common
+#       - scripts/remote
 
-tag-prod-branch:
-  stage: build
-  script:
-    - git tag -a "$PROD_VERSION" -m "Version created by gitlab-ci Build"
-    - git push --tags
-  rules:
-    - if:  $PROD_BUILD == "true"
-      when: on_success
+# tag-prod-branch:
+#   stage: build
+#   script:
+#     - git tag -a "$PROD_VERSION" -m "Version created by gitlab-ci Build"
+#     - git push --tags
+#   rules:
+#     - if:  $PROD_BUILD == "true"
+#       when: on_success
 
 build-image:
   stage: build
