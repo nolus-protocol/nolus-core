@@ -50,6 +50,8 @@ prep-builder:check-exist:
       then
         echo "NOLUS_INTEGRATION_EXISTS=true" >> builder_exists.env ;
       fi
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
   artifacts:
     reports:
       dotenv: builder_exists.env
