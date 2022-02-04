@@ -19,6 +19,7 @@ variables:
   # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
   ARTIFACT_BIN: "nolus.tar.gz"
+  ARTIFACT_SCRIPTS: "scripts.tar.gz"
 
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
@@ -120,27 +121,38 @@ test-unit-cosmos:on-schedule:
   script:
     - make test-unit-cosmos
 
-test-integration:
-  stage: test
-  needs: ["build-binary"]
-  image: "${NOLUS_INTEGRATION_IMAGE}"
-  script:
-    - tar -xvf $ARTIFACT_BIN
-    - export PATH="$(pwd)":$PATH
-    - make test-integration
-
-# setup-dev-network:
-#   stage: deploy
-#   needs: [ "build-binary", "publish-remote-scripts"]
-#   image:
-#     name: amazon/aws-cli
-#     entrypoint: [ "" ]
+# test-integration:
+#   stage: test
+#   needs: ["build-binary"]
+#   image: "${NOLUS_INTEGRATION_IMAGE}"
 #   script:
-#     -  ./scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts
-#           --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
-#           --faucet-tokens '$FAUCET_TOKENS_DEV'
-#   only:
-#     - main
+#     - tar -xvf $ARTIFACT_BIN
+#     - export PATH="$(pwd)":$PATH
+#     - make test-integration
+
+prep-deploy:
+  stage: deploy
+  tag: bash
+  script:
+    - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
+  artifacts:
+    name: "scripts-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $ARTIFACT_SCRIPTS
+
+setup-dev-network:
+  stage: deploy
+  needs: [ "build-binary", "prep-deploy"]
+  image:
+    name: amazon/aws-cli
+    entrypoint: [ "" ]
+  script:
+    -  ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
+          --validators_dir validators -v 3 --validator_accounts_dir val_accounts
+          --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
+          --faucet-tokens '$FAUCET_TOKENS_DEV'
+  only:
+    - main
 
 # copy-binary-scripts-s3:
 #   stage: deploy
