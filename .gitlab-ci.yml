@@ -137,18 +137,18 @@ test-unit-cosmos:on-schedule:
 #     - export PATH="$(pwd)/target/release":$PATH
 #     - make test-integration
 
-setup-dev-network:
-  stage: deploy
-  needs: [ "build-binary", "publish-remote-scripts"]
-  image:
-    name: amazon/aws-cli
-    entrypoint: [ "" ]
-  script:
-    -  ./scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts
-          --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
-          --faucet-tokens '$FAUCET_TOKENS_DEV'
-  only:
-    - main
+# setup-dev-network:
+#   stage: deploy
+#   needs: [ "build-binary", "publish-remote-scripts"]
+#   image:
+#     name: amazon/aws-cli
+#     entrypoint: [ "" ]
+#   script:
+#     -  ./scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts
+#           --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
+#           --faucet-tokens '$FAUCET_TOKENS_DEV'
+#   only:
+#     - main
 
 # copy-binary-scripts-s3:
 #   stage: deploy
