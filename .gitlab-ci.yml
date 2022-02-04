@@ -132,8 +132,6 @@ test-unit-cosmos:on-schedule:
 
 prep-deploy:
   stage: deploy
-  # tags:
-  #   - shell
   script:
     - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
   artifacts:

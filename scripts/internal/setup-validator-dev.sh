@@ -28,10 +28,12 @@ setup_all() {
   set -euxo pipefail
   local validators_nb="$1"
 
+  __do_cmd_services "$validators_nb" "stop"
   __deploy
   for i in $(seq "$validators_nb"); do
     config "$i"
   done
+  __do_cmd_services "$validators_nb" "start"
 }
 
 propagate_genesis_all() {
@@ -88,6 +90,15 @@ __node_moniker() {
 __node_base_port() {
   local node_index=$1
   echo $((SETUP_VALIDATOR_DEV_BASE_PORT + node_index*5))
+}
+
+__do_cmd_services() {
+  local validators_nb="$1"
+  local cmd="$2"
+  for i in $(seq "$validators_nb"); do
+    "$setup_validator_dev_scripts_home_dir"/aws/run-shell-script.sh \
+        "systemctl $cmd nolusd-dev-validator-$i.service" "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID"
+  done
 }
 
 __deploy() {
