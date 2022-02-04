@@ -61,7 +61,6 @@ prep-builder:
 
 build-binary:
   stage: build
-  needs: ["prep-builder"]
   extends:
     - .go-build
   script:
