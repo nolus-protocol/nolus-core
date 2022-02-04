@@ -38,18 +38,18 @@ prep-builder:check-exist:
     name: amazon/aws-cli
     entrypoint: [""]
   script:
-    - if [[ aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
+    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
           --repository-name $NOLUS_BUILDER_REPO --region us-east-1
-          --image-ids=imageTag=$NOLUS_BUILDER_TAG ]]
-    - then 
-    -   echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env
-    - fi
-    - if [[ aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
+          --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
+      then 
+        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
+      fi
+    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
           --repository-name $NOLUS_INTEGRATION_REPO --region us-east-1
-          --image-ids=imageTag=$NOLUS_INTEGRATION_TAG ]]
-    - then
-    -   echo "NOLUS_INTEGRATION_EXISTS=true" >> builder_exists.env
-    - fi
+          --image-ids=imageTag=$NOLUS_INTEGRATION_TAG ;
+      then
+        echo "NOLUS_INTEGRATION_EXISTS=true" >> builder_exists.env ;
+      fi
   artifacts:
     reports:
       dotenv: builder_exists.env
