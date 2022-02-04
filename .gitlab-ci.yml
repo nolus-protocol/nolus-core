@@ -118,13 +118,14 @@ test-unit-cosmos:on-schedule:
   script:
     - make test-unit-cosmos
 
-# test-integration:
-#   stage: test
-#   needs: ["build-binary"]
-#   image: "${NOLUS_INTEGRATION_IMAGE}"
-#   script:
-#     - export PATH="$(pwd)/target/release":$PATH
-#     - make test-integration
+test-integration:
+  stage: test
+  needs: ["build-binary"]
+  image: "${NOLUS_INTEGRATION_IMAGE}"
+  script:
+    - tar -xvf $ARTIFACT_BIN
+    - export PATH="$(pwd)":$PATH
+    - make test-integration
 
 # setup-dev-network:
 #   stage: deploy
