@@ -61,11 +61,13 @@ prep-builder:
 
 build-binary:
   stage: build
+  needs: ["prep-builder"]
   extends:
     - .go-build
   script:
     - echo "CI_COMMIT_TAG = $CI_COMMIT_TAG"
     - echo "CI_COMMIT_REF_SLUG = $CI_COMMIT_REF_SLUG"
+    - echo "CI_COMMIT_REF_NAME = $CI_COMMIT_REF_NAME"
     - make build
     # - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
     # - tar -C target/release/ -czvf nolus.tar.gz
