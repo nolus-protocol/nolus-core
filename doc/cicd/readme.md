@@ -1,3 +1,11 @@
+# Versioning
+## Release a new version
+
+1. Tag the source code in git with a version complying to [semantic versioning](https://semver.org/).
+
+        git tag -a major.minor.patch -m "tag message"
+        git push origin --tags
+
 # Setup Gitlab Runner
 
 1. Install Docker

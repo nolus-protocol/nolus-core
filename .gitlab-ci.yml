@@ -18,16 +18,15 @@ variables:
   ARTIFACT_BUCKET: "nolus-artifact-bucket"
   # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
+  ARTIFACT_BIN: "nolus.tar.gz"
 
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
 
   NOLUS_NODE_REPO: "node"
-  NOLUS_NODE_TAG: "latest"
+  NOLUS_NODE_TAG: "${CI_COMMIT_TAG}"
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
-
-  NOLUS_NODE_PROD_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${PROD_VERSION}"
 
   NOLUS_INTEGRATION_REPO: "integration"
   NOLUS_INTEGRATION_TAG: "0.12"
@@ -49,7 +48,8 @@ prep-builder:check-exist:
     reports:
       dotenv: builder_exists.env
 
-#ref: https://github.com/GoogleContainerTools/kaniko
+# Builds a builder image only if a new NOLUS_BUILDER_TAG is pushed
+# ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
   needs: ["prep-builder:check-exist"]
@@ -59,6 +59,7 @@ prep-builder:
     KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
 
+# Builds the binary
 build-binary:
   stage: build
   extends:
@@ -68,12 +69,11 @@ build-binary:
     - echo "CI_COMMIT_REF_SLUG = $CI_COMMIT_REF_SLUG"
     - echo "CI_COMMIT_REF_NAME = $CI_COMMIT_REF_NAME"
     - make build
-    # - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
-    # - tar -C target/release/ -czvf nolus.tar.gz
+    - tar -C target/release/ -czvf $ARTIFACT_BIN .
   artifacts:
-    name: "binary"
+    name: "nolusd-$CI_COMMIT_REF_SLUG"
     paths:
-      - target/release
+      - $ARTIFACT_BIN
 
 # publish-remote-scripts:
 #   stage: build
@@ -85,15 +85,7 @@ build-binary:
 #       - scripts/common
 #       - scripts/remote
 
-# tag-prod-branch:
-#   stage: build
-#   script:
-#     - git tag -a "$PROD_VERSION" -m "Version created by gitlab-ci Build"
-#     - git push --tags
-#   rules:
-#     - if:  $PROD_BUILD == "true"
-#       when: on_success
-
+# Builds a new node image on a new git tag
 build-image:
   stage: build
   needs: ["build-binary"]
@@ -103,9 +95,8 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
   rules:
-    - if:  $PROD_BUILD == "true"
-      variables:
-        KANIKO_IMAGE: ${NOLUS_NODE_PROD_IMAGE}
+    - if: $CI_COMMIT_TAG
+      when: on_success
 
 build-integration:
   stage: build
