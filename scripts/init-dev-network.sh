@@ -35,7 +35,7 @@ while [[ $# -gt 0 ]]; do
     "Usage: %s
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
-    [--chain_id <string>]
+    [--chain-id <string>]
     [-v|--validators <number>]
     [--validator_accounts_dir <validator_accounts_dir>]
     [--currency <native_currency>]
@@ -152,6 +152,8 @@ __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 __verify_mandatory "$SUSPEND_ADMIN" "Suspend admin"
 __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
+
+rm -fr "$VAL_ACCOUNTS_DIR"
 
 # TBD open a few sample private investor accounts
 # TBD open admin accounts, e.g. a treasury and a suspender

@@ -13,6 +13,7 @@ trap cleanup INT TERM EXIT
 
 VALIDATORS=1
 VALIDATORS_ROOT_DIR="networks/nolus"
+VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
 POSITIONAL=()
 
@@ -123,7 +124,9 @@ __config_client() {
   run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
 }
 
-VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
+rm -fr "$VALIDATORS_ROOT_DIR"
+rm -fr "$VAL_ACCOUNTS_DIR"
+rm -fr "$USER_DIR"
 
 # TBD open a few sample private investor accounts
 # TBD open admin accounts, e.g. a treasury and a suspender

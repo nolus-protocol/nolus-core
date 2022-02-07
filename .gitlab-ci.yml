@@ -143,7 +143,7 @@ setup-dev-network:
     entrypoint: [ "" ]
   script:
     -  ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-          --chain_id nolus-dev-1 -v 3 --validator_accounts_dir val_accounts
+          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir val_accounts
           --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
           --faucet-tokens '$FAUCET_TOKENS_DEV'
   only:
