@@ -18,19 +18,27 @@ init_setup_validator_dev_sh() {
   setup_validator_dev_scripts_artifact="$3"
 }
 
-# Setup validator nodes and collect their ids and validator public keys
-#
-# The nodes are installed and configured depending on the sourced implementation script.
-# The node ids and validator public keys are printed on the standard output one at a line.
-setup_all() {
+stop_validators() {
   local validators_nb="$1"
 
-  __do_cmd_services "$validators_nb" "stop" >/dev/null
-  __deploy >/dev/null
+  __do_cmd_services "$validators_nb" "stop"
+} 
+
+deploy_validators() {
+  __upload_to_s3
+  __download_from_s3 "$setup_validator_dev_binary_artifact" "/usr/bin"
+  __download_from_s3 "$setup_validator_dev_scripts_artifact" "/opt/deploy"
+}
+
+# Setup validator nodes and collect their ids and validator public keys
+#
+# The node ids and validator public keys are printed on the standard output one at a line.
+setup_validators() {
+  local validators_nb="$1"
+
   for i in $(seq "$validators_nb"); do
     config "$i"
   done
-  __do_cmd_services "$validators_nb" "start" >/dev/null
 }
 
 propagate_genesis_all() {
@@ -42,6 +50,12 @@ propagate_genesis_all() {
     __download_genesis_from_s3 "$i" "$genesis_file_path"
   done
 }
+
+start_validators() {
+  local validators_nb="$1"
+
+  __do_cmd_services "$validators_nb" "start"
+} 
 
 #
 # Return the node ids and validator public keys printed on the standard output delimited with a space.
@@ -91,12 +105,6 @@ __do_cmd_services() {
     "$setup_validator_dev_scripts_home_dir"/aws/run-shell-script.sh \
         "systemctl $cmd nolusd-dev-validator-$i.service" "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID"
   done
-}
-
-__deploy() {
-  __upload_to_s3
-  __download_from_s3 "$setup_validator_dev_binary_artifact" "/usr/bin"
-  __download_from_s3 "$setup_validator_dev_scripts_artifact" "/opt/deploy"
 }
 
 __upload_to_s3() {
