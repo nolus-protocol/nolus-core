@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 check_accounts_dependencies() {
   local script_dir

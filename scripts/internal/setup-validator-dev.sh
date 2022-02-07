@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 # start "instance" variables
 setup_validator_dev_scripts_home_dir=""
@@ -24,7 +23,6 @@ init_setup_validator_dev_sh() {
 # The nodes are installed and configured depending on the sourced implementation script.
 # The node ids and validator public keys are printed on the standard output one at a line.
 setup_all() {
-  set -euxo pipefail
   local validators_nb="$1"
 
   __do_cmd_services "$validators_nb" "stop" >/dev/null

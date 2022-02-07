@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 cleanup_init_network_sh() {
   cleanup_genesis_sh
@@ -14,7 +13,6 @@ source "$SCRIPT_DIR"/genesis.sh
 WASM_BIN_PATH="$SCRIPT_DIR/wasmbin"
 
 init_network() {
-  set -euxo pipefail
   local val_accounts_dir="$1"
   local validators="$2"
   local chain_id="$3"

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 # start "instance" variables
 config_validator_dev_root_dir=""
