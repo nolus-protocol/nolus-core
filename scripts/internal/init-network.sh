@@ -31,8 +31,6 @@ init_network() {
   local smartcontract_admin_addr="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
 
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
-  stop_validators "$validators"
-  deploy_validators
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
   local accounts_spec="$genesis_accounts_spec"
@@ -41,8 +39,7 @@ init_network() {
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
   add-wasm-genesis-message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr"
-  propagate_genesis_all "$final_genesis_file" "$validators"
-  start_validators "$validators"
+  propagate_genesis "$final_genesis_file" "$validators"
 }
 
 #####################

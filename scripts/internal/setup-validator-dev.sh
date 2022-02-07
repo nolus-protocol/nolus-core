@@ -41,7 +41,7 @@ setup_validators() {
   done
 }
 
-propagate_genesis_all() {
+propagate_genesis() {
   local genesis_file_path="$1"
   local validators_nb="$2"
 
