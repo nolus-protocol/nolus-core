@@ -1,6 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
-
 CMD="nolusd"
 command -v "$CMD" >/dev/null 2>&1 || {
   echo >&2 "$CMD is not found in \$PATH."

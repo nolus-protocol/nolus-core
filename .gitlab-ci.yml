@@ -102,10 +102,6 @@ build-integration:
     KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
 
-    # - echo "CI_COMMIT_TAG = $CI_COMMIT_TAG"
-    # - echo "CI_COMMIT_REF_SLUG = $CI_COMMIT_REF_SLUG"
-    # - echo "CI_COMMIT_REF_NAME = $CI_COMMIT_REF_NAME"
-
 # test-unit:
 #   extends: .go-test
 #   script:
@@ -147,58 +143,8 @@ setup-dev-network:
     entrypoint: [ "" ]
   script:
     -  ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-          --validators_dir validators -v 3 --validator_accounts_dir val_accounts
+          --chain_id nolus-dev-1 -v 3 --validator_accounts_dir val_accounts
           --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
           --faucet-tokens '$FAUCET_TOKENS_DEV'
   only:
     - main
-
-# copy-binary-scripts-s3:
-#   stage: deploy
-#   needs: [ "build-binary" ]
-#   image:
-#     name: amazon/aws-cli
-#     entrypoint: [ "" ]
-#   script:
-#     - aws --version
-#     - yum install -y tar gzip
-#     - tar -czvf scripts.tar.gz scripts/
-#     - aws configure set region $AWS_DEFAULT_REGION
-#     - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
-#     - aws s3 cp scripts.tar.gz s3://$ARTIFACT_BUCKET/scripts.tar.gz
-#   only:
-#     - main
-
-# deploy-from-s3:
-#   stage: deploy
-#   image:
-#     name: amazon/aws-cli
-#     entrypoint: [ "" ]
-#   script:
-#     - aws --version
-#     - yum install jq -y
-#     - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/binaries/nolusd /usr/bin/ && chmod +x /usr/bin/nolusd" "$AWS_DEV_INSTANCE_ID"
-#     - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/scripts.tar.gz /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
-#     - ./scripts/aws/run-shell-script.sh "tar -xvf /opt/deploy/scripts.tar.gz -C /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
-#   dependencies:
-#     - copy-binary-scripts-s3
-#   only:
-#     - main
-
-# execute-dev-scripts:
-#   stage: deploy
-#   image:
-#     name: amazon/aws-cli
-#     entrypoint: [ "" ]
-#   script:
-#     - aws --version
-#     - yum install jq -y
-#     - ./scripts/aws/run-shell-script.sh "systemctl stop nolusd-dev-validator-1.service && systemctl stop nolusd-dev-validator-2.service && systemctl stop nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
-#     - cmd_main="export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh --validators_dir validators -v 3 --validator_accounts_dir val_accounts --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV' --faucet-tokens '$FAUCET_TOKENS_DEV' "
-#     - ./scripts/aws/run-shell-script.sh "$cmd_main" "$AWS_DEV_INSTANCE_ID"
-#     - ./scripts/aws/run-shell-script.sh "systemctl restart nolusd-dev-validator-1.service && systemctl restart nolusd-dev-validator-2.service && systemctl restart nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
-
-#   dependencies:
-#     - deploy-from-s3
-#   only:
-#     - main

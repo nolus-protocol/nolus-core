@@ -11,9 +11,8 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
-VAL_ROOT_DIR="networks/nolus"
 VALIDATORS=1
-VAL_ACCOUNTS_DIR="$VAL_ROOT_DIR/val-accounts"
+VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 POSITIONAL=()
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
@@ -37,7 +36,6 @@ while [[ $# -gt 0 ]]; do
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
     [--chain_id <string>]
-    [--validators_dir <validators_root_dir>]
     [-v|--validators <number>]
     [--validator_accounts_dir <validator_accounts_dir>]
     [--currency <native_currency>]
@@ -65,12 +63,6 @@ while [[ $# -gt 0 ]]; do
   
    --chain-id)
     CHAIN_ID="$2"
-    shift
-    shift
-    ;;
-
-   --validators_dir)
-    VAL_ROOT_DIR="$2"
     shift
     shift
     ;;
@@ -168,7 +160,7 @@ __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
-init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$VAL_ROOT_DIR"
+init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"
