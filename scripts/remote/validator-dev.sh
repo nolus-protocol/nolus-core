@@ -38,10 +38,12 @@ run_cmd "$home_dir" init "$node_moniker" >/dev/null
 # TBD reevaluate the necessity to remain open
 update_app "$home_dir" '."api"."enable"' "true" >/dev/null
 update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/null
+update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
 update_app "$home_dir" '."grpc"."enable"' "false" >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
+update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/null
 update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
