@@ -13,6 +13,7 @@ trap cleanup INT TERM EXIT
 
 VALIDATORS=1
 VALIDATORS_ROOT_DIR="networks/nolus"
+USER_DIR="$HOME/.nolus"
 POSITIONAL=()
 
 NATIVE_CURRENCY="unolus"
@@ -33,6 +34,7 @@ while [[ $# -gt 0 ]]; do
     [-v|--validators <number>]
     [--validators-root-dir <validators_root_dir>]
     [--validator-accounts-dir <validator_accounts_dir>]
+    [--user-dir <client_user_dir>]
     [--currency <native_currency>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]"
@@ -64,6 +66,12 @@ while [[ $# -gt 0 ]]; do
 
   --validator-accounts-dir)
     VAL_ACCOUNTS_DIR="$2"
+    shift
+    shift
+    ;;
+
+  --user-dir)
+    USER_DIR="$2"
     shift
     shift
     ;;
@@ -109,8 +117,13 @@ __create_suspend_admin_account() {
   run_cmd "$USER_DIR" keys show suspend-admin -a --keyring-backend "test"
 }
 
+__config_client() {
+  run_cmd "$USER_DIR" config chain-id "$CHAIN_ID"
+  run_cmd "$USER_DIR" config keyring-backend "test"
+  run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
+}
+
 VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
-USER_DIR="$VALIDATORS_ROOT_DIR/users"
 
 # TBD open a few sample private investor accounts
 # TBD open admin accounts, e.g. a treasury and a suspender
@@ -125,3 +138,5 @@ init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$suspend_admin_addr" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"
+
+__config_client

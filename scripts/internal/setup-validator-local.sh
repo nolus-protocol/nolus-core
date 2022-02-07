@@ -32,6 +32,12 @@ propagate_genesis() {
   done
 }
 
+first_node_rpc_port() {
+  local base_port
+  base_port=$(__node_base_port 1)
+  echo $((base_port+1))
+}
+
 __home_dir() {
   local node_index=$1
   local node_id

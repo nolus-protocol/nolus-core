@@ -55,9 +55,11 @@ create_vested_account() {
 }
 
 prepare_env() {
+  rm -fr "$NET_ROOT_DIR"
   "$SCRIPTS_DIR"/init-local-network.sh --validators-root-dir "$NET_ROOT_DIR" -v 1 \
       --validator-accounts-dir "$VAL_ACCOUNTS_DIR" \
-      --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" 2>&1
+      --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" \
+      --user-dir "$USER_DIR" 2>&1
 # TBD incorporate it in the local network node configuration
   "$SCRIPTS_DIR"/remote/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
@@ -99,11 +101,14 @@ EOF
 
 create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network"
+    rm -fr "$MARS_ROOT_DIR"
     local MARS_HOME_DIR="$MARS_ROOT_DIR/local-validator-1"
     local MARS_VAL_ACCOUNTS_DIR="$MARS_ROOT_DIR/val-accounts"
+    local MARS_USER_DIR="$MARS_ROOT_DIR/users"
     "$SCRIPTS_DIR"/init-local-network.sh --currency 'mars' --chain-id 'mars-private' \
       --validators-root-dir "$MARS_ROOT_DIR" -v 1 --validator-accounts-dir "$MARS_VAL_ACCOUNTS_DIR" \
-      --validator-tokens '100000000000mars' --validator-stake '1000000mars'
+      --validator-tokens '100000000000mars' --validator-stake '1000000mars' \
+      --user-dir "$MARS_USER_DIR"
     "$SCRIPTS_DIR"/remote/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
@@ -113,9 +118,7 @@ create_ibc_network() {
     MARS_PID=$!
 }
 
-rm -fr "$USER_DIR"
 prepare_env
-
 
 cd "$TESTS_DIR"
 yarn install
