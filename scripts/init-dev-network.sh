@@ -41,7 +41,6 @@ while [[ $# -gt 0 ]]; do
     [--currency <native_currency>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
-    [-ips <ip_addrs>]
     [--suspend-admin <bech32address>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]"

@@ -102,10 +102,10 @@ build-integration:
     KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
 
-# test-unit:
-#   extends: .go-test
-#   script:
-#     - make test-unit
+test-unit:
+  extends: .go-test
+  script:
+    - make test-unit
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
@@ -117,14 +117,14 @@ test-unit-cosmos:on-schedule:
   script:
     - make test-unit-cosmos
 
-# test-integration:
-#   stage: test
-#   needs: ["build-binary"]
-#   image: "${NOLUS_INTEGRATION_IMAGE}"
-#   script:
-#     - tar -xvf $ARTIFACT_BIN
-#     - export PATH="$(pwd)":$PATH
-#     - make test-integration
+test-integration:
+  stage: test
+  needs: ["build-binary"]
+  image: "${NOLUS_INTEGRATION_IMAGE}"
+  script:
+    - tar -xvf $ARTIFACT_BIN
+    - export PATH="$(pwd)":$PATH
+    - make test-integration
 
 prep-deploy:
   stage: deploy
