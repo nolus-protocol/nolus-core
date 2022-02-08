@@ -22,6 +22,7 @@ NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-local"
+SUSPEND_ADMIN_TOKENS="1000$NATIVE_CURRENCY"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -113,11 +114,6 @@ __verify_mandatory() {
   fi
 }
 
-__create_suspend_admin_account() {
-  run_cmd "$USER_DIR" keys add suspend-admin --keyring-backend "test" --output json >/dev/null
-  run_cmd "$USER_DIR" keys show suspend-admin -a --keyring-backend "test"
-}
-
 __config_client() {
   run_cmd "$USER_DIR" config chain-id "$CHAIN_ID"
   run_cmd "$USER_DIR" config keyring-backend "test"
@@ -128,12 +124,11 @@ rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
-# TBD open a few sample private investor accounts
-# TBD open admin accounts, e.g. a treasury and a suspender
-#  and pass them to init_network
-accounts_spec="[]"
+source "$SCRIPT_DIR"/internal/admin-dev.sh
+init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
+suspend_admin_addr=$(admin_dev_create_suspend_admin_account)
 
-suspend_admin_addr=$(__create_suspend_admin_account)
+accounts_spec=$(echo "[]" | add_account "$suspend_admin_addr" "$SUSPEND_ADMIN_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"

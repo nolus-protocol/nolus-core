@@ -13,6 +13,7 @@ trap cleanup INT TERM EXIT
 
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
+USER_DIR="networks/nolus/user"
 POSITIONAL=()
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
@@ -21,7 +22,8 @@ NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
-SUSPEND_ADMIN=""
+SUSPEND_ADMIN_TOKENS="1000$NATIVE_CURRENCY"
+TREASURY_TOKENS="1000000000000$NATIVE_CURRENCY"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 
@@ -38,10 +40,9 @@ while [[ $# -gt 0 ]]; do
     [--chain-id <string>]
     [-v|--validators <number>]
     [--validator_accounts_dir <validator_accounts_dir>]
-    [--currency <native_currency>]
+    [--user-dir <client_user_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
-    [--suspend-admin <bech32address>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]"
      "$0"
@@ -82,8 +83,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --currency)
-    NATIVE_CURRENCY="$2"
+  --user-dir)
+    USER_DIR="$2"
     shift
     shift
     ;;
@@ -96,12 +97,6 @@ while [[ $# -gt 0 ]]; do
 
   --validator-stake)
     VAL_STAKE="$2"
-    shift
-    shift
-    ;;
-
-  --suspend-admin)
-    SUSPEND_ADMIN="$2"
     shift
     shift
     ;;
@@ -134,31 +129,33 @@ __verify_mandatory() {
   fi
 }
 
-__add_faucet_account() {
+__recover_faucet_addr() {
   local mnemonic="$1"
-  local amount="$2"
 
   local account_name="faucet"
   local tmp_faucet_dir
   tmp_faucet_dir="$(mktemp -d)"
   run_cmd "$tmp_faucet_dir" keys add --recover "$account_name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
   local addr
-  addr="$(run_cmd "$tmp_faucet_dir" keys show "$account_name" -a --keyring-backend test)"
-  add_account "$addr" "$amount"
+  run_cmd "$tmp_faucet_dir" keys show "$account_name" -a --keyring-backend test
 }
 
 
 __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
-__verify_mandatory "$SUSPEND_ADMIN" "Suspend admin"
 __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
+rm -fr "$USER_DIR"
 
-# TBD open a few sample private investor accounts
-# TBD open admin accounts, e.g. a treasury and a suspender
-#  and pass them to init_network
-accounts_spec=$(echo "[]" | __add_faucet_account "$FAUCET_MNEMONIC" "$FAUCET_TOKENS")
+source "$SCRIPT_DIR"/internal/admin-dev.sh
+init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
+suspend_admin_addr=$(admin_dev_create_suspend_admin_account)
+treasury_addr=$(admin_dev_create_treasury_account)
+
+accounts_spec=$(echo "[]" | add_account $(__recover_faucet_addr "$FAUCET_MNEMONIC") "$FAUCET_TOKENS")
+accounts_spec=$(echo "$accounts_spec" | add_account "$suspend_admin_addr" "$SUSPEND_ADMIN_TOKENS")
+accounts_spec=$(echo "$accounts_spec" | add_account "$treasury_addr" "$TREASURY_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
@@ -166,6 +163,7 @@ stop_validators "$VALIDATORS"
 deploy_validators "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$SUSPEND_ADMIN" "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec"
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$suspend_admin_addr" "$VAL_TOKENS" \
+              "$VAL_STAKE" "$accounts_spec"
 
 start_validators "$VALIDATORS"

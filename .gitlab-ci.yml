@@ -141,10 +141,16 @@ setup-dev-network:
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
+  variables:
+    ACCOUNTS_DIR: accounts
   script:
     -  ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir val_accounts
-          --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
+          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
+          --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
           --faucet-tokens '$FAUCET_TOKENS_DEV'
+  artifacts:
+    name: "accounts-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $ACCOUNTS_DIR
   only:
     - main
