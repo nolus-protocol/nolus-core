@@ -144,6 +144,7 @@ setup-dev-network:
   variables:
     ACCOUNTS_DIR: accounts
   script:
+    - yum install -y tar gzip
     - tar -xvf $ARTIFACT_BIN
     - export PATH="$(pwd)":$PATH
     - ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
