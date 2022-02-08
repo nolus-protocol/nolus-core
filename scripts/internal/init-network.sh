@@ -38,7 +38,7 @@ init_network() {
   generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file" "$suspend_admin"
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
-  add-wasm-genesis-message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr"
+  add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr" "$final_genesis_file"
   propagate_genesis "$final_genesis_file" "$validators"
 }
 

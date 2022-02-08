@@ -6,6 +6,7 @@ source "$SCRIPT_DIR"/../common/cmd.sh
 
 # start "instance" variables
 genesis_home_dir=$(mktemp -d)
+genesis_file="$genesis_home_dir"/config/genesis.json
 # end "instance" variables
 
 cleanup_genesis_sh() {
@@ -25,7 +26,6 @@ generate_proto_genesis() {
   run_cmd "$genesis_home_dir" config keyring-backend test
   run_cmd "$genesis_home_dir" config chain-id "$chain_id"
 
-  local genesis_file="$genesis_home_dir/config/genesis.json"
   __set_token_denominations "$genesis_file" "$currency"
   __set_suspend_admin "$genesis_file" "$suspend_admin"
 
@@ -81,8 +81,6 @@ integrate_genesis_txs() {
   local txs="$2"
   local genesis_out_file="$3"
 
-  local genesis_basedir="$genesis_home_dir"/config
-  local genesis_file="$genesis_basedir"/genesis.json
   cp "$genesis_in_file" "$genesis_file"
 
   local txs_dir="$genesis_home_dir"/txs
@@ -99,16 +97,21 @@ integrate_genesis_txs() {
   cp "$genesis_file" "$genesis_out_file"
 }
 
-add-wasm-genesis-message() {
+add_wasm_genesis_message() {
   local acl_bpath="$1"
   local treasury_bpath="$2"
   local admin_addr="$3"
+  local genesis_in_out_file="$4"
   local trs_inst='{"acl":"nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"}'
+
+  cp "$genesis_in_out_file" "$genesis_file"
 
   run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$acl_bpath" --run-as "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 1 {} --label acl --run-as "$admin_addr" --admin "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$treasury_bpath" --run-as "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 2 "$trs_inst" --label treasury --run-as "$admin_addr" --admin "$admin_addr"
+
+  cp "$genesis_file" "$genesis_in_out_file"
 }
 
 #####################
