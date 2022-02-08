@@ -48,13 +48,13 @@ init_network() {
 
 __gen_val_accounts() {
   local node_id_and_val_pubkeys="$1"
-  for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
+  while IFS= read -r node_id_and_val_pubkey ; do
     local account_name
     read -r account_name __val_pub_key <<< $node_id_and_val_pubkey
     local address
     address=$(gen_val_account "$account_name")
     echo "$address"
-  done
+  done <<< "$node_id_and_val_pubkeys"
 }
 
 __add_val_accounts() {
@@ -62,9 +62,9 @@ __add_val_accounts() {
   local val_addrs="$2"
   local val_tokens="$3"
 
-  for address in $val_addrs; do
+  while IFS= read -r address ; do
     account_spec=$(echo "$account_spec" | add_account "$address" "$val_tokens")
-  done
+  done <<< "$val_addrs"
   echo "$account_spec"
 }
 
@@ -73,12 +73,12 @@ __init_validators() {
   local node_id_and_val_pubkeys="$2"
   local val_stake="$3"
 
-  for node_id_and_val_pubkey in "$node_id_and_val_pubkeys"; do
+  while IFS= read -r node_id_and_val_pubkey ; do
     local node_id
     local val_pub_key
     read -r node_id val_pub_key <<< $node_id_and_val_pubkey
     local create_validator_tx
     create_validator_tx=$(gen_val_txn "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
     echo "$create_validator_tx"
-  done
+  done <<< "$node_id_and_val_pubkeys"
 }

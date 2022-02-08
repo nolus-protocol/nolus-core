@@ -29,9 +29,9 @@ generate_proto_genesis() {
   __set_token_denominations "$genesis_file" "$currency"
   __set_suspend_admin "$genesis_file" "$suspend_admin"
 
-  for account_spec in $(echo "$accounts_spec" | jq -c '.[]'); do
+  while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
-  done
+  done <<< $(echo "$accounts_spec" | jq -c '.[]')
 
   cp "$genesis_file" "$proto_genesis_file"
 }
@@ -89,10 +89,10 @@ integrate_genesis_txs() {
   {
     mkdir "$txs_dir"
     local index=0
-    for tx in $txs; do
+    while IFS= read -r tx ; do
         echo "$tx" > "$txs_dir"/tx"$index".json
         index=$((index+1))
-    done
+    done <<< "$txs"
   }
 
   run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
