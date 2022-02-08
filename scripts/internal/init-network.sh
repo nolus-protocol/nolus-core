@@ -64,7 +64,7 @@ __add_val_accounts() {
 
   while IFS= read -r address ; do
     account_spec=$(echo "$account_spec" | add_account "$address" "$val_tokens")
-  done <<< $val_addrs
+  done <<< "$val_addrs"
   echo "$account_spec"
 }
 

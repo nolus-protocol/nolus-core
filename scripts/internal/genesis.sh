@@ -31,7 +31,7 @@ generate_proto_genesis() {
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
-  done <<< $(echo "$accounts_spec" | jq -c '.[]')
+  done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
   cp "$genesis_file" "$proto_genesis_file"
 }
