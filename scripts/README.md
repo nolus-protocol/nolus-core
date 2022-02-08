@@ -13,15 +13,15 @@ Sample usage:
   penultimate-genesis.sh --output "proto-genesis.json"
 ```
 
-## init-dev-network.sh
+## init-local-network.sh
 
 Initialize one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
 
-The nodes are ready to be started.
+The nodes are ready to be started. The nolus client is configured at the default home, "$HOME/.nolus", to point to the first validator node.
 
 Sample usage which generates 2 validator nodes:
 ```shell
-init-dev-node.sh -v 2 --output validators
+init-local-node.sh -v 2
 ```
 
 ## init-validator-node.sh

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 cleanup_init_network_sh() {
   cleanup_genesis_sh
@@ -32,7 +31,7 @@ init_network() {
   local smartcontract_admin_addr="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
 
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
-  node_id_and_val_pubkeys="$(__setup_nodes "$validators")"
+  node_id_and_val_pubkeys="$(setup_validators "$validators")"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
   local accounts_spec="$genesis_accounts_spec"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
@@ -40,24 +39,12 @@ init_network() {
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
   add-wasm-genesis-message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr"
-  __propagate_genesis_all "$final_genesis_file" "$validators"
+  propagate_genesis "$final_genesis_file" "$validators"
 }
 
 #####################
 # private functions #
 #####################
-
-# Setup validator nodes and collect their ids and validator public keys
-#
-# The nodes are installed and configured depending on the sourced implementation script.
-# The node ids and validator public keys are printed on the standard output one at a line.
-__setup_nodes() {
-  set -euxo pipefail
-  local validators="$1"
-  for i in $(seq "$validators"); do
-    config "$i"
-  done
-}
 
 __gen_val_accounts() {
   local node_id_and_val_pubkeys="$1"
@@ -93,14 +80,5 @@ __init_validators() {
     local create_validator_tx
     create_validator_tx=$(gen_val_txn "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
     echo "$create_validator_tx"
-  done
-}
-
-__propagate_genesis_all() {
-  local genesis_file="$1"
-  local validators="$2"
-
-  for i in $(seq "$validators"); do
-    propagate_genesis "$i" "$genesis_file"
   done
 }

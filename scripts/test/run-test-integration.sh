@@ -3,7 +3,7 @@ set -euxo pipefail
 
 SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/.. && pwd)
 source "$SCRIPTS_DIR"/create-vesting-account.sh
-source "$SCRIPTS_DIR"/internal/cmd.sh
+source "$SCRIPTS_DIR"/common/cmd.sh
 
 ROOT_DIR=$1
 shift
@@ -14,9 +14,9 @@ fi
 
 TESTS_DIR="$ROOT_DIR/tests/integration"
 NET_ROOT_DIR="$ROOT_DIR/networks/nolus"
-HOME_DIR="$NET_ROOT_DIR/dev-validator-1"
+HOME_DIR="$NET_ROOT_DIR/local-validator-1"
 VAL_ACCOUNTS_DIR="$NET_ROOT_DIR/val-accounts"
-USER_DIR="$ROOT_DIR/users/test-integration"
+USER_DIR="$NET_ROOT_DIR/users"
 IBC_TOKEN='ibc/11DFDFADE34DCE439BA732EBA5CD8AA804A544BA1ECC0882856289FAF01FE53F'
 NLS_CURRENCY="unolus"
 LOG_DIR="/tmp"
@@ -55,24 +55,18 @@ create_vested_account() {
 }
 
 prepare_env() {
-  # note that the suspend admin account will be deleted by the init-dev-network script, so we first need to save his private key for later use in the tests
-  local suspend_admin_output
-  suspend_admin_output="$(run_cmd "$USER_DIR" keys add suspend-admin --keyring-backend "test" --output json)"
-  SUSPEND_ADMIN_ADDR="$(run_cmd "$USER_DIR" keys show suspend-admin -a --keyring-backend "test")"
-  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | nolusd keys export suspend-admin --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1 )"
-# TBD switch to using 'local' network - a single node locally run network with all ports opened
-  "$SCRIPTS_DIR"/init-dev-network.sh --validators_dir "$NET_ROOT_DIR" -v 1 --validator_accounts_dir "$VAL_ACCOUNTS_DIR" \
+  rm -fr "$NET_ROOT_DIR"
+  "$SCRIPTS_DIR"/init-local-network.sh --validators-root-dir "$NET_ROOT_DIR" -v 1 \
+      --validator-accounts-dir "$VAL_ACCOUNTS_DIR" \
       --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" \
-      --suspend-admin "$SUSPEND_ADMIN_ADDR" \
-      --faucet-mnemonic "crop affair angry miracle typical burst submit grit cage body found near dinner reveal hour true diamond move tackle scene record tone bus parent" \
-      --faucet-amount "1000000000$NLS_CURRENCY" \
-      2>&1
+      --user-dir "$USER_DIR" 2>&1
 # TBD incorporate it in the local network node configuration
-  "$SCRIPTS_DIR"/config/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
+  "$SCRIPTS_DIR"/remote/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
   create_ibc_network
 
-# TBD do create vesting accounts feeding `init-dev-network` with necessary account data
+# TBD when finalize vesting type, periodic vs continuos, do create vesting accounts
+# feeding `init-local-network` with necessary account data
   create_vested_account
   run_cmd "$USER_DIR" keys add test-user-1 --keyring-backend "test" # force no password
   run_cmd "$USER_DIR" keys add test-user-2 --keyring-backend "test" # force no password
@@ -80,6 +74,8 @@ prepare_env() {
 
   VALIDATOR_KEY_NAME=$(run_cmd "$VAL_ACCOUNTS_DIR" keys list --list-names)
   VALIDATOR_PRIV_KEY=$(echo 'y' | nolusd keys export "$VALIDATOR_KEY_NAME" --unsafe --unarmored-hex --keyring-backend "test" --home "$VAL_ACCOUNTS_DIR" 2>&1)
+  SUSPEND_ADMIN_ADDR="$(run_cmd "$USER_DIR" keys show suspend-admin -a --keyring-backend "test")"
+  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | nolusd keys export suspend-admin --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1 )"
   PERIODIC_PRIV_KEY=$(echo 'y' | nolusd keys export periodic-vesting-account --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
   USR_1_PRIV_KEY=$(echo 'y' | nolusd keys export test-user-1 --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
   USR_2_PRIV_KEY=$(echo 'y' | nolusd keys export test-user-2 --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
@@ -105,15 +101,15 @@ EOF
 
 create_ibc_network() {
     local MARS_ROOT_DIR="$ROOT_DIR/networks/ibc_network"
-    local MARS_HOME_DIR="$MARS_ROOT_DIR/dev-validator-1"
+    rm -fr "$MARS_ROOT_DIR"
+    local MARS_HOME_DIR="$MARS_ROOT_DIR/local-validator-1"
     local MARS_VAL_ACCOUNTS_DIR="$MARS_ROOT_DIR/val-accounts"
-    "$SCRIPTS_DIR"/init-dev-network.sh --currency 'mars' --chain-id 'mars-private' \
-      --validators_dir "$MARS_ROOT_DIR" -v 1 --validator_accounts_dir "$MARS_VAL_ACCOUNTS_DIR" \
+    local MARS_USER_DIR="$MARS_ROOT_DIR/users"
+    "$SCRIPTS_DIR"/init-local-network.sh --currency 'mars' --chain-id 'mars-private' \
+      --validators-root-dir "$MARS_ROOT_DIR" -v 1 --validator-accounts-dir "$MARS_VAL_ACCOUNTS_DIR" \
       --validator-tokens '100000000000mars' --validator-stake '1000000mars' \
-      --suspend-admin 'nolus1jxguv8equszl0xus8akavgf465ppl2tzd8ac9k' \
-      --faucet-mnemonic "gas glow catch admit reopen emerge worry point industry sugar industry deliver soccer example elegant mystery target turn horn talk kiwi chimney front gadget" \
-      --faucet-amount "1000000000mars"
-    "$SCRIPTS_DIR"/config/edit.sh --home "$MARS_HOME_DIR" \
+      --user-dir "$MARS_USER_DIR"
+    "$SCRIPTS_DIR"/remote/edit.sh --home "$MARS_HOME_DIR" \
       --tendermint-rpc-address "tcp://127.0.0.1:26667" --tendermint-p2p-address "tcp://0.0.0.0:26666" \
       --enable-api false --enable-grpc false --grpc-address "0.0.0.0:9095" \
       --enable-grpc-web false --grpc-web-address "0.0.0.0:9096" \
@@ -122,9 +118,7 @@ create_ibc_network() {
     MARS_PID=$!
 }
 
-rm -fr "$USER_DIR"
 prepare_env
-
 
 cd "$TESTS_DIR"
 yarn install

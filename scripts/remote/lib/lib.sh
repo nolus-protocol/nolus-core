@@ -1,6 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
-
 command -v tomlq > /dev/null 2>&1 || {
   echo >&2 "tomlq not installed. More info: https://tomlq.readthedocs.io/en/latest/installation.html"
   exit 1

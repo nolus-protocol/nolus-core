@@ -2,7 +2,7 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
-source "$SCRIPT_DIR"/internal/cmd.sh
+source "$SCRIPT_DIR"/common/cmd.sh
 "$SCRIPT_DIR"/internal/check-jq.sh
 
 GENESIS="genesis.json"

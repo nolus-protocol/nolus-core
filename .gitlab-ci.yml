@@ -18,16 +18,16 @@ variables:
   ARTIFACT_BUCKET: "nolus-artifact-bucket"
   # https://github.com/GoogleContainerTools/kaniko/issues/1542#issuecomment-853929795
   container: "docker"
+  ARTIFACT_BIN: "nolus.tar.gz"
+  ARTIFACT_SCRIPTS: "scripts.tar.gz"
 
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
 
   NOLUS_NODE_REPO: "node"
-  NOLUS_NODE_TAG: "latest"
+  NOLUS_NODE_TAG: "${CI_COMMIT_TAG}"
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
-
-  NOLUS_NODE_PROD_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${PROD_VERSION}"
 
   NOLUS_INTEGRATION_REPO: "integration"
   NOLUS_INTEGRATION_TAG: "0.12"
@@ -40,16 +40,25 @@ prep-builder:check-exist:
     entrypoint: [""]
   script:
     - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
-      --repository-name $NOLUS_BUILDER_REPO --region us-east-1
-      --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
-      then
-      echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
+          --repository-name $NOLUS_BUILDER_REPO --region us-east-1
+          --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
+      then 
+        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
       fi
+    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
+          --repository-name $NOLUS_INTEGRATION_REPO --region us-east-1
+          --image-ids=imageTag=$NOLUS_INTEGRATION_TAG ;
+      then
+        echo "NOLUS_INTEGRATION_EXISTS=true" >> builder_exists.env ;
+      fi
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
   artifacts:
     reports:
       dotenv: builder_exists.env
 
-#ref: https://github.com/GoogleContainerTools/kaniko
+# Builds a builder image only if a new NOLUS_BUILDER_TAG is pushed
+# ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
   needs: ["prep-builder:check-exist"]
@@ -59,25 +68,20 @@ prep-builder:
     KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
 
+# Builds the binary
 build-binary:
   stage: build
   extends:
     - .go-build
   script:
-    - - if [[ "$PROD_BUILD" = "true" ]]; then export VERSION="$PROD_VERSION" && make build; else make build; fi
+    - make build
+    - tar -C target/release/ -czvf $ARTIFACT_BIN .
   artifacts:
+    name: "nolusd-$CI_COMMIT_REF_SLUG"
     paths:
-      - target/release
+      - $ARTIFACT_BIN
 
-tag-prod-branch:
-  stage: build
-  script:
-    - git tag -a "$PROD_VERSION" -m "Version created by gitlab-ci Build"
-    - git push --tags
-  rules:
-    - if:  $PROD_BUILD == "true"
-      when: on_success
-
+# Builds a new node image on a new git tag only
 build-image:
   stage: build
   needs: ["build-binary"]
@@ -87,9 +91,8 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
   rules:
-    - if:  $PROD_BUILD == "true"
-      variables:
-        KANIKO_IMAGE: ${NOLUS_NODE_PROD_IMAGE}
+    - if: $CI_COMMIT_TAG
+      when: on_success
 
 build-integration:
   stage: build
@@ -119,55 +122,35 @@ test-integration:
   needs: ["build-binary"]
   image: "${NOLUS_INTEGRATION_IMAGE}"
   script:
-    - export PATH="$(pwd)/target/release":$PATH
+    - tar -xvf $ARTIFACT_BIN
+    - export PATH="$(pwd)":$PATH
     - make test-integration
 
-copy-binary-scripts-s3:
+prep-deploy:
   stage: deploy
-  needs: [ "build-binary" ]
+  script:
+    - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
+  artifacts:
+    name: "scripts-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $ARTIFACT_SCRIPTS
+
+setup-dev-network:
+  stage: deploy
+  needs: [ "build-binary", "prep-deploy"]
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
+  variables:
+    ACCOUNTS_DIR: accounts
   script:
-    - aws --version
-    - yum install -y tar gzip
-    - tar -czvf scripts.tar.gz scripts/
-    - aws configure set region $AWS_DEFAULT_REGION
-    - aws s3 sync target/release s3://$ARTIFACT_BUCKET/binaries
-    - aws s3 cp scripts.tar.gz s3://$ARTIFACT_BUCKET/scripts.tar.gz
-  only:
-    - main
-
-deploy-from-s3:
-  stage: deploy
-  image:
-    name: amazon/aws-cli
-    entrypoint: [ "" ]
-  script:
-    - aws --version
-    - yum install jq -y
-    - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/binaries/nolusd /usr/bin/ && chmod +x /usr/bin/nolusd" "$AWS_DEV_INSTANCE_ID"
-    - ./scripts/aws/run-shell-script.sh "aws s3 cp s3://nolus-artifact-bucket/scripts.tar.gz /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
-    - ./scripts/aws/run-shell-script.sh "tar -xvf /opt/deploy/scripts.tar.gz -C /opt/deploy/" "$AWS_DEV_INSTANCE_ID"
-  dependencies:
-    - copy-binary-scripts-s3
-  only:
-    - main
-
-execute-dev-scripts:
-  stage: deploy
-  image:
-    name: amazon/aws-cli
-    entrypoint: [ "" ]
-  script:
-    - aws --version
-    - yum install jq -y
-    - ./scripts/aws/run-shell-script.sh "systemctl stop nolusd-dev-validator-1.service && systemctl stop nolusd-dev-validator-2.service && systemctl stop nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
-    - cmd_main="export HOME=/home/ssm-user && /bin/bash /opt/deploy/scripts/init-dev-network.sh --chain_id 'nolus-dev-1' --validators_dir validators -v 3 --validator_accounts_dir val_accounts --suspend-admin 'nolusalabala' --faucet-mnemonic '$FAUCET_MNEMONIC_DEV' --faucet-tokens '$FAUCET_TOKENS_DEV' "
-    - ./scripts/aws/run-shell-script.sh "$cmd_main" "$AWS_DEV_INSTANCE_ID"
-    - ./scripts/aws/run-shell-script.sh "systemctl restart nolusd-dev-validator-1.service && systemctl restart nolusd-dev-validator-2.service && systemctl restart nolusd-dev-validator-3.service" "$AWS_DEV_INSTANCE_ID"
-
-  dependencies:
-    - deploy-from-s3
+    -  ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
+          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
+          --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic '$FAUCET_MNEMONIC_DEV'
+          --faucet-tokens '$FAUCET_TOKENS_DEV'
+  artifacts:
+    name: "accounts-$CI_COMMIT_REF_SLUG"
+    paths:
+      - $ACCOUNTS_DIR
   only:
     - main
