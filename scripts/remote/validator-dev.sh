@@ -27,7 +27,6 @@ fi
 HOST="127.0.0.1"
 P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
-PROXY_PORT=$((base_port+2))
 API_PORT=$((base_port+3))
 
 rm -fr "$home_dir"
@@ -48,7 +47,7 @@ update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/n
 update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
-update_config "$home_dir" '."proxy_app"' '"tcp://'"$HOST:$PROXY_PORT"'"' >/dev/null
+update_config "$home_dir" '."proxy_app"' '""' >/dev/null
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)
