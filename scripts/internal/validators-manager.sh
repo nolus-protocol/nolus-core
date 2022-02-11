@@ -12,9 +12,6 @@ init_val_mngr_sh() {
   val_mngr_home_dir="$1"
   val_mngr_chain_id="$2"
 
-  rm -fr "$val_mngr_home_dir"
-  mkdir -p "$val_mngr_home_dir"
-
   run_cmd "$val_mngr_home_dir" config chain-id "$val_mngr_chain_id"
   run_cmd "$val_mngr_home_dir" config keyring-backend test
 }

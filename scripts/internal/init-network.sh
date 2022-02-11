@@ -12,6 +12,7 @@ source "$SCRIPT_DIR"/genesis.sh
 
 WASM_BIN_PATH="$SCRIPT_DIR/wasmbin"
 
+# arg1: an existing local dir where validator accounts are created, mandatory
 init_network() {
   local val_accounts_dir="$1"
   local validators="$2"
