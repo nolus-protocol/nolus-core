@@ -6,7 +6,8 @@
 # arg1: home directory of the validator node, mandatory
 # arg2: node's moniker, mandatory
 # arg3: base port, mandatory. Used to determine the endpoint ports.
-# arg4: first node's identificator, optional. Empty, if this is the first node.
+# arg4: tls enabled, mandatory. Pass "true" to configure TLS.
+# arg5: first node's identificator, optional. Empty, if this is the first node.
 #
 # Returns the node identificator in the form of "node-id@host:p2p-port" followed
 # by the node public key in JSON.
@@ -19,8 +20,9 @@ source "$SCRIPT_DIR"/../common/cmd.sh
 home_dir="$1"
 node_moniker="$2"
 base_port="$3"
-if [[ $# -gt 3 ]]
-then first_node_id="$4"
+tls_enable="$4"
+if [[ $# -gt 4 ]]
+then first_node_id="$5"
 else first_node_id=""
 fi
 
@@ -38,8 +40,6 @@ RPC_PORT=$((base_port+1))
 API_PORT=$((base_port+3))
 TLS_CERT_FILE="/etc/pki/tls/certs/gitlab-nomo.credissimo.net.pem"
 TLS_KEY_FILE="/etc/pki/tls/private/gitlab-nomo.credissimo.net.key"
-exit_if_not_present "$TLS_CERT_FILE"
-exit_if_not_present "$TLS_KEY_FILE"
 
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
@@ -55,9 +55,12 @@ update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
-update_config "$home_dir" '."rpc"."tls_cert_file"' '["*"]' >/dev/null
-update_config "$home_dir" '."rpc"."tls_key_file"' '["*"]' >/dev/null
-
+if [[ "$tls_enable" == "true" ]]; then
+    exit_if_not_present "$TLS_CERT_FILE"
+    exit_if_not_present "$TLS_KEY_FILE"
+    update_config "$home_dir" '."rpc"."tls_cert_file"' '"'"$TLS_CERT_FILE"'"' >/dev/null
+    update_config "$home_dir" '."rpc"."tls_key_file"' '"'"$TLS_KEY_FILE"'"' >/dev/null
+fi
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/null
 update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
