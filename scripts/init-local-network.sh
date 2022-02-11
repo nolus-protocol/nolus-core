@@ -23,6 +23,7 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-local"
 SUSPEND_ADMIN_TOKENS="1000$NATIVE_CURRENCY"
+TREASURY_TOKENS="1000000000000$NATIVE_CURRENCY"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -127,8 +128,10 @@ rm -fr "$USER_DIR"
 source "$SCRIPT_DIR"/internal/admin-dev.sh
 init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
 suspend_admin_addr=$(admin_dev_create_suspend_admin_account)
+treasury_addr=$(admin_dev_create_treasury_account)
 
 accounts_spec=$(echo "[]" | add_account "$suspend_admin_addr" "$SUSPEND_ADMIN_TOKENS")
+accounts_spec=$(echo "$accounts_spec" | add_account "$treasury_addr" "$TREASURY_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
