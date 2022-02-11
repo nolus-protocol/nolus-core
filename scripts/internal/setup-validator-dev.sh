@@ -9,7 +9,6 @@ setup_validator_dev_prev_node_id=""
 SETUP_VALIDATOR_DEV_BASE_PORT=26606
 SETUP_VALIDATOR_DEV_ROOT_DIR="/opt/deploy/nolus"
 SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET="nolus-artifact-bucket/dev"
-SETUP_VALIDATOR_DEV_BIN_TAR="nolusd.tar"
 SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID="i-0307d4bb453d880f3"
 
 init_setup_validator_dev_sh() {

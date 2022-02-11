@@ -12,7 +12,7 @@
 # by the node public key in JSON.
 set -euo pipefail
 
-SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/lib/lib.sh
 source "$SCRIPT_DIR"/../common/cmd.sh
 
@@ -24,10 +24,22 @@ then first_node_id="$4"
 else first_node_id=""
 fi
 
+exit_if_not_present() {
+    local file_name="$1"
+    if [[ ! -f "$file_name" ]]; then
+        echo "$file_name not found!"
+        exit 1
+    fi
+}
+
 HOST="127.0.0.1"
 P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
 API_PORT=$((base_port+3))
+TLS_CERT_FILE="/etc/pki/tls/certs/gitlab-nomo.credissimo.net.pem"
+TLS_KEY_FILE="/etc/pki/tls/private/gitlab-nomo.credissimo.net.key"
+exit_if_not_present "$TLS_CERT_FILE"
+exit_if_not_present "$TLS_KEY_FILE"
 
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
@@ -43,10 +55,14 @@ update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
+update_config "$home_dir" '."rpc"."tls_cert_file"' '["*"]' >/dev/null
+update_config "$home_dir" '."rpc"."tls_key_file"' '["*"]' >/dev/null
+
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/null
 update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
+
 update_config "$home_dir" '."proxy_app"' '""' >/dev/null
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
