@@ -6,7 +6,9 @@ workspace {
             
             nolus = softwareSystem "Nolus" {
                 validatornode = group "Validator/Sentry Node" {
-                    cosmosapp = container "Cosmos App" {
+                    cosmosapp = container "Nolus Node" {
+                        description "Tendermint PoS and Cosmos based blockchain"
+                        technology "Cosmos SDK Application"
                         tax_agent = component "Tax Agent"
                         minter = component "Minter"
                         distributor = component "Distributor"
@@ -42,7 +44,9 @@ workspace {
                     -> cosmosapp "Forward Queries&Transactions"
                 }
 
-                webapp = container "Web UI Client" {
+                webapp = container "Web App" {
+                    description "Static content and client-side rendered application"
+                    technology "TypeScript, React"
                     -> appserver "Queries, Transactions"
                 }
 
@@ -66,6 +70,32 @@ workspace {
         market_data_aggregator = softwareSystem "Market Data Aggregator" {
         }
 
+        deploymentEnvironment dev {
+            deploymentNode Nolus "description" "AWS" {
+                deploymentNode Worker "description" "AWS EC2 dev-network-worker" {
+                    deploymentNode "Validator Node" "" "nolusd" "" 3 {
+                        containerInstance cosmosapp {}
+                        properties {
+                            p2p "tcp://127.0.0.1:26611, :26616, :26621"
+                            rpc "http://0.0.0.0:26612, :26617, :26622"
+                            api "http://0.0.0.0:26614, :26619, :26624"
+                        }
+                    }
+                }
+                webappHost = deploymentNode "WebApp Hosting" "" "AWS S3 web-dev.nolus.io" {
+                    containerInstance webapp {}
+                    url "https://app-dev.nolus.io"
+                }
+            }
+
+            deploymentNode "Customer's device" "" "Desktop, laptop ot mobile" {
+                clientBrowser = deploymentNode "Web Browser" "" "Chrome, Firefox, Safari" {
+                    containerInstance webapp {}
+                }
+                webappHost -> clientBrowser "Delivers to the customer's web browser"
+            }
+
+        }
         market_data_operator -> market_data_aggregator "Fetch Data"
 
         user -> webapp "Uses"
@@ -135,6 +165,11 @@ workspace {
             timer -> flex "push time update"
             flex -> reserve_vault "send the total amount A"
             autolayout
+        }
+
+        deployment nolus dev "nolus-dev-deployment" "Nolus Development Environment" {
+            title "Nolus Development"
+            include *
         }
         theme default
     }
