@@ -38,8 +38,8 @@ HOST="127.0.0.1"
 P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
 API_PORT=$((base_port+3))
-TLS_CERT_FILE="/etc/pki/tls/certs/gitlab-nomo.credissimo.net.pem"
-TLS_KEY_FILE="/etc/pki/tls/private/gitlab-nomo.credissimo.net.key"
+TLS_CERT_FILE="/etc/pki/tls/certs/nolus.io.pem"
+TLS_KEY_FILE="/etc/pki/tls/private/nolus.io.key"
 
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
