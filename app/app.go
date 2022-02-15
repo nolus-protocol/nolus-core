@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	nolusante "gitlab-nomo.credissimo.net/nomo/cosmzone/custom/auth/ante"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -92,6 +91,10 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
+	taxmodule "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax"
+	taxmodulekeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
+	taxmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	suspend "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend"
 	suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
@@ -157,8 +160,8 @@ var (
 	// non-dependant module elements, such as codec registration
 	// and genesis verification.
 	ModuleBasics = module.NewBasicManager(
-		auth.AppModuleBasic{},
 		genutil.AppModuleBasic{},
+		auth.AppModuleBasic{},
 		bank.AppModuleBasic{},
 		capability.AppModuleBasic{},
 		staking.AppModuleBasic{},
@@ -175,6 +178,7 @@ var (
 		vesting.AppModuleBasic{},
 		wasm.AppModuleBasic{},
 		suspend.AppModuleBasic{},
+		taxmodule.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -246,6 +250,8 @@ type App struct {
 	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
 	SuspendKeeper suspendkeeper.Keeper
+
+	TaxKeeper taxmodulekeeper.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -283,6 +289,7 @@ func New(
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, wasm.StoreKey,
 		suspendtypes.StoreKey,
+		taxmoduletypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -415,6 +422,15 @@ func New(
 	//if len(enabledProposals) != 0 {
 	//	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
 	//}
+
+	app.TaxKeeper = *taxmodulekeeper.NewKeeper(
+		appCodec,
+		keys[taxmoduletypes.StoreKey],
+		keys[taxmoduletypes.MemStoreKey],
+		app.GetSubspace(taxmoduletypes.ModuleName),
+	)
+	taxModule := taxmodule.NewAppModule(appCodec, app.TaxKeeper, app.AccountKeeper, app.BankKeeper)
+
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	app.SuspendKeeper = suspendkeeper.NewKeeper(
@@ -463,6 +479,7 @@ func New(
 		transferModule,
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper),
 		suspendModule,
+		taxModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -474,13 +491,13 @@ func New(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
 		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName, authtypes.ModuleName, crisistypes.ModuleName,
-		govtypes.ModuleName, suspendtypes.ModuleName, wasm.ModuleName,
+		govtypes.ModuleName, suspendtypes.ModuleName, taxmoduletypes.ModuleName, wasm.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
 		paramstypes.ModuleName, slashingtypes.ModuleName, upgradetypes.ModuleName, suspendtypes.ModuleName, authtypes.ModuleName,
 		capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
-		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, wasm.ModuleName,
+		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName, wasm.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -498,8 +515,9 @@ func New(
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
-		ibchost.ModuleName,
+		taxmoduletypes.ModuleName,
 		genutiltypes.ModuleName,
+		ibchost.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		vestingtypes.ModuleName,
@@ -539,11 +557,12 @@ func New(
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 
-	anteHandler, err := nolusante.NewAnteHandler(
-		nolusante.HandlerOptions{
+	anteHandler, err := NewAnteHandler(
+		HandlerOptions{
 			AccountKeeper:     app.AccountKeeper,
 			BankKeeper:        app.BankKeeper,
 			SuspendKeeper:     app.SuspendKeeper,
+			TaxKeeper:         app.TaxKeeper,
 			TxCounterStoreKey: keys[wasm.StoreKey],
 			WasmConfig:        wasmConfig,
 			SignModeHandler:   encodingConfig.TxConfig.SignModeHandler(),
@@ -711,6 +730,7 @@ func GetMaccPerms() map[string][]string {
 func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
+	paramsKeeper.Subspace(taxmoduletypes.ModuleName)
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)

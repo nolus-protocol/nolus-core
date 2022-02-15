@@ -1,0 +1,13 @@
+syntax = "proto3";
+package nomo.cosmzone.tax;
+
+// this line is used by starport scaffolding # proto/tx/import
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";
+
+// Msg defines the Msg service.
+service Msg {
+    // this line is used by starport scaffolding # proto/tx/rpc
+}
+
+// this line is used by starport scaffolding # proto/tx/message

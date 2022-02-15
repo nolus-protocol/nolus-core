@@ -1,4 +1,4 @@
-package ante
+package app
 
 import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -8,23 +8,25 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
+	taxkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
+	taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
-	AccountKeeper     AccountKeeper
-	BankKeeper        types.BankKeeper
-	SuspendKeeper     SuspendKeeper
-	SignModeHandler   authsigning.SignModeHandler
+	AccountKeeper     ante.AccountKeeper
+	BankKeeper        taxtypes.BankKeeper
+	SuspendKeeper     suspendkeeper.Keeper
+	TaxKeeper         taxkeeper.Keeper
 	TxCounterStoreKey sdk.StoreKey
 	WasmConfig        wasmTypes.WasmConfig
+	SignModeHandler   authsigning.SignModeHandler
 	SigGasConsumer    func(meter sdk.GasMeter, sig signing.SignatureV2, params types.Params) error
 }
 
-// NewAnteHandler returns an AnteHandler that checks and increments sequence
-// numbers, checks signatures & account numbers, and deducts fees from the first
-// signer.
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	if options.AccountKeeper == nil {
 		return nil, sdkerrors.Wrap(sdkerrors.ErrLogic, "account keeper is required for ante builder")
@@ -43,19 +45,25 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
+	mempoolFeeDecorator := taxkeeper.NewMempoolFeeDecorator(options.TaxKeeper)
+	deductFeeDecorator := taxkeeper.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.TaxKeeper)
+	suspendDecorator := suspendkeeper.NewSuspendDecorator(options.SuspendKeeper)
+
 	anteDecorators := []sdk.AnteDecorator{
-		// based on the sdk antehandlers https://github.com/cosmos/cosmos-sdk/blob/v0.44.5/x/auth/ante/ante.go
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
 		ante.NewRejectExtensionOptionsDecorator(),
-		NewSuspendDecorator(options.SuspendKeeper),
-		ante.NewMempoolFeeDecorator(),
+		suspendDecorator,
+		//ante.NewMempoolFeeDecorator(), // we are replacing the original fee decorator with a custom one
+		mempoolFeeDecorator,
+		//NewMempoolFeeDecorator(options.TreasuryKeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, nil),
+		deductFeeDecorator,
+		//NewNomoDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.TreasuryKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
