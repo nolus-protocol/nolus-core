@@ -62,6 +62,20 @@ workspace {
             ibc -> nolus "Relays-in"
             nolus -> ibc "Relays-out"
 
+            faucet = softwareSystem "Faucet" {
+                -> appserver "Send tx"
+                faucetBackend = container "Faucet Backend" {
+                    description "A faucet for Cosmos-SDK apps"
+                    technology "Nolus CLI"
+                    url "https://github.com/tendermint/faucet"
+                }
+                faucetUI = container "Faucet UI" {
+                    description "A single page app"
+                    technology "NodeJS"
+                    url "https://github.com/scrtlabs/testnet-faucet"
+                }
+            }
+
             admin = person "Admin" {
                 -> webapp "Uses"
             }
@@ -71,34 +85,75 @@ workspace {
         }
 
         deploymentEnvironment dev {
-            deploymentNode Nolus "description" "AWS" {
+            deploymentNode Nolus@AWS "description" "AWS" {
                 deploymentNode Worker "description" "AWS EC2 dev-network-worker" {
-                    deploymentNode "Validator Node" "" "nolusd" "" 3 {
+                    validatorInstances = deploymentNode "Validator Node" "" "nolusd" "" 3 {
                         containerInstance cosmosapp {}
+                    }
+                }
+                webappHost = deploymentNode "WebApp Hosting" "" "AWS S3 app-dev.nolus.io" {
+                    containerInstance webapp {}
+                    url "https://s3.eu-west-1.amazonaws.com/app-dev.nolus.io"
+                }
+                faucetNode = deploymentNode "Faucet" "" "AWS EC2 Faucet" {
+                    faucetBackendNode = deploymentNode "Faucet Backend" "" "faucet JSON server" {
+                        containerInstance faucetBackend {}
+                    }
+                    faucetUINode = deploymentNode "Faucet UI" "" "nodeJS server" {
+                        containerInstance faucetUI {}
+                        -> faucetBackendNode "Request test tokens" {
+                            url "http://0.0.0.0:8000"
+                        }
+                    }
+                }
+                reverseProxyInstance = infrastructureNode reverseProxy "Proxy to the backend services and TLS termination" "HAProxy" {
+                    -> faucetUINode "Plain JSON over HTTP" {
+                        url "http://0.0.0.0:8080"
+                    }
+                    -> validatorInstances "Plain JSON over HTTP" {
                         properties {
-                            p2p "tcp://127.0.0.1:26611, :26616, :26621"
                             rpc "http://0.0.0.0:26612, :26617, :26622"
                             api "http://0.0.0.0:26614, :26619, :26624"
                         }
                     }
                 }
-                webappHost = deploymentNode "WebApp Hosting" "" "AWS S3 web-dev.nolus.io" {
-                    containerInstance webapp {}
-                    url "https://app-dev.nolus.io"
+                faucetBackendNode -> reverseProxyInstance "send tx" {
+                    url "https://net-dev.nolus.io:26612"
+                }
+            }
+
+            deploymentNode "CloudFlare" {
+                infrastructureNode DNS "Domain Name Resolution of *.nolus.io to AWS EC2 public IPs" "CloudFlare" {}
+                cloudFlareProxy = infrastructureNode Proxy "HTTP(S) Proxy with DDOS protection" "CloudFlare" {
+                    -> webappHost "Load Nolus Web App" {
+                        url "https://s3.eu-west-1.amazonaws.com/app-dev.nolus.io:443"
+                    }
                 }
             }
 
             deploymentNode "Customer's device" "" "Desktop, laptop ot mobile" {
                 clientBrowser = deploymentNode "Web Browser" "" "Chrome, Firefox, Safari" {
-                    containerInstance webapp {}
+                    webappInstance = containerInstance webapp {}
+                    containerInstance faucetUI {}
                 }
-                webappHost -> clientBrowser "Delivers to the customer's web browser"
+                clientBrowser -> cloudFlareProxy webappHost "Load Nolus Web App" {
+                    url "https://app-dev.nolus.io:443"
+                }
+                clientBrowser -> reverseProxyInstance "JSON Queries and transactions to HTTPS rpc&api endpoints" {
+                    properties {
+                        rpc "https://net-dev.nolus.io:26612, :26617, :26622"
+                        api "https://net-dev.nolus.io:26614, :26619, :26624"
+                    }   
+                }
+                clientBrowser -> reverseProxyInstance "Load Faucet app and send JSON test tokens requests" {
+                    url "https://faucet.nolus.io:8443"
+                }
             }
-
         }
         market_data_operator -> market_data_aggregator "Fetch Data"
 
         user -> webapp "Uses"
+        user -> faucet "Request Test Coins"
     }
 
     views {
@@ -167,7 +222,7 @@ workspace {
             autolayout
         }
 
-        deployment nolus dev "nolus-dev-deployment" "Nolus Development Environment" {
+        deployment * dev "nolus-dev-deployment" "Nolus Development Environment" {
             title "Nolus Development"
             include *
         }
