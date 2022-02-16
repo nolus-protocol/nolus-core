@@ -93,7 +93,7 @@ workspace {
                 }
                 webappHost = deploymentNode "WebApp Hosting" "" "AWS S3 app-dev.nolus.io" {
                     containerInstance webapp {}
-                    url "https://s3.eu-west-1.amazonaws.com/app-dev.nolus.io"
+                    url "https://s3.eu-west-1.amazonaws.com:443/app-dev.nolus.io"
                 }
                 faucetNode = deploymentNode "Faucet" "" "AWS EC2 Faucet" {
                     faucetBackendNode = deploymentNode "Faucet Backend" "" "faucet JSON server" {
@@ -117,6 +117,11 @@ workspace {
                         }
                     }
                 }
+                cdn = infrastructureNode CDN "Content delivery for AWS S3 buckets, caching and protection" "CloudFront" {
+                    -> webappHost "Load Nolus Web App" {
+                        url "https://s3.eu-west-1.amazonaws.com:443/app-dev.nolus.io"
+                    }
+                }
                 faucetBackendNode -> reverseProxyInstance "send tx" {
                     url "https://net-dev.nolus.io:26612"
                 }
@@ -124,11 +129,7 @@ workspace {
 
             deploymentNode "CloudFlare" {
                 infrastructureNode DNS "Domain Name Resolution of *.nolus.io to AWS EC2 public IPs" "CloudFlare" {}
-                cloudFlareProxy = infrastructureNode Proxy "HTTP(S) Proxy with DDOS protection" "CloudFlare" {
-                    -> webappHost "Load Nolus Web App" {
-                        url "https://s3.eu-west-1.amazonaws.com/app-dev.nolus.io:443"
-                    }
-                }
+                cloudFlareProxy = infrastructureNode Proxy "HTTP(S) Proxy with DDOS protection" "CloudFlare" {}
             }
 
             deploymentNode "Customer's device" "" "Desktop, laptop ot mobile" {
@@ -136,7 +137,7 @@ workspace {
                     webappInstance = containerInstance webapp {}
                     containerInstance faucetUI {}
                 }
-                clientBrowser -> cloudFlareProxy webappHost "Load Nolus Web App" {
+                clientBrowser -> cdn "Web-app Hosting" "Load Nolus Web App" {
                     url "https://app-dev.nolus.io:443"
                 }
                 clientBrowser -> reverseProxyInstance "JSON Queries and transactions to HTTPS rpc&api endpoints" {
@@ -146,7 +147,7 @@ workspace {
                     }   
                 }
                 clientBrowser -> reverseProxyInstance "Load Faucet app and send JSON test tokens requests" {
-                    url "https://faucet.nolus.io:8443"
+                    url "https://faucet-dev.nolus.io:443"
                 }
             }
         }
