@@ -36,7 +36,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	feeCoins := feeTx.GetFee()
 	gas := feeTx.GetGas()
 
-	ctx.Logger().Info(fmt.Sprintf("Mempool: gas %s", gas))
+	ctx.Logger().Info(fmt.Sprintf("Mempool: gas %d", gas))
 
 	feeRate := sdk.NewDec(int64(params.FeeRate))
 
