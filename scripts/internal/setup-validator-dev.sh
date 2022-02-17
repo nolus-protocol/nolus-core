@@ -72,7 +72,7 @@ config() {
   local node_id_val_pub_key
   node_id_val_pub_key=$("$setup_validator_dev_scripts_home_dir"/aws/run-shell-script.sh \
                           "export HOME=/home/ssm-user && /opt/deploy/scripts/remote/validator-dev.sh \
-                                  $home_dir $node_moniker $node_base_port true $setup_validator_dev_prev_node_id" \
+                                  $home_dir $node_moniker $node_base_port $setup_validator_dev_prev_node_id" \
                                   "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID")
   read -r setup_validator_dev_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
