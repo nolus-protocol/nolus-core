@@ -40,9 +40,9 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	// get smart contract address
 	params := dfd.tk.GetParams(ctx)
 
-	treasuryAddr, err := sdk.AccAddressFromBech32(params.ContractAddress)
+	treasuryAddr, err := sdk.AccAddressFromBech32(dfd.tk.ContractAddress(ctx))
 	if err != nil {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, "Invalid Treasury Smart Contract Address")
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("Invalid Treasury Smart Contract Address [ %s ]", err.Error()))
 	}
 
 	feePayer := feeTx.FeePayer()
