@@ -8,6 +8,5 @@ import (
 
 // x/tax module sentinel errors
 var (
-	ErrSample = sdkerrors.Register(ModuleName, 1100, "sample error")
-	
+	ErrInvalidFeeRate = sdkerrors.Register(ModuleName, 1, "feeRate should be between 0 and 100")
 )

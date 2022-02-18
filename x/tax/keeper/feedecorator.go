@@ -62,7 +62,6 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 				fee := gp.Amount.Mul(glDec)
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
-
 			// ensure that enough was paid to cover the validator tax after the custom tax was deduced
 			if !feeRemaining.IsAnyGTE(requiredFees) {
 				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeRemaining.Add(taxFee...), requiredFees.Add(taxFee...))
@@ -79,6 +78,10 @@ func ApplyFee(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error)
 
 	if feeRate.IsZero() {
 		return proceeds, feeCoins, nil
+	}
+
+	if feeCoins.Empty() {
+		return sdk.NewCoins(), feeCoins, nil
 	}
 
 	// we will deduct the fee from every denomination send
