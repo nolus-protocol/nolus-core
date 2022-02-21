@@ -124,10 +124,10 @@ fuzz:
 
 staticcheck:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
-	staticcheck $(PACKAGES)
+	staticcheck ./...
 
 govet:
-	go vet $(PACKAGES)
+	go vet ./...
 
 test-unit:
 	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
@@ -137,10 +137,10 @@ test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 coverage: ## Generate global code coverage report
-	/bin/bash  ./scripts/test/coverage.sh;
+	sh  ./scripts/test/coverage.sh;
 
 coverhtml: ## Generate global code coverage report in HTML
-	/bin/bash  ./scripts/test/coverage.sh html;
+	sh  ./scripts/test/coverage.sh html;
 
 test-integration:
 	/bin/bash ./scripts/test/run-test-integration.sh $(shell pwd)  >&2
