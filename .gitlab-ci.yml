@@ -7,6 +7,7 @@ include:
 
 stages:
   - prep
+  - verify
   - build
   - test
   - deploy
@@ -115,6 +116,44 @@ build-integration:
     KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
 
+go_vet:
+    stage: verify
+    extends:
+    - .go-build
+    script:
+        - go vet $(go list ./... | grep -v "vendor")
+staticcheck:
+    stage: verify
+    extends:
+    - .go-build
+    script:
+        - go install honnef.co/go/tools/cmd/staticcheck@latest
+        - staticcheck $(go list ./... | grep -v "vendor")
+golint:
+    stage: verify
+    extends:
+    - .go-build
+    script:
+        - go get -u github.com/golang/lint/golint
+        - out=$(golint $(go list ./... | grep -v "vendor"))
+        - if [ "$out" ]; then echo "$out"; exit 1; fi
+
+lint:
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
+  stage: verify
+  script:
+    # Use default .golangci.yml file from the image if one is not present in the project root.
+    - '[ -e .golangci.yml ] || cp /golangci/.golangci.yml .'
+    # Write the code coverage report to gl-code-quality-report.json
+    # and print linting issues to stdout in the format: path/to/file:line description
+    # remove `--issues-exit-code 0` or set to non-zero to fail the job if linting issues are detected
+    - golangci-lint run --issues-exit-code 0 --out-format code-climate | tee gl-code-quality-report.json | jq -r '.[] | "\(.location.path):\(.location.lines.begin) \(.description)"'
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
+    paths:
+      - gl-code-quality-report.json
+
 test-unit:
   extends: .go-test
   script:
@@ -129,38 +168,6 @@ code_coverage_report:
   extends: .go-test
   script:
     - make coverhtml
-
-go_vet:
-    stage: test
-    script:
-        - go vet $(go list ./... | grep -v "vendor")
-staticcheck:
-    stage: test
-    script:
-        - go install honnef.co/go/tools/cmd/staticcheck@latest
-        - staticcheck $(go list ./... | grep -v "vendor")
-golint:
-    stage: test
-    script:
-        - go get -u github.com/golang/lint/golint
-        - out=$(golint $(go list ./... | grep -v "vendor"))
-        - if [ "$out" ]; then echo "$out"; exit 1; fi
-
-lint:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
-  stage: test
-  script:
-    # Use default .golangci.yml file from the image if one is not present in the project root.
-    - '[ -e .golangci.yml ] || cp /golangci/.golangci.yml .'
-    # Write the code coverage report to gl-code-quality-report.json
-    # and print linting issues to stdout in the format: path/to/file:line description
-    # remove `--issues-exit-code 0` or set to non-zero to fail the job if linting issues are detected
-    - golangci-lint run --issues-exit-code 0 --out-format code-climate | tee gl-code-quality-report.json | jq -r '.[] | "\(.location.path):\(.location.lines.begin) \(.description)"'
-  artifacts:
-    reports:
-      codequality: gl-code-quality-report.json
-    paths:
-      - gl-code-quality-report.json
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test

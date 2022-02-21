@@ -129,10 +129,10 @@ test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 coverage: ## Generate global code coverage report
-	./scripts/test/coverage.sh;
+	/bin/bash  ./scripts/test/coverage.sh;
 
 coverhtml: ## Generate global code coverage report in HTML
-	./scripts/test/coverage.sh html;
+	/bin/bash  ./scripts/test/coverage.sh html;
 
 test-integration:
 	/bin/bash ./scripts/test/run-test-integration.sh $(shell pwd)  >&2
