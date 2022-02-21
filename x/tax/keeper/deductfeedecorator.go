@@ -37,9 +37,6 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		panic(fmt.Sprintf("%s module account has not been set", authtypes.FeeCollectorName))
 	}
 
-	// get smart contract address
-	params := dfd.tk.GetParams(ctx)
-
 	treasuryAddr, err := sdk.AccAddressFromBech32(dfd.tk.ContractAddress(ctx))
 	if err != nil {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("Invalid Treasury Smart Contract Address [ %s ]", err.Error()))
@@ -47,7 +44,7 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 
 	feePayer := feeTx.FeePayer()
 	feeCoins := feeTx.GetFee()
-	feeRate := sdk.NewDec(int64(params.FeeRate))
+	feeRate := sdk.NewDec(int64(dfd.tk.FeeRate(ctx)))
 
 	deductFeesFrom := feePayer
 
@@ -56,15 +53,15 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", deductFeesFrom)
 	}
 
-	taxFees, feesRemaining, err := ApplyFee(feeRate, feeCoins)
-	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, feesRemaining))
+	taxFees, afterTax, err := ApplyFee(feeRate, feeCoins)
+	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, afterTax))
 	if err != nil {
 		return ctx, err
 	}
 
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
-		err = DeductFees(dfd.bankKeeper, ctx, deductFeesFromAcc, treasuryAddr, taxFees, feesRemaining)
+		err = DeductFees(ctx, dfd.bankKeeper, deductFeesFromAcc, treasuryAddr, taxFees, afterTax)
 		if err != nil {
 			return ctx, err
 		}
@@ -80,9 +77,9 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 }
 
 // DeductFees deducts fees and tax from the given account.
-func DeductFees(bankKeeper types.BankKeeper, ctx sdk.Context, acc authtypes.AccountI, treasuryAddr sdk.AccAddress, taxFees sdk.Coins, feesRemaining sdk.Coins) error {
-	if !feesRemaining.IsValid() {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "invalid fee amount: %s", feesRemaining)
+func DeductFees(ctx sdk.Context, bankKeeper types.BankKeeper, acc authtypes.AccountI, treasuryAddr sdk.AccAddress, taxFees sdk.Coins, afterTax sdk.Coins) error {
+	if !afterTax.IsValid() {
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "invalid fee amount: %s", afterTax)
 	}
 
 	if !taxFees.IsValid() {
@@ -95,7 +92,7 @@ func DeductFees(bankKeeper types.BankKeeper, ctx sdk.Context, acc authtypes.Acco
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}
 
-	err = bankKeeper.SendCoinsFromAccountToModule(ctx, acc.GetAddress(), authtypes.FeeCollectorName, feesRemaining)
+	err = bankKeeper.SendCoinsFromAccountToModule(ctx, acc.GetAddress(), authtypes.FeeCollectorName, afterTax)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}

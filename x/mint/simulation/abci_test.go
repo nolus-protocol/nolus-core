@@ -2,18 +2,21 @@ package simulation_test
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/simapp"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_BeginBlock(t *testing.T) {
+	params.SetAddressPrefixes()
 	app, err := simapp.TestSetup()
 	if err != nil {
 		t.Errorf("Error while creating simapp: %v\"", err)

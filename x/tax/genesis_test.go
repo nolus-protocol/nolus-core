@@ -3,17 +3,19 @@ package tax_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 	keepertest "gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/nullify"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGenesis(t *testing.T) {
+	params.SetAddressPrefixes()
 	genesisState := types.GenesisState{
-		Params:	types.DefaultParams(),
-		
+		Params: types.DefaultParams(),
+
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -24,8 +26,6 @@ func TestGenesis(t *testing.T) {
 
 	nullify.Fill(&genesisState)
 	nullify.Fill(got)
-
-	
 
 	// this line is used by starport scaffolding # genesis/test/assert
 }

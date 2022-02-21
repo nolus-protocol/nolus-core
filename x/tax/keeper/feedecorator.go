@@ -73,7 +73,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 }
 
 //TODO Rename this method
-func ApplyFee(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
+func ApplyFeeImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
 	proceeds := sdk.Coins{}
 
 	if feeRate.IsZero() {

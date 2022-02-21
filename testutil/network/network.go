@@ -19,6 +19,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 )
 
 type (
@@ -38,7 +39,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	} else {
 		cfg = configs[0]
 	}
-	cosmoscmd.SetPrefixes(app.AccountAddressPrefix)
+	params.SetAddressPrefixes()
 	net := network.New(t, cfg)
 	t.Cleanup(net.Cleanup)
 	return net

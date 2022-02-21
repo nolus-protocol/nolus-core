@@ -96,14 +96,14 @@ import (
 	taxmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 
 	// this line is used by starport scaffolding # stargate/app/moduleImport
+	appparams "gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 	suspend "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend"
 	suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
 	suspendtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
 const (
-	AccountAddressPrefix = "nolus"
-	Name                 = "nolus"
+	Name = "nolus"
 )
 
 // this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
@@ -207,7 +207,7 @@ func init() {
 		panic(err)
 	}
 
-	DefaultNodeHome = filepath.Join(userHomeDir, "."+Name)
+	DefaultNodeHome = filepath.Join(userHomeDir, "."+appparams.Name)
 }
 
 // App extends an ABCI application, but with most of its parameters exported.

@@ -2,8 +2,10 @@ package testutil
 
 import (
 	"fmt"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/network"
 	"strings"
+
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/network"
 
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
@@ -27,7 +29,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
-
+	params.SetAddressPrefixes()
 	genesisState := s.cfg.GenesisState
 
 	var mintData minttypes.GenesisState
