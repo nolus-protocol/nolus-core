@@ -121,6 +121,14 @@ fuzz:
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
+
+staticcheck:
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	staticcheck $(PACKAGES)
+
+govet:
+	go vet $(PACKAGES)
+
 test-unit:
 	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
 		-timeout 15m

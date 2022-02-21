@@ -118,41 +118,19 @@ build-integration:
 
 go_vet:
     stage: verify
+    allow_failure: true
     extends:
     - .go-build
     script:
-        - go vet $(go list ./... | grep -v "vendor")
+        make govet
+
 staticcheck:
     stage: verify
+    allow_failure: true
     extends:
     - .go-build
     script:
-        - go install honnef.co/go/tools/cmd/staticcheck@latest
-        - staticcheck $(go list ./... | grep -v "vendor")
-golint:
-    stage: verify
-    extends:
-    - .go-build
-    script:
-        - go get -u github.com/golang/lint/golint
-        - out=$(golint $(go list ./... | grep -v "vendor"))
-        - if [ "$out" ]; then echo "$out"; exit 1; fi
-
-lint:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
-  stage: verify
-  script:
-    # Use default .golangci.yml file from the image if one is not present in the project root.
-    - '[ -e .golangci.yml ] || cp /golangci/.golangci.yml .'
-    # Write the code coverage report to gl-code-quality-report.json
-    # and print linting issues to stdout in the format: path/to/file:line description
-    # remove `--issues-exit-code 0` or set to non-zero to fail the job if linting issues are detected
-    - golangci-lint run --issues-exit-code 0 --out-format code-climate | tee gl-code-quality-report.json | jq -r '.[] | "\(.location.path):\(.location.lines.begin) \(.description)"'
-  artifacts:
-    reports:
-      codequality: gl-code-quality-report.json
-    paths:
-      - gl-code-quality-report.json
+        make staticcheck
 
 test-unit:
   extends: .go-test
@@ -161,11 +139,13 @@ test-unit:
 
 code_coverage:
   extends: .go-test
+  allow_failure: true
   script:
     - make coverage
 
 code_coverage_report:
   extends: .go-test
+  allow_failure: true
   script:
     - make coverhtml
 
