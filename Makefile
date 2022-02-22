@@ -127,6 +127,8 @@ staticcheck:
 	staticcheck ./...
 
 govet:
+	pwd
+	ls -la /builds/nomo/cosmzone/.git/
 	go vet ./...
 
 test-unit:
