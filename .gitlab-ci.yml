@@ -84,18 +84,19 @@ build-binary:
 # Builds a new node image on a new git tag only
 build-image:
   stage: build
-  needs: ["build-binary"]
+  needs: ["prep-builder:check-exist","build-binary"]
   extends: .kaniko
   variables:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: '$CI_COMMIT_TAG and $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
 
 build-integration:
   stage: build
+  needs: ["prep-builder:check-exist"]
   extends: .kaniko
   variables:
     KANIKO_DOCKER_FILE: build/integration_spec
