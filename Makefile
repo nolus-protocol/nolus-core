@@ -123,12 +123,18 @@ fuzz:
 
 
 staticcheck:
+	pwd
+	ls -la
+	env
+	echo $GOPATH
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	staticcheck ./...
 
 govet:
 	pwd
-	ls -la /builds/nomo/cosmzone/.git/
+	ls -la
+	env
+	echo $GOPATH
 	go vet ./...
 
 test-unit:
