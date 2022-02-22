@@ -133,10 +133,12 @@ staticcheck:
 test-unit:
   extends: .go-test
   script:
-    - make test-unit
+    - make gotestsum
   artifacts:
     paths:
-      - coverage.txt
+      - cover.out
+    reports:
+      junit: testreport.xml
 
 code_coverage:
   extends: .go-test
