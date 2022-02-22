@@ -137,7 +137,7 @@ test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 coverage: ## Generate global code coverage report
-	sh  ./scripts/test/coverage.sh;
+	sh  ./scripts/test/coverage.sh xml;
 
 coverhtml: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;

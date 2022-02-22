@@ -146,6 +146,9 @@ code_coverage:
     - test-unit
   script:
     - make coverage
+  artifacts:
+    reports:
+      junit: coverage.xml
 
 code_coverage_report:
   extends: .go-test
@@ -155,6 +158,9 @@ code_coverage_report:
     - test-unit
   script:
     - make coverhtml
+  artifacts:
+    paths:
+      - coverage.html
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
