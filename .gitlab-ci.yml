@@ -148,7 +148,7 @@ code_coverage:
     - make coverage
   artifacts:
     reports:
-      junit: coverage.xml
+      cobertura: coverage.xml
 
 code_coverage_report:
   extends: .go-test
