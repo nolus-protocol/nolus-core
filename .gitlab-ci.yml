@@ -141,6 +141,7 @@ test-unit:
 code_coverage:
   extends: .go-test
   allow_failure: true
+  needs: ["test-unit"]
   dependencies: 
     - test-unit
   script:
@@ -149,6 +150,7 @@ code_coverage:
 code_coverage_report:
   extends: .go-test
   allow_failure: true
+  needs: ["test-unit"]
   dependencies: 
     - test-unit
   script:

@@ -123,19 +123,11 @@ fuzz:
 
 
 staticcheck:
-	pwd
-	ls -la
-	env
-	echo $GOPATH
 	go install honnef.co/go/tools/cmd/staticcheck@latest
-	staticcheck ./...
+	$(GOPATH)/bin/staticcheck ./...
 
 govet:
-	pwd
-	ls -la
-	env
-	echo $GOPATH
-	go vet ./...
+	go vet $(PACKAGES)
 
 test-unit:
 	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
