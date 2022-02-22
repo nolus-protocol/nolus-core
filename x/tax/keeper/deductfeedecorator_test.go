@@ -10,7 +10,7 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
 )
 
-func (suite *AnteTestSuite) TestDeductFees() {
+func (suite *KeeperTestSuite) TestDeductFees() {
 	suite.SetupTest(true) // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 

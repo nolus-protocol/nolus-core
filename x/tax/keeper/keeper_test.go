@@ -9,10 +9,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
-	"github.com/tendermint/tendermint/libs/log"
 
 	nolusapp "gitlab-nomo.credissimo.net/nomo/cosmzone/app"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -23,13 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/tendermint/spm/cosmoscmd"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	dbm "github.com/tendermint/tm-db"
 	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
-	taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 )
 
 // TestAccount represents an account used in the tests in x/auth/ante.
@@ -39,7 +31,7 @@ type TestAccount struct {
 }
 
 // AnteTestSuite is a test suite to be used with ante handler tests.
-type AnteTestSuite struct {
+type KeeperTestSuite struct {
 	suite.Suite
 
 	app         *nolusapp.App
@@ -49,33 +41,10 @@ type AnteTestSuite struct {
 	anteHandler sdk.AnteHandler
 }
 
-// returns context and app with params set on account keeper
-func createTestApp(isCheckTx bool, tempDir string) (*nolusapp.App, sdk.Context) {
-	encoding := cosmoscmd.MakeEncodingConfig(nolusapp.ModuleBasics)
-
-	app := nolusapp.New(log.NewNopLogger(), dbm.NewMemDB(), nil, true, map[int64]bool{},
-		tempDir, simapp.FlagPeriodValue, encoding,
-		simapp.EmptyAppOptions{})
-
-	// cosmoscmd.SetPrefixes(nolusapp.AccountAddressPrefix)
-	// sdk.GetConfig().SetBech32PrefixForAccount(nolusapp.AccountAddressPrefix, nolusapp.AccountAddressPrefixPub)
-	params.SetAddressPrefixes()
-
-	testapp := app.(*nolusapp.App)
-
-	ctx := testapp.BaseApp.NewContext(isCheckTx, tmproto.Header{})
-	testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
-	testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
-	testapp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
-	testapp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
-
-	return testapp, ctx
-}
-
 // SetupTest setups a new test, with new app, context, and anteHandler.
-func (suite *AnteTestSuite) SetupTest(isCheckTx bool) {
+func (suite *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	tempDir := suite.T().TempDir()
-	suite.app, suite.ctx = createTestApp(isCheckTx, tempDir)
+	suite.app, suite.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
 	suite.ctx = suite.ctx.WithBlockHeight(1)
 
 	// Set up TxConfig.
@@ -99,7 +68,7 @@ func (suite *AnteTestSuite) SetupTest(isCheckTx bool) {
 
 // CreateTestAccounts creates `numAccs` accounts, and return all relevant
 // information about them including their private keys.
-func (suite *AnteTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
+func (suite *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 	var accounts []TestAccount
 
 	for i := 0; i < numAccs; i++ {
@@ -138,7 +107,7 @@ func (suite *AnteTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 }
 
 // CreateTestTx is a helper function to create a tx given multiple inputs.
-func (suite *AnteTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
+func (suite *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
 	// First round: we gather all the signer infos. We use the "set empty
 	// signature" hack to do that.
 	var sigsV2 []signing.SignatureV2
@@ -185,85 +154,5 @@ func (suite *AnteTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []
 }
 
 func TestAnteTestSuite(t *testing.T) {
-	suite.Run(t, new(AnteTestSuite))
-}
-
-func (suite *AnteTestSuite) TestApplyFee() {
-	suite.SetupTest(true)
-	baseDenom := sdk.DefaultBondDenom
-	defaultFeeRate := int64(suite.app.TaxKeeper.FeeRate(suite.ctx))
-
-	type expected struct {
-		proceeds  sdk.Coins
-		remaining sdk.Coins
-		err       error
-	}
-
-	var testCases = []struct {
-		name     string
-		feeRate  int64
-		feeCoins sdk.Coins
-		expect   expected
-	}{
-		{
-			name:     "works with no fee rate",
-			feeRate:  0,
-			feeCoins: sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 50)),
-			expect: expected{
-				proceeds:  sdk.NewCoins(),
-				remaining: sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 50)),
-				err:       nil,
-			},
-		},
-		{
-			name:     "works with default fee rate and enought coins",
-			feeRate:  defaultFeeRate,
-			feeCoins: sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 50)),
-			expect: expected{
-				proceeds:  sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 20)),
-				remaining: sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 30)),
-				err:       nil,
-			},
-		},
-		{
-			name:     "works with gready fee rate",
-			feeRate:  100,
-			feeCoins: sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 50)),
-			expect: expected{
-				proceeds:  sdk.NewCoins(sdk.NewInt64Coin(baseDenom, 50)),
-				remaining: nil,
-				err:       nil,
-			},
-		},
-		{
-			name:     "works with default fee rate and no coins",
-			feeRate:  defaultFeeRate,
-			feeCoins: sdk.NewCoins(),
-			expect: expected{
-				proceeds:  sdk.NewCoins(),
-				remaining: sdk.NewCoins(),
-				err:       nil,
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		feeRate := sdk.NewDec(tc.feeRate)
-		testName := fmt.Sprintf("test: %s", tc.name)
-
-		actualProceeds, deductedFees, err := keeper.ApplyFee(feeRate, tc.feeCoins)
-
-		if tc.expect.err == nil {
-			suite.Require().NoError(err, testName)
-		} else {
-			suite.Require().Error(err, testName)
-		}
-
-		suite.EqualValues(tc.expect.proceeds, actualProceeds, testName)
-		suite.EqualValues(tc.expect.remaining, deductedFees, testName)
-
-		if !tc.feeCoins.Empty() {
-			suite.EqualValues(tc.feeCoins, actualProceeds.Add(deductedFees...), testName)
-		}
-	}
+	suite.Run(t, new(KeeperTestSuite))
 }
