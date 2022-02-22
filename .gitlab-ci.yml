@@ -117,7 +117,8 @@ build-integration:
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
 
 go_vet:
-  stage: verify
+  stage: test
+  needs: ["build-binary"]
   allow_failure: true
   extends: .go-build
   script:
