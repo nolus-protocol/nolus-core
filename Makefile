@@ -127,7 +127,7 @@ staticcheck:
 	$(GOPATH)/bin/staticcheck ./...
 
 govet:
-	go vet $(PACKAGES)
+	go vet $(BUILD_FLAGS) $(PACKAGES)
 
 test-unit:
 	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
