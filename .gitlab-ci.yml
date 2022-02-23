@@ -165,6 +165,18 @@ code_coverage_report:
     paths:
       - coverage.html
 
+pages:
+  stage: deploy
+  dependencies:
+    - code_coverage_report
+  script:
+    - mv coverage.html public/coverage.html
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+
+
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
   script:
