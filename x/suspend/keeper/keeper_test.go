@@ -32,6 +32,7 @@ func (suite *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 	suite.txBuilder.SetMsgs([]sdk.Msg{}...)
+
 }
 
 func TestKeeperTestSuite(t *testing.T) {
@@ -45,11 +46,16 @@ type KeeperTestCase struct {
 	suspended   bool
 }
 
+func (suite *KeeperTestSuite) setInitialState() sdk.AccAddress {
+	// set initial state
+	_, _, adminAddr := sdktestutil.KeyTestPubAddr()
+	state := types.NewSuspendedState(adminAddr.String(), false, suite.ctx.BlockHeight())
+	suite.app.SuspendKeeper.SetState(suite.ctx, state)
+	return adminAddr
+}
+
 func (suite *KeeperTestSuite) TestSetSuspendState() {
 	suite.SetupTest(true)
-
-	encodingConfig := simapp.MakeTestEncodingConfig()
-	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 
 	// no admin address is set
 	_, _, addr1 := sdktestutil.KeyTestPubAddr()
@@ -57,9 +63,7 @@ func (suite *KeeperTestSuite) TestSetSuspendState() {
 	suite.Require().EqualError(err, "No admin address is set: unauthorized")
 
 	// set initial state
-	_, _, adminAddr := sdktestutil.KeyTestPubAddr()
-	state := types.NewSuspendedState(adminAddr.String(), false, suite.ctx.BlockHeight())
-	suite.app.SuspendKeeper.SetState(suite.ctx, state)
+	adminAddr := suite.setInitialState()
 
 	initialstate := suite.app.SuspendKeeper.GetState(suite.ctx)
 	suite.Require().False(initialstate.Suspended)
