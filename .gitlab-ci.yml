@@ -175,7 +175,8 @@ pages:
     paths:
       - public
     expire_in: 30 days
-
+  only:
+    - master
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test

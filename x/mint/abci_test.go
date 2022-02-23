@@ -2,12 +2,13 @@ package mint
 
 import (
 	"fmt"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
 	"math/rand"
 	"testing"
 	"time"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
 )
 
 var (
@@ -41,13 +42,13 @@ func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredetermin
 		mintedCoins = mintedCoins.Add(coins)
 		mintedMonth = mintedMonth.Add(coins)
 		if i%secondsInMonth == 0 {
-			fmt.Println(fmt.Sprintf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Recieved in this block ",
-				i/secondsInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins))
+			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Recieved in this block \n",
+				i/secondsInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			mintedMonth = sdk.ZeroInt()
 		}
 	}
-	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
-		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
+	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
+		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	if !expectedCoins60Sec.Equal(mintedCoins) || !expectedCoins60Sec.Equal(minter.TotalMinted) {
 		t.Errorf("Minted unexpected amount of tokens, expected %v returned and in store, actual minted %v, actual in store %v",
 			expectedCoins60Sec, mintedCoins, minter.TotalMinted)
@@ -78,8 +79,8 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		mintedMonth = mintedMonth.Add(coins)
 		if (timeOffset-prevOffset)/nanoSecondsInMonth.TruncateInt64() != (timeOffset+i-prevOffset)/nanoSecondsInMonth.TruncateInt64() {
 			month := (timeOffset+i)/nanoSecondsInMonth.TruncateInt64() - monthsSoFar
-			fmt.Println(fmt.Sprintf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block ",
-				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins))
+			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
+				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			if mintedMonth.Sub(sdk.NewInt(expectedTokensInFormula[month-1])).Abs().GT(monthThreshold) {
 				t.Errorf("Minted unexpected amount of tokens for month %d, expected [%v +/- 100*10^6], actual %v",
 					month, mintedMonth, expectedTokensInFormula[month-1])
@@ -91,7 +92,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		timeOffset += i
 	}
 	mintThreshold := sdk.NewInt(10_000_000) // 10 tokens
-	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time", mintedCoins, minter.TotalMinted, minter.NormTimePassed))
+	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	if expectedCoins60Sec.Sub(mintedCoins).Abs().GT(mintThreshold) || expectedCoins60Sec.Sub(minter.TotalMinted).Abs().GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- 10*10^6] returned and in store, actual minted %v, actual in store %v",
 			expectedCoins60Sec, mintedCoins, minter.TotalMinted)
@@ -117,8 +118,8 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 		mintedCoins = mintedCoins.Add(coins)
 		timeOffset += i
 	}
-	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
-		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
+	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
+		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	mintThreshold := sdk.NewInt(1_300_000) // 1.3 tokens is the max deviation
 	if types.FixedMintedAmount.Sub(mintedCoins).Abs().GT(mintThreshold) || types.FixedMintedAmount.Sub(minter.TotalMinted).Abs().GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- 10^6] returned and in store, actual minted %v, actual in store %v",
@@ -143,8 +144,8 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 		mintedCoins = mintedCoins.Add(coins)
 		timeOffset += i
 	}
-	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
-		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
+	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
+		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	mintThreshold := sdk.NewInt(1_000_000) // 1 token
 	if types.MintingCap.Sub(minter.TotalMinted).Abs().GT(sdk.ZeroInt()) {
 		t.Errorf("Minting Cap exeeded, minted total %v, with minting cap %v",
@@ -173,15 +174,15 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 		mintedMonth = mintedMonth.Add(coins)
 		if (timeOffset-prevOffset)/nanoSecondsInMonth.TruncateInt64() != (timeOffset+i-prevOffset)/nanoSecondsInMonth.TruncateInt64() {
 			rand.Seed(time.Now().UnixNano())
-			fmt.Println(fmt.Sprintf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block ",
-				(timeOffset+i)/nanoSecondsInMonth.TruncateInt64()-monthsSoFar, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins))
+			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
+				(timeOffset+i)/nanoSecondsInMonth.TruncateInt64()-monthsSoFar, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			prevOffset = timeOffset
 			mintedMonth = sdk.ZeroInt()
 		}
 		timeOffset += i
 	}
-	fmt.Println(fmt.Sprintf("%v Returned Total, %v Total Minted(in store), %v Norm Time",
-		mintedCoins, minter.TotalMinted, minter.NormTimePassed))
+	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
+		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	require.Equal(t, types.MintingCap, minter.TotalMinted)
 	require.Equal(t, minter.TotalMinted, mintedCoins)
 }

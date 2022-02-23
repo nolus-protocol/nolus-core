@@ -33,7 +33,7 @@ func Test_BeginBlock(t *testing.T) {
 	feeCollector := app.AccountKeeper.GetModuleAccount(ctx2, types.FeeCollectorName)
 	feesCollectedInt := app.BankKeeper.GetAllBalances(ctx2, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
-	fmt.Println(fmt.Sprintf("norm %v, total %v", minter.NormTimePassed, minter.TotalMinted))
-	fmt.Println(fmt.Sprintf("balance %v", feesCollected))
+	fmt.Printf("norm %v, total %v \n", minter.NormTimePassed, minter.TotalMinted)
+	fmt.Printf("balance %v \n", feesCollected)
 	require.Equal(t, minter.TotalMinted, feesCollectedInt.AmountOf(sdk.DefaultBondDenom))
 }
