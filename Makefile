@@ -122,29 +122,25 @@ fuzz:
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
 
-staticcheck:
+static-code-check:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
 	$(GOPATH)/bin/staticcheck ./...
 
-govet:
+examine-source-code:
 	go vet $(BUILD_FLAGS) $(PACKAGES)
-
-test-unit:
-	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
-		-timeout 15m
 
 test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
-gotestsum:
+test-unit:
 	go install gotest.tools/gotestsum@latest
 	$(GOPATH)/bin/gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
 
-coverage: ## Generate global code coverage report
+test-unit-coverage: ## Generate global code coverage report
 	go install github.com/boumenot/gocover-cobertura@latest
 	$(GOPATH)/bin/gocover-cobertura < cover.out > coverage.xml
 
-coverhtml: ## Generate global code coverage report in HTML
+test-unit-coverage-report: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;
 
 test-integration:

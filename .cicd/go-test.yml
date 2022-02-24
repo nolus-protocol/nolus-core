@@ -1,2 +1,32 @@
 .go-test:
   extends: .go-test-abstract
+
+test-unit:
+  extends: .go-test
+  script:
+    - make test-unit
+  artifacts:
+    paths:
+      - cover.out
+    reports:
+      junit: testreport.xml
+
+code_coverage:
+  extends: .go-test
+  allow_failure: true
+  needs: ["test-unit"]
+  script:
+    - make test-unit-coverage
+  artifacts:
+    reports:
+      cobertura: coverage.xml
+
+code_coverage_report:
+  extends: .go-test
+  allow_failure: true
+  needs: ["test-unit"]
+  script:
+    - make test-unit-coverage-report
+  artifacts:
+    paths:
+      - coverage.html
