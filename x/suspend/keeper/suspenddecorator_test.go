@@ -8,11 +8,10 @@ import (
 )
 
 type DecoratorTestCase struct {
-	name            string
-	messages        []sdk.Msg
-	newCtx          sdk.Context
-	expectPass      bool
-	expectSuspended bool
+	name       string
+	messages   []sdk.Msg
+	newCtx     sdk.Context
+	expectPass bool
 }
 
 func (suite *KeeperTestSuite) TestSuspendAnteHandle() {
@@ -26,18 +25,16 @@ func (suite *KeeperTestSuite) TestSuspendAnteHandle() {
 
 	tests := []DecoratorTestCase{
 		{
-			name:            "send empty message, no admin => should fail",
-			messages:        []sdk.Msg{},
-			newCtx:          suite.ctx.WithBlockHeight(10),
-			expectPass:      false,
-			expectSuspended: true,
+			name:       "send empty message, no admin => should fail",
+			messages:   []sdk.Msg{},
+			newCtx:     suite.ctx.WithBlockHeight(10),
+			expectPass: false,
 		},
 		{
-			name:            "send unsuspend message, admin => should pass",
-			messages:        []sdk.Msg{types.NewMsgUnsuspend(adminAddr.String())},
-			newCtx:          suite.ctx.WithBlockHeight(10),
-			expectPass:      false,
-			expectSuspended: true,
+			name:       "send unsuspend message, admin => should pass",
+			messages:   []sdk.Msg{types.NewMsgUnsuspend(adminAddr.String())},
+			newCtx:     suite.ctx.WithBlockHeight(10),
+			expectPass: true,
 		},
 		{
 			name: "send multiple messages, including unsuspend",
@@ -46,9 +43,8 @@ func (suite *KeeperTestSuite) TestSuspendAnteHandle() {
 				types.NewMsgUnsuspend(adminAddr.String()),
 				sdktestutil.NewTestMsg(addr1),
 			},
-			newCtx:          suite.ctx.WithBlockHeight(10),
-			expectPass:      true,
-			expectSuspended: false,
+			newCtx:     suite.ctx.WithBlockHeight(10),
+			expectPass: true,
 		},
 	}
 	for _, tc := range tests {
@@ -59,11 +55,8 @@ func (suite *KeeperTestSuite) TestSuspendAnteHandle() {
 		if tc.expectPass {
 			suite.Require().NoError(err, "test: %s", tc.name)
 		} else {
-			suite.Require().Error(err, "test: %s ; error: %s", tc.name, err.Error())
+			suite.Require().Error(err, "test: %s ; error: %s", tc.name)
 		}
-
-		afterstate := suite.app.SuspendKeeper.GetState(suite.ctx)
-		suite.Require().Equal(tc.expectSuspended, afterstate.Suspended)
 	}
 
 }
