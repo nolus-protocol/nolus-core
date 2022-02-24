@@ -33,8 +33,7 @@ code-coverage-report:
 
 publish-coverage-report:
   stage: deploy
-  dependencies:
-    - code_coverage_report
+  needs: [ "code-coverage-report" ]
   script:
     - mv coverage.html public/coverage.html
   artifacts:
