@@ -1,6 +1,7 @@
 include:
   - '.cicd/kaniko.yml'
   - '.cicd/go-build.yml'
+  - '.cicd/go-verify.yml'
   - '.cicd/go-test-abstract.yml'
   - '.cicd/go-test.yml'
   - '.cicd/go-scheduled-test.yml'
@@ -115,19 +116,6 @@ build-integration:
     KANIKO_DOCKER_FILE: build/integration_spec
     KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
-
-pages:
-  stage: deploy
-  dependencies:
-    - code_coverage_report
-  script:
-    - mv coverage.html public/coverage.html
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test

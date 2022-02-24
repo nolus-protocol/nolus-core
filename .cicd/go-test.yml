@@ -11,7 +11,7 @@ test-unit:
     reports:
       junit: testreport.xml
 
-code_coverage:
+code-coverage:
   extends: .go-test
   allow_failure: true
   needs: ["test-unit"]
@@ -21,7 +21,7 @@ code_coverage:
     reports:
       cobertura: coverage.xml
 
-code_coverage_report:
+code-coverage-report:
   extends: .go-test
   allow_failure: true
   needs: ["test-unit"]
@@ -30,3 +30,16 @@ code_coverage_report:
   artifacts:
     paths:
       - coverage.html
+
+publish-coverage-report:
+  stage: deploy
+  dependencies:
+    - code_coverage_report
+  script:
+    - mv coverage.html public/coverage.html
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
