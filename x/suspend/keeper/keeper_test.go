@@ -46,11 +46,15 @@ type KeeperTestCase struct {
 	suspended   bool
 }
 
-func (suite *KeeperTestSuite) setInitialState() sdk.AccAddress {
+func (suite *KeeperTestSuite) setInitialState(suspended bool) sdk.AccAddress {
 	// set initial state
 	_, _, adminAddr := sdktestutil.KeyTestPubAddr()
-	state := types.NewSuspendedState(adminAddr.String(), false, suite.ctx.BlockHeight())
+	state := types.NewSuspendedState(adminAddr.String(), suspended, suite.ctx.BlockHeight())
 	suite.app.SuspendKeeper.SetState(suite.ctx, state)
+
+	initialstate := suite.app.SuspendKeeper.GetState(suite.ctx)
+	suite.Require().Equal(suspended, initialstate.Suspended)
+
 	return adminAddr
 }
 
@@ -63,10 +67,7 @@ func (suite *KeeperTestSuite) TestSetSuspendState() {
 	suite.Require().EqualError(err, "No admin address is set: unauthorized")
 
 	// set initial state
-	adminAddr := suite.setInitialState()
-
-	initialstate := suite.app.SuspendKeeper.GetState(suite.ctx)
-	suite.Require().False(initialstate.Suspended)
+	adminAddr := suite.setInitialState(false)
 
 	tests := []KeeperTestCase{
 		{

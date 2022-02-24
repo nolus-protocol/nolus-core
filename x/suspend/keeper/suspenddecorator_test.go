@@ -1,44 +1,69 @@
 package keeper_test
 
 import (
-	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
+type DecoratorTestCase struct {
+	name            string
+	messages        []sdk.Msg
+	newCtx          sdk.Context
+	expectPass      bool
+	expectSuspended bool
+}
+
 func (suite *KeeperTestSuite) TestSuspendAnteHandle() {
 	suite.SetupTest(true)
 
-	encodingConfig := simapp.MakeTestEncodingConfig()
-	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
-
 	// set initial state to suspended
-	_, _, adminAddr := sdktestutil.KeyTestPubAddr()
-	state := types.NewSuspendedState(adminAddr.String(), true, suite.ctx.BlockHeight())
-	suite.app.SuspendKeeper.SetState(suite.ctx, state)
-
-	initialstate := suite.app.SuspendKeeper.GetState(suite.ctx)
-	suite.Require().True(initialstate.Suspended)
-
+	adminAddr := suite.setInitialState(true)
+	_, _, addr1 := sdktestutil.KeyTestPubAddr()
 	sd := keeper.NewSuspendDecorator(suite.app.SuspendKeeper)
 	antehandler := sdk.ChainAnteDecorators(sd)
 
-	newCtx := suite.ctx.WithBlockHeight(10)
+	tests := []DecoratorTestCase{
+		{
+			name:            "send empty message, no admin => should fail",
+			messages:        []sdk.Msg{},
+			newCtx:          suite.ctx.WithBlockHeight(10),
+			expectPass:      false,
+			expectSuspended: true,
+		},
+		{
+			name:            "send unsuspend message, admin => should pass",
+			messages:        []sdk.Msg{types.NewMsgUnsuspend(adminAddr.String())},
+			newCtx:          suite.ctx.WithBlockHeight(10),
+			expectPass:      false,
+			expectSuspended: true,
+		},
+		{
+			name: "send multiple messages, including unsuspend",
+			messages: []sdk.Msg{
+				sdktestutil.NewTestMsg(adminAddr),
+				types.NewMsgUnsuspend(adminAddr.String()),
+				sdktestutil.NewTestMsg(addr1),
+			},
+			newCtx:          suite.ctx.WithBlockHeight(10),
+			expectPass:      true,
+			expectSuspended: false,
+		},
+	}
+	for _, tc := range tests {
+		suite.txBuilder.SetMsgs(tc.messages...)
+		tx := suite.txBuilder.GetTx()
+		_, err := antehandler(tc.newCtx, tx, false)
 
-	// send random message => should fail
-	suite.txBuilder.SetMsgs([]sdk.Msg{}...)
-	tx := suite.txBuilder.GetTx()
-	_, err := antehandler(newCtx, tx, false)
-	suite.Require().Error(err, err.Error())
+		if tc.expectPass {
+			suite.Require().NoError(err, "test: %s", tc.name)
+		} else {
+			suite.Require().Error(err, "test: %s ; error: %s", tc.name, err.Error())
+		}
 
-	// send unsuspend message => should pass
-	unsuspendMsg := types.NewMsgUnsuspend(adminAddr.String())
-	suite.txBuilder.SetMsgs(unsuspendMsg)
-	tx = suite.txBuilder.GetTx()
-	_, err = antehandler(newCtx, tx, false)
-	suite.Require().NoError(err)
+		afterstate := suite.app.SuspendKeeper.GetState(suite.ctx)
+		suite.Require().Equal(tc.expectSuspended, afterstate.Suspended)
+	}
 
 }

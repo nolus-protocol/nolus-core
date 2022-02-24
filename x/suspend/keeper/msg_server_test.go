@@ -11,7 +11,7 @@ func (suite *KeeperTestSuite) TestMsgServer() {
 	suite.SetupTest(true)
 
 	// set initial state
-	adminAddr := suite.setInitialState()
+	adminAddr := suite.setInitialState(false)
 
 	msgServer := keeper.NewMsgServerImpl(suite.app.SuspendKeeper)
 	goCtx := sdk.WrapSDKContext(suite.ctx)
