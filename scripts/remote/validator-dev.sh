@@ -43,6 +43,7 @@ update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/
 update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
 update_app "$home_dir" '."grpc"."enable"' "false" >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
+update_app "$home_dir" '."minimum-gas-prices"' '"0.0025unolus"' >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
