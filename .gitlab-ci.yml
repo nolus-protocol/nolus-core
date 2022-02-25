@@ -21,7 +21,7 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
 
-  IS_NOLUS_VERSION: '$CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_TAG'
+  IS_NOLUS_VERSION: '$CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_TAG != ""'
 
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
