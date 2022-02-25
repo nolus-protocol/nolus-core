@@ -15,10 +15,12 @@ nolusd start --home "networks/nolus/local-validator-1"
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup (run `init-local-network.sh --help` for more configuration options) and `nolusd start` starts the network. For more details check the [scripts README](./scripts/README.md)
 
-### Configure
-
-Your blockchain in development can be configured within the `init.sh` script. Check out the `update_genesis` method and its usages
-
 ## Integration testing
 
-Tests can be run by installing dependencies via: `cd tests/integration && yarn install` and then running `./run-integration.sh`
+Tests can be run by installing dependencies via
+
+```
+cd tests/integration
+yarn install
+```
+and run with `make test-integration` from the base project root.
