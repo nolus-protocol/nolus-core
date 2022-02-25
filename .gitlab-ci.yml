@@ -21,8 +21,6 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
 
-  IS_NOLUS_VERSION: '$CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_TAG != ""'
-
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
@@ -35,15 +33,23 @@ variables:
   NOLUS_INTEGRATION_TAG: "0.12"
   NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
 
+prep-version:check:
+  stage: prep
+  script:
+    - if [[ $CI_COMMIT_REF_PROTECTED == "true" ]]  &&  [[ -n "$CI_COMMIT_TAG" ]];
+      then
+        echo "IS_NOLUS_VERSION=true" >> version.env ;
+      fi
+  artifacts:
+    reports:
+      dotenv: version.env
+
 prep-builder:check-exist:
   stage: prep
   image:
     name: amazon/aws-cli
     entrypoint: [""]
   script:
-    - echo "$CI_COMMIT_REF_PROTECTED"
-    - echo "$CI_COMMIT_TAG"
-    - echo "$IS_NOLUS_VERSION"
     - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
           --repository-name $NOLUS_BUILDER_REPO --region us-east-1
           --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
