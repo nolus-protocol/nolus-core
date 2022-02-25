@@ -21,6 +21,8 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
 
+  IS_NOLUS_VERSION: '$CI_COMMIT_REF_PROTECTED == "true" && $CI_COMMIT_TAG'
+
   NOLUS_BUILDER_REPO: "builder"
   NOLUS_BUILDER_TAG: "0.4"
   NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
@@ -57,8 +59,8 @@ prep-builder:check-exist:
     reports:
       dotenv: builder_exists.env
 
-# Builds a builder image only if a new NOLUS_BUILDER_TAG is pushed
-# ref: https://github.com/GoogleContainerTools/kaniko
+# Builds a builder image only if a new NOLUS_BUILDER_TAG is pushed to a protected git ref.
+# Kaniko ref: https://github.com/GoogleContainerTools/kaniko
 prep-builder:
   stage: prep
   needs: ["prep-builder:check-exist"]
@@ -81,7 +83,8 @@ build-binary:
     paths:
       - $ARTIFACT_BIN
 
-# Builds a new node image on a new git tag only
+# Builds a new node image on a new version only.
+# A version is denoted with a protected tag.
 build-image:
   stage: build
   needs: ["prep-builder:check-exist","build-binary"]
@@ -91,9 +94,10 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $IS_NOLUS_VERSION
       when: on_success
 
+# Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
 build-integration:
   stage: build
   needs: ["prep-builder:check-exist"]
@@ -127,10 +131,14 @@ test-integration:
     - export PATH="$(pwd)":$PATH
     - make test-integration
 
+# Deploy a dev network when a new version is being built
 prep-deploy:
   stage: deploy
   script:
     - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
+  rules:
+    - if: $IS_NOLUS_VERSION
+      when: on_success
   artifacts:
     name: "scripts-$CI_COMMIT_REF_SLUG"
     paths:
@@ -138,7 +146,7 @@ prep-deploy:
 
 setup-dev-network:
   stage: deploy
-  needs: [ "build-binary", "prep-deploy"]
+  needs: ["build-binary", "prep-deploy"]
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
@@ -156,5 +164,3 @@ setup-dev-network:
     name: "accounts-$CI_COMMIT_REF_SLUG"
     paths:
       - $ACCOUNTS_DIR
-  only:
-    - main
