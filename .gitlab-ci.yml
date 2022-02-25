@@ -41,6 +41,9 @@ prep-builder:check-exist:
     name: amazon/aws-cli
     entrypoint: [""]
   script:
+    - echo "$CI_COMMIT_REF_PROTECTED"
+    - echo "$CI_COMMIT_TAG"
+    - echo "$IS_NOLUS_VERSION"
     - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
           --repository-name $NOLUS_BUILDER_REPO --region us-east-1
           --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
