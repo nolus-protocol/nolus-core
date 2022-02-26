@@ -153,23 +153,24 @@ prep-deploy:
     paths:
       - $ARTIFACT_SCRIPTS
 
-setup-dev-network:
-  stage: deploy
-  needs: ["build-binary","prep-deploy"]
-  image:
-    name: amazon/aws-cli
-    entrypoint: [ "" ]
-  variables:
-    ACCOUNTS_DIR: accounts
-  script:
-    - yum install -y tar gzip jq
-    - tar -xvf $ARTIFACT_BIN
-    - export PATH="$(pwd)":$PATH
-    - ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
-          --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
-          --faucet-tokens "$FAUCET_TOKENS_DEV"
-  artifacts:
-    name: "accounts-$CI_COMMIT_REF_SLUG"
-    paths:
-      - $ACCOUNTS_DIR
+# https://gitlab.com/gitlab-org/gitlab/-/issues/351794
+# setup-dev-network:
+#   stage: deploy
+#   needs: [ "build-binary","prep-deploy"]
+#   image:
+#     name: amazon/aws-cli
+#     entrypoint: [ "" ]
+#   variables:
+#     ACCOUNTS_DIR: accounts
+#   script:
+#     - yum install -y tar gzip jq
+#     - tar -xvf $ARTIFACT_BIN
+#     - export PATH="$(pwd)":$PATH
+#     - ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
+#           --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
+#           --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
+#           --faucet-tokens "$FAUCET_TOKENS_DEV"
+#   artifacts:
+#     name: "accounts-$CI_COMMIT_REF_SLUG"
+#     paths:
+#       - $ACCOUNTS_DIR
