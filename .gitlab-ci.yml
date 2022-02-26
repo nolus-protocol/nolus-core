@@ -171,6 +171,9 @@ setup-dev-network:
           --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
           --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
           --faucet-tokens "$FAUCET_TOKENS_DEV"
+  rules:
+    - if: $IS_NOLUS_VERSION
+      when: on_success
   artifacts:
     name: "accounts-$CI_COMMIT_REF_SLUG"
     paths:
