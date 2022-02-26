@@ -153,11 +153,10 @@ prep-deploy:
     paths:
       - $ARTIFACT_SCRIPTS
 
-# https://gitlab.com/gitlab-org/gitlab/-/issues/351794
-# needs: [ "build-binary","prep-deploy"]
+# duplicate 'rules' due to https://gitlab.com/gitlab-org/gitlab/-/issues/351794
 setup-dev-network:
   stage: deploy
-  needs: ["prep-deploy"]
+  needs: ["build-binary","prep-deploy"]
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
