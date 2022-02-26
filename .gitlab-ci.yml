@@ -155,7 +155,7 @@ prep-deploy:
 
 setup-dev-network:
   stage: deploy
-  needs: ["build-binary", "prep-deploy"]
+  needs: ["build-binary","prep-deploy"]
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
