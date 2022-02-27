@@ -101,10 +101,7 @@ build-image:
   variables:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
-    KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
-  rules:
-    - if: '"$IS_NOLUS_VERSION" == "true"'
-      when: on_success
+    KANIKO_IMAGE_EXISTS: ${IS_NOLUS_VERSION}
 
 # Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
 build-integration:
@@ -144,10 +141,10 @@ test-integration:
 prep-deploy:
   stage: deploy
   script:
-    - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
-  rules:
-    - if: '"$IS_NOLUS_VERSION" == "true"'
-      when: on_success
+    - if [[ $IS_NOLUS_VERSION == "true" ]] ;
+      then
+        tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common ;
+      fi
   artifacts:
     name: "scripts-$CI_COMMIT_REF_SLUG"
     paths:
@@ -163,16 +160,16 @@ setup-dev-network:
   variables:
     ACCOUNTS_DIR: accounts
   script:
-    - yum install -y tar gzip jq
-    - tar -xvf $ARTIFACT_BIN
-    - export PATH="$(pwd)":$PATH
-    - ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-          --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
-          --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
-          --faucet-tokens "$FAUCET_TOKENS_DEV"
-  rules:
-    - if: '"$IS_NOLUS_VERSION" == "true"'
-      when: on_success
+    - if [[ $IS_NOLUS_VERSION == "true" ]] ;
+      then
+        yum install -y tar gzip jq
+        tar -xvf $ARTIFACT_BIN
+        export PATH="$(pwd)":$PATH
+        ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
+              --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
+              --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
+              --faucet-tokens "$FAUCET_TOKENS_DEV"
+      fi
   artifacts:
     name: "accounts-$CI_COMMIT_REF_SLUG"
     paths:

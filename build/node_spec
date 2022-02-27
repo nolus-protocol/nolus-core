@@ -1,8 +1,9 @@
 FROM alpine:3.14
-ARG BIN_NAME=nolusd
-ARG TARGET=release
+ARG ARTIFACT_BIN=nolus.tar.gz
 
-COPY target/${TARGET}/${BIN_NAME} /usr/bin/
+COPY $ARTIFACT_BIN /tmp/
+RUN tar -xvf /tmp/$ARTIFACT_BIN --directory /usr/bin/
+RUN rm /tmp/$ARTIFACT_BIN
 
 # tendermint p2p
 EXPOSE 26656/tcp
