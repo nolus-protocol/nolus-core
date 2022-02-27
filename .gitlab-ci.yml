@@ -103,7 +103,7 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_NODE_EXISTS}
   rules:
-    - if: '$IS_NOLUS_VERSION == "true"'
+    - if: '"$IS_NOLUS_VERSION" == "true"'
       when: on_success
 
 # Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
@@ -146,7 +146,7 @@ prep-deploy:
   script:
     - tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common
   rules:
-    - if: '$IS_NOLUS_VERSION == "true"'
+    - if: '"$IS_NOLUS_VERSION" == "true"'
       when: on_success
   artifacts:
     name: "scripts-$CI_COMMIT_REF_SLUG"
@@ -171,7 +171,7 @@ setup-dev-network:
           --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
           --faucet-tokens "$FAUCET_TOKENS_DEV"
   rules:
-    - if: '$IS_NOLUS_VERSION == "true"'
+    - if: '"$IS_NOLUS_VERSION" == "true"'
       when: on_success
   artifacts:
     name: "accounts-$CI_COMMIT_REF_SLUG"
