@@ -139,7 +139,8 @@ test-integration:
 
 # Deploy a dev network when a new version is being built
 prep-deploy:
-  stage: ["deploy","prep-version:check"]
+  stage: deploy
+  needs: ["prep-version:check"]
   script:
     - echo "IS_NOLUS_VERSION=$IS_NOLUS_VERSION"
     - if [[ $IS_NOLUS_VERSION == "true" ]] ;

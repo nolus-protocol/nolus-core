@@ -4,6 +4,7 @@
     entrypoint: [""]
   script:
     - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - echo "KANIKO_IMAGE_EXISTS=$KANIKO_IMAGE_EXISTS"
     - if [ -z ${KANIKO_IMAGE_EXISTS} ] ;
       then
         /kaniko/executor
