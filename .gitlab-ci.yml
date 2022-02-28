@@ -38,11 +38,11 @@ prep-version:check:
   script:
     - if [[ $CI_COMMIT_REF_PROTECTED == "true" ]]  &&  [[ -n "$CI_COMMIT_TAG" ]] ;
       then
-        echo "IS_NOLUS_VERSION=true" >> version.env ;
+        echo "BUILD_NOLUS_VERSION=true" >> build_version.env ;
       fi
   artifacts:
     reports:
-      dotenv: version.env
+      dotenv: build_version.env
 
 prep-builder:check-exist:
   stage: prep
@@ -101,7 +101,7 @@ build-image:
   variables:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
-    KANIKO_IMAGE_EXISTS: ${IS_NOLUS_VERSION}
+    KANIKO_IMAGE_EXISTS: ${BUILD_NOLUS_VERSION}
 
 # Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
 build-integration:
@@ -142,8 +142,8 @@ prep-deploy:
   stage: deploy
   needs: ["prep-version:check"]
   script:
-    - echo "IS_NOLUS_VERSION=$IS_NOLUS_VERSION"
-    - if [[ $IS_NOLUS_VERSION == "true" ]] ;
+    - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
+    - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
         tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common ;
       else
@@ -164,8 +164,8 @@ setup-dev-network:
   variables:
     ACCOUNTS_DIR: accounts
   script:
-    - echo "IS_NOLUS_VERSION=$IS_NOLUS_VERSION"
-    - if [[ $IS_NOLUS_VERSION == "true" ]] ;
+    - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
+    - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
         yum install -y tar gzip jq ;
         tar -xvf $ARTIFACT_BIN ;
