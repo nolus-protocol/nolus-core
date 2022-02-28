@@ -162,13 +162,13 @@ setup-dev-network:
   script:
     - if [[ $IS_NOLUS_VERSION == "true" ]] ;
       then
-        yum install -y tar gzip jq
-        tar -xvf $ARTIFACT_BIN
-        export PATH="$(pwd)":$PATH
+        yum install -y tar gzip jq ;
+        tar -xvf $ARTIFACT_BIN ;
+        export PATH="$(pwd)":$PATH ;
         ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
               --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
               --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
-              --faucet-tokens "$FAUCET_TOKENS_DEV"
+              --faucet-tokens "$FAUCET_TOKENS_DEV" ;
       fi
   artifacts:
     name: "accounts-$CI_COMMIT_REF_SLUG"
