@@ -39,6 +39,8 @@ prep-version:check:
     - if [[ $CI_COMMIT_REF_PROTECTED == "true" ]]  &&  [[ -n "$CI_COMMIT_TAG" ]] ;
       then
         echo "BUILD_NOLUS_VERSION=true" >> build_version.env ;
+      else
+        echo "NOLUS_IMAGE_EXIST=true" >> build_version.env ;
       fi
   artifacts:
     reports:
@@ -101,7 +103,7 @@ build-image:
   variables:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
-    KANIKO_IMAGE_EXISTS: ${BUILD_NOLUS_VERSION}
+    KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
 
 # Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
 build-integration:
