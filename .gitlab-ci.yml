@@ -96,7 +96,7 @@ build-binary:
 # A version is denoted with a protected tag.
 build-image:
   stage: build
-  needs: ["prep-builder:check-exist","build-binary"]
+  needs: ["prep-version:check","build-binary"]
   extends: .kaniko
   variables:
     KANIKO_DOCKER_FILE: build/node_spec
@@ -139,11 +139,14 @@ test-integration:
 
 # Deploy a dev network when a new version is being built
 prep-deploy:
-  stage: deploy
+  stage: ["deploy","prep-version:check"]
   script:
+    - echo "IS_NOLUS_VERSION=$IS_NOLUS_VERSION"
     - if [[ $IS_NOLUS_VERSION == "true" ]] ;
       then
         tar -czvf $ARTIFACT_SCRIPTS scripts/remote scripts/common ;
+      else
+        echo "Skip preparation for deploy since this is not a new version build" ;
       fi
   artifacts:
     name: "scripts-$CI_COMMIT_REF_SLUG"
@@ -153,13 +156,14 @@ prep-deploy:
 # duplicate 'rules' due to https://gitlab.com/gitlab-org/gitlab/-/issues/351794
 setup-dev-network:
   stage: deploy
-  needs: ["build-binary","prep-deploy"]
+  needs: ["build-binary","prep-deploy","prep-version:check"]
   image:
     name: amazon/aws-cli
     entrypoint: [ "" ]
   variables:
     ACCOUNTS_DIR: accounts
   script:
+    - echo "IS_NOLUS_VERSION=$IS_NOLUS_VERSION"
     - if [[ $IS_NOLUS_VERSION == "true" ]] ;
       then
         yum install -y tar gzip jq ;
@@ -169,6 +173,8 @@ setup-dev-network:
               --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
               --user-dir "$ACCOUNTS_DIR" --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
               --faucet-tokens "$FAUCET_TOKENS_DEV" ;
+      else
+        echo "Skip preparation for deploy since this is not a new version build" ;
       fi
   artifacts:
     name: "accounts-$CI_COMMIT_REF_SLUG"
