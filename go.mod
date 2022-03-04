@@ -3,8 +3,8 @@ module gitlab-nomo.credissimo.net/nomo/cosmzone
 go 1.16
 
 require (
-	github.com/CosmWasm/wasmd v0.21.1-0.20220105132732-3d2affb31f82
-	github.com/cosmos/cosmos-sdk v0.44.5
+	github.com/CosmWasm/wasmd v0.23.0
+	github.com/cosmos/cosmos-sdk v0.45.0
 	github.com/cosmos/ibc-go/v2 v2.0.2
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
