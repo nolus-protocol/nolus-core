@@ -9,12 +9,12 @@
     "setup-proto": "COSMOS_SDK_REF='v0.44.0' sh scripts/get-proto.sh && sh scripts/define-custom-proto.sh"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.26.0",
-    "@cosmjs/crypto": "0.26.0",
-    "@cosmjs/encoding": "0.26.0",
-    "@cosmjs/proto-signing": "0.26.0",
-    "@cosmjs/stargate": "0.26.0",
-    "@cosmjs/tendermint-rpc": "0.26.0",
+    "@cosmjs/cosmwasm-stargate": "0.27.1",
+    "@cosmjs/crypto": "0.27.1",
+    "@cosmjs/encoding": "0.27.1",
+    "@cosmjs/proto-signing": "0.27.1",
+    "@cosmjs/stargate": "0.27.1",
+    "@cosmjs/tendermint-rpc": "0.27.1",
     "bip32": "^2.0.6",
     "bip39": "^3.0.4",
     "dotenv": "^10.0.0"

@@ -1,20 +1,19 @@
 import * as fs from "fs";
-import { SigningCosmWasmClient, InstantiateResult } from "@cosmjs/cosmwasm-stargate";
-import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
-import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser1Client } from "../util/clients";
-import { AccountData } from "@cosmjs/amino";
+import {InstantiateResult, SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
+import {getUser1Client, getUser1Wallet, getValidatorClient, getValidatorWallet} from "../util/clients";
+import {AccountData} from "@cosmjs/amino";
 
 const customFees = {
     upload: {
-        amount: [{ amount: "2000000", denom: "unolus" }],
+        amount: [{amount: "2000000", denom: "unolus"}],
         gas: "2000000",
     },
     init: {
-        amount: [{ amount: "500000", denom: "unolus" }],
+        amount: [{amount: "500000", denom: "unolus"}],
         gas: "500000",
     },
     exec: {
-        amount: [{ amount: "500000", denom: "unolus" }],
+        amount: [{amount: "500000", denom: "unolus"}],
         gas: "500000",
     }
 };
@@ -28,7 +27,7 @@ describe("CW20 transfers", () => {
     let tokenDecimals = 18;
     let totalSupply = "1000000000000000000";
 
-    beforeEach(async() =>{
+    beforeEach(async () => {
         validatorClient = await getValidatorClient();
         [validatorAccount] = await (await getValidatorWallet()).getAccounts();
 

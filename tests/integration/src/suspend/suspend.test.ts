@@ -14,7 +14,7 @@ import {EncodeObject} from "@cosmjs/proto-signing/build/registry";
 import {getSuspendQueryClient} from "./suspend-client";
 import {Query} from "../util/codec/nolus/suspend/v1beta1/query";
 import {AccountData} from "@cosmjs/proto-signing";
-import {isBroadcastTxFailure} from "@cosmjs/stargate";
+import {isDeliverTxFailure} from "@cosmjs/stargate";
 import {DEFAULT_FEE, TEN_NOLUS} from "../util/utils";
 
 
@@ -81,7 +81,7 @@ describe("suspend module", () => {
             await suspendAdminClient.signAndBroadcast(suspendAdminAccount.address, [suspendedMsg], DEFAULT_FEE);
 
             const result = await suspendAdminClient.sendTokens(suspendAdminAccount.address, genUserAccount.address, DUMMY_TRANSFER_MSG, DEFAULT_FEE)
-            expect(isBroadcastTxFailure(result)).toBeFalsy()
+            expect(isDeliverTxFailure(result)).toBeFalsy()
         })
 
         test("when suspended can send multiple messages when one of them is MsgUnsuspend", async () => {
@@ -96,7 +96,8 @@ describe("suspend module", () => {
             const fullTransferMsg2 = dummyMsgTransfer(suspendAdminAccount, user1Account);
 
             const result = await suspendAdminClient.signAndBroadcast(suspendAdminAccount.address, [fullTransferMsg1, unsuspendMsg, fullTransferMsg2], DEFAULT_FEE);
-            expect(isBroadcastTxFailure(result)).toBeFalsy();
+            console.log(result)
+            expect(isDeliverTxFailure(result)).toBeFalsy();
 
             const suspendResponse = await suspendQueryClient.SuspendedState({});
             expect(suspendResponse.state?.suspended).toBeFalsy();
@@ -111,7 +112,7 @@ describe("suspend module", () => {
 
             let invalidMsg = asMsgUnsuspend(genUserAccount);
             let result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
-            expect(isBroadcastTxFailure(result)).toBeTruthy();
+            expect(isDeliverTxFailure(result)).toBeTruthy();
 
             // ensure state cannot be modified while also being in state unsuspended
             const unsuspendedMsg = asMsgUnsuspend(suspendAdminAccount);
@@ -120,13 +121,13 @@ describe("suspend module", () => {
 
             invalidMsg = asMsgUnsuspend(genUserAccount);
             result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
-            expect(isBroadcastTxFailure(result)).toBeTruthy();
+            expect(isDeliverTxFailure(result)).toBeTruthy();
         })
 
         test("state height cannot be changed", async () => {
             let invalidMsg = asMsgSuspend(genUserAccount, 100);
             let result = await genUserClient.signAndBroadcast(genUserAccount.address, [invalidMsg], DEFAULT_FEE)
-            expect(isBroadcastTxFailure(result)).toBeTruthy();
+            expect(isDeliverTxFailure(result)).toBeTruthy();
         })
 
         test("message cannot be send with forged from address", async () => {
@@ -155,7 +156,7 @@ describe("suspend module", () => {
 
             const result = await genUserClient.signAndBroadcast(genUserAccount.address, [fullTransferMsg1, unsuspendMsg, fullTransferMsg2], DEFAULT_FEE);
             console.log(result)
-            expect(isBroadcastTxFailure(result)).toBeTruthy();
+            expect(isDeliverTxFailure(result)).toBeTruthy();
         })
     })
 

@@ -30,6 +30,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting"
+	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -471,10 +472,16 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, wasm.ModuleName,
+		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
+		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName, authtypes.ModuleName, crisistypes.ModuleName,
+		govtypes.ModuleName, suspendtypes.ModuleName, wasm.ModuleName,
 	)
 
-	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, wasm.ModuleName)
+	app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
+		paramstypes.ModuleName, slashingtypes.ModuleName, upgradetypes.ModuleName, suspendtypes.ModuleName, authtypes.ModuleName,
+		capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
+		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, wasm.ModuleName,
+	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
@@ -495,6 +502,9 @@ func New(
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
+		vestingtypes.ModuleName,
+		upgradetypes.ModuleName,
+		paramstypes.ModuleName,
 		// wasm after ibc transfer
 		wasm.ModuleName,
 		suspendtypes.ModuleName,

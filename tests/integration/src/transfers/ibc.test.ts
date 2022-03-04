@@ -1,5 +1,5 @@
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import { assertIsBroadcastTxSuccess, BroadcastTxResponse } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { getValidatorClient, getValidatorWallet, getUser1Wallet, getUser1Client, getUser2Wallet, getUser2Client } from "../util/clients";
 import { AccountData } from "@cosmjs/amino";
 
@@ -31,8 +31,8 @@ describe("IBC transfers", () => {
             amount: [{denom: "unolus", amount: "12"}],
             gas: "100000"
         };
-        let sendTokensResponse: BroadcastTxResponse = await validatorClient.sendTokens(validatorAccount.address, user1Account.address, [transfer], fee, "Testing send transaction");
-        assertIsBroadcastTxSuccess(sendTokensResponse);
+        let sendTokensResponse: DeliverTxResponse = await validatorClient.sendTokens(validatorAccount.address, user1Account.address, [transfer], fee, "Testing send transaction");
+        assertIsDeliverTxSuccess(sendTokensResponse);
 
         let nextValidatorBalance = await validatorClient.getBalance(validatorAccount.address, ibcToken);
         let nextUser1Balance = await user1Client.getBalance(user1Account.address, ibcToken);

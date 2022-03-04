@@ -1,5 +1,5 @@
 import {SigningCosmWasmClient} from "@cosmjs/cosmwasm-stargate";
-import {assertIsBroadcastTxSuccess, Coin, isBroadcastTxFailure} from "@cosmjs/stargate";
+import {assertIsDeliverTxSuccess, Coin, isDeliverTxFailure} from "@cosmjs/stargate";
 import {getPeriodicClient, getPeriodicWallet, getValidatorWallet} from "../util/clients";
 import {AccountData} from "@cosmjs/proto-signing";
 import {DEFAULT_FEE} from "../util/utils";
@@ -23,11 +23,11 @@ describe('periodic vesting transfers', () => {
 
     test('periodic account\'s vested amount can be send', async () => {
         let result = await periodicClient.sendTokens(periodicAccount.address, validatorAccount.address, [VESTED_AMOUNT], DEFAULT_FEE)
-        assertIsBroadcastTxSuccess(result)
+        assertIsDeliverTxSuccess(result)
     })
 
     test('periodic account\s vesting amount cannot be send', async () => {
         let result = await periodicClient.sendTokens(periodicAccount.address, validatorAccount.address, [VESTED_AMOUNT], DEFAULT_FEE)
-        expect(isBroadcastTxFailure(result)).toBeTruthy();
+        expect(isDeliverTxFailure(result)).toBeTruthy();
     })
 })
