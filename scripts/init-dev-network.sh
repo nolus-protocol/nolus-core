@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
 
@@ -43,8 +43,9 @@ while [[ $# -gt 0 ]]; do
     [--user-dir <client_user_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
+    [--treasury-tokens <treasury_initial_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
-    [--faucet-tokens <initial_balance>]"
+    [--faucet-tokens <initial_balance>]" \
      "$0"
     exit 0
     ;;
@@ -101,6 +102,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --treasury-tokens)
+    TREASURY_TOKENS="$2"
+    shift
+    shift
+    ;;
+
   --faucet-mnemonic)
     FAUCET_MNEMONIC="$2"
     shift
@@ -136,7 +143,6 @@ __recover_faucet_addr() {
   local tmp_faucet_dir
   tmp_faucet_dir="$(mktemp -d)"
   run_cmd "$tmp_faucet_dir" keys add --recover "$account_name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
-  local addr
   run_cmd "$tmp_faucet_dir" keys show "$account_name" -a --keyring-backend test
 }
 
@@ -153,7 +159,7 @@ init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
 suspend_admin_addr=$(admin_dev_create_suspend_admin_account)
 treasury_addr=$(admin_dev_create_treasury_account)
 
-accounts_spec=$(echo "[]" | add_account $(__recover_faucet_addr "$FAUCET_MNEMONIC") "$FAUCET_TOKENS")
+accounts_spec=$(echo "[]" | add_account "$(__recover_faucet_addr "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
 accounts_spec=$(echo "$accounts_spec" | add_account "$suspend_admin_addr" "$SUSPEND_ADMIN_TOKENS")
 accounts_spec=$(echo "$accounts_spec" | add_account "$treasury_addr" "$TREASURY_TOKENS")
 

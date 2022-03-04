@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}")/.. && pwd)
+SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 source "$SCRIPTS_DIR"/create-vesting-account.sh
 source "$SCRIPTS_DIR"/common/cmd.sh
 
@@ -37,7 +37,7 @@ trap cleanup INT TERM EXIT
 
 __now_shifted_with_hours() {
   local delta_hours="$1"
-  date -d @$(($(date +%s) + $delta_hours*60*60)) -Iseconds
+  date -d @$(($(date +%s) + delta_hours*60*60)) -Iseconds
 }
 create_vested_account() {
   run_cmd "$USER_DIR" keys add periodic-vesting-account --keyring-backend "test"
@@ -59,6 +59,9 @@ prepare_env() {
   "$SCRIPTS_DIR"/init-local-network.sh --validators-root-dir "$NET_ROOT_DIR" -v 1 \
       --validator-accounts-dir "$VAL_ACCOUNTS_DIR" \
       --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" \
+      --treasury-tokens "1000000000000ibc/0954E1C28EB7AF5B72D24F3BC2B47BBB2FDF91BDDFD57B74B99E133AED40972A, \
+                        1000000000000ibc/0EF15DF2F02480ADE0BB6E85D9EBB5DAEA2836D3860E9F97F9AADE4F57A31AA0, \
+                        1000000000000ibc/8A34AF0C1943FD0DFCDE9ADBF0B2C9959C45E87E6088EA2FC6ADACD59261B8A2" \
       --user-dir "$USER_DIR" 2>&1
 
   # create_ibc_network
@@ -72,7 +75,6 @@ prepare_env() {
 
   VALIDATOR_KEY_NAME=$(run_cmd "$VAL_ACCOUNTS_DIR" keys list --list-names)
   VALIDATOR_PRIV_KEY=$(echo 'y' | nolusd keys export "$VALIDATOR_KEY_NAME" --unsafe --unarmored-hex --keyring-backend "test" --home "$VAL_ACCOUNTS_DIR" 2>&1)
-  SUSPEND_ADMIN_ADDR="$(run_cmd "$USER_DIR" keys show suspend-admin -a --keyring-backend "test")"
   SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | nolusd keys export suspend-admin --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1 )"
   PERIODIC_PRIV_KEY=$(echo 'y' | nolusd keys export periodic-vesting-account --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
   USR_1_PRIV_KEY=$(echo 'y' | nolusd keys export test-user-1 --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euxo pipefail
 
-SCRIPT_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
 
@@ -39,8 +39,9 @@ while [[ $# -gt 0 ]]; do
     [--validator-accounts-dir <validator_accounts_dir>]
     [--user-dir <client_user_dir>]
     [--currency <native_currency>]
-    [--validator-tokens <tokens_for_val_genesis_accounts>]
-    [--validator-stake <tokens_val_will_stake>]"
+    [--validator-tokens <validators_initial_tokens>]
+    [--validator-stake <tokens_validator_stakes>]
+    [--treasury-tokens <treasury_initial_tokens>]" \
      "$0"
     exit 0
     ;;
@@ -93,6 +94,12 @@ while [[ $# -gt 0 ]]; do
 
   --validator-stake)
     VAL_STAKE="$2"
+    shift
+    shift
+    ;;
+
+  --treasury-tokens)
+    TREASURY_TOKENS="$2"
     shift
     shift
     ;;
