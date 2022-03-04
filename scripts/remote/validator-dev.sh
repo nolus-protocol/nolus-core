@@ -6,7 +6,8 @@
 # arg1: home directory of the validator node, mandatory
 # arg2: node's moniker, mandatory
 # arg3: base port, mandatory. Used to determine the endpoint ports.
-# arg4: first node's identificator, optional. Empty, if this is the first node.
+# arg4: timeout commit, mandatory. Example: "3s".
+# arg5: first node's identificator, optional. Empty, if this is the first node.
 #
 # Returns the node identificator in the form of "node-id@host:p2p-port" followed
 # by the node public key in JSON.
@@ -19,8 +20,9 @@ source "$SCRIPT_DIR"/../common/cmd.sh
 home_dir="$1"
 node_moniker="$2"
 base_port="$3"
-if [[ $# -gt 3 ]]
-then first_node_id="$4"
+timeout_commit="$4"
+if [[ $# -gt 4 ]]
+then first_node_id="$5"
 else first_node_id=""
 fi
 
@@ -48,6 +50,7 @@ update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
 update_config "$home_dir" '."proxy_app"' '""' >/dev/null
+update_config "$home_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"' >/dev/null
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)

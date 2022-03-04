@@ -60,10 +60,8 @@ prepare_env() {
       --validator-accounts-dir "$VAL_ACCOUNTS_DIR" \
       --validator-tokens "100000000000$NLS_CURRENCY,1000000000$IBC_TOKEN" \
       --user-dir "$USER_DIR" 2>&1
-# TBD incorporate it in the local network node configuration
-  "$SCRIPTS_DIR"/remote/edit.sh --home "$HOME_DIR" --timeout-commit '1s'
 
-  create_ibc_network
+  # create_ibc_network
 
 # TBD when finalize vesting type, periodic vs continuos, do create vesting accounts
 # feeding `init-local-network` with necessary account data
@@ -122,4 +120,4 @@ prepare_env
 
 cd "$TESTS_DIR"
 yarn install
-yarn test $@
+yarn test "$@"

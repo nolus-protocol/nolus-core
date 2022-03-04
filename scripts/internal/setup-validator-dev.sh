@@ -10,6 +10,7 @@ SETUP_VALIDATOR_DEV_BASE_PORT=26606
 SETUP_VALIDATOR_DEV_ROOT_DIR="/opt/deploy/nolus"
 SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET="nolus-artifact-bucket/dev"
 SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID="i-0307d4bb453d880f3"
+SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT="5s"
 
 init_setup_validator_dev_sh() {
   setup_validator_dev_scripts_home_dir="$1"
@@ -131,12 +132,12 @@ __download_genesis_from_s3() {
   local genesis_file_path="$2"
 
   local genesis_name
-  genesis_name="$(basename $genesis_file_path)"
+  genesis_name="$(basename "$genesis_file_path")"
 
   local home_dir
   home_dir=$(__home_dir "$node_index")
 
   "$setup_validator_dev_scripts_home_dir"/aws/run-shell-script.sh \
       "aws s3 cp s3://$SETUP_VALIDATOR_DEV_ARTIFACT_S3_BUCKET/$genesis_name $home_dir/config/" \
-      "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID"
+      "$SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT" "$SETUP_VALIDATOR_DEV_AWS_INSTANCE_ID"
 }

@@ -6,6 +6,7 @@ setup_validator_local_root_dir=""
 setup_validator_local_prev_node_id=""
 # end "instance" variables
 SETUP_VALIDATOR_LOCAL_BASE_PORT=26606
+SETUP_VALIDATOR_LOCAL_TIMEOUT_COMMIT="1s"
 
 init_setup_validator_local_sh() {
   setup_validator_local_scripts_home_dir="$1"
@@ -66,7 +67,8 @@ __config() {
 
   local node_id_val_pub_key
   node_id_val_pub_key=$("$setup_validator_local_scripts_home_dir"/remote/validator-dev.sh "$home_dir" "$node_moniker" \
-                                          "$node_base_port" "$setup_validator_local_prev_node_id")
+                                          "$node_base_port" "$SETUP_VALIDATOR_LOCAL_TIMEOUT_COMMIT" \
+                                          "$setup_validator_local_prev_node_id")
   read -r setup_validator_local_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
 }
