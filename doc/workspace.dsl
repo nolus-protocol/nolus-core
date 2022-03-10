@@ -20,13 +20,13 @@ workspace {
                     }
                     contracts = container "Smart Contracts" {
                         flex = component "Flex"
-                        price_feed = component "Price Feed"
+                        price_oracle = component "Market Price Oracle"
                         timer = component "Timer"
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
                         swap = component "Swap Gateway"
                         timer -> flex "time updates"
-                        price_feed -> flex "price updates"
+                        price_oracle -> flex "price updates"
                         flex -> loans_vault "request amount"
                         flex -> reserve_vault "forward payments"
                         loans_vault -> swap "exchange"
@@ -192,23 +192,24 @@ workspace {
         dynamic contracts oracle_msgs {
             title "Price Feeds"
 
-            admin -> price_feed "manage supported price pairs"
-            admin -> price_feed "manage whitelisted operators"
+            admin -> price_oracle "manage supported price pairs"
+            admin -> price_oracle "manage whitelisted operators"
 
+            market_data_feeder -> price_oracle "read currency pairs"
             market_data_feeder -> market_data_aggregator "poll observations"
-            market_data_feeder -> price_feed "send observations"
-            price_feed -> price_feed "match msg sender address to whitelist"
-            price_feed -> price_feed "update a price pair when aggregated observations pass % but not later than a delta t"
-            price_feed -> flex "push price update"
+            market_data_feeder -> price_oracle "send observations"
+            price_oracle -> price_oracle "match msg sender address to whitelist"
+            price_oracle -> price_oracle "update a price pair when aggregated observations pass % but not later than a delta t"
+            price_oracle -> flex "push price update"
         }
 
         dynamic contracts "case0" "all" {
             title "Flex successful close"
             user -> flex "sign contract(A: amount, D: down-payment) && deposit down-payment D"
-            flex -> price_feed "get currency price"
+            flex -> price_oracle "get currency price"
             flex -> loans_vault "request loan (A-D)"
             loans_vault -> flex "send amount (A-D)"
-            price_feed -> flex "push price update"
+            price_oracle -> flex "push price update"
             timer -> flex "push time update"
             user -> flex "repay one or more times until pay-off the total of (A-D+I)"
             flex -> reserve_vault "forward payments total (A-D+I)"
@@ -217,7 +218,7 @@ workspace {
 
         dynamic contracts "case1" "Flex liquidation" {
             title "Flex liquidation"
-            price_feed -> flex "push price update"
+            price_oracle -> flex "push price update"
             timer -> flex "push time update"
             flex -> reserve_vault "send the total amount A"
             autolayout

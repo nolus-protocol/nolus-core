@@ -3,10 +3,10 @@
   "name" : "Name",
   "description" : "Description",
   "revision" : 0,
-  "lastModifiedDate" : "2022-03-10T13:35:34Z",
+  "lastModifiedDate" : "2022-03-10T13:44:39Z",
   "lastModifiedAgent" : "structurizr-web/2549/diagram",
   "properties" : {
-    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiVXNlciIKICAgICAgICBub2x1c2VudGVycHJpc2UgPSBlbnRlcnByaXNlICJOb2x1cyIgewogICAgICAgICAgICAKICAgICAgICAgICAgbm9sdXMgPSBzb2Z0d2FyZVN5c3RlbSAiTm9sdXMiIHsKICAgICAgICAgICAgICAgIHZhbGlkYXRvcm5vZGUgPSBncm91cCAiVmFsaWRhdG9yL1NlbnRyeSBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwID0gY29udGFpbmVyICJOb2x1cyBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJUZW5kZXJtaW50IFBvUyBhbmQgQ29zbW9zIGJhc2VkIGJsb2NrY2hhaW4iCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkNvc21vcyBTREsgQXBwbGljYXRpb24iCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCA9IGNvbXBvbmVudCAiVGF4IEFnZW50IgogICAgICAgICAgICAgICAgICAgICAgICBtaW50ZXIgPSBjb21wb25lbnQgIk1pbnRlciIKICAgICAgICAgICAgICAgICAgICAgICAgZGlzdHJpYnV0b3IgPSBjb21wb25lbnQgIkRpc3RyaWJ1dG9yIgogICAgICAgICAgICAgICAgICAgICAgICByZXNlcnZlX3Byb3h5ID0gY29tcG9uZW50ICJSZXNlcnZlIFZhdWx0IFByb3h5IgoKICAgICAgICAgICAgICAgICAgICAgICAgdGF4X2FnZW50IC0+IGRpc3RyaWJ1dG9yICJkaXN0cmlidXRlIHRoZSB0cmFuc2FjdGlvbiBnYXMiCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCAtPiByZXNlcnZlX3Byb3h5ICJzZW5kIGV4dHJhIGZlZSIKICAgICAgICAgICAgICAgICAgICAgICAgbWludGVyIC0+IGRpc3RyaWJ1dG9yICJtaW50IGFtb3VudCBvbiBlYWNoIGJsb2NrIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBjb250cmFjdHMgPSBjb250YWluZXIgIlNtYXJ0IENvbnRyYWN0cyIgewogICAgICAgICAgICAgICAgICAgICAgICBmbGV4ID0gY29tcG9uZW50ICJGbGV4IgogICAgICAgICAgICAgICAgICAgICAgICBwcmljZV9mZWVkID0gY29tcG9uZW50ICJQcmljZSBGZWVkIgogICAgICAgICAgICAgICAgICAgICAgICB0aW1lciA9IGNvbXBvbmVudCAiVGltZXIiCiAgICAgICAgICAgICAgICAgICAgICAgIHJlc2VydmVfdmF1bHQgPSBjb21wb25lbnQgIlJlc2VydmUgVmF1bHQiCiAgICAgICAgICAgICAgICAgICAgICAgIGxvYW5zX3ZhdWx0ID0gY29tcG9uZW50ICJMb2FucyBWYXVsdCIKICAgICAgICAgICAgICAgICAgICAgICAgc3dhcCA9IGNvbXBvbmVudCAiU3dhcCBHYXRld2F5IgogICAgICAgICAgICAgICAgICAgICAgICB0aW1lciAtPiBmbGV4ICJ0aW1lIHVwZGF0ZXMiCiAgICAgICAgICAgICAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gZmxleCAicHJpY2UgdXBkYXRlcyIKICAgICAgICAgICAgICAgICAgICAgICAgZmxleCAtPiBsb2Fuc192YXVsdCAicmVxdWVzdCBhbW91bnQiCiAgICAgICAgICAgICAgICAgICAgICAgIGZsZXggLT4gcmVzZXJ2ZV92YXVsdCAiZm9yd2FyZCBwYXltZW50cyIKICAgICAgICAgICAgICAgICAgICAgICAgbG9hbnNfdmF1bHQgLT4gc3dhcCAiZXhjaGFuZ2UiCiAgICAgICAgICAgICAgICAgICAgICAgIHJlc2VydmVfdmF1bHQgLT4gc3dhcCAiZXhjaGFuZ2UiCiAgICAgICAgICAgICAgICAgICAgICAgIHJlc2VydmVfdmF1bHQgLT4gbG9hbnNfdmF1bHQgInJlYmFsYW5jZSIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwIC0+IGNvbnRyYWN0cyAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiU3RvcmUgU3RhdGUiCiAgICAgICAgICAgICAgICAgICAgY29udHJhY3RzIC0+IGNvc21vc2FwcCAiRXhlY3V0ZSBUcnggbWVzc2FnZXMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBhcHBzZXJ2ZXIgPSBjb250YWluZXIgIkFwcGxpY2F0aW9uIFNlcnZlciIgewogICAgICAgICAgICAgICAgICAgIGFwaV9lbmRwb2ludCA9IGNvbXBvbmVudCAiQVBJIEVuZHBvaW50IgoKICAgICAgICAgICAgICAgICAgICAtPiBjb3Ntb3NhcHAgIlNvdXJjZSBFdmVudHMiCiAgICAgICAgICAgICAgICAgICAgLT4gY29zbW9zYXBwICJGb3J3YXJkIFF1ZXJpZXMmVHJhbnNhY3Rpb25zIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIHdlYmFwcCA9IGNvbnRhaW5lciAiV2ViIEFwcCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJTdGF0aWMgY29udGVudCBhbmQgY2xpZW50LXNpZGUgcmVuZGVyZWQgYXBwbGljYXRpb24iCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiVHlwZVNjcmlwdCwgUmVhY3QiCiAgICAgICAgICAgICAgICAgICAgLT4gYXBwc2VydmVyICJRdWVyaWVzLCBUcmFuc2FjdGlvbnMiCiAgICAgICAgICAgICAgICB9CgogICAgICAgICAgICAgICAgb3JhY2xlX29wZXJhdG9yID0gY29udGFpbmVyICJPcmFjbGUgT3BlcmF0b3IiIHsKICAgICAgICAgICAgICAgICAgICBtYXJrZXRfZGF0YV9mZWVkZXIgPSBjb21wb25lbnQgIk1hcmtldCBEYXRhIEZlZWRlciIgewogICAgICAgICAgICAgICAgICAgICAgIC0+IGFwaV9lbmRwb2ludCAiUHJpY2UgdXBkYXRlcyIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGliYyA9IHNvZnR3YXJlU3lzdGVtICJDb3Ntb3MgSUJDIFJlbGF5IgoKICAgICAgICAgICAgaWJjIC0+IG5vbHVzICJSZWxheXMtaW4iCiAgICAgICAgICAgIG5vbHVzIC0+IGliYyAiUmVsYXlzLW91dCIKCiAgICAgICAgICAgIGZhdWNldCA9IHNvZnR3YXJlU3lzdGVtICJGYXVjZXQiIHsKICAgICAgICAgICAgICAgIC0+IGFwcHNlcnZlciAiU2VuZCB0eCIKICAgICAgICAgICAgICAgIGZhdWNldEJhY2tlbmQgPSBjb250YWluZXIgIkZhdWNldCBCYWNrZW5kIiB7CiAgICAgICAgICAgICAgICAgICAgZGVzY3JpcHRpb24gIkEgZmF1Y2V0IGZvciBDb3Ntb3MtU0RLIGFwcHMiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiTm9sdXMgQ0xJIgogICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cHM6Ly9naXRodWIuY29tL3RlbmRlcm1pbnQvZmF1Y2V0IgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZmF1Y2V0VUkgPSBjb250YWluZXIgIkZhdWNldCBVSSIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBIHNpbmdsZSBwYWdlIGFwcCIKICAgICAgICAgICAgICAgICAgICB0ZWNobm9sb2d5ICJOb2RlSlMiCiAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwczovL2dpdGh1Yi5jb20vc2NydGxhYnMvdGVzdG5ldC1mYXVjZXQiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGFkbWluID0gcGVyc29uICJBZG1pbiIgewogICAgICAgICAgICAgICAgLT4gd2ViYXBwICJVc2VzIgogICAgICAgICAgICB9CiAgICAgICAgfQoKICAgICAgICBtYXJrZXRfZGF0YV9hZ2dyZWdhdG9yID0gc29mdHdhcmVTeXN0ZW0gIk1hcmtldCBEYXRhIEFnZ3JlZ2F0b3IiIHsKICAgICAgICB9CgogICAgICAgIGRlcGxveW1lbnRFbnZpcm9ubWVudCBkZXYgewogICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSBOb2x1c0BBV1MgImRlc2NyaXB0aW9uIiAiQVdTIiB7CiAgICAgICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSBXb3JrZXIgImRlc2NyaXB0aW9uIiAiQVdTIEVDMiBkZXYtbmV0d29yay13b3JrZXIiIHsKICAgICAgICAgICAgICAgICAgICB2YWxpZGF0b3JJbnN0YW5jZXMgPSBkZXBsb3ltZW50Tm9kZSAiVmFsaWRhdG9yIE5vZGUiICIiICJub2x1c2QiICIiIDMgewogICAgICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBjb3Ntb3NhcHAge30KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB3ZWJhcHBIb3N0ID0gZGVwbG95bWVudE5vZGUgIldlYkFwcCBIb3N0aW5nIiAiIiAiQVdTIFMzIGFwcC1kZXYubm9sdXMuaW8iIHsKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSB3ZWJhcHAge30KICAgICAgICAgICAgICAgICAgICB1cmwgImh0dHBzOi8vczMuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb206NDQzL2FwcC1kZXYubm9sdXMuaW8iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBmYXVjZXROb2RlID0gZGVwbG95bWVudE5vZGUgIkZhdWNldCIgIiIgIkFXUyBFQzIgRmF1Y2V0IiB7CiAgICAgICAgICAgICAgICAgICAgZmF1Y2V0QmFja2VuZE5vZGUgPSBkZXBsb3ltZW50Tm9kZSAiRmF1Y2V0IEJhY2tlbmQiICIiICJmYXVjZXQgSlNPTiBzZXJ2ZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZmF1Y2V0QmFja2VuZCB7fQogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBmYXVjZXRVSU5vZGUgPSBkZXBsb3ltZW50Tm9kZSAiRmF1Y2V0IFVJIiAiIiAibm9kZUpTIHNlcnZlciIgewogICAgICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBmYXVjZXRVSSB7fQogICAgICAgICAgICAgICAgICAgICAgICAtPiBmYXVjZXRCYWNrZW5kTm9kZSAiUmVxdWVzdCB0ZXN0IHRva2VucyIgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwOi8vMC4wLjAuMDo4MDAwIgogICAgICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgcmV2ZXJzZVByb3h5SW5zdGFuY2UgPSBpbmZyYXN0cnVjdHVyZU5vZGUgcmV2ZXJzZVByb3h5ICJQcm94eSB0byB0aGUgYmFja2VuZCBzZXJ2aWNlcyBhbmQgVExTIHRlcm1pbmF0aW9uIiAiSEFQcm94eSIgewogICAgICAgICAgICAgICAgICAgIC0+IGZhdWNldFVJTm9kZSAiUGxhaW4gSlNPTiBvdmVyIEhUVFAiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwOi8vMC4wLjAuMDo4MDgwIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICAtPiB2YWxpZGF0b3JJbnN0YW5jZXMgIlBsYWluIEpTT04gb3ZlciBIVFRQIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHByb3BlcnRpZXMgewogICAgICAgICAgICAgICAgICAgICAgICAgICAgcnBjICJodHRwOi8vMC4wLjAuMDoyNjYxMiwgOjI2NjE3LCA6MjY2MjIiCiAgICAgICAgICAgICAgICAgICAgICAgICAgICBhcGkgImh0dHA6Ly8wLjAuMC4wOjI2NjE0LCA6MjY2MTksIDoyNjYyNCIKICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGNkbiA9IGluZnJhc3RydWN0dXJlTm9kZSBDRE4gIkNvbnRlbnQgZGVsaXZlcnkgZm9yIEFXUyBTMyBidWNrZXRzLCBjYWNoaW5nIGFuZCBwcm90ZWN0aW9uIiAiQ2xvdWRGcm9udCIgewogICAgICAgICAgICAgICAgICAgIC0+IHdlYmFwcEhvc3QgIkxvYWQgTm9sdXMgV2ViIEFwcCIgewogICAgICAgICAgICAgICAgICAgICAgICB1cmwgImh0dHBzOi8vczMuZXUtd2VzdC0xLmFtYXpvbmF3cy5jb206NDQzL2FwcC1kZXYubm9sdXMuaW8iCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZmF1Y2V0QmFja2VuZE5vZGUgLT4gcmV2ZXJzZVByb3h5SW5zdGFuY2UgInNlbmQgdHgiIHsKICAgICAgICAgICAgICAgICAgICB1cmwgImh0dHBzOi8vbmV0LWRldi5ub2x1cy5pbzoyNjYxMiIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQoKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkNsb3VkRmxhcmUiIHsKICAgICAgICAgICAgICAgIGluZnJhc3RydWN0dXJlTm9kZSBETlMgIkRvbWFpbiBOYW1lIFJlc29sdXRpb24gb2YgKi5ub2x1cy5pbyB0byBBV1MgRUMyIHB1YmxpYyBJUHMiICJDbG91ZEZsYXJlIiB7fQogICAgICAgICAgICAgICAgY2xvdWRGbGFyZVByb3h5ID0gaW5mcmFzdHJ1Y3R1cmVOb2RlIFByb3h5ICJIVFRQKFMpIFByb3h5IHdpdGggRERPUyBwcm90ZWN0aW9uIiAiQ2xvdWRGbGFyZSIge30KICAgICAgICAgICAgfQoKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIkN1c3RvbWVyJ3MgZGV2aWNlIiAiIiAiRGVza3RvcCwgbGFwdG9wIG90IG1vYmlsZSIgewogICAgICAgICAgICAgICAgY2xpZW50QnJvd3NlciA9IGRlcGxveW1lbnROb2RlICJXZWIgQnJvd3NlciIgIiIgIkNocm9tZSwgRmlyZWZveCwgU2FmYXJpIiB7CiAgICAgICAgICAgICAgICAgICAgd2ViYXBwSW5zdGFuY2UgPSBjb250YWluZXJJbnN0YW5jZSB3ZWJhcHAge30KICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBmYXVjZXRVSSB7fQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgY2xpZW50QnJvd3NlciAtPiBjZG4gIldlYi1hcHAgSG9zdGluZyIgIkxvYWQgTm9sdXMgV2ViIEFwcCIgewogICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cHM6Ly9hcHAtZGV2Lm5vbHVzLmlvOjQ0MyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGNsaWVudEJyb3dzZXIgLT4gcmV2ZXJzZVByb3h5SW5zdGFuY2UgIkpTT04gUXVlcmllcyBhbmQgdHJhbnNhY3Rpb25zIHRvIEhUVFBTIHJwYyZhcGkgZW5kcG9pbnRzIiB7CiAgICAgICAgICAgICAgICAgICAgcHJvcGVydGllcyB7CiAgICAgICAgICAgICAgICAgICAgICAgIHJwYyAiaHR0cHM6Ly9uZXQtZGV2Lm5vbHVzLmlvOjI2NjEyLCA6MjY2MTcsIDoyNjYyMiIKICAgICAgICAgICAgICAgICAgICAgICAgYXBpICJodHRwczovL25ldC1kZXYubm9sdXMuaW86MjY2MTQsIDoyNjYxOSwgOjI2NjI0IgogICAgICAgICAgICAgICAgICAgIH0gICAKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGNsaWVudEJyb3dzZXIgLT4gcmV2ZXJzZVByb3h5SW5zdGFuY2UgIkxvYWQgRmF1Y2V0IGFwcCBhbmQgc2VuZCBKU09OIHRlc3QgdG9rZW5zIHJlcXVlc3RzIiB7CiAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwczovL2ZhdWNldC1kZXYubm9sdXMuaW86NDQzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgICAgIG1hcmtldF9kYXRhX2ZlZWRlciAtPiBtYXJrZXRfZGF0YV9hZ2dyZWdhdG9yICJGZXRjaCBEYXRhIgoKICAgICAgICB1c2VyIC0+IHdlYmFwcCAiVXNlcyIKICAgICAgICB1c2VyIC0+IGZhdWNldCAiUmVxdWVzdCBUZXN0IENvaW5zIgogICAgfQoKICAgIHZpZXdzIHsKICAgICAgICBzeXN0ZW1Db250ZXh0IG5vbHVzIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBjb250YWluZXIgbm9sdXMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBjb3Ntb3NhcHAgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBjb250cmFjdHMgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGNvbXBvbmVudCBvcmFjbGVfb3BlcmF0b3IgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29zbW9zYXBwIGZlZV9oYW5kbGVyIHsKICAgICAgICAgICAgdGl0bGUgIlRheCAmIEluZmxhdGlvbiBkaXN0cmlidXRpb24iCgogICAgICAgICAgICB1c2VyIC0+IHRheF9hZ2VudCAic2VuZCB0cmFuc2FjdGlvbiIKICAgICAgICAgICAgdGF4X2FnZW50IC0+IHJlc2VydmVfcHJveHkgInNlbmQgZXh0cmEgZmVlIgogICAgICAgICAgICByZXNlcnZlX3Byb3h5IC0+IHJlc2VydmVfdmF1bHQgInNlbmQgZXh0cmEgZmVlIgogICAgICAgICAgICB0YXhfYWdlbnQgLT4gZGlzdHJpYnV0b3IgInNlbmQgcmVtYWluZWQgZ2FzIgogICAgICAgICAgICBtaW50ZXIgLT4gZGlzdHJpYnV0b3IgInNlbmQgbmV3bHkgbWludGVkIGNvaW5zIgogICAgICAgICAgICBkaXN0cmlidXRvciAtPiBkaXN0cmlidXRvciAiZGlzdHJpYnV0ZSB0byB0aGUgZGVsZWdhdG9ycyIKICAgICAgICB9CgogICAgICAgIGR5bmFtaWMgY29udHJhY3RzIG9yYWNsZV9tc2dzIHsKICAgICAgICAgICAgdGl0bGUgIlByaWNlIEZlZWRzIgoKICAgICAgICAgICAgYWRtaW4gLT4gcHJpY2VfZmVlZCAibWFuYWdlIHN1cHBvcnRlZCBwcmljZSBwYWlycyIKICAgICAgICAgICAgYWRtaW4gLT4gcHJpY2VfZmVlZCAibWFuYWdlIHdoaXRlbGlzdGVkIG9wZXJhdG9ycyIKCiAgICAgICAgICAgIG1hcmtldF9kYXRhX2ZlZWRlciAtPiBtYXJrZXRfZGF0YV9hZ2dyZWdhdG9yICJwb2xsIG9ic2VydmF0aW9ucyIKICAgICAgICAgICAgbWFya2V0X2RhdGFfZmVlZGVyIC0+IHByaWNlX2ZlZWQgInNlbmQgb2JzZXJ2YXRpb25zIgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IHByaWNlX2ZlZWQgIm1hdGNoIG1zZyBzZW5kZXIgYWRkcmVzcyB0byB3aGl0ZWxpc3QiCiAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gcHJpY2VfZmVlZCAidXBkYXRlIGEgcHJpY2UgcGFpciB3aGVuIGFnZ3JlZ2F0ZWQgb2JzZXJ2YXRpb25zIHBhc3MgJSBidXQgbm90IGxhdGVyIHRoYW4gYSBkZWx0YSB0IgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IGZsZXggInB1c2ggcHJpY2UgdXBkYXRlIgogICAgICAgIH0KCiAgICAgICAgZHluYW1pYyBjb250cmFjdHMgImNhc2UwIiAiYWxsIiB7CiAgICAgICAgICAgIHRpdGxlICJGbGV4IHN1Y2Nlc3NmdWwgY2xvc2UiCiAgICAgICAgICAgIHVzZXIgLT4gZmxleCAic2lnbiBjb250cmFjdChBOiBhbW91bnQsIEQ6IGRvd24tcGF5bWVudCkgJiYgZGVwb3NpdCBkb3duLXBheW1lbnQgRCIKICAgICAgICAgICAgZmxleCAtPiBwcmljZV9mZWVkICJnZXQgY3VycmVuY3kgcHJpY2UiCiAgICAgICAgICAgIGZsZXggLT4gbG9hbnNfdmF1bHQgInJlcXVlc3QgbG9hbiAoQS1EKSIKICAgICAgICAgICAgbG9hbnNfdmF1bHQgLT4gZmxleCAic2VuZCBhbW91bnQgKEEtRCkiCiAgICAgICAgICAgIHByaWNlX2ZlZWQgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgICAgIHRpbWVyIC0+IGZsZXggInB1c2ggdGltZSB1cGRhdGUiCiAgICAgICAgICAgIHVzZXIgLT4gZmxleCAicmVwYXkgb25lIG9yIG1vcmUgdGltZXMgdW50aWwgcGF5LW9mZiB0aGUgdG90YWwgb2YgKEEtRCtJKSIKICAgICAgICAgICAgZmxleCAtPiByZXNlcnZlX3ZhdWx0ICJmb3J3YXJkIHBheW1lbnRzIHRvdGFsIChBLUQrSSkiCiAgICAgICAgICAgIGZsZXggLT4gdXNlciAidHJhbnNmZXIgb3duZXJzaGlwIG9mIEEiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyAiY2FzZTEiICJGbGV4IGxpcXVpZGF0aW9uIiB7CiAgICAgICAgICAgIHRpdGxlICJGbGV4IGxpcXVpZGF0aW9uIgogICAgICAgICAgICBwcmljZV9mZWVkIC0+IGZsZXggInB1c2ggcHJpY2UgdXBkYXRlIgogICAgICAgICAgICB0aW1lciAtPiBmbGV4ICJwdXNoIHRpbWUgdXBkYXRlIgogICAgICAgICAgICBmbGV4IC0+IHJlc2VydmVfdmF1bHQgInNlbmQgdGhlIHRvdGFsIGFtb3VudCBBIgogICAgICAgICAgICBhdXRvbGF5b3V0CiAgICAgICAgfQoKICAgICAgICBkZXBsb3ltZW50ICogZGV2ICJub2x1cy1kZXYtZGVwbG95bWVudCIgIk5vbHVzIERldmVsb3BtZW50IEVudmlyb25tZW50IiB7CiAgICAgICAgICAgIHRpdGxlICJOb2x1cyBEZXZlbG9wbWVudCIKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQogICAgICAgIHRoZW1lIGRlZmF1bHQKICAgIH0KICAgIAp9Cg=="
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKCiAgICBtb2RlbCB7CiAgICAgICAgdXNlciA9IHBlcnNvbiAiVXNlciIKICAgICAgICBub2x1c2VudGVycHJpc2UgPSBlbnRlcnByaXNlICJOb2x1cyIgewogICAgICAgICAgICAKICAgICAgICAgICAgbm9sdXMgPSBzb2Z0d2FyZVN5c3RlbSAiTm9sdXMiIHsKICAgICAgICAgICAgICAgIHZhbGlkYXRvcm5vZGUgPSBncm91cCAiVmFsaWRhdG9yL1NlbnRyeSBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgY29zbW9zYXBwID0gY29udGFpbmVyICJOb2x1cyBOb2RlIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJUZW5kZXJtaW50IFBvUyBhbmQgQ29zbW9zIGJhc2VkIGJsb2NrY2hhaW4iCiAgICAgICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIkNvc21vcyBTREsgQXBwbGljYXRpb24iCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCA9IGNvbXBvbmVudCAiVGF4IEFnZW50IgogICAgICAgICAgICAgICAgICAgICAgICBtaW50ZXIgPSBjb21wb25lbnQgIk1pbnRlciIKICAgICAgICAgICAgICAgICAgICAgICAgZGlzdHJpYnV0b3IgPSBjb21wb25lbnQgIkRpc3RyaWJ1dG9yIgogICAgICAgICAgICAgICAgICAgICAgICByZXNlcnZlX3Byb3h5ID0gY29tcG9uZW50ICJSZXNlcnZlIFZhdWx0IFByb3h5IgoKICAgICAgICAgICAgICAgICAgICAgICAgdGF4X2FnZW50IC0+IGRpc3RyaWJ1dG9yICJkaXN0cmlidXRlIHRoZSB0cmFuc2FjdGlvbiBnYXMiCiAgICAgICAgICAgICAgICAgICAgICAgIHRheF9hZ2VudCAtPiByZXNlcnZlX3Byb3h5ICJzZW5kIGV4dHJhIGZlZSIKICAgICAgICAgICAgICAgICAgICAgICAgbWludGVyIC0+IGRpc3RyaWJ1dG9yICJtaW50IGFtb3VudCBvbiBlYWNoIGJsb2NrIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICBjb250cmFjdHMgPSBjb250YWluZXIgIlNtYXJ0IENvbnRyYWN0cyIgewogICAgICAgICAgICAgICAgICAgICAgICBmbGV4ID0gY29tcG9uZW50ICJGbGV4IgogICAgICAgICAgICAgICAgICAgICAgICBwcmljZV9vcmFjbGUgPSBjb21wb25lbnQgIk1hcmtldCBQcmljZSBPcmFjbGUiCiAgICAgICAgICAgICAgICAgICAgICAgIHRpbWVyID0gY29tcG9uZW50ICJUaW1lciIKICAgICAgICAgICAgICAgICAgICAgICAgcmVzZXJ2ZV92YXVsdCA9IGNvbXBvbmVudCAiUmVzZXJ2ZSBWYXVsdCIKICAgICAgICAgICAgICAgICAgICAgICAgbG9hbnNfdmF1bHQgPSBjb21wb25lbnQgIkxvYW5zIFZhdWx0IgogICAgICAgICAgICAgICAgICAgICAgICBzd2FwID0gY29tcG9uZW50ICJTd2FwIEdhdGV3YXkiCiAgICAgICAgICAgICAgICAgICAgICAgIHRpbWVyIC0+IGZsZXggInRpbWUgdXBkYXRlcyIKICAgICAgICAgICAgICAgICAgICAgICAgcHJpY2Vfb3JhY2xlIC0+IGZsZXggInByaWNlIHVwZGF0ZXMiCiAgICAgICAgICAgICAgICAgICAgICAgIGZsZXggLT4gbG9hbnNfdmF1bHQgInJlcXVlc3QgYW1vdW50IgogICAgICAgICAgICAgICAgICAgICAgICBmbGV4IC0+IHJlc2VydmVfdmF1bHQgImZvcndhcmQgcGF5bWVudHMiCiAgICAgICAgICAgICAgICAgICAgICAgIGxvYW5zX3ZhdWx0IC0+IHN3YXAgImV4Y2hhbmdlIgogICAgICAgICAgICAgICAgICAgICAgICByZXNlcnZlX3ZhdWx0IC0+IHN3YXAgImV4Y2hhbmdlIgogICAgICAgICAgICAgICAgICAgICAgICByZXNlcnZlX3ZhdWx0IC0+IGxvYW5zX3ZhdWx0ICJyZWJhbGFuY2UiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIGNvc21vc2FwcCAtPiBjb250cmFjdHMgIkV4ZWN1dGUgVHJ4IG1lc3NhZ2VzIgogICAgICAgICAgICAgICAgICAgIGNvbnRyYWN0cyAtPiBjb3Ntb3NhcHAgIlN0b3JlIFN0YXRlIgogICAgICAgICAgICAgICAgICAgIGNvbnRyYWN0cyAtPiBjb3Ntb3NhcHAgIkV4ZWN1dGUgVHJ4IG1lc3NhZ2VzIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgYXBwc2VydmVyID0gY29udGFpbmVyICJBcHBsaWNhdGlvbiBTZXJ2ZXIiIHsKICAgICAgICAgICAgICAgICAgICBhcGlfZW5kcG9pbnQgPSBjb21wb25lbnQgIkFQSSBFbmRwb2ludCIKCiAgICAgICAgICAgICAgICAgICAgLT4gY29zbW9zYXBwICJTb3VyY2UgRXZlbnRzIgogICAgICAgICAgICAgICAgICAgIC0+IGNvc21vc2FwcCAiRm9yd2FyZCBRdWVyaWVzJlRyYW5zYWN0aW9ucyIKICAgICAgICAgICAgICAgIH0KCiAgICAgICAgICAgICAgICB3ZWJhcHAgPSBjb250YWluZXIgIldlYiBBcHAiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiU3RhdGljIGNvbnRlbnQgYW5kIGNsaWVudC1zaWRlIHJlbmRlcmVkIGFwcGxpY2F0aW9uIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIlR5cGVTY3JpcHQsIFJlYWN0IgogICAgICAgICAgICAgICAgICAgIC0+IGFwcHNlcnZlciAiUXVlcmllcywgVHJhbnNhY3Rpb25zIgogICAgICAgICAgICAgICAgfQoKICAgICAgICAgICAgICAgIG9yYWNsZV9vcGVyYXRvciA9IGNvbnRhaW5lciAiT3JhY2xlIE9wZXJhdG9yIiB7CiAgICAgICAgICAgICAgICAgICAgbWFya2V0X2RhdGFfZmVlZGVyID0gY29tcG9uZW50ICJNYXJrZXQgRGF0YSBGZWVkZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAtPiBhcGlfZW5kcG9pbnQgIlByaWNlIHVwZGF0ZXMiCiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICBpYmMgPSBzb2Z0d2FyZVN5c3RlbSAiQ29zbW9zIElCQyBSZWxheSIKCiAgICAgICAgICAgIGliYyAtPiBub2x1cyAiUmVsYXlzLWluIgogICAgICAgICAgICBub2x1cyAtPiBpYmMgIlJlbGF5cy1vdXQiCgogICAgICAgICAgICBmYXVjZXQgPSBzb2Z0d2FyZVN5c3RlbSAiRmF1Y2V0IiB7CiAgICAgICAgICAgICAgICAtPiBhcHBzZXJ2ZXIgIlNlbmQgdHgiCiAgICAgICAgICAgICAgICBmYXVjZXRCYWNrZW5kID0gY29udGFpbmVyICJGYXVjZXQgQmFja2VuZCIgewogICAgICAgICAgICAgICAgICAgIGRlc2NyaXB0aW9uICJBIGZhdWNldCBmb3IgQ29zbW9zLVNESyBhcHBzIgogICAgICAgICAgICAgICAgICAgIHRlY2hub2xvZ3kgIk5vbHVzIENMSSIKICAgICAgICAgICAgICAgICAgICB1cmwgImh0dHBzOi8vZ2l0aHViLmNvbS90ZW5kZXJtaW50L2ZhdWNldCIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZhdWNldFVJID0gY29udGFpbmVyICJGYXVjZXQgVUkiIHsKICAgICAgICAgICAgICAgICAgICBkZXNjcmlwdGlvbiAiQSBzaW5nbGUgcGFnZSBhcHAiCiAgICAgICAgICAgICAgICAgICAgdGVjaG5vbG9neSAiTm9kZUpTIgogICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cHM6Ly9naXRodWIuY29tL3NjcnRsYWJzL3Rlc3RuZXQtZmF1Y2V0IgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CgogICAgICAgICAgICBhZG1pbiA9IHBlcnNvbiAiQWRtaW4iIHsKICAgICAgICAgICAgICAgIC0+IHdlYmFwcCAiVXNlcyIKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgbWFya2V0X2RhdGFfYWdncmVnYXRvciA9IHNvZnR3YXJlU3lzdGVtICJNYXJrZXQgRGF0YSBBZ2dyZWdhdG9yIiB7CiAgICAgICAgfQoKICAgICAgICBkZXBsb3ltZW50RW52aXJvbm1lbnQgZGV2IHsKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgTm9sdXNAQVdTICJkZXNjcmlwdGlvbiIgIkFXUyIgewogICAgICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgV29ya2VyICJkZXNjcmlwdGlvbiIgIkFXUyBFQzIgZGV2LW5ldHdvcmstd29ya2VyIiB7CiAgICAgICAgICAgICAgICAgICAgdmFsaWRhdG9ySW5zdGFuY2VzID0gZGVwbG95bWVudE5vZGUgIlZhbGlkYXRvciBOb2RlIiAiIiAibm9sdXNkIiAiIiAzIHsKICAgICAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgY29zbW9zYXBwIHt9CiAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgd2ViYXBwSG9zdCA9IGRlcGxveW1lbnROb2RlICJXZWJBcHAgSG9zdGluZyIgIiIgIkFXUyBTMyBhcHAtZGV2Lm5vbHVzLmlvIiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2Ugd2ViYXBwIHt9CiAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwczovL3MzLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tOjQ0My9hcHAtZGV2Lm5vbHVzLmlvIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgZmF1Y2V0Tm9kZSA9IGRlcGxveW1lbnROb2RlICJGYXVjZXQiICIiICJBV1MgRUMyIEZhdWNldCIgewogICAgICAgICAgICAgICAgICAgIGZhdWNldEJhY2tlbmROb2RlID0gZGVwbG95bWVudE5vZGUgIkZhdWNldCBCYWNrZW5kIiAiIiAiZmF1Y2V0IEpTT04gc2VydmVyIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGZhdWNldEJhY2tlbmQge30KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgZmF1Y2V0VUlOb2RlID0gZGVwbG95bWVudE5vZGUgIkZhdWNldCBVSSIgIiIgIm5vZGVKUyBzZXJ2ZXIiIHsKICAgICAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZmF1Y2V0VUkge30KICAgICAgICAgICAgICAgICAgICAgICAgLT4gZmF1Y2V0QmFja2VuZE5vZGUgIlJlcXVlc3QgdGVzdCB0b2tlbnMiIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cDovLzAuMC4wLjA6ODAwMCIKICAgICAgICAgICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIHJldmVyc2VQcm94eUluc3RhbmNlID0gaW5mcmFzdHJ1Y3R1cmVOb2RlIHJldmVyc2VQcm94eSAiUHJveHkgdG8gdGhlIGJhY2tlbmQgc2VydmljZXMgYW5kIFRMUyB0ZXJtaW5hdGlvbiIgIkhBUHJveHkiIHsKICAgICAgICAgICAgICAgICAgICAtPiBmYXVjZXRVSU5vZGUgIlBsYWluIEpTT04gb3ZlciBIVFRQIiB7CiAgICAgICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cDovLzAuMC4wLjA6ODA4MCIKICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAgICAgLT4gdmFsaWRhdG9ySW5zdGFuY2VzICJQbGFpbiBKU09OIG92ZXIgSFRUUCIgewogICAgICAgICAgICAgICAgICAgICAgICBwcm9wZXJ0aWVzIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHJwYyAiaHR0cDovLzAuMC4wLjA6MjY2MTIsIDoyNjYxNywgOjI2NjIyIgogICAgICAgICAgICAgICAgICAgICAgICAgICAgYXBpICJodHRwOi8vMC4wLjAuMDoyNjYxNCwgOjI2NjE5LCA6MjY2MjQiCiAgICAgICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBjZG4gPSBpbmZyYXN0cnVjdHVyZU5vZGUgQ0ROICJDb250ZW50IGRlbGl2ZXJ5IGZvciBBV1MgUzMgYnVja2V0cywgY2FjaGluZyBhbmQgcHJvdGVjdGlvbiIgIkNsb3VkRnJvbnQiIHsKICAgICAgICAgICAgICAgICAgICAtPiB3ZWJhcHBIb3N0ICJMb2FkIE5vbHVzIFdlYiBBcHAiIHsKICAgICAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwczovL3MzLmV1LXdlc3QtMS5hbWF6b25hd3MuY29tOjQ0My9hcHAtZGV2Lm5vbHVzLmlvIgogICAgICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGZhdWNldEJhY2tlbmROb2RlIC0+IHJldmVyc2VQcm94eUluc3RhbmNlICJzZW5kIHR4IiB7CiAgICAgICAgICAgICAgICAgICAgdXJsICJodHRwczovL25ldC1kZXYubm9sdXMuaW86MjY2MTIiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDbG91ZEZsYXJlIiB7CiAgICAgICAgICAgICAgICBpbmZyYXN0cnVjdHVyZU5vZGUgRE5TICJEb21haW4gTmFtZSBSZXNvbHV0aW9uIG9mICoubm9sdXMuaW8gdG8gQVdTIEVDMiBwdWJsaWMgSVBzIiAiQ2xvdWRGbGFyZSIge30KICAgICAgICAgICAgICAgIGNsb3VkRmxhcmVQcm94eSA9IGluZnJhc3RydWN0dXJlTm9kZSBQcm94eSAiSFRUUChTKSBQcm94eSB3aXRoIERET1MgcHJvdGVjdGlvbiIgIkNsb3VkRmxhcmUiIHt9CiAgICAgICAgICAgIH0KCiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDdXN0b21lcidzIGRldmljZSIgIiIgIkRlc2t0b3AsIGxhcHRvcCBvdCBtb2JpbGUiIHsKICAgICAgICAgICAgICAgIGNsaWVudEJyb3dzZXIgPSBkZXBsb3ltZW50Tm9kZSAiV2ViIEJyb3dzZXIiICIiICJDaHJvbWUsIEZpcmVmb3gsIFNhZmFyaSIgewogICAgICAgICAgICAgICAgICAgIHdlYmFwcEluc3RhbmNlID0gY29udGFpbmVySW5zdGFuY2Ugd2ViYXBwIHt9CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgZmF1Y2V0VUkge30KICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIGNsaWVudEJyb3dzZXIgLT4gY2RuICJXZWItYXBwIEhvc3RpbmciICJMb2FkIE5vbHVzIFdlYiBBcHAiIHsKICAgICAgICAgICAgICAgICAgICB1cmwgImh0dHBzOi8vYXBwLWRldi5ub2x1cy5pbzo0NDMiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBjbGllbnRCcm93c2VyIC0+IHJldmVyc2VQcm94eUluc3RhbmNlICJKU09OIFF1ZXJpZXMgYW5kIHRyYW5zYWN0aW9ucyB0byBIVFRQUyBycGMmYXBpIGVuZHBvaW50cyIgewogICAgICAgICAgICAgICAgICAgIHByb3BlcnRpZXMgewogICAgICAgICAgICAgICAgICAgICAgICBycGMgImh0dHBzOi8vbmV0LWRldi5ub2x1cy5pbzoyNjYxMiwgOjI2NjE3LCA6MjY2MjIiCiAgICAgICAgICAgICAgICAgICAgICAgIGFwaSAiaHR0cHM6Ly9uZXQtZGV2Lm5vbHVzLmlvOjI2NjE0LCA6MjY2MTksIDoyNjYyNCIKICAgICAgICAgICAgICAgICAgICB9ICAgCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICBjbGllbnRCcm93c2VyIC0+IHJldmVyc2VQcm94eUluc3RhbmNlICJMb2FkIEZhdWNldCBhcHAgYW5kIHNlbmQgSlNPTiB0ZXN0IHRva2VucyByZXF1ZXN0cyIgewogICAgICAgICAgICAgICAgICAgIHVybCAiaHR0cHM6Ly9mYXVjZXQtZGV2Lm5vbHVzLmlvOjQ0MyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgIH0KICAgICAgICBtYXJrZXRfZGF0YV9mZWVkZXIgLT4gbWFya2V0X2RhdGFfYWdncmVnYXRvciAiRmV0Y2ggRGF0YSIKCiAgICAgICAgdXNlciAtPiB3ZWJhcHAgIlVzZXMiCiAgICAgICAgdXNlciAtPiBmYXVjZXQgIlJlcXVlc3QgVGVzdCBDb2lucyIKICAgIH0KCiAgICB2aWV3cyB7CiAgICAgICAgc3lzdGVtQ29udGV4dCBub2x1cyB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgIH0KCiAgICAgICAgY29udGFpbmVyIG5vbHVzIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgY29zbW9zYXBwIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgY29udHJhY3RzIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBjb21wb25lbnQgb3JhY2xlX29wZXJhdG9yIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvc21vc2FwcCBmZWVfaGFuZGxlciB7CiAgICAgICAgICAgIHRpdGxlICJUYXggJiBJbmZsYXRpb24gZGlzdHJpYnV0aW9uIgoKICAgICAgICAgICAgdXNlciAtPiB0YXhfYWdlbnQgInNlbmQgdHJhbnNhY3Rpb24iCiAgICAgICAgICAgIHRheF9hZ2VudCAtPiByZXNlcnZlX3Byb3h5ICJzZW5kIGV4dHJhIGZlZSIKICAgICAgICAgICAgcmVzZXJ2ZV9wcm94eSAtPiByZXNlcnZlX3ZhdWx0ICJzZW5kIGV4dHJhIGZlZSIKICAgICAgICAgICAgdGF4X2FnZW50IC0+IGRpc3RyaWJ1dG9yICJzZW5kIHJlbWFpbmVkIGdhcyIKICAgICAgICAgICAgbWludGVyIC0+IGRpc3RyaWJ1dG9yICJzZW5kIG5ld2x5IG1pbnRlZCBjb2lucyIKICAgICAgICAgICAgZGlzdHJpYnV0b3IgLT4gZGlzdHJpYnV0b3IgImRpc3RyaWJ1dGUgdG8gdGhlIGRlbGVnYXRvcnMiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyBvcmFjbGVfbXNncyB7CiAgICAgICAgICAgIHRpdGxlICJQcmljZSBGZWVkcyIKCiAgICAgICAgICAgIGFkbWluIC0+IHByaWNlX29yYWNsZSAibWFuYWdlIHN1cHBvcnRlZCBwcmljZSBwYWlycyIKICAgICAgICAgICAgYWRtaW4gLT4gcHJpY2Vfb3JhY2xlICJtYW5hZ2Ugd2hpdGVsaXN0ZWQgb3BlcmF0b3JzIgoKICAgICAgICAgICAgbWFya2V0X2RhdGFfZmVlZGVyIC0+IHByaWNlX29yYWNsZSAicmVhZCBjdXJyZW5jeSBwYWlycyIKICAgICAgICAgICAgbWFya2V0X2RhdGFfZmVlZGVyIC0+IG1hcmtldF9kYXRhX2FnZ3JlZ2F0b3IgInBvbGwgb2JzZXJ2YXRpb25zIgogICAgICAgICAgICBtYXJrZXRfZGF0YV9mZWVkZXIgLT4gcHJpY2Vfb3JhY2xlICJzZW5kIG9ic2VydmF0aW9ucyIKICAgICAgICAgICAgcHJpY2Vfb3JhY2xlIC0+IHByaWNlX29yYWNsZSAibWF0Y2ggbXNnIHNlbmRlciBhZGRyZXNzIHRvIHdoaXRlbGlzdCIKICAgICAgICAgICAgcHJpY2Vfb3JhY2xlIC0+IHByaWNlX29yYWNsZSAidXBkYXRlIGEgcHJpY2UgcGFpciB3aGVuIGFnZ3JlZ2F0ZWQgb2JzZXJ2YXRpb25zIHBhc3MgJSBidXQgbm90IGxhdGVyIHRoYW4gYSBkZWx0YSB0IgogICAgICAgICAgICBwcmljZV9vcmFjbGUgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyAiY2FzZTAiICJhbGwiIHsKICAgICAgICAgICAgdGl0bGUgIkZsZXggc3VjY2Vzc2Z1bCBjbG9zZSIKICAgICAgICAgICAgdXNlciAtPiBmbGV4ICJzaWduIGNvbnRyYWN0KEE6IGFtb3VudCwgRDogZG93bi1wYXltZW50KSAmJiBkZXBvc2l0IGRvd24tcGF5bWVudCBEIgogICAgICAgICAgICBmbGV4IC0+IHByaWNlX29yYWNsZSAiZ2V0IGN1cnJlbmN5IHByaWNlIgogICAgICAgICAgICBmbGV4IC0+IGxvYW5zX3ZhdWx0ICJyZXF1ZXN0IGxvYW4gKEEtRCkiCiAgICAgICAgICAgIGxvYW5zX3ZhdWx0IC0+IGZsZXggInNlbmQgYW1vdW50IChBLUQpIgogICAgICAgICAgICBwcmljZV9vcmFjbGUgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgICAgIHRpbWVyIC0+IGZsZXggInB1c2ggdGltZSB1cGRhdGUiCiAgICAgICAgICAgIHVzZXIgLT4gZmxleCAicmVwYXkgb25lIG9yIG1vcmUgdGltZXMgdW50aWwgcGF5LW9mZiB0aGUgdG90YWwgb2YgKEEtRCtJKSIKICAgICAgICAgICAgZmxleCAtPiByZXNlcnZlX3ZhdWx0ICJmb3J3YXJkIHBheW1lbnRzIHRvdGFsIChBLUQrSSkiCiAgICAgICAgICAgIGZsZXggLT4gdXNlciAidHJhbnNmZXIgb3duZXJzaGlwIG9mIEEiCiAgICAgICAgfQoKICAgICAgICBkeW5hbWljIGNvbnRyYWN0cyAiY2FzZTEiICJGbGV4IGxpcXVpZGF0aW9uIiB7CiAgICAgICAgICAgIHRpdGxlICJGbGV4IGxpcXVpZGF0aW9uIgogICAgICAgICAgICBwcmljZV9vcmFjbGUgLT4gZmxleCAicHVzaCBwcmljZSB1cGRhdGUiCiAgICAgICAgICAgIHRpbWVyIC0+IGZsZXggInB1c2ggdGltZSB1cGRhdGUiCiAgICAgICAgICAgIGZsZXggLT4gcmVzZXJ2ZV92YXVsdCAic2VuZCB0aGUgdG90YWwgYW1vdW50IEEiCiAgICAgICAgICAgIGF1dG9sYXlvdXQKICAgICAgICB9CgogICAgICAgIGRlcGxveW1lbnQgKiBkZXYgIm5vbHVzLWRldi1kZXBsb3ltZW50IiAiTm9sdXMgRGV2ZWxvcG1lbnQgRW52aXJvbm1lbnQiIHsKICAgICAgICAgICAgdGl0bGUgIk5vbHVzIERldmVsb3BtZW50IgogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICB9CiAgICAgICAgdGhlbWUgZGVmYXVsdAogICAgfQogICAgCn0K"
   },
   "configuration" : { },
   "model" : {
@@ -18,16 +18,10 @@
       "tags" : "Element,Person",
       "name" : "User",
       "relationships" : [ {
-        "id" : "87",
+        "id" : "84",
         "tags" : "Relationship",
         "sourceId" : "1",
-        "destinationId" : "3",
-        "description" : "send transaction"
-      }, {
-        "id" : "83",
-        "tags" : "Relationship",
-        "sourceId" : "1",
-        "destinationId" : "32",
+        "destinationId" : "2",
         "description" : "Uses"
       }, {
         "id" : "85",
@@ -42,23 +36,29 @@
         "destinationId" : "4",
         "description" : "send transaction"
       }, {
-        "id" : "100",
-        "tags" : "Relationship",
-        "sourceId" : "1",
-        "destinationId" : "11",
-        "description" : "sign contract(A: amount, D: down-payment) && deposit down-payment D"
-      }, {
         "id" : "99",
         "tags" : "Relationship",
         "sourceId" : "1",
         "destinationId" : "12",
         "description" : "sign contract(A: amount, D: down-payment) && deposit down-payment D"
       }, {
-        "id" : "84",
+        "id" : "83",
         "tags" : "Relationship",
         "sourceId" : "1",
-        "destinationId" : "2",
+        "destinationId" : "32",
         "description" : "Uses"
+      }, {
+        "id" : "87",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "3",
+        "description" : "send transaction"
+      }, {
+        "id" : "100",
+        "tags" : "Relationship",
+        "sourceId" : "1",
+        "destinationId" : "11",
+        "description" : "sign contract(A: amount, D: down-payment) && deposit down-payment D"
       } ],
       "location" : "External"
     }, {
@@ -72,6 +72,12 @@
         "destinationId" : "32",
         "description" : "Uses"
       }, {
+        "id" : "92",
+        "tags" : "Relationship",
+        "sourceId" : "48",
+        "destinationId" : "13",
+        "description" : "manage supported price pairs"
+      }, {
         "id" : "93",
         "tags" : "Relationship",
         "sourceId" : "48",
@@ -83,12 +89,6 @@
         "sourceId" : "48",
         "destinationId" : "2",
         "description" : "Uses"
-      }, {
-        "id" : "92",
-        "tags" : "Relationship",
-        "sourceId" : "48",
-        "destinationId" : "13",
-        "description" : "manage supported price pairs"
       } ],
       "location" : "Internal"
     } ],
@@ -109,38 +109,239 @@
       "tags" : "Element,Software System",
       "name" : "Nolus",
       "relationships" : [ {
-        "id" : "82",
-        "tags" : "Relationship",
-        "sourceId" : "2",
-        "destinationId" : "51",
-        "description" : "Fetch Data"
-      }, {
         "id" : "42",
         "tags" : "Relationship",
         "sourceId" : "2",
         "destinationId" : "40",
         "description" : "Relays-out"
+      }, {
+        "id" : "82",
+        "tags" : "Relationship",
+        "sourceId" : "2",
+        "destinationId" : "51",
+        "description" : "Fetch Data"
       } ],
       "location" : "Internal",
       "containers" : [ {
+        "id" : "28",
+        "tags" : "Element,Container",
+        "name" : "Application Server",
+        "relationships" : [ {
+          "id" : "30",
+          "tags" : "Relationship",
+          "sourceId" : "28",
+          "destinationId" : "3",
+          "description" : "Source Events"
+        }, {
+          "id" : "31",
+          "tags" : "Relationship",
+          "sourceId" : "28",
+          "destinationId" : "3",
+          "description" : "Forward Queries&Transactions"
+        } ],
+        "components" : [ {
+          "id" : "29",
+          "tags" : "Element,Component",
+          "name" : "API Endpoint",
+          "size" : 0
+        } ]
+      }, {
+        "id" : "34",
+        "tags" : "Element,Container",
+        "name" : "Oracle Operator",
+        "relationships" : [ {
+          "id" : "39",
+          "tags" : "Relationship",
+          "sourceId" : "34",
+          "destinationId" : "28",
+          "description" : "Price updates"
+        }, {
+          "id" : "97",
+          "tags" : "Relationship",
+          "sourceId" : "34",
+          "destinationId" : "11",
+          "description" : "read currency pairs"
+        }, {
+          "id" : "38",
+          "tags" : "Relationship",
+          "sourceId" : "34",
+          "destinationId" : "29",
+          "description" : "Price updates"
+        }, {
+          "id" : "81",
+          "tags" : "Relationship",
+          "sourceId" : "34",
+          "destinationId" : "51",
+          "description" : "Fetch Data"
+        }, {
+          "id" : "96",
+          "tags" : "Relationship",
+          "sourceId" : "34",
+          "destinationId" : "13",
+          "description" : "read currency pairs"
+        } ],
+        "components" : [ {
+          "id" : "35",
+          "tags" : "Element,Component",
+          "name" : "Market Data Feeder",
+          "relationships" : [ {
+            "id" : "37",
+            "tags" : "Relationship",
+            "sourceId" : "35",
+            "destinationId" : "28",
+            "description" : "Price updates"
+          }, {
+            "id" : "36",
+            "tags" : "Relationship",
+            "sourceId" : "35",
+            "destinationId" : "29",
+            "description" : "Price updates"
+          }, {
+            "id" : "94",
+            "tags" : "Relationship",
+            "sourceId" : "35",
+            "destinationId" : "13",
+            "description" : "read currency pairs"
+          }, {
+            "id" : "95",
+            "tags" : "Relationship",
+            "sourceId" : "35",
+            "destinationId" : "11",
+            "description" : "read currency pairs"
+          }, {
+            "id" : "80",
+            "tags" : "Relationship",
+            "sourceId" : "35",
+            "destinationId" : "51",
+            "description" : "Fetch Data"
+          } ],
+          "size" : 0
+        } ]
+      }, {
+        "id" : "3",
+        "tags" : "Element,Container",
+        "name" : "Nolus Node",
+        "description" : "Tendermint PoS and Cosmos based blockchain",
+        "relationships" : [ {
+          "id" : "90",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "15",
+          "description" : "send extra fee"
+        }, {
+          "id" : "25",
+          "tags" : "Relationship",
+          "sourceId" : "3",
+          "destinationId" : "11",
+          "description" : "Execute Trx messages"
+        } ],
+        "group" : "Validator/Sentry Node",
+        "technology" : "Cosmos SDK Application",
+        "components" : [ {
+          "id" : "7",
+          "tags" : "Element,Component",
+          "name" : "Reserve Vault Proxy",
+          "relationships" : [ {
+            "id" : "88",
+            "tags" : "Relationship",
+            "sourceId" : "7",
+            "destinationId" : "15",
+            "description" : "send extra fee"
+          }, {
+            "id" : "89",
+            "tags" : "Relationship",
+            "sourceId" : "7",
+            "destinationId" : "11",
+            "description" : "send extra fee"
+          } ],
+          "size" : 0
+        }, {
+          "id" : "5",
+          "tags" : "Element,Component",
+          "name" : "Minter",
+          "relationships" : [ {
+            "id" : "10",
+            "tags" : "Relationship",
+            "sourceId" : "5",
+            "destinationId" : "6",
+            "description" : "mint amount on each block"
+          } ],
+          "size" : 0
+        }, {
+          "id" : "4",
+          "tags" : "Element,Component",
+          "name" : "Tax Agent",
+          "relationships" : [ {
+            "id" : "8",
+            "tags" : "Relationship",
+            "sourceId" : "4",
+            "destinationId" : "6",
+            "description" : "distribute the transaction gas"
+          }, {
+            "id" : "9",
+            "tags" : "Relationship",
+            "sourceId" : "4",
+            "destinationId" : "7",
+            "description" : "send extra fee"
+          } ],
+          "size" : 0
+        }, {
+          "id" : "6",
+          "tags" : "Element,Component",
+          "name" : "Distributor",
+          "relationships" : [ {
+            "id" : "91",
+            "tags" : "Relationship",
+            "sourceId" : "6",
+            "destinationId" : "6",
+            "description" : "distribute to the delegators"
+          } ],
+          "size" : 0
+        } ]
+      }, {
+        "id" : "32",
+        "tags" : "Element,Container",
+        "name" : "Web App",
+        "description" : "Static content and client-side rendered application",
+        "relationships" : [ {
+          "id" : "33",
+          "tags" : "Relationship",
+          "sourceId" : "32",
+          "destinationId" : "28",
+          "description" : "Queries, Transactions"
+        } ],
+        "technology" : "TypeScript, React"
+      }, {
         "id" : "11",
         "tags" : "Element,Container",
         "name" : "Smart Contracts",
         "relationships" : [ {
-          "id" : "27",
-          "tags" : "Relationship",
-          "sourceId" : "11",
-          "destinationId" : "3",
-          "description" : "Execute Trx messages"
-        }, {
           "id" : "26",
           "tags" : "Relationship",
           "sourceId" : "11",
           "destinationId" : "3",
           "description" : "Store State"
+        }, {
+          "id" : "27",
+          "tags" : "Relationship",
+          "sourceId" : "11",
+          "destinationId" : "3",
+          "description" : "Execute Trx messages"
         } ],
         "group" : "Validator/Sentry Node",
         "components" : [ {
+          "id" : "16",
+          "tags" : "Element,Component",
+          "name" : "Loans Vault",
+          "relationships" : [ {
+            "id" : "22",
+            "tags" : "Relationship",
+            "sourceId" : "16",
+            "destinationId" : "17",
+            "description" : "exchange"
+          } ],
+          "size" : 0
+        }, {
           "id" : "15",
           "tags" : "Element,Component",
           "name" : "Reserve Vault",
@@ -159,21 +360,27 @@
           } ],
           "size" : 0
         }, {
-          "id" : "16",
+          "id" : "12",
           "tags" : "Element,Component",
-          "name" : "Loans Vault",
+          "name" : "Flex",
           "relationships" : [ {
-            "id" : "22",
+            "id" : "20",
             "tags" : "Relationship",
-            "sourceId" : "16",
-            "destinationId" : "17",
-            "description" : "exchange"
+            "sourceId" : "12",
+            "destinationId" : "16",
+            "description" : "request amount"
+          }, {
+            "id" : "21",
+            "tags" : "Relationship",
+            "sourceId" : "12",
+            "destinationId" : "15",
+            "description" : "forward payments"
           } ],
           "size" : 0
         }, {
           "id" : "13",
           "tags" : "Element,Component",
-          "name" : "Price Feed",
+          "name" : "Market Price Oracle",
           "relationships" : [ {
             "id" : "98",
             "tags" : "Relationship",
@@ -201,216 +408,9 @@
           } ],
           "size" : 0
         }, {
-          "id" : "12",
-          "tags" : "Element,Component",
-          "name" : "Flex",
-          "relationships" : [ {
-            "id" : "21",
-            "tags" : "Relationship",
-            "sourceId" : "12",
-            "destinationId" : "15",
-            "description" : "forward payments"
-          }, {
-            "id" : "20",
-            "tags" : "Relationship",
-            "sourceId" : "12",
-            "destinationId" : "16",
-            "description" : "request amount"
-          } ],
-          "size" : 0
-        }, {
           "id" : "17",
           "tags" : "Element,Component",
           "name" : "Swap Gateway",
-          "size" : 0
-        } ]
-      }, {
-        "id" : "34",
-        "tags" : "Element,Container",
-        "name" : "Oracle Operator",
-        "relationships" : [ {
-          "id" : "39",
-          "tags" : "Relationship",
-          "sourceId" : "34",
-          "destinationId" : "28",
-          "description" : "Price updates"
-        }, {
-          "id" : "97",
-          "tags" : "Relationship",
-          "sourceId" : "34",
-          "destinationId" : "11",
-          "description" : "send observations"
-        }, {
-          "id" : "81",
-          "tags" : "Relationship",
-          "sourceId" : "34",
-          "destinationId" : "51",
-          "description" : "Fetch Data"
-        }, {
-          "id" : "96",
-          "tags" : "Relationship",
-          "sourceId" : "34",
-          "destinationId" : "13",
-          "description" : "send observations"
-        }, {
-          "id" : "38",
-          "tags" : "Relationship",
-          "sourceId" : "34",
-          "destinationId" : "29",
-          "description" : "Price updates"
-        } ],
-        "components" : [ {
-          "id" : "35",
-          "tags" : "Element,Component",
-          "name" : "Market Data Feeder",
-          "relationships" : [ {
-            "id" : "80",
-            "tags" : "Relationship",
-            "sourceId" : "35",
-            "destinationId" : "51",
-            "description" : "Fetch Data"
-          }, {
-            "id" : "36",
-            "tags" : "Relationship",
-            "sourceId" : "35",
-            "destinationId" : "29",
-            "description" : "Price updates"
-          }, {
-            "id" : "95",
-            "tags" : "Relationship",
-            "sourceId" : "35",
-            "destinationId" : "11",
-            "description" : "send observations"
-          }, {
-            "id" : "37",
-            "tags" : "Relationship",
-            "sourceId" : "35",
-            "destinationId" : "28",
-            "description" : "Price updates"
-          }, {
-            "id" : "94",
-            "tags" : "Relationship",
-            "sourceId" : "35",
-            "destinationId" : "13",
-            "description" : "send observations"
-          } ],
-          "size" : 0
-        } ]
-      }, {
-        "id" : "32",
-        "tags" : "Element,Container",
-        "name" : "Web App",
-        "description" : "Static content and client-side rendered application",
-        "relationships" : [ {
-          "id" : "33",
-          "tags" : "Relationship",
-          "sourceId" : "32",
-          "destinationId" : "28",
-          "description" : "Queries, Transactions"
-        } ],
-        "technology" : "TypeScript, React"
-      }, {
-        "id" : "3",
-        "tags" : "Element,Container",
-        "name" : "Nolus Node",
-        "description" : "Tendermint PoS and Cosmos based blockchain",
-        "relationships" : [ {
-          "id" : "25",
-          "tags" : "Relationship",
-          "sourceId" : "3",
-          "destinationId" : "11",
-          "description" : "Execute Trx messages"
-        }, {
-          "id" : "90",
-          "tags" : "Relationship",
-          "sourceId" : "3",
-          "destinationId" : "15",
-          "description" : "send extra fee"
-        } ],
-        "group" : "Validator/Sentry Node",
-        "technology" : "Cosmos SDK Application",
-        "components" : [ {
-          "id" : "5",
-          "tags" : "Element,Component",
-          "name" : "Minter",
-          "relationships" : [ {
-            "id" : "10",
-            "tags" : "Relationship",
-            "sourceId" : "5",
-            "destinationId" : "6",
-            "description" : "mint amount on each block"
-          } ],
-          "size" : 0
-        }, {
-          "id" : "6",
-          "tags" : "Element,Component",
-          "name" : "Distributor",
-          "relationships" : [ {
-            "id" : "91",
-            "tags" : "Relationship",
-            "sourceId" : "6",
-            "destinationId" : "6",
-            "description" : "distribute to the delegators"
-          } ],
-          "size" : 0
-        }, {
-          "id" : "7",
-          "tags" : "Element,Component",
-          "name" : "Reserve Vault Proxy",
-          "relationships" : [ {
-            "id" : "88",
-            "tags" : "Relationship",
-            "sourceId" : "7",
-            "destinationId" : "15",
-            "description" : "send extra fee"
-          }, {
-            "id" : "89",
-            "tags" : "Relationship",
-            "sourceId" : "7",
-            "destinationId" : "11",
-            "description" : "send extra fee"
-          } ],
-          "size" : 0
-        }, {
-          "id" : "4",
-          "tags" : "Element,Component",
-          "name" : "Tax Agent",
-          "relationships" : [ {
-            "id" : "9",
-            "tags" : "Relationship",
-            "sourceId" : "4",
-            "destinationId" : "7",
-            "description" : "send extra fee"
-          }, {
-            "id" : "8",
-            "tags" : "Relationship",
-            "sourceId" : "4",
-            "destinationId" : "6",
-            "description" : "distribute the transaction gas"
-          } ],
-          "size" : 0
-        } ]
-      }, {
-        "id" : "28",
-        "tags" : "Element,Container",
-        "name" : "Application Server",
-        "relationships" : [ {
-          "id" : "30",
-          "tags" : "Relationship",
-          "sourceId" : "28",
-          "destinationId" : "3",
-          "description" : "Source Events"
-        }, {
-          "id" : "31",
-          "tags" : "Relationship",
-          "sourceId" : "28",
-          "destinationId" : "3",
-          "description" : "Forward Queries&Transactions"
-        } ],
-        "components" : [ {
-          "id" : "29",
-          "tags" : "Element,Component",
-          "name" : "API Endpoint",
           "size" : 0
         } ]
       } ]
@@ -454,61 +454,25 @@
       "location" : "External"
     } ],
     "deploymentNodes" : [ {
-      "id" : "73",
+      "id" : "70",
       "tags" : "Element,Deployment Node",
-      "name" : "Customer's device",
+      "name" : "CloudFlare",
       "environment" : "dev",
-      "technology" : "Desktop, laptop ot mobile",
       "instances" : 1,
-      "children" : [ {
-        "id" : "74",
-        "tags" : "Element,Deployment Node",
-        "name" : "Web Browser",
-        "relationships" : [ {
-          "id" : "78",
-          "tags" : "Relationship",
-          "properties" : {
-            "rpc" : "https://net-dev.nolus.io:26612, :26617, :26622",
-            "api" : "https://net-dev.nolus.io:26614, :26619, :26624"
-          },
-          "sourceId" : "74",
-          "destinationId" : "64",
-          "description" : "JSON Queries and transactions to HTTPS rpc&api endpoints"
-        }, {
-          "id" : "77",
-          "tags" : "Relationship",
-          "url" : "https://app-dev.nolus.io:443",
-          "sourceId" : "74",
-          "destinationId" : "67",
-          "description" : "Web-app Hosting",
-          "technology" : "Load Nolus Web App"
-        }, {
-          "id" : "79",
-          "tags" : "Relationship",
-          "url" : "https://faucet-dev.nolus.io:443",
-          "sourceId" : "74",
-          "destinationId" : "64",
-          "description" : "Load Faucet app and send JSON test tokens requests"
-        } ],
+      "infrastructureNodes" : [ {
+        "id" : "72",
+        "tags" : "Element,Infrastructure Node,{}",
+        "name" : "Proxy",
+        "description" : "HTTP(S) Proxy with DDOS protection",
         "environment" : "dev",
-        "technology" : "Chrome, Firefox, Safari",
-        "instances" : 1,
-        "containerInstances" : [ {
-          "id" : "75",
-          "tags" : "Container Instance",
-          "environment" : "dev",
-          "deploymentGroups" : [ "Default" ],
-          "instanceId" : 1,
-          "containerId" : "32"
-        }, {
-          "id" : "76",
-          "tags" : "Container Instance",
-          "url" : "https://github.com/scrtlabs/testnet-faucet",
-          "environment" : "dev",
-          "deploymentGroups" : [ "Default" ],
-          "instanceId" : 1,
-          "containerId" : "47"
-        } ]
+        "technology" : "CloudFlare"
+      }, {
+        "id" : "71",
+        "tags" : "Element,Infrastructure Node,{}",
+        "name" : "DNS",
+        "description" : "Domain Name Resolution of *.nolus.io to AWS EC2 public IPs",
+        "environment" : "dev",
+        "technology" : "CloudFlare"
       } ]
     }, {
       "id" : "52",
@@ -519,62 +483,6 @@
       "technology" : "AWS",
       "instances" : 1,
       "children" : [ {
-        "id" : "58",
-        "tags" : "Element,Deployment Node",
-        "name" : "Faucet",
-        "environment" : "dev",
-        "technology" : "AWS EC2 Faucet",
-        "instances" : 1,
-        "children" : [ {
-          "id" : "59",
-          "tags" : "Element,Deployment Node",
-          "name" : "Faucet Backend",
-          "relationships" : [ {
-            "id" : "69",
-            "tags" : "Relationship",
-            "url" : "https://net-dev.nolus.io:26612",
-            "sourceId" : "59",
-            "destinationId" : "64",
-            "description" : "send tx"
-          } ],
-          "environment" : "dev",
-          "technology" : "faucet JSON server",
-          "instances" : 1,
-          "containerInstances" : [ {
-            "id" : "60",
-            "tags" : "Container Instance",
-            "url" : "https://github.com/tendermint/faucet",
-            "environment" : "dev",
-            "deploymentGroups" : [ "Default" ],
-            "instanceId" : 1,
-            "containerId" : "46"
-          } ]
-        }, {
-          "id" : "61",
-          "tags" : "Element,Deployment Node",
-          "name" : "Faucet UI",
-          "relationships" : [ {
-            "id" : "63",
-            "tags" : "Relationship",
-            "url" : "http://0.0.0.0:8000",
-            "sourceId" : "61",
-            "destinationId" : "59",
-            "description" : "Request test tokens"
-          } ],
-          "environment" : "dev",
-          "technology" : "nodeJS server",
-          "instances" : 1,
-          "containerInstances" : [ {
-            "id" : "62",
-            "tags" : "Container Instance",
-            "url" : "https://github.com/scrtlabs/testnet-faucet",
-            "environment" : "dev",
-            "deploymentGroups" : [ "Default" ],
-            "instanceId" : 1,
-            "containerId" : "47"
-          } ]
-        } ]
-      }, {
         "id" : "56",
         "tags" : "Element,Deployment Node",
         "url" : "https://s3.eu-west-1.amazonaws.com:443/app-dev.nolus.io",
@@ -614,8 +522,89 @@
             "containerId" : "3"
           } ]
         } ]
+      }, {
+        "id" : "58",
+        "tags" : "Element,Deployment Node",
+        "name" : "Faucet",
+        "environment" : "dev",
+        "technology" : "AWS EC2 Faucet",
+        "instances" : 1,
+        "children" : [ {
+          "id" : "61",
+          "tags" : "Element,Deployment Node",
+          "name" : "Faucet UI",
+          "relationships" : [ {
+            "id" : "63",
+            "tags" : "Relationship",
+            "url" : "http://0.0.0.0:8000",
+            "sourceId" : "61",
+            "destinationId" : "59",
+            "description" : "Request test tokens"
+          } ],
+          "environment" : "dev",
+          "technology" : "nodeJS server",
+          "instances" : 1,
+          "containerInstances" : [ {
+            "id" : "62",
+            "tags" : "Container Instance",
+            "url" : "https://github.com/scrtlabs/testnet-faucet",
+            "environment" : "dev",
+            "deploymentGroups" : [ "Default" ],
+            "instanceId" : 1,
+            "containerId" : "47"
+          } ]
+        }, {
+          "id" : "59",
+          "tags" : "Element,Deployment Node",
+          "name" : "Faucet Backend",
+          "relationships" : [ {
+            "id" : "69",
+            "tags" : "Relationship",
+            "url" : "https://net-dev.nolus.io:26612",
+            "sourceId" : "59",
+            "destinationId" : "64",
+            "description" : "send tx"
+          } ],
+          "environment" : "dev",
+          "technology" : "faucet JSON server",
+          "instances" : 1,
+          "containerInstances" : [ {
+            "id" : "60",
+            "tags" : "Container Instance",
+            "url" : "https://github.com/tendermint/faucet",
+            "environment" : "dev",
+            "deploymentGroups" : [ "Default" ],
+            "instanceId" : 1,
+            "containerId" : "46"
+          } ]
+        } ]
       } ],
       "infrastructureNodes" : [ {
+        "id" : "64",
+        "tags" : "Element,Infrastructure Node",
+        "name" : "reverseProxy",
+        "description" : "Proxy to the backend services and TLS termination",
+        "relationships" : [ {
+          "id" : "65",
+          "tags" : "Relationship",
+          "url" : "http://0.0.0.0:8080",
+          "sourceId" : "64",
+          "destinationId" : "61",
+          "description" : "Plain JSON over HTTP"
+        }, {
+          "id" : "66",
+          "tags" : "Relationship",
+          "properties" : {
+            "rpc" : "http://0.0.0.0:26612, :26617, :26622",
+            "api" : "http://0.0.0.0:26614, :26619, :26624"
+          },
+          "sourceId" : "64",
+          "destinationId" : "54",
+          "description" : "Plain JSON over HTTP"
+        } ],
+        "environment" : "dev",
+        "technology" : "HAProxy"
+      }, {
         "id" : "67",
         "tags" : "Element,Infrastructure Node",
         "name" : "CDN",
@@ -630,52 +619,63 @@
         } ],
         "environment" : "dev",
         "technology" : "CloudFront"
-      }, {
-        "id" : "64",
-        "tags" : "Element,Infrastructure Node",
-        "name" : "reverseProxy",
-        "description" : "Proxy to the backend services and TLS termination",
-        "relationships" : [ {
-          "id" : "66",
-          "tags" : "Relationship",
-          "properties" : {
-            "rpc" : "http://0.0.0.0:26612, :26617, :26622",
-            "api" : "http://0.0.0.0:26614, :26619, :26624"
-          },
-          "sourceId" : "64",
-          "destinationId" : "54",
-          "description" : "Plain JSON over HTTP"
-        }, {
-          "id" : "65",
-          "tags" : "Relationship",
-          "url" : "http://0.0.0.0:8080",
-          "sourceId" : "64",
-          "destinationId" : "61",
-          "description" : "Plain JSON over HTTP"
-        } ],
-        "environment" : "dev",
-        "technology" : "HAProxy"
       } ]
     }, {
-      "id" : "70",
+      "id" : "73",
       "tags" : "Element,Deployment Node",
-      "name" : "CloudFlare",
+      "name" : "Customer's device",
       "environment" : "dev",
+      "technology" : "Desktop, laptop ot mobile",
       "instances" : 1,
-      "infrastructureNodes" : [ {
-        "id" : "71",
-        "tags" : "Element,Infrastructure Node,{}",
-        "name" : "DNS",
-        "description" : "Domain Name Resolution of *.nolus.io to AWS EC2 public IPs",
+      "children" : [ {
+        "id" : "74",
+        "tags" : "Element,Deployment Node",
+        "name" : "Web Browser",
+        "relationships" : [ {
+          "id" : "77",
+          "tags" : "Relationship",
+          "url" : "https://app-dev.nolus.io:443",
+          "sourceId" : "74",
+          "destinationId" : "67",
+          "description" : "Web-app Hosting",
+          "technology" : "Load Nolus Web App"
+        }, {
+          "id" : "78",
+          "tags" : "Relationship",
+          "properties" : {
+            "rpc" : "https://net-dev.nolus.io:26612, :26617, :26622",
+            "api" : "https://net-dev.nolus.io:26614, :26619, :26624"
+          },
+          "sourceId" : "74",
+          "destinationId" : "64",
+          "description" : "JSON Queries and transactions to HTTPS rpc&api endpoints"
+        }, {
+          "id" : "79",
+          "tags" : "Relationship",
+          "url" : "https://faucet-dev.nolus.io:443",
+          "sourceId" : "74",
+          "destinationId" : "64",
+          "description" : "Load Faucet app and send JSON test tokens requests"
+        } ],
         "environment" : "dev",
-        "technology" : "CloudFlare"
-      }, {
-        "id" : "72",
-        "tags" : "Element,Infrastructure Node,{}",
-        "name" : "Proxy",
-        "description" : "HTTP(S) Proxy with DDOS protection",
-        "environment" : "dev",
-        "technology" : "CloudFlare"
+        "technology" : "Chrome, Firefox, Safari",
+        "instances" : 1,
+        "containerInstances" : [ {
+          "id" : "75",
+          "tags" : "Container Instance",
+          "environment" : "dev",
+          "deploymentGroups" : [ "Default" ],
+          "instanceId" : 1,
+          "containerId" : "32"
+        }, {
+          "id" : "76",
+          "tags" : "Container Instance",
+          "url" : "https://github.com/scrtlabs/testnet-faucet",
+          "environment" : "dev",
+          "deploymentGroups" : [ "Default" ],
+          "instanceId" : 1,
+          "containerId" : "47"
+        } ]
       } ]
     } ]
   },
@@ -752,13 +752,13 @@
         "x" : 370,
         "y" : 855
       }, {
-        "id" : "34",
-        "x" : 950,
-        "y" : 1890
-      }, {
         "id" : "1",
         "x" : 975,
         "y" : -5
+      }, {
+        "id" : "34",
+        "x" : 950,
+        "y" : 1890
       }, {
         "id" : "3",
         "x" : 370,
@@ -776,13 +776,13 @@
         "x" : 1520,
         "y" : 2320
       }, {
-        "id" : "43",
-        "x" : 1520,
-        "y" : 470
-      }, {
         "id" : "32",
         "x" : 950,
         "y" : 855
+      }, {
+        "id" : "43",
+        "x" : 1520,
+        "y" : 470
       } ],
       "relationships" : [ {
         "id" : "83"
@@ -858,6 +858,39 @@
         "id" : "37"
       } ]
     }, {
+      "key" : "Nolus-NolusNode-Component",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "containerId" : "3",
+      "externalContainerBoundariesVisible" : true,
+      "elements" : [ {
+        "id" : "4",
+        "x" : 655,
+        "y" : 210
+      }, {
+        "id" : "5",
+        "x" : 1480,
+        "y" : 210
+      }, {
+        "id" : "6",
+        "x" : 1480,
+        "y" : 1035
+      }, {
+        "id" : "7",
+        "x" : 655,
+        "y" : 1035
+      } ],
+      "relationships" : [ {
+        "id" : "8"
+      }, {
+        "id" : "10"
+      }, {
+        "id" : "9"
+      } ]
+    }, {
       "key" : "Nolus-SmartContracts-Component",
       "dimensions" : {
         "width" : 2680,
@@ -905,130 +938,8 @@
       }, {
         "id" : "19"
       } ]
-    }, {
-      "key" : "Nolus-NolusNode-Component",
-      "paperSize" : "A5_Landscape",
-      "dimensions" : {
-        "width" : 2480,
-        "height" : 1748
-      },
-      "containerId" : "3",
-      "externalContainerBoundariesVisible" : true,
-      "elements" : [ {
-        "id" : "4",
-        "x" : 655,
-        "y" : 210
-      }, {
-        "id" : "5",
-        "x" : 1480,
-        "y" : 210
-      }, {
-        "id" : "6",
-        "x" : 1480,
-        "y" : 1035
-      }, {
-        "id" : "7",
-        "x" : 655,
-        "y" : 1035
-      } ],
-      "relationships" : [ {
-        "id" : "8"
-      }, {
-        "id" : "10"
-      }, {
-        "id" : "9"
-      } ]
     } ],
     "dynamicViews" : [ {
-      "key" : "oracle_msgs",
-      "paperSize" : "A5_Landscape",
-      "dimensions" : {
-        "width" : 2480,
-        "height" : 1748
-      },
-      "title" : "Price Feeds",
-      "elementId" : "11",
-      "externalBoundariesVisible" : true,
-      "relationships" : [ {
-        "id" : "92",
-        "description" : "manage supported price pairs",
-        "order" : "1",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 581,
-          "y" : 953
-        } ]
-      }, {
-        "id" : "92",
-        "description" : "manage whitelisted operators",
-        "order" : "2",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 743,
-          "y" : 701
-        } ]
-      }, {
-        "id" : "80",
-        "description" : "poll observations",
-        "order" : "3",
-        "response" : false
-      }, {
-        "id" : "94",
-        "description" : "send observations",
-        "order" : "4",
-        "response" : false
-      }, {
-        "id" : "98",
-        "description" : "match msg sender address to whitelist",
-        "order" : "5",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1230,
-          "y" : 630
-        }, {
-          "x" : 1565,
-          "y" : 720
-        } ]
-      }, {
-        "id" : "98",
-        "description" : "update a price pair when aggregated observations pass % but not later than a delta t",
-        "order" : "6",
-        "response" : false,
-        "vertices" : [ {
-          "x" : 1405,
-          "y" : 1520
-        }, {
-          "x" : 1015,
-          "y" : 1555
-        } ]
-      }, {
-        "id" : "19",
-        "description" : "push price update",
-        "order" : "7",
-        "response" : false
-      } ],
-      "elements" : [ {
-        "id" : "12",
-        "x" : 1695,
-        "y" : 895
-      }, {
-        "id" : "13",
-        "x" : 790,
-        "y" : 905
-      }, {
-        "id" : "35",
-        "x" : 780,
-        "y" : 35
-      }, {
-        "id" : "48",
-        "x" : 110,
-        "y" : 400
-      }, {
-        "id" : "51",
-        "x" : 1695,
-        "y" : 35
-      } ]
-    }, {
       "description" : "Flex liquidation",
       "key" : "case1",
       "automaticLayout" : {
@@ -1257,6 +1168,98 @@
         "x" : 1002,
         "y" : 1542
       } ]
+    }, {
+      "key" : "oracle_msgs",
+      "paperSize" : "A5_Landscape",
+      "dimensions" : {
+        "width" : 2480,
+        "height" : 1748
+      },
+      "title" : "Price Feeds",
+      "elementId" : "11",
+      "externalBoundariesVisible" : true,
+      "relationships" : [ {
+        "id" : "92",
+        "description" : "manage supported price pairs",
+        "order" : "1",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 581,
+          "y" : 953
+        } ]
+      }, {
+        "id" : "92",
+        "description" : "manage whitelisted operators",
+        "order" : "2",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 743,
+          "y" : 701
+        } ]
+      }, {
+        "id" : "94",
+        "description" : "read currency pairs",
+        "order" : "3",
+        "response" : false
+      }, {
+        "id" : "80",
+        "description" : "poll observations",
+        "order" : "4",
+        "response" : false
+      }, {
+        "id" : "94",
+        "description" : "send observations",
+        "order" : "5",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1159,
+          "y" : 618
+        } ]
+      }, {
+        "id" : "98",
+        "description" : "match msg sender address to whitelist",
+        "order" : "6",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1015,
+          "y" : 1205
+        } ]
+      }, {
+        "id" : "98",
+        "description" : "update a price pair when aggregated observations pass % but not later than a delta t",
+        "order" : "7",
+        "response" : false,
+        "vertices" : [ {
+          "x" : 1015,
+          "y" : 905
+        } ]
+      }, {
+        "id" : "19",
+        "description" : "push price update",
+        "order" : "8",
+        "response" : false
+      } ],
+      "elements" : [ {
+        "id" : "12",
+        "x" : 1695,
+        "y" : 895
+      }, {
+        "id" : "13",
+        "x" : 790,
+        "y" : 905
+      }, {
+        "id" : "35",
+        "x" : 780,
+        "y" : 35
+      }, {
+        "id" : "48",
+        "x" : 110,
+        "y" : 400
+      }, {
+        "id" : "51",
+        "x" : 1695,
+        "y" : 35
+      } ]
     } ],
     "deploymentViews" : [ {
       "description" : "Nolus Development Environment",
@@ -1383,7 +1386,7 @@
       "styles" : { },
       "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ],
       "terminology" : { },
-      "lastSavedView" : "Nolus-OracleOperator-Component"
+      "lastSavedView" : "oracle_msgs"
     }
   }
 }
