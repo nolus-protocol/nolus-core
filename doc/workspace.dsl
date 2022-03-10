@@ -19,13 +19,13 @@ workspace {
                         minter -> distributor "mint amount on each block"
                     }
                     contracts = container "Smart Contracts" {
-                        flex = component "Flex"
                         price_oracle = component "Market Price Oracle"
-                        timer = component "Timer"
+                        time_oracle = component "Global Time Oracle"
+                        flex = component "Flex"
                         reserve_vault = component "Reserve Vault"
                         loans_vault = component "Loans Vault"
                         swap = component "Swap Gateway"
-                        timer -> flex "time updates"
+                        time_oracle -> flex "time updates"
                         price_oracle -> flex "price updates"
                         flex -> loans_vault "request amount"
                         flex -> reserve_vault "forward payments"
@@ -210,7 +210,7 @@ workspace {
             flex -> loans_vault "request loan (A-D)"
             loans_vault -> flex "send amount (A-D)"
             price_oracle -> flex "push price update"
-            timer -> flex "push time update"
+            time_oracle -> flex "push time update"
             user -> flex "repay one or more times until pay-off the total of (A-D+I)"
             flex -> reserve_vault "forward payments total (A-D+I)"
             flex -> user "transfer ownership of A"
@@ -219,7 +219,7 @@ workspace {
         dynamic contracts "case1" "Flex liquidation" {
             title "Flex liquidation"
             price_oracle -> flex "push price update"
-            timer -> flex "push time update"
+            time_oracle -> flex "push time update"
             flex -> reserve_vault "send the total amount A"
             autolayout
         }
