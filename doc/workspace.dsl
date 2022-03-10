@@ -19,20 +19,35 @@ workspace {
                         minter -> distributor "mint amount on each block"
                     }
                     contracts = container "Smart Contracts" {
-                        price_oracle = component "Market Price Oracle"
-                        time_oracle = component "Global Time Oracle"
-                        flex = component "Flex"
-                        treasury = component "Treasury"
-                        stable_lpp = component "UST Liquidity Provider Pool"
-                        swap = component "Swap Gateway"
+                        price_oracle = component "Market Price Oracle" "Pair Prices and Alarms"
+                        time_oracle = component "Global Time Oracle" "Time and Alarms"
 
-                        time_oracle -> flex "time updates"
-                        price_oracle -> flex "price updates"
-                        flex -> stable_lpp "request amount"
-                        flex -> treasury "forward payments"
-                        stable_lpp -> swap "exchange"
-                        treasury -> swap "exchange"
-                        treasury -> stable_lpp "rebalance"
+                        borrower = component "Borrower" "Provide quotes, open new Loans"
+                        loan = component "Loan" "Instance per Loan, holds the amount in crypto"
+                        treasury = component "Treasury NLS" "Fees, swap spreads, and interest margin"
+                        stable_lpp = component "Liquidity Provider Pool UST" "UST Liquidity Pool"
+                        profit = component "Profit UST" "Collect profit and buy NLS back"
+                        deposit = component "Deposit UST" "CW20 shares"
+                        swap = component "Swap Gateway" "DEX interaction"
+
+                        borrower -> stable_lpp "quote % interest rate"
+                        borrower -> price_oracle "read pair prices"
+                        borrower -> loan "open a new loan with % interest margin"
+                        borrower -> loan "transfer the downpayment"
+                        
+                        time_oracle -> loan "time alarms"
+                        price_oracle -> loan "price alarms"
+                        loan -> stable_lpp "request loan UST"
+                        loan -> stable_lpp "repay loan UST"
+                        loan -> swap "exchange downpayment->crypto"
+                        loan -> swap "exchange LPP loan UST->crypto"
+                        loan -> swap "exchange repayment->UST"
+                        loan -> profit "swap spread, interest margin UST"
+                        time_oracle -> profit "alarms on 48 hours"
+                        profit -> swap "buy back NLS"
+                        profit -> treasury "transfer profit NLS"
+                        deposit -> stable_lpp "deposit&withdraw UST"
+                        deposit -> treasury "claim rewards"
                     }
                     cosmosapp -> contracts "Execute Trx messages"
                     contracts -> cosmosapp "Store State"
@@ -201,27 +216,27 @@ workspace {
             market_data_feeder -> price_oracle "send observations"
             price_oracle -> price_oracle "match msg sender address to whitelist"
             price_oracle -> price_oracle "update a price pair when aggregated observations pass % but not later than a delta t"
-            price_oracle -> flex "push price update"
+            price_oracle -> loan "push price alerts"
         }
 
         dynamic contracts "case0" "all" {
-            title "Flex successful close"
-            user -> flex "sign contract(A: amount, D: down-payment) && deposit down-payment D"
-            flex -> price_oracle "get currency price"
-            flex -> stable_lpp "request loan (A-D)"
-            stable_lpp -> flex "send amount (A-D)"
-            price_oracle -> flex "push price update"
-            time_oracle -> flex "push time update"
-            user -> flex "repay one or more times until pay-off the total of (A-D+I)"
-            flex -> treasury "forward payments total (A-D+I)"
-            flex -> user "transfer ownership of A"
+            title "Loan successful close"
+            user -> loan "sign contract(A: amount, D: down-payment) && deposit down-payment D"
+            loan -> price_oracle "get currency price"
+            loan -> stable_lpp "request loan (A-D)"
+            stable_lpp -> loan "send amount (A-D)"
+            price_oracle -> loan "push price alerts"
+            time_oracle -> loan "push time alerts"
+            user -> loan "repay one or more times until pay-off the total of (A-D+I)"
+            loan -> treasury "forward payments total (A-D+I)"
+            loan -> user "transfer ownership of A"
         }
 
-        dynamic contracts "case1" "Flex liquidation" {
-            title "Flex liquidation"
-            price_oracle -> flex "push price update"
-            time_oracle -> flex "push time update"
-            flex -> treasury "send the total amount A"
+        dynamic contracts "case1" "Loan liquidation" {
+            title "Loan liquidation"
+            price_oracle -> loan "push price alerts"
+            time_oracle -> loan "push time alerts"
+            loan -> treasury "send the total amount A"
             autolayout
         }
 
