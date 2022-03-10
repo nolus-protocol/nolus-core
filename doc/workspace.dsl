@@ -12,26 +12,27 @@ workspace {
                         tax_agent = component "Tax Agent"
                         minter = component "Minter"
                         distributor = component "Distributor"
-                        reserve_proxy = component "Reserve Vault Proxy"
+                        treasury_proxy = component "Treasury Proxy"
 
                         tax_agent -> distributor "distribute the transaction gas"
-                        tax_agent -> reserve_proxy "send extra fee"
+                        tax_agent -> treasury_proxy "send extra fee"
                         minter -> distributor "mint amount on each block"
                     }
                     contracts = container "Smart Contracts" {
                         price_oracle = component "Market Price Oracle"
                         time_oracle = component "Global Time Oracle"
                         flex = component "Flex"
-                        reserve_vault = component "Reserve Vault"
-                        loans_vault = component "Loans Vault"
+                        treasury = component "Treasury"
+                        stable_lpp = component "UST Liquidity Provider Pool"
                         swap = component "Swap Gateway"
+
                         time_oracle -> flex "time updates"
                         price_oracle -> flex "price updates"
-                        flex -> loans_vault "request amount"
-                        flex -> reserve_vault "forward payments"
-                        loans_vault -> swap "exchange"
-                        reserve_vault -> swap "exchange"
-                        reserve_vault -> loans_vault "rebalance"
+                        flex -> stable_lpp "request amount"
+                        flex -> treasury "forward payments"
+                        stable_lpp -> swap "exchange"
+                        treasury -> swap "exchange"
+                        treasury -> stable_lpp "rebalance"
                     }
                     cosmosapp -> contracts "Execute Trx messages"
                     contracts -> cosmosapp "Store State"
@@ -182,8 +183,8 @@ workspace {
             title "Tax & Inflation distribution"
 
             user -> tax_agent "send transaction"
-            tax_agent -> reserve_proxy "send extra fee"
-            reserve_proxy -> reserve_vault "send extra fee"
+            tax_agent -> treasury_proxy "send extra fee"
+            treasury_proxy -> treasury "send extra fee"
             tax_agent -> distributor "send remained gas"
             minter -> distributor "send newly minted coins"
             distributor -> distributor "distribute to the delegators"
@@ -207,12 +208,12 @@ workspace {
             title "Flex successful close"
             user -> flex "sign contract(A: amount, D: down-payment) && deposit down-payment D"
             flex -> price_oracle "get currency price"
-            flex -> loans_vault "request loan (A-D)"
-            loans_vault -> flex "send amount (A-D)"
+            flex -> stable_lpp "request loan (A-D)"
+            stable_lpp -> flex "send amount (A-D)"
             price_oracle -> flex "push price update"
             time_oracle -> flex "push time update"
             user -> flex "repay one or more times until pay-off the total of (A-D+I)"
-            flex -> reserve_vault "forward payments total (A-D+I)"
+            flex -> treasury "forward payments total (A-D+I)"
             flex -> user "transfer ownership of A"
         }
 
@@ -220,7 +221,7 @@ workspace {
             title "Flex liquidation"
             price_oracle -> flex "push price update"
             time_oracle -> flex "push time update"
-            flex -> reserve_vault "send the total amount A"
+            flex -> treasury "send the total amount A"
             autolayout
         }
 
