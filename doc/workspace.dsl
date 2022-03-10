@@ -51,7 +51,7 @@ workspace {
                 }
 
                 oracle_operator = container "Oracle Operator" {
-                    market_data_operator = component "Market Data Operator" {
+                    market_data_feeder = component "Market Data Feeder" {
                        -> api_endpoint "Price updates"
                     }
                 }
@@ -151,7 +151,7 @@ workspace {
                 }
             }
         }
-        market_data_operator -> market_data_aggregator "Fetch Data"
+        market_data_feeder -> market_data_aggregator "Fetch Data"
 
         user -> webapp "Uses"
         user -> faucet "Request Test Coins"
@@ -195,8 +195,8 @@ workspace {
             admin -> price_feed "manage supported price pairs"
             admin -> price_feed "manage whitelisted operators"
 
-            market_data_operator -> market_data_aggregator "poll observations"
-            market_data_operator -> price_feed "send observations"
+            market_data_feeder -> market_data_aggregator "poll observations"
+            market_data_feeder -> price_feed "send observations"
             price_feed -> price_feed "match msg sender address to whitelist"
             price_feed -> price_feed "update a price pair when aggregated observations pass % but not later than a delta t"
             price_feed -> flex "push price update"
