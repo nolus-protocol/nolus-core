@@ -211,11 +211,15 @@ workspace {
             admin -> price_oracle "manage supported price pairs"
             admin -> price_oracle "manage whitelisted operators"
 
-            market_data_feeder -> price_oracle "read currency pairs"
-            market_data_feeder -> market_data_aggregator "poll observations"
+            market_data_feeder -> price_oracle "read supported price pairs"
+            market_data_feeder -> market_data_aggregator "fetch data"
+            market_data_feeder -> price_oracle "price updates"
+            
             market_data_feeder -> price_oracle "send observations"
             price_oracle -> price_oracle "match msg sender address to whitelist"
             price_oracle -> price_oracle "update a price pair when aggregated observations pass % but not later than a delta t"
+            borrower -> price_oracle "read pair prices"
+            loan -> price_oracle "read pair prices"
             price_oracle -> loan "push price alerts"
         }
 
@@ -243,11 +247,13 @@ workspace {
         }
 
         dynamic contracts "case1" "Loan liquidation" {
-            title "Loan liquidation"
+            title "Loan partial liquidation"
             price_oracle -> loan "push price alerts"
             time_oracle -> loan "push time alerts"
-            loan -> treasury "send the total amount A"
-            autolayout
+            loan -> swap "exchange some C->UST"
+            loan -> loan "decrease A"
+            loan -> stable_lpp "repay loan+LPP interest UST"
+            loan -> profit "transfer(interest margin + swap spread)"
         }
 
         deployment * dev "nolus-dev-deployment" "Nolus Development Environment" {
