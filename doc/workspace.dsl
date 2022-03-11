@@ -217,7 +217,7 @@ workspace {
             
             market_data_feeder -> price_oracle "send observations"
             price_oracle -> price_oracle "match msg sender address to whitelist"
-            price_oracle -> price_oracle "update a price pair when aggregated observations pass % but not later than a delta t"
+            price_oracle -> price_oracle "a price pair get ready if some number of feeders have been active for some period now"
             borrower -> price_oracle "read pair prices"
             loan -> price_oracle "read pair prices"
             price_oracle -> loan "push price alerts"
