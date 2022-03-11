@@ -219,17 +219,27 @@ workspace {
             price_oracle -> loan "push price alerts"
         }
 
-        dynamic contracts "case0" "all" {
+        dynamic contracts "case0" "Loan successful close" {
             title "Loan successful close"
-            user -> loan "sign contract(A: amount, D: down-payment) && deposit down-payment D"
-            loan -> price_oracle "get currency price"
-            loan -> stable_lpp "request loan (A-D)"
-            stable_lpp -> loan "send amount (A-D)"
-            price_oracle -> loan "push price alerts"
-            time_oracle -> loan "push time alerts"
-            user -> loan "repay one or more times until pay-off the total of (A-D+I)"
-            loan -> treasury "forward payments total (A-D+I)"
-            loan -> user "transfer ownership of A"
+            user -> borrower "quote loan(C: currency, D: down-payment)"
+            borrower -> stable_lpp "quote % interest rate"
+            borrower -> price_oracle "read C/UST, D/UST prices"
+            borrower -> user "quote(A: amount in C, B: borrowed amount in UST, I: interest rate)"
+
+            user -> borrower "open loan(C: currency) & transfer(D: down-payment)"
+            borrower -> loan "instantiate(C, D, Ii: % interest margin)"
+            borrower -> loan "transfer(D)"
+            loan -> swap "exchange D->C"
+            loan -> price_oracle "read C/UST, D/UST prices"
+            loan -> stable_lpp "request (A-D) loan UST"
+            loan -> swap "exchange UST->C"
+            borrower -> user "open loan done"
+
+            user -> loan "repay() & transfer(R: re-payment)"
+            loan -> swap "exchange R->UST"
+            loan -> stable_lpp "repay loan+LPP interest UST"
+            loan -> profit "transfer(interest margin + swap spread)"
+            loan -> user "transfer(A)"
         }
 
         dynamic contracts "case1" "Loan liquidation" {
