@@ -29,6 +29,7 @@ fi
 HOST="127.0.0.1"
 P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
+MONITORING_PORT=$((base_port+2))
 API_PORT=$((base_port+3))
 
 rm -fr "$home_dir"
@@ -51,6 +52,8 @@ update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
 update_config "$home_dir" '."proxy_app"' '""' >/dev/null
 update_config "$home_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"' >/dev/null
+update_config "$home_dir" '."instrumentation"."prometheus"' "true" >/dev/null
+update_config "$home_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$MONITORING_PORT"'"' >/dev/null
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)
