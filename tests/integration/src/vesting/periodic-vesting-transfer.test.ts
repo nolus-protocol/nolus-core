@@ -5,7 +5,7 @@ import {AccountData} from "@cosmjs/proto-signing";
 import {DEFAULT_FEE} from "../util/utils";
 
 describe('periodic vesting transfers', () => {
-    const VESTED_AMOUNT: Coin = {denom: "unolus", amount: "136600"}; // + 63 remainder, if needed for taxes
+    const VESTED_AMOUNT: Coin = {denom: "unolus", amount: "118000"}; // + 63 remainder, if needed for taxes
     let periodicAccount: AccountData;
     let validatorAccount: AccountData;
     let periodicClient: SigningCosmWasmClient;

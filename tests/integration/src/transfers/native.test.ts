@@ -29,7 +29,7 @@ describe("Native transfers", () => {
         };
         const fee = {
             amount: [{denom: "unolus", amount: "12"}],
-            gas: "100000"
+            gas: "110000"
         };
 
         // validator -> user1

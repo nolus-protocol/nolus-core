@@ -6,7 +6,7 @@ import {AccountData} from "@cosmjs/amino";
 const customFees = {
     upload: {
         amount: [{amount: "2000000", denom: "unolus"}],
-        gas: "2000000",
+        gas: "2201000",
     },
     init: {
         amount: [{amount: "500000", denom: "unolus"}],

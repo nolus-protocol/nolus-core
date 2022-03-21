@@ -23,8 +23,8 @@ describe("continuous vesting", () => {
     })
 
     test("created continuous vesting account works as expected", async () => {
-        const FULL_AMOUNT: Coin = {denom: "unolus", amount: "10000"};
-        const HALF_AMOUNT: Coin = {denom: "unolus", amount: "5000"};
+        const FULL_AMOUNT: Coin = {denom: "unolus", amount: "1000000"};
+        const HALF_AMOUNT: Coin = {denom: "unolus", amount: "500000"};
 
         const createVestingAccountMsg: MsgCreateVestingAccount = {
             fromAddress: validatorAccount.address,
@@ -43,7 +43,7 @@ describe("continuous vesting", () => {
         let sendFailTx = await continuousClient.sendTokens(continuousAccount.address, validatorAccount.address, [HALF_AMOUNT], DEFAULT_FEE);
         console.log(sendFailTx)
         expect(isDeliverTxFailure(sendFailTx)).toBeTruthy()
-        await expect(sendFailTx.rawLog).toMatch(/^.*smaller than 5000unolus: insufficient funds.*/)
+        await expect(sendFailTx.rawLog).toMatch(/^.*smaller than 500000unolus: insufficient funds*/)
         await sleep(6000) // sleep for 6000 seconds
         assertIsDeliverTxSuccess(await continuousClient.sendTokens(continuousAccount.address, validatorAccount.address, [HALF_AMOUNT], DEFAULT_FEE))
     }, 30000)
