@@ -43,7 +43,7 @@ update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/
 update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
 update_app "$home_dir" '."grpc"."enable"' "false" >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
-update_app "$home_dir" '."telemetry"."enable"' "true" >/dev/null
+update_app "$home_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
