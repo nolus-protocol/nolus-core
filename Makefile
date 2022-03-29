@@ -124,7 +124,7 @@ fuzz:
 
 static-code-check:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
-	$(GOPATH)/bin/staticcheck ${BUILD_FLAGS} ./...
+	$(GOPATH)/bin/staticcheck -tags "muslc" ./...
 
 examine-source-code:
 	go vet $(BUILD_FLAGS) $(PACKAGES)
