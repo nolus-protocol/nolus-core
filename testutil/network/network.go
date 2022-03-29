@@ -19,6 +19,7 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 )
 
 type (
@@ -38,6 +39,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	} else {
 		cfg = configs[0]
 	}
+	params.SetAddressPrefixes()
 	net := network.New(t, cfg)
 	t.Cleanup(net.Cleanup)
 	return net
@@ -62,15 +64,16 @@ func DefaultConfig() network.Config {
 				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 			)
 		},
-		GenesisState:    app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
-		TimeoutCommit:   2 * time.Second,
-		ChainID:         "chain-" + tmrand.NewRand().Str(6),
-		NumValidators:   1,
-		BondDenom:       sdk.DefaultBondDenom,
-		MinGasPrices:    fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
-		AccountTokens:   sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
-		StakingTokens:   sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
-		BondedTokens:    sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
+		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
+		TimeoutCommit: 2 * time.Second,
+		ChainID:       "chain-" + tmrand.NewRand().Str(6),
+		NumValidators: 1,
+		BondDenom:     sdk.DefaultBondDenom,
+		MinGasPrices:  fmt.Sprintf("0.000006%s", sdk.DefaultBondDenom),
+		AccountTokens: sdk.TokensFromConsensusPower(1000, sdk.DefaultPowerReduction),
+		StakingTokens: sdk.TokensFromConsensusPower(500, sdk.DefaultPowerReduction),
+		BondedTokens:  sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction),
+
 		PruningStrategy: storetypes.PruningOptionNothing,
 		CleanupDir:      true,
 		SigningAlgo:     string(hd.Secp256k1Type),

@@ -1,20 +1,15 @@
 package keeper_test
 
-import (
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+// // returns context and an app with updated mint keeper
+// func createTestApp(isCheckTx bool) (*simapp.SimApp, sdk.Context) {
+// 	params.SetAddressPrefixes()
+// 	app := simapp.Setup(isCheckTx)
 
-	"github.com/cosmos/cosmos-sdk/simapp"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
+// 	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
 
-// returns context and an app with updated mint keeper
-func createTestApp(isCheckTx bool) (*simapp.SimApp, sdk.Context) {
-	app := simapp.Setup(isCheckTx)
+// 	// TODO
+// 	//app.MintKeeper.SetParams(ctx, types.DefaultParams())
+// 	//app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
 
-	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
-	// TODO
-	//app.MintKeeper.SetParams(ctx, types.DefaultParams())
-	//app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
-
-	return app, ctx
-}
+// 	return app, ctx
+// }

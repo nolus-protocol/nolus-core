@@ -2,18 +2,21 @@ package simulation_test
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/simapp"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
 func Test_BeginBlock(t *testing.T) {
+	params.SetAddressPrefixes()
 	app, err := simapp.TestSetup()
 	if err != nil {
 		t.Errorf("Error while creating simapp: %v\"", err)
@@ -30,7 +33,7 @@ func Test_BeginBlock(t *testing.T) {
 	feeCollector := app.AccountKeeper.GetModuleAccount(ctx2, types.FeeCollectorName)
 	feesCollectedInt := app.BankKeeper.GetAllBalances(ctx2, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
-	fmt.Println(fmt.Sprintf("norm %v, total %v", minter.NormTimePassed, minter.TotalMinted))
-	fmt.Println(fmt.Sprintf("balance %v", feesCollected))
+	fmt.Printf("norm %v, total %v \n", minter.NormTimePassed, minter.TotalMinted)
+	fmt.Printf("balance %v \n", feesCollected)
 	require.Equal(t, minter.TotalMinted, feesCollectedInt.AmountOf(sdk.DefaultBondDenom))
 }

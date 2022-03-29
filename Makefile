@@ -121,12 +121,27 @@ fuzz:
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
-test-unit:
-	go test ./... $(BUILD_FLAGS) -mod=readonly -coverprofile=coverage.txt -covermode=atomic \
-		-timeout 15m
+
+static-code-check:
+	go install honnef.co/go/tools/cmd/staticcheck@latest
+	$(GOPATH)/bin/staticcheck -tags "muslc" ./...
+
+examine-source-code:
+	go vet $(BUILD_FLAGS) $(PACKAGES)
 
 test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
+
+test-unit:
+	go install gotest.tools/gotestsum@latest
+	$(GOPATH)/bin/gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
+
+test-unit-coverage: ## Generate global code coverage report
+	go install github.com/boumenot/gocover-cobertura@latest
+	$(GOPATH)/bin/gocover-cobertura < cover.out > coverage.xml
+
+test-unit-coverage-report: ## Generate global code coverage report in HTML
+	sh  ./scripts/test/coverage.sh html;
 
 test-integration:
 	/bin/bash ./scripts/test/run-test-integration.sh $(shell pwd)  >&2

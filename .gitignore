@@ -9,3 +9,4 @@ networks/
 users/
 validators/
 coverage.txt
+/.vscode/launch.json

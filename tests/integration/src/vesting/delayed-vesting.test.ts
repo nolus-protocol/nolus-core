@@ -29,7 +29,7 @@ describe("delayed vesting", () => {
         const createVestingAccountMsg: MsgCreateVestingAccount = {
             fromAddress: validatorAccount.address,
             toAddress: delayedAccount.address,
-            amount: [{denom: "unolus", amount: "1000"}],
+            amount: [{denom: "unolus", amount: "1000000"}],
             endTime: Long.fromNumber((new Date().getTime() / 1000) + 7),
             delayed: true,
         }

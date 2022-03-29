@@ -1,9 +1,10 @@
 package testutil
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/suite"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/network"
-	"testing"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {
