@@ -24,13 +24,14 @@ deploy_nodes() {
   local -r validator_aws_instance_id="$5"
   local -r -a sentry_aws_instance_ids="$6"
 
-  __transfer_file "$scripts_home_dir" "$binary_artifact_path" "/usr/bin" \
+  __transfer_file "$scripts_home_dir" "$binary_artifact_path" "/usr/bin/" \
                     "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
                     "$sentry_aws_instance_ids"
-  __transfer_file "$scripts_home_dir" "$scripts_artifact_path" "/opt/deploy" \
+  __transfer_file "$scripts_home_dir" "$scripts_artifact_path" "/opt/deploy/" \
                     "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
                     "$sentry_aws_instance_ids"
   # TBD setup systemctl service
+  __ensure_tomlq_nodes "$scripts_home_dir" "$validator_aws_instance_id" "$sentry_aws_instance_ids"
 }
 
 # Setup а validator node and adjacent sentry nodes.
@@ -46,10 +47,13 @@ setup_nodes() {
   local -r validator_aws_instance_id="$3"
   local -r validator_ip="$4"
   local -r -a sentry_aws_instance_ids="$5[@]"
+  local -r -a sentry_aws_instance_ids_arr=("${!sentry_aws_instance_ids}")
   local -r -a sentry_aws_public_ips="$6[@]"
+  local -r -a sentry_aws_public_ips_arr=("${!sentry_aws_public_ips}")
 
   #making sure both arrays are equal in length
-  [[ ${#sentry_aws_instance_ids[@]} -eq ${#sentry_aws_public_ips[@]} ]]
+  [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_public_ips_arr[@]} ]]
+
 
   local validator_node_moniker
   validator_node_moniker=$(__validator_node_moniker "$moniker_base")
@@ -61,9 +65,10 @@ setup_nodes() {
                                   "$validator_aws_instance_id")
   local -r validator_node_id=$(__read_till_space "$validator_node_id_pub_key")
 
+  local sentry_node_id
   local -a sentry_node_ids
   local -a sentry_node_id_pub_keys
-  for sentry_aws_instance_id in "${sentry_aws_instance_ids[@]}"; do
+  for sentry_aws_instance_id in "${!sentry_aws_instance_ids}"; do
     local sentry_node_moniker
     sentry_node_moniker=$(__sentry_node_moniker "$moniker_base" "$sentry_aws_instance_id")
   
@@ -73,11 +78,11 @@ setup_nodes() {
                                     $SETUP_VALIDATOR_HOME_DIR $sentry_node_moniker" \
                                     "$sentry_aws_instance_id")
     sentry_node_id_pub_keys+=("$sentry_node_id_pub_key")
-    local -r sentry_node_id=$(__read_till_space "$sentry_node_id_pub_key")
+    sentry_node_id=$(__read_till_space "$sentry_node_id_pub_key")
     sentry_node_ids+=("$sentry_node_id")
   done
 
-  local -r sentry_node_ids_str=__comma_join "${sentry_node_ids[@]}"
+  local -r sentry_node_ids_str=$(__comma_join "${sentry_node_ids[@]}")
   "$scripts_home_dir"/aws/run-shell-script.sh \
       "/opt/deploy/scripts/remote/validator-config.sh \
             $SETUP_VALIDATOR_HOME_DIR $validator_ip $SETUP_VALIDATOR_P2P_PORT \
@@ -85,13 +90,13 @@ setup_nodes() {
             $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_ids_str" \
             "$validator_aws_instance_id"
 
-  for sentry_aws_index in "${!sentry_aws_instance_ids[@]}"; do
+  for sentry_aws_index in "${!sentry_aws_instance_ids_arr[@]}"; do
     "$scripts_home_dir"/aws/run-shell-script.sh \
         "/opt/deploy/scripts/remote/sentry-config.sh \
-              $SETUP_VALIDATOR_HOME_DIR ${sentry_aws_public_ips[$sentry_aws_index]} $SETUP_VALIDATOR_P2P_PORT \
+              $SETUP_VALIDATOR_HOME_DIR ${sentry_aws_public_ips_arr[$sentry_aws_index]} $SETUP_VALIDATOR_P2P_PORT \
               $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT $SETUP_VALIDATOR_API_PORT \
               $validator_node_id $sentry_node_ids_str" \
-              "${sentry_aws_instance_ids[$sentry_aws_index]}"
+              "${sentry_aws_instance_ids_arr[$sentry_aws_index]}"
   done
 
   # dump the result out
@@ -199,5 +204,25 @@ __transfer_file() {
   for sentry_aws_instance_id in "${!sentry_aws_instance_ids}"; do
     __download_from_s3 "$scripts_home_dir" "$file_src_path" "$file_dest_dir" \
                       "$deploy_medium_s3_bucket" "$sentry_aws_instance_id"
+  done
+}
+
+__ensure_tomlq() {
+  local -r scripts_home_dir="$1"
+  local -r aws_instance_id="$2"
+
+  "$scripts_home_dir"/aws/run-shell-script.sh \
+      "python3 -m ensurepip --upgrade --user && \
+      pip3 install tomlq" "$aws_instance_id"
+}
+
+__ensure_tomlq_nodes() {
+  local -r scripts_home_dir="$1"
+  local -r validator_aws_instance_id="$2"
+  local -r -a sentry_aws_instance_ids="$3[@]"
+
+  __ensure_tomlq "$scripts_home_dir" "$validator_aws_instance_id"
+  for sentry_aws_instance_id in "${!sentry_aws_instance_ids}"; do
+    __ensure_tomlq "$scripts_home_dir" "$sentry_aws_instance_id"
   done
 }

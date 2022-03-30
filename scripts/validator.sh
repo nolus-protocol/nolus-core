@@ -35,7 +35,7 @@ AWS_EC2_VALIDATOR_PRIVATE_IP="10.215.65.198"
 AWS_EC2_SENTRY_INSTANCE_IDS=("i-07cf9474ec35f8cd7" "i-05258ca94ed55d360" "i-04e8908952a9824db")
 AWS_EC2_SENTRY_PUBLIC_IPS=("52.16.45.178" "34.241.107.0" "52.215.189.123")
 
-MONIKER_BASE="test1"
+MONIKER_BASE="rila1"
 POSITIONAL=()
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
@@ -55,7 +55,7 @@ while [[ $# -gt 0 ]]; do
   case $key in
 
   -h | --help)
-    __print_usage $0
+    __print_usage "$0"
     exit 0
     ;;
 
@@ -85,7 +85,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [ $COMMAND == $COMMAND_STOP ]; then
+if [[ "$COMMAND" == "$COMMAND_STOP" ]]; then
   stop_nodes "$SCRIPT_DIR" "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
 elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
   __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
