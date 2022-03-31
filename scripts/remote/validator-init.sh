@@ -15,10 +15,18 @@ source "$SCRIPT_DIR"/../common/cmd.sh
 declare -r home_dir="$1"
 declare -r node_moniker="$2"
 
+init_systemd_service() {
+    cp --force "$SCRIPT_DIR/nolusd.service" "/etc/systemd/system/"
+    systemctl daemon-reload >/dev/null
+    systemctl enable nolusd >/dev/null
+}
+
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
 
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
+
+init_systemd_service
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)

@@ -31,7 +31,7 @@ deploy_nodes() {
   __transfer_file "$scripts_home_dir" "$scripts_artifact_path" "/opt/deploy/" \
                     "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
                     "$sentry_aws_instance_ids" "$and_untar"
-  # TBD setup systemctl service
+
   __ensure_tomlq_nodes "$scripts_home_dir" "$validator_aws_instance_id" "$sentry_aws_instance_ids"
 }
 
