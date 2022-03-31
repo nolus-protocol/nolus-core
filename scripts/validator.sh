@@ -10,7 +10,7 @@ __print_usage() {
     <$COMMAND_STOP|$COMMAND_SETUP|$COMMAND_SEND_GENESIS|$COMMAND_START>
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
-    [--chain-id <string>]" \
+    [--genesis-file <genesis_file_path>]" \
      "$1"
 }
 
@@ -36,7 +36,6 @@ AWS_EC2_SENTRY_INSTANCE_IDS=("i-07cf9474ec35f8cd7" "i-05258ca94ed55d360" "i-04e8
 AWS_EC2_SENTRY_PUBLIC_IPS=("52.16.45.178" "34.241.107.0" "52.215.189.123")
 
 MONIKER_BASE="rila1"
-POSITIONAL=()
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
 GENESIS_FILE=""
@@ -77,9 +76,9 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   
-  *) # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift              # past argument
+  *)
+    echo "unknown option '$key'"
+    exit 1
     ;;
 
   esac
