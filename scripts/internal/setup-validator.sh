@@ -211,9 +211,12 @@ __ensure_tomlq() {
   local -r scripts_home_dir="$1"
   local -r aws_instance_id="$2"
 
+  # tomlq requires jq
+  "$scripts_home_dir"/aws/run-shell-script.sh \
+      "sudo yum -y install jq" "$aws_instance_id"
   "$scripts_home_dir"/aws/run-shell-script.sh \
       "python3 -m ensurepip --upgrade --user && \
-      pip3 install tomlq" "$aws_instance_id"
+      pip3 install tomlq --user" "$aws_instance_id"
 }
 
 __ensure_tomlq_nodes() {
