@@ -24,12 +24,13 @@ deploy_nodes() {
   local -r validator_aws_instance_id="$5"
   local -r -a sentry_aws_instance_ids="$6"
 
+  local -r and_untar="true"
   __transfer_file "$scripts_home_dir" "$binary_artifact_path" "/usr/bin/" \
                     "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
-                    "$sentry_aws_instance_ids"
+                    "$sentry_aws_instance_ids" "$and_untar"
   __transfer_file "$scripts_home_dir" "$scripts_artifact_path" "/opt/deploy/" \
                     "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
-                    "$sentry_aws_instance_ids"
+                    "$sentry_aws_instance_ids" "$and_untar"
   # TBD setup systemctl service
   __ensure_tomlq_nodes "$scripts_home_dir" "$validator_aws_instance_id" "$sentry_aws_instance_ids"
 }
@@ -114,8 +115,10 @@ propagate_genesis() {
   local -r -a sentry_aws_instance_ids="$5"
 
   local -r genesis_file_dest_dir="$SETUP_VALIDATOR_HOME_DIR/config/"
+  local -r and_untar="false"
   __transfer_file "$scripts_home_dir" "$genesis_file_src_path" "$genesis_file_dest_dir" \
-                    "$deploy_medium_s3_bucket" "$validator_aws_instance_id" "$sentry_aws_instance_ids"
+                    "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
+                    "$sentry_aws_instance_ids" "$and_untar"
 }
 
 start_nodes() {
@@ -178,16 +181,20 @@ __upload_to_s3() {
 
 __download_from_s3() {
   local -r scripts_home_dir="$1"
-  local -r archive_full_path="$2"
+  local -r file_full_path="$2"
   local -r target_dir="$3"
   local -r deploy_medium_s3_bucket="$4"
   local -r aws_instance_id="$5"
+  local -r and_untar="$6"
 
-  local archive_name
-  archive_name="$(basename "$archive_full_path")"
-  "$scripts_home_dir"/aws/run-shell-script.sh \
-      "aws s3 cp s3://$deploy_medium_s3_bucket/$archive_name $target_dir && \
-      tar -xvf $target_dir/$archive_name -C $target_dir" "$aws_instance_id"
+  local file_name
+  file_name="$(basename "$file_full_path")"
+  local cmd="aws s3 cp s3://$deploy_medium_s3_bucket/$file_name $target_dir"
+  if [[ "$and_untar" == "true" ]]; then
+    cmd="$cmd && tar -xvf $target_dir/$file_name -C $target_dir"
+  fi
+
+  "$scripts_home_dir"/aws/run-shell-script.sh "$cmd" "$aws_instance_id"
 }
 
 __transfer_file() {
@@ -197,13 +204,16 @@ __transfer_file() {
   local -r deploy_medium_s3_bucket="$4"
   local -r validator_aws_instance_id="$5"
   local -r -a sentry_aws_instance_ids="$6[@]"
+  local -r and_untar="$7"
 
   __upload_to_s3 "$file_src_path" "$deploy_medium_s3_bucket"
   __download_from_s3 "$scripts_home_dir" "$file_src_path" "$file_dest_dir" \
-                      "$deploy_medium_s3_bucket" "$validator_aws_instance_id"
+                      "$deploy_medium_s3_bucket" "$validator_aws_instance_id" \
+                      "$and_untar"
   for sentry_aws_instance_id in "${!sentry_aws_instance_ids}"; do
     __download_from_s3 "$scripts_home_dir" "$file_src_path" "$file_dest_dir" \
-                      "$deploy_medium_s3_bucket" "$sentry_aws_instance_id"
+                      "$deploy_medium_s3_bucket" "$sentry_aws_instance_id" \
+                      "$and_untar"
   done
 }
 
