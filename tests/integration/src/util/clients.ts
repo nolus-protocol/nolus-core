@@ -13,15 +13,12 @@ import {defaultRegistryTypes} from "@cosmjs/stargate";
 import {MsgCreateVestingAccount, protobufPackage as vestingPackage} from "./codec/cosmos/vesting/v1beta1/tx";
 import {generateMnemonic, mnemonicToSeedSync} from "bip39";
 import {fromSeed} from "bip32";
-import {MsgSuspend, MsgUnsuspend, protobufPackage as suspendPackage} from "./codec/nolus/suspend/v1beta1/tx";
-import {QuerySuspendRequest} from "./codec/nolus/suspend/v1beta1/query";
 
 let validatorPrivKey = fromHex(process.env.VALIDATOR_PRIV_KEY as string);
 let periodicPrivKey = fromHex(process.env.PERIODIC_PRIV_KEY as string);
 let user1PrivKey = fromHex(process.env.USR_1_PRIV_KEY as string);
 let user2PrivKey = fromHex(process.env.USR_2_PRIV_KEY as string);
 let delayedVestingPrivKey = fromHex(process.env.DELAYED_VESTING_PRIV_KEY as string);
-let suspendAdminPrivKey = fromHex(process.env.SUSPEND_ADMIN_PRIV_KEY as string);
 
 
 export const NOLUS_PREFIX = "nolus";
@@ -72,14 +69,6 @@ export async function getUser1Client(): Promise<SigningCosmWasmClient> {
     return await getClientWithKey(user1PrivKey);
 }
 
-export async function getSuspendAdminWallet(): Promise<DirectSecp256k1Wallet> {
-    return await getWallet(suspendAdminPrivKey);
-}
-
-export async function getSuspendAdminClient(): Promise<SigningCosmWasmClient> {
-    return await getClientWithKey(suspendAdminPrivKey);
-}
-
 export async function createWallet(): Promise<DirectSecp256k1Wallet> {
     const privateKey = seedToPrivateKey(generateMnemonic(256))
     return await DirectSecp256k1Wallet.fromKey(privateKey, NOLUS_PREFIX)
@@ -114,9 +103,6 @@ function getSignerOptions(): SigningCosmWasmClientOptions {
         ["/cosmwasm.wasm.v1.MsgInstantiateContract", MsgInstantiateContract],
         ["/cosmwasm.wasm.v1.MsgUpdateAdmin", MsgUpdateAdmin],
         [`/${vestingPackage}.MsgCreateVestingAccount`, MsgCreateVestingAccount],
-        [`/${suspendPackage}.MsgSuspend`, MsgSuspend],
-        [`/${suspendPackage}.MsgUnsuspend`, MsgUnsuspend],
-        [`/${suspendPackage}.QuerySuspendRequest`, QuerySuspendRequest],
     ]);
     return {registry: customRegistry}
 }
