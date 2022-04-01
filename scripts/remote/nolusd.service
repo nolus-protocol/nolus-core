@@ -1,0 +1,11 @@
+[Unit]
+Description=Nolus Node
+
+[Service]
+User=root
+WorkingDirectory=/opt/deploy/nolus
+ExecStart=/usr/bin/nolusd start --home /opt/deploy/nolus
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
