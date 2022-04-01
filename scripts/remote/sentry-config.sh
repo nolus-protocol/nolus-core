@@ -7,8 +7,11 @@
 # arg: RPC port, mandatory
 # arg: Monitoring port, mandatory
 # arg: API port, mandatory
+# arg: validator node URL, mandatory
 # arg: validator node ID, mandatory
-# arg: a comma separated list of sentry node IDs, mandatory
+# arg: a comma separated list of sibling sentry node URLs, mandatory
+# arg: a comma separated list of sibling sentry node IDs, mandatory
+# arg: a comma separated list of other sentry node URLs, mandatory
 
 set -euo pipefail
 
@@ -21,8 +24,11 @@ declare -r p2p_port="$3"
 declare -r rpc_port="$4"
 declare -r monitoring_port="$5"
 declare -r api_port="$6"
-declare -r validator_node_id="$7"
-declare -r sentry_node_ids_str="$8"
+declare -r validator_node_url="$7"
+declare -r validator_node_id="$8"
+declare -r sibling_sentry_node_urls_str="$9"
+declare -r sentry_node_ids_str="${10}"
+declare -r other_sentry_node_urls_str="${11}"
 
 # although the API endpoint is deprecated it is still required by Keplr
 # TBD reevaluate the necessity to remain open
@@ -39,7 +45,7 @@ update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]'
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$external_address:$p2p_port"'"'
 update_config "$home_dir" '."p2p"."seed_mode"' "false"
 update_config "$home_dir" '."p2p"."pex"' "true"
-update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$validator_node_id","$sentry_node_ids_str"'"'
+update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$validator_node_url","$sibling_sentry_node_urls_str","$other_sentry_node_urls_str"'"'
 update_config "$home_dir" '."p2p"."unconditional_peer_ids"' '"'"$validator_node_id","$sentry_node_ids_str"'"'
 update_config "$home_dir" '."p2p"."private_peer_ids"' '"'"$validator_node_id"'"'
 update_config "$home_dir" '."p2p"."addr_book_strict"' "false"

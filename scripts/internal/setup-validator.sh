@@ -40,7 +40,7 @@ deploy_nodes() {
 # Due to limitations in the key values of bash associative arrays we use two distinct indexed arrays
 # with corresponding elements at the same indexes.
 #
-# The node ids and validator public keys are printed on the standard output one at a line.
+# The node urls, node_url="node_id@ip:port", and validator public keys are printed on the standard output one at a line.
 # The first line contains validator's info. Each of the next lines contains sentry's info.
 setup_nodes() {
   local -r scripts_home_dir="$1"
@@ -51,6 +51,7 @@ setup_nodes() {
   local -r -a sentry_aws_instance_ids_arr=("${!sentry_aws_instance_ids}")
   local -r -a sentry_aws_public_ips="$6[@]"
   local -r -a sentry_aws_public_ips_arr=("${!sentry_aws_public_ips}")
+  local -r others_sentry_node_urls_str="$7"
 
   #making sure both arrays are equal in length
   [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_public_ips_arr[@]} ]]
@@ -64,12 +65,17 @@ setup_nodes() {
                           "export HOME=/home/ssm-user && /opt/deploy/scripts/remote/validator-init.sh \
                                   $SETUP_VALIDATOR_HOME_DIR $validator_node_moniker" \
                                   "$validator_aws_instance_id")
-  local -r validator_node_id=$(__read_till_space "$validator_node_id_pub_key")
+  local validator_node_id validator_pub_key validator_node_url
+  read -r validator_node_id validator_pub_key <<< "$validator_node_id_pub_key"
+  validator_node_url=$(__node_id_to_url "$validator_node_id" "$validator_ip" "$SETUP_VALIDATOR_P2P_PORT")
+  local -r validator_node_url_pub_key="$validator_node_url $validator_pub_key"
 
-  local sentry_node_id
+  local sentry_node_url
   local -a sentry_node_ids
-  local -a sentry_node_id_pub_keys
-  for sentry_aws_instance_id in "${!sentry_aws_instance_ids}"; do
+  local -a sentry_node_urls
+  local -a sentry_node_url_pub_keys
+  for i in "${!sentry_aws_instance_ids_arr[@]}"; do
+    local sentry_aws_instance_id="${sentry_aws_instance_ids_arr[$i]}"
     local sentry_node_moniker
     sentry_node_moniker=$(__sentry_node_moniker "$moniker_base" "$sentry_aws_instance_id")
   
@@ -78,17 +84,21 @@ setup_nodes() {
                             "export HOME=/home/ssm-user && /opt/deploy/scripts/remote/validator-init.sh \
                                     $SETUP_VALIDATOR_HOME_DIR $sentry_node_moniker" \
                                     "$sentry_aws_instance_id")
-    sentry_node_id_pub_keys+=("$sentry_node_id_pub_key")
-    sentry_node_id=$(__read_till_space "$sentry_node_id_pub_key")
+    local sentry_node_id sentry_pub_key
+    read -r sentry_node_id sentry_pub_key <<< "$sentry_node_id_pub_key"
     sentry_node_ids+=("$sentry_node_id")
+    sentry_node_url=$(__node_id_to_url "$sentry_node_id" "${sentry_aws_public_ips_arr[$i]}" "$SETUP_VALIDATOR_P2P_PORT")
+    sentry_node_urls+=("$sentry_node_url")
+    sentry_node_url_pub_keys+=("$sentry_node_url $sentry_pub_key")
   done
 
+  local -r sentry_node_urls_str=$(__comma_join "${sentry_node_urls[@]}")
   local -r sentry_node_ids_str=$(__comma_join "${sentry_node_ids[@]}")
   "$scripts_home_dir"/aws/run-shell-script.sh \
       "/opt/deploy/scripts/remote/validator-config.sh \
             $SETUP_VALIDATOR_HOME_DIR $validator_ip $SETUP_VALIDATOR_P2P_PORT \
             $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT \
-            $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_ids_str" \
+            $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_urls_str $sentry_node_ids_str" \
             "$validator_aws_instance_id"
 
   for sentry_aws_index in "${!sentry_aws_instance_ids_arr[@]}"; do
@@ -96,14 +106,15 @@ setup_nodes() {
         "/opt/deploy/scripts/remote/sentry-config.sh \
               $SETUP_VALIDATOR_HOME_DIR ${sentry_aws_public_ips_arr[$sentry_aws_index]} $SETUP_VALIDATOR_P2P_PORT \
               $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT $SETUP_VALIDATOR_API_PORT \
-              $validator_node_id $sentry_node_ids_str" \
+              $validator_node_url $validator_node_id $sentry_node_urls_str $sentry_node_ids_str \
+              $others_sentry_node_urls_str" \
               "${sentry_aws_instance_ids_arr[$sentry_aws_index]}"
   done
 
   # dump the result out
-  echo "$validator_node_id_pub_key"
-  for sentry_node_id_pub_key in "${sentry_node_id_pub_keys[@]}"; do
-    echo "$sentry_node_id_pub_key"
+  echo "$validator_node_url_pub_key"
+  for sentry_node_url_pub_key in "${sentry_node_url_pub_keys[@]}"; do
+    echo "$sentry_node_url_pub_key"
   done
 }
 
@@ -148,10 +159,8 @@ __comma_join() {
   echo "$*"
 }
 
-__read_till_space() {
-  local res
-  read -r res _rest <<< "$1"
-  echo "$res"
+__node_id_to_url() {
+  echo "$1@$2:$3"
 }
 
 __do_cmd_service() {
