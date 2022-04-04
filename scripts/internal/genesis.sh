@@ -85,22 +85,22 @@ add_genesis_account() {
   local home_dir="$3"
 
   local address
-  address=$(jq -r '.address' <<< "$specification")
+  address=$(echo "$specification" | jq -r '.address')
   local amount
-  amount=$(jq -r '.amount' <<< "$specification")
-  if [[ "$(jq -r '.vesting' <<< "$specification")" != 'null' ]]; then
+  amount=$(echo "$specification" | jq -r '.amount')
+  if [[ "$(echo "$specification" | jq -r '.vesting')" != 'null' ]]; then
     local vesting_start_time=""
-    if [[ "$(jq -r '.vesting."start-time"' <<< "$specification")" != 'null' ]]; then
+    if [[ "$(echo "$specification" | jq -r '.vesting."start-time"')" != 'null' ]]; then
       vesting_start_time="--vesting-start-time $(__read_unix_time "$specification" start-time)"
     fi
 
     local vesting_end_time
     vesting_end_time=$(echo "$specification" | jq -r '.vesting."end-time"' | __as_unix_time )
     local vesting_amount
-    vesting_amount=$(jq -r '.vesting.amount' <<< "$row")
+    vesting_amount=$(echo "$specification" | jq -r '.vesting.amount')
     run_cmd "$home_dir" add-genesis-account "$address" "$amount" \
                 --vesting-amount "$vesting_amount$currency" \
-                --vesting-end-time "$vesting_end_time" $vesting_start_time
+                --vesting-end-time "$vesting_end_time" "$vesting_start_time"
   else
     run_cmd "$home_dir" add-genesis-account "$address" "$amount"
   fi
@@ -179,7 +179,7 @@ __gen_val_accounts() {
   local node_id_and_val_pubkeys="$1"
   while IFS= read -r node_id_and_val_pubkey ; do
     local account_name
-    read -r account_name __val_pub_key <<< $node_id_and_val_pubkey
+    read -r account_name __val_pub_key <<< "$node_id_and_val_pubkey"
     local address
     address=$(gen_val_account "$account_name")
     echo "$address"
@@ -205,7 +205,7 @@ __init_validators() {
   while IFS= read -r node_id_and_val_pubkey ; do
     local node_id
     local val_pub_key
-    read -r node_id val_pub_key <<< $node_id_and_val_pubkey
+    read -r node_id val_pub_key <<< "$node_id_and_val_pubkey"
     local create_validator_tx
     create_validator_tx=$(gen_val_txn "$proto_genesis_file" "$node_id" "$val_pub_key" "$val_stake")
     echo "$create_validator_tx"
