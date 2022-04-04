@@ -12,6 +12,9 @@ genesis_file="$genesis_home_dir"/config/genesis.json
 # end "instance" variables
 
 WASM_BIN_PATH="$SCRIPT_DIR/wasmbin"
+# TODO Add proper account
+GENESIS_SMARTCONTRACT_ADMIN_ADDR="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
+
 
 cleanup_genesis_sh() {
   if [[ -n "${genesis_home_dir:-}" ]]; then
@@ -33,18 +36,17 @@ generate_genesis() {
 
   local -r acl_bpath="$WASM_BIN_PATH/acl.wasm"
   local -r treasury_bpath="$WASM_BIN_PATH/treasury.wasm"
-  # TODO Add proper account
-  local -r smartcontract_admin_addr="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
-
 
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
   local accounts_spec="$genesis_accounts_spec"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file"
+  generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file" >> /dev/null
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
-  integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file"
-  add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$smartcontract_admin_addr" "$final_genesis_file"
+  __integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file" >> /dev/null
+  __add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$GENESIS_SMARTCONTRACT_ADMIN_ADDR"\
+                             "$final_genesis_file" >> /dev/null
+  echo "$final_genesis_file"
 }
 
 generate_proto_genesis() {
@@ -106,7 +108,10 @@ add_genesis_account() {
   fi
 }
 
-integrate_genesis_txs() {
+#####################
+# private functions #
+#####################
+__integrate_genesis_txs() {
   local genesis_in_file="$1"
   local txs="$2"
   local genesis_out_file="$3"
@@ -127,7 +132,7 @@ integrate_genesis_txs() {
   cp "$genesis_file" "$genesis_out_file"
 }
 
-add_wasm_genesis_message() {
+__add_wasm_genesis_message() {
   local acl_bpath="$1"
   local treasury_bpath="$2"
   local admin_addr="$3"
@@ -144,9 +149,6 @@ add_wasm_genesis_message() {
   cp "$genesis_file" "$genesis_in_out_file"
 }
 
-#####################
-# private functions #
-#####################
 __set_token_denominations() {
   local genesis_file="$1"
   local currency="$2"
