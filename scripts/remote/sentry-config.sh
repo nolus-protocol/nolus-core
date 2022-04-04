@@ -27,7 +27,7 @@ declare -r api_port="$6"
 declare -r validator_node_url="$7"
 declare -r validator_node_id="$8"
 declare -r sibling_sentry_node_urls_str="$9"
-declare -r sentry_node_ids_str="${10}"
+declare -r sibling_sentry_node_ids_str="${10}"
 declare -r other_sentry_node_urls_str="${11}"
 
 # although the API endpoint is deprecated it is still required by Keplr
@@ -46,7 +46,7 @@ update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$external_address:$p2p_port
 update_config "$home_dir" '."p2p"."seed_mode"' "false"
 update_config "$home_dir" '."p2p"."pex"' "true"
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$validator_node_url","$sibling_sentry_node_urls_str","$other_sentry_node_urls_str"'"'
-update_config "$home_dir" '."p2p"."unconditional_peer_ids"' '"'"$validator_node_id","$sentry_node_ids_str"'"'
+update_config "$home_dir" '."p2p"."unconditional_peer_ids"' '"'"$validator_node_id","$sibling_sentry_node_ids_str"'"'
 update_config "$home_dir" '."p2p"."private_peer_ids"' '"'"$validator_node_id"'"'
 update_config "$home_dir" '."p2p"."addr_book_strict"' "false"
 update_config "$home_dir" '."p2p"."allow_duplicate_ip"' "false"

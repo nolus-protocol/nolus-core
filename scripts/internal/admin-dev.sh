@@ -10,10 +10,6 @@ init_admin_dev_sh() {
   source "$scripts_home_dir"/common/cmd.sh
 }
 
-admin_dev_create_suspend_admin_account() {
-  __admin_dev_create_account "suspend-admin"
-}
-
 admin_dev_create_treasury_account() {
   __admin_dev_create_account "treasury"
 }

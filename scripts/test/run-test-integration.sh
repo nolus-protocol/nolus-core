@@ -76,7 +76,6 @@ prepare_env() {
 
   VALIDATOR_KEY_NAME=$(run_cmd "$VAL_ACCOUNTS_DIR" keys list --list-names)
   VALIDATOR_PRIV_KEY=$(echo 'y' | nolusd keys export "$VALIDATOR_KEY_NAME" --unsafe --unarmored-hex --keyring-backend "test" --home "$VAL_ACCOUNTS_DIR" 2>&1)
-  SUSPEND_ADMIN_PRIV_KEY="$(echo 'y' | nolusd keys export suspend-admin --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1 )"
   PERIODIC_PRIV_KEY=$(echo 'y' | nolusd keys export periodic-vesting-account --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
   USR_1_PRIV_KEY=$(echo 'y' | nolusd keys export test-user-1 --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
   USR_2_PRIV_KEY=$(echo 'y' | nolusd keys export test-user-2 --unsafe --unarmored-hex --keyring-backend "test" --home "$USER_DIR" 2>&1)
@@ -88,7 +87,6 @@ USR_1_PRIV_KEY=${USR_1_PRIV_KEY}
 USR_2_PRIV_KEY=${USR_2_PRIV_KEY}
 PERIODIC_PRIV_KEY=${PERIODIC_PRIV_KEY}
 DELAYED_VESTING_PRIV_KEY=${DELAYED_VESTING_PRIV_KEY}
-SUSPEND_ADMIN_PRIV_KEY=${SUSPEND_ADMIN_PRIV_KEY}
 IBC_TOKEN=${IBC_TOKEN}
 EOF
   )

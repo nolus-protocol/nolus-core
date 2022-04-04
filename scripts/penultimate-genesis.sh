@@ -17,7 +17,6 @@ trap cleanup INT TERM EXIT
 CHAIN_ID="nolus-private"
 OUTPUT_FILE="genesis.json"
 ACCOUNTS_FILE=""
-SUSPEND_ADMIN=""
 NATIVE_CURRENCY="unolus"
 
 POSITIONAL=()
@@ -45,13 +44,8 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  --suspend-admin)
-    SUSPEND_ADMIN="$2"
-    shift
-    shift
-    ;;
   --help)
-    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>] [--suspend-admin <bech32address>]"
+    echo "Usage: penultimate-genesis.sh [-c|--chain-id <chain_id>] [-o|--output <output_file>] [--accounts <accounts_file>] [--currency <native_currency>]"
     exit 0
     ;;
   *) # unknown option
@@ -61,4 +55,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE" "$SUSPEND_ADMIN"
+generate_proto_genesis "$CHAIN_ID" "$ACCOUNTS_FILE" "$NATIVE_CURRENCY" "$OUTPUT_FILE"

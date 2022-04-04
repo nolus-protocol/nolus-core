@@ -22,7 +22,6 @@ NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-private"
-SUSPEND_ADMIN_TOKENS="1000$NATIVE_CURRENCY"
 TREASURY_TOKENS="1000000000000$NATIVE_CURRENCY"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
@@ -156,11 +155,9 @@ rm -fr "$USER_DIR"
 
 source "$SCRIPT_DIR"/internal/admin-dev.sh
 init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
-suspend_admin_addr=$(admin_dev_create_suspend_admin_account)
 treasury_addr=$(admin_dev_create_treasury_account)
 
 accounts_spec=$(echo "[]" | add_account "$(__recover_faucet_addr "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
-accounts_spec=$(echo "$accounts_spec" | add_account "$suspend_admin_addr" "$SUSPEND_ADMIN_TOKENS")
 accounts_spec=$(echo "$accounts_spec" | add_account "$treasury_addr" "$TREASURY_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
@@ -169,7 +166,7 @@ stop_validators "$VALIDATORS"
 deploy_validators "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$suspend_admin_addr" "$VAL_TOKENS" \
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec"
 
 start_validators "$VALIDATORS"

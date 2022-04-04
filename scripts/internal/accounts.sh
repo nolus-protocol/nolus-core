@@ -2,7 +2,7 @@
 
 check_accounts_dependencies() {
   local script_dir
-  script_dir=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+  script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
   "$script_dir"/check-jq.sh
 }
 
