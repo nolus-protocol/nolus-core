@@ -31,9 +31,6 @@ generate_genesis() {
   local -r genesis_accounts_spec="$6"
   local -r node_id_and_val_pubkeys="$7"
 
-  local -r proto_genesis_file="$val_accounts_dir/penultimate-genesis.json"
-  local -r final_genesis_file="$val_accounts_dir/genesis.json"
-
   local -r acl_bpath="$WASM_BIN_PATH/acl.wasm"
   local -r treasury_bpath="$WASM_BIN_PATH/treasury.wasm"
 
@@ -42,11 +39,10 @@ generate_genesis() {
   local accounts_spec="$genesis_accounts_spec"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
   __generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" >> /dev/null
-  create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
-  __integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file" >> /dev/null
-  __add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$GENESIS_SMARTCONTRACT_ADMIN_ADDR"\
-                             "$final_genesis_file" >> /dev/null
-  echo "$final_genesis_file"
+  create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
+  __integrate_genesis_txs "$create_validator_txs" >> /dev/null
+  __add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$GENESIS_SMARTCONTRACT_ADMIN_ADDR" >> /dev/null
+  echo "$genesis_file"
 }
 
 generate_proto_genesis() {
@@ -119,11 +115,7 @@ __generate_proto_genesis() {
 }
 
 __integrate_genesis_txs() {
-  local genesis_in_file="$1"
-  local txs="$2"
-  local genesis_out_file="$3"
-
-  cp "$genesis_in_file" "$genesis_file"
+  local txs="$1"
 
   local txs_dir="$genesis_home_dir"/txs
   {
@@ -136,24 +128,18 @@ __integrate_genesis_txs() {
   }
 
   run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
-  cp "$genesis_file" "$genesis_out_file"
 }
 
 __add_wasm_genesis_message() {
   local acl_bpath="$1"
   local treasury_bpath="$2"
   local admin_addr="$3"
-  local genesis_in_out_file="$4"
   local trs_inst='{"acl":"nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"}'
-
-  cp "$genesis_in_out_file" "$genesis_file"
 
   run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$acl_bpath" --run-as "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 1 {} --label acl --run-as "$admin_addr" --admin "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$treasury_bpath" --run-as "$admin_addr"
   run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 2 "$trs_inst" --label treasury --run-as "$admin_addr" --admin "$admin_addr"
-
-  cp "$genesis_file" "$genesis_in_out_file"
 }
 
 __set_token_denominations() {
@@ -206,7 +192,7 @@ __add_val_accounts() {
   echo "$account_spec"
 }
 
-__init_validators() {
+__gen_val_txns() {
   local proto_genesis_file="$1"
   local node_id_and_val_pubkeys="$2"
   local val_stake="$3"
