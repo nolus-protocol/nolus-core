@@ -41,7 +41,7 @@ generate_genesis() {
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
   local accounts_spec="$genesis_accounts_spec"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" "$proto_genesis_file" >> /dev/null
+  __generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" >> /dev/null
   create_validator_txs="$(__init_validators "$proto_genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   __integrate_genesis_txs "$proto_genesis_file" "$create_validator_txs" "$final_genesis_file" >> /dev/null
   __add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$GENESIS_SMARTCONTRACT_ADMIN_ADDR"\
@@ -55,16 +55,7 @@ generate_proto_genesis() {
   local currency="$3"
   local proto_genesis_file="$4"
 
-  run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
-  run_cmd "$genesis_home_dir" config keyring-backend test
-  run_cmd "$genesis_home_dir" config chain-id "$chain_id"
-
-  __set_token_denominations "$genesis_file" "$currency"
-
-  while IFS= read -r account_spec ; do
-    add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
-  done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
-
+  __generate_proto_genesis "$chain_id" "$accounts_spec" "$currency"
   cp "$genesis_file" "$proto_genesis_file"
 }
 
@@ -111,6 +102,22 @@ add_genesis_account() {
 #####################
 # private functions #
 #####################
+__generate_proto_genesis() {
+  local chain_id="$1"
+  local accounts_spec="$2"
+  local currency="$3"
+
+  run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
+  run_cmd "$genesis_home_dir" config keyring-backend test
+  run_cmd "$genesis_home_dir" config chain-id "$chain_id"
+
+  __set_token_denominations "$genesis_file" "$currency"
+
+  while IFS= read -r account_spec ; do
+    add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
+  done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
+}
+
 __integrate_genesis_txs() {
   local genesis_in_file="$1"
   local txs="$2"
