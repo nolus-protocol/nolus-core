@@ -20,7 +20,7 @@ gen_val_account() {
   set -euo pipefail
   local account_name="$1"
 
-  run_cmd "$val_mngr_home_dir" keys add "$account_name" --output json 1>/dev/null
+  echo 'y' | run_cmd "$val_mngr_home_dir" keys add "$account_name" --output json --keyring-backend test 1>/dev/null
   run_cmd "$val_mngr_home_dir" keys show -a "$account_name"
 }
 
@@ -40,7 +40,8 @@ gen_val_txn() {
   #   ip_spec="--ip $ip_address"
   # fi
   # $ip_spec
+  rm "$tx_out_file" || true
   run_cmd "$val_mngr_home_dir" gentx "$val_account_name" "$stake" --pubkey "$val_pub_key" --chain-id "$val_mngr_chain_id" \
-        --moniker "$val_account_name" --output-document "$tx_out_file" 1>/dev/null
+        --moniker "$val_account_name" --keyring-backend test --output-document "$tx_out_file" 1>/dev/null
   cat "$tx_out_file"
 }
