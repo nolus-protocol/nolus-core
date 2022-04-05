@@ -4,6 +4,12 @@ set -euox pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/internal/genesis.sh
 
+cleanup() {
+  cleanup_genesis_sh
+  exit
+}
+trap cleanup INT TERM EXIT
+
 __print_usage() {
     printf \
     "Usage: %s

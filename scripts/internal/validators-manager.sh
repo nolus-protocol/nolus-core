@@ -17,6 +17,7 @@ init_val_mngr_sh() {
 }
 
 gen_val_account() {
+  set -euo pipefail
   local account_name="$1"
 
   run_cmd "$val_mngr_home_dir" keys add "$account_name" --output json 1>/dev/null
@@ -25,6 +26,7 @@ gen_val_account() {
 
 # outputs the generated create validator transaction to the standard output
 gen_val_txn() {
+  set -euo pipefail
   local genesis_file="$1"
   local val_account_name="$2"
   local val_pub_key="$3"
