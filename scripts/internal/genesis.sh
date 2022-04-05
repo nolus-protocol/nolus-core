@@ -23,12 +23,12 @@ cleanup_genesis_sh() {
 }
 
 generate_genesis() {
-  local -r val_accounts_dir="$1"
-  local -r chain_id="$2"
-  local -r native_currency="$3"
-  local -r val_tokens="$4"
-  local -r val_stake="$5"
-  local -r genesis_accounts_spec="$6"
+  local -r chain_id="$1"
+  local -r native_currency="$2"
+  local -r val_tokens="$3"
+  local -r val_stake="$4"
+  local -r genesis_accounts_spec="$5"
+  local -r val_accounts_dir="$6"
   local -r node_id_and_val_pubkeys="$7"
 
   local -r acl_bpath="$WASM_BIN_PATH/acl.wasm"

@@ -19,8 +19,9 @@ init_network() {
   
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
-  final_genesis_file=$(generate_genesis "$val_accounts_dir" "$chain_id" "$native_currency" \
+  final_genesis_file=$(generate_genesis "$chain_id" "$native_currency" \
                                           "$val_tokens" "$val_stake" \
-                                          "$genesis_accounts_spec" "$node_id_and_val_pubkeys")
+                                          "$genesis_accounts_spec" \
+                                          "$val_accounts_dir" "$node_id_and_val_pubkeys")
   propagate_genesis "$final_genesis_file" "$validators"
 }
