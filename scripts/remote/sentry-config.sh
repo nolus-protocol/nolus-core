@@ -11,7 +11,7 @@
 # arg: validator node ID, mandatory
 # arg: a comma separated list of sibling sentry node URLs, mandatory
 # arg: a comma separated list of sibling sentry node IDs, mandatory
-# arg: a comma separated list of other sentry node URLs, mandatory
+# arg: a comma separated list of other sentry node URLs, mandatory, the list must begin with a comma
 
 set -euo pipefail
 
@@ -45,7 +45,7 @@ update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]'
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$external_address:$p2p_port"'"'
 update_config "$home_dir" '."p2p"."seed_mode"' "false"
 update_config "$home_dir" '."p2p"."pex"' "true"
-update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$validator_node_url","$sibling_sentry_node_urls_str","$other_sentry_node_urls_str"'"'
+update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$validator_node_url","$sibling_sentry_node_urls_str""$other_sentry_node_urls_str"'"'
 update_config "$home_dir" '."p2p"."unconditional_peer_ids"' '"'"$validator_node_id","$sibling_sentry_node_ids_str"'"'
 update_config "$home_dir" '."p2p"."private_peer_ids"' '"'"$validator_node_id"'"'
 update_config "$home_dir" '."p2p"."addr_book_strict"' "false"
