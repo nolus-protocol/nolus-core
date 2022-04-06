@@ -10,7 +10,12 @@ __print_usage() {
     <$COMMAND_STOP|$COMMAND_SETUP|$COMMAND_SEND_GENESIS|$COMMAND_START>
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
-    [--genesis-file <genesis_file_path>]" \
+    [--genesis-file <genesis_file_path>]
+    [--ec2-id-validator <AWS EC2 validator instance ID>]
+    [--ec2-private-ip-validator <AWS EC2 validator private IP>]
+    [--ec2-id-sentries <space delimited AWS EC2 sentry instance IDs>]
+    [--ec2-public-ip-sentries <space delimited AWS EC2 sentry public IPs>]
+    [--ec2-private-ip-sentries <space delimited AWS EC2 sentry private IPs>]" \
      "$1"
 }
 
@@ -79,7 +84,43 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  
+
+  --ec2-id-validator)
+    AWS_EC2_VALIDATOR_INSTANCE_ID="$2"
+    shift
+    shift
+    ;;
+
+  --ec2-private-ip-validator)
+    AWS_EC2_VALIDATOR_PRIVATE_IP="$2"
+    shift
+    shift
+    ;;
+
+  --ec2-id-sentries)
+    while IFS= read -r item ; do
+      AWS_EC2_SENTRY_INSTANCE_IDS+=($item)
+    done <<< "$2"
+    shift
+    shift
+    ;;
+
+  --ec2-public-ip-sentries)
+    while IFS= read -r item ; do
+      AWS_EC2_SENTRY_PUBLIC_IPS+=($item)
+    done <<< "$2"
+    shift
+    shift
+    ;;
+
+  --ec2-private-ip-sentries)
+    while IFS= read -r item ; do
+      AWS_EC2_SENTRY_PRIVATE_IPS+=($item)
+    done <<< "$2"
+    shift
+    shift
+    ;;
+
   *)
     echo "unknown option '$key'"
     exit 1
@@ -88,11 +129,17 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+__verify_mandatory "$AWS_EC2_VALIDATOR_INSTANCE_ID" "AWS EC2 validator instance ID"
+__verify_mandatory "$AWS_EC2_SENTRY_INSTANCE_IDS" "AWS EC2 sentry instance IDs"
+
 if [[ "$COMMAND" == "$COMMAND_STOP" ]]; then
   stop_nodes "$SCRIPT_DIR" "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
 elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
   __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
   __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+  __verify_mandatory "$AWS_EC2_VALIDATOR_PRIVATE_IP" "AWS EC2 validator private IP"
+  __verify_mandatory "$AWS_EC2_SENTRY_PUBLIC_IPS" "AWS EC2 sentry public IPs"
+  __verify_mandatory "$AWS_EC2_SENTRY_PRIVATE_IPS" "AWS EC2 sentry private IPs"
   deploy_nodes "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$AWS_S3_ARTIFACTS_MEDIUM_BUCKET" \
                 "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
   setup_nodes "$SCRIPT_DIR" "$MONIKER_BASE" "$AWS_EC2_VALIDATOR_INSTANCE_ID" \
