@@ -17,7 +17,7 @@ __print_usage() {
     [-c|--chain_id <string>]
     [--currency <native_currency>]
     [--accounts <accounts_spec_json>]
-    [--node-urls-pubkeys <node_urls_and_validator_pubkeys>]
+    [--validator-node-urls-pubkeys <validator_node_urls_and_validator_pubkeys>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
@@ -39,7 +39,7 @@ COMMAND_FULL_GEN="full-gen"
 CHAIN_ID=""
 NATIVE_CURRENCY="unolus"
 ACCOUNTS_SPEC=""
-NODE_URLS_AND_VAL_PUBKEYS=""
+VAL_NODE_URLS_AND_VAL_PUBKEYS=""
 VAL_ACCOUNTS_DIR="val-accounts"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -81,8 +81,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --node-urls-pubkeys)
-    NODE_URLS_AND_VAL_PUBKEYS="$2"
+  --validator-node-urls-pubkeys)
+    VAL_NODE_URLS_AND_VAL_PUBKEYS="$2"
     shift
     shift
     ;;
@@ -122,16 +122,15 @@ done
 if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   __verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
   __verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
-  __verify_mandatory "$NODE_URLS_AND_VAL_PUBKEYS" "Nolus URLs and validator public keys spec"
+  __verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
   __verify_mandatory "$OUTPUT_FILE" "Genesis output file"
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$ACCOUNTS_SPEC" "$VAL_ACCOUNTS_DIR" \
-                                  "$NODE_URLS_AND_VAL_PUBKEYS")
+                                  "$VAL_NODE_URLS_AND_VAL_PUBKEYS")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
-#   __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
-#   __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+#
 else
   echo "Unknown command!"
   exit 1
