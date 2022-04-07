@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/lib/lib.sh
 
 declare -r home_dir="$1"
-declare -r external_address="$2"
+declare -r ip_address="$2"
 declare -r p2p_port="$3"
 declare -r rpc_port="$4"
 declare -r monitoring_port="$5"
@@ -31,8 +31,8 @@ update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unolus"'"'
 update_app "$home_dir" '."telemetry"."enabled"' "true"
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1"
 
-update_config "$home_dir" '."rpc"."laddr"' '"tcp://'"$external_address:$rpc_port"'"'
-update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$external_address:$p2p_port"'"'
+update_config "$home_dir" '."rpc"."laddr"' '"tcp://'"$ip_address:$rpc_port"'"'
+update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$ip_address:$p2p_port"'"'
 update_config "$home_dir" '."p2p"."seed_mode"' "false"
 update_config "$home_dir" '."p2p"."pex"' "false"
 update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$sentry_node_urls_str"'"'

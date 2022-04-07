@@ -33,7 +33,7 @@ declare -r other_sentry_node_urls_str="${11}"
 # although the API endpoint is deprecated it is still required by Keplr
 # TBD reevaluate the necessity to remain open
 update_app "$home_dir" '."api"."enable"' "true"
-update_app "$home_dir" '."api"."address"' '"tcp:'"$external_address:$api_port"'"'
+update_app "$home_dir" '."api"."address"' '"tcp://'"$external_address:$api_port"'"'
 update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true"
 update_app "$home_dir" '."grpc"."enable"' "false"
 update_app "$home_dir" '."grpc-web"."enable"' "false"
