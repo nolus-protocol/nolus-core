@@ -4,6 +4,28 @@
 
 The binary `nolusd` must be on the system path to allow scripts to run it.
 
+## Setup and run a localy hosted network
+
+A script setups a network comprised of one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
+
+The nodes are ready to be started. The nolus client is configured at the default home, "$HOME/.nolus", to point to the first validator node.
+
+Sample usage which generates 2 validator nodes:
+```shell
+./init-local-network.sh -v 2
+```
+
+For simplicity, and for the most use-cases, a single node local network would suffice, for example:
+```shell
+./init-local-network.sh
+```
+
+## Setup and run a remotely hosted network
+
+```shell
+./init-dev-network.sh
+```
+
 ## penultimate-genesis.sh
 
 Script that generates a non-final genesis, namely without any gen_txs. For more details check the Cosmos hub [GENESIS CEREMONY](https://github.com/cosmos/mainnet/blob/master/GENESIS-CEREMONY.md) process.
@@ -11,17 +33,6 @@ Script that generates a non-final genesis, namely without any gen_txs. For more 
 Sample usage:
 ```shell
   penultimate-genesis.sh --output "proto-genesis.json"
-```
-
-## init-local-network.sh
-
-Initialize one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
-
-The nodes are ready to be started. The nolus client is configured at the default home, "$HOME/.nolus", to point to the first validator node.
-
-Sample usage which generates 2 validator nodes:
-```shell
-init-local-node.sh -v 2
 ```
 
 ## init-validator-node.sh

@@ -51,10 +51,13 @@ setup_nodes() {
   local -r -a sentry_aws_instance_ids_arr=("${!sentry_aws_instance_ids}")
   local -r -a sentry_aws_public_ips="$6[@]"
   local -r -a sentry_aws_public_ips_arr=("${!sentry_aws_public_ips}")
-  local -r others_sentry_node_urls_str="$7"
+  local -r -a sentry_aws_private_ips="$7[@]"
+  local -r -a sentry_aws_private_ips_arr=("${!sentry_aws_private_ips}")
+  local -r others_sentry_node_urls_str="$8"
 
-  #making sure both arrays are equal in length
+  #making sure all arrays are equal in length
   [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_public_ips_arr[@]} ]]
+  [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_private_ips_arr[@]} ]]
 
 
   local validator_node_moniker
@@ -70,10 +73,12 @@ setup_nodes() {
   validator_node_url=$(__node_id_to_url "$validator_node_id" "$validator_ip" "$SETUP_VALIDATOR_P2P_PORT")
   local -r validator_node_url_pub_key="$validator_node_url $validator_pub_key"
 
-  local sentry_node_url
+  local sentry_node_public_url
+  local sentry_node_private_url
   local -a sentry_node_ids
-  local -a sentry_node_urls
-  local -a sentry_node_url_pub_keys
+  local -a sentry_node_public_urls
+  local -a sentry_node_private_urls
+  local -a sentry_node_public_url_pub_keys
   for i in "${!sentry_aws_instance_ids_arr[@]}"; do
     local sentry_aws_instance_id="${sentry_aws_instance_ids_arr[$i]}"
     local sentry_node_moniker
@@ -87,34 +92,36 @@ setup_nodes() {
     local sentry_node_id sentry_pub_key
     read -r sentry_node_id sentry_pub_key <<< "$sentry_node_id_pub_key"
     sentry_node_ids+=("$sentry_node_id")
-    sentry_node_url=$(__node_id_to_url "$sentry_node_id" "${sentry_aws_public_ips_arr[$i]}" "$SETUP_VALIDATOR_P2P_PORT")
-    sentry_node_urls+=("$sentry_node_url")
-    sentry_node_url_pub_keys+=("$sentry_node_url $sentry_pub_key")
+    sentry_node_public_url=$(__node_id_to_url "$sentry_node_id" "${sentry_aws_public_ips_arr[$i]}" "$SETUP_VALIDATOR_P2P_PORT")
+    sentry_node_public_urls+=("$sentry_node_public_url")
+    sentry_node_private_url=$(__node_id_to_url "$sentry_node_id" "${sentry_aws_private_ips_arr[$i]}" "$SETUP_VALIDATOR_P2P_PORT")
+    sentry_node_private_urls+=("$sentry_node_private_url")
+    sentry_node_public_url_pub_keys+=("$sentry_node_public_url $sentry_pub_key")
   done
 
-  local -r sentry_node_urls_str=$(__comma_join "${sentry_node_urls[@]}")
+  local -r sentry_node_private_urls_str=$(__comma_join "${sentry_node_private_urls[@]}")
   local -r sentry_node_ids_str=$(__comma_join "${sentry_node_ids[@]}")
   "$scripts_home_dir"/aws/run-shell-script.sh \
       "/opt/deploy/scripts/remote/validator-config.sh \
             $SETUP_VALIDATOR_HOME_DIR $validator_ip $SETUP_VALIDATOR_P2P_PORT \
             $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT \
-            $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_urls_str $sentry_node_ids_str" \
+            $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_private_urls_str $sentry_node_ids_str" \
             "$validator_aws_instance_id"
 
   for sentry_aws_index in "${!sentry_aws_instance_ids_arr[@]}"; do
     "$scripts_home_dir"/aws/run-shell-script.sh \
         "/opt/deploy/scripts/remote/sentry-config.sh \
-              $SETUP_VALIDATOR_HOME_DIR ${sentry_aws_public_ips_arr[$sentry_aws_index]} $SETUP_VALIDATOR_P2P_PORT \
+              $SETUP_VALIDATOR_HOME_DIR '0.0.0.0' $SETUP_VALIDATOR_P2P_PORT \
               $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT $SETUP_VALIDATOR_API_PORT \
-              $validator_node_url $validator_node_id $sentry_node_urls_str $sentry_node_ids_str \
+              $validator_node_url $validator_node_id $sentry_node_private_urls_str $sentry_node_ids_str \
               $others_sentry_node_urls_str" \
               "${sentry_aws_instance_ids_arr[$sentry_aws_index]}"
   done
 
   # dump the result out
   echo "$validator_node_url_pub_key"
-  for sentry_node_url_pub_key in "${sentry_node_url_pub_keys[@]}"; do
-    echo "$sentry_node_url_pub_key"
+  for sentry_node_public_url_pub_key in "${sentry_node_public_url_pub_keys[@]}"; do
+    echo "$sentry_node_public_url_pub_key"
   done
 }
 

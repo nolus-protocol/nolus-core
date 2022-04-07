@@ -23,12 +23,13 @@ cleanup_genesis_sh() {
 }
 
 generate_genesis() {
-  local -r val_accounts_dir="$1"
-  local -r chain_id="$2"
-  local -r native_currency="$3"
-  local -r val_tokens="$4"
-  local -r val_stake="$5"
-  local -r genesis_accounts_spec="$6"
+  set -euo pipefail
+  local -r chain_id="$1"
+  local -r native_currency="$2"
+  local -r val_tokens="$3"
+  local -r val_stake="$4"
+  local -r genesis_accounts_spec="$5"
+  local -r val_accounts_dir="$6"
   local -r node_id_and_val_pubkeys="$7"
 
   local -r acl_bpath="$WASM_BIN_PATH/acl.wasm"
@@ -171,6 +172,7 @@ __as_unix_time() {
 }
 
 __gen_val_accounts() {
+  set -euo pipefail
   local node_id_and_val_pubkeys="$1"
   while IFS= read -r node_id_and_val_pubkey ; do
     local account_name
@@ -182,6 +184,7 @@ __gen_val_accounts() {
 }
 
 __add_val_accounts() {
+  set -euo pipefail
   local account_spec="$1"
   local val_addrs="$2"
   local val_tokens="$3"
@@ -193,6 +196,7 @@ __add_val_accounts() {
 }
 
 __gen_val_txns() {
+  set -euo pipefail
   local proto_genesis_file="$1"
   local node_id_and_val_pubkeys="$2"
   local val_stake="$3"
