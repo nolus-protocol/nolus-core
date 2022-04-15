@@ -143,9 +143,6 @@ test-unit-coverage: ## Generate global code coverage report
 test-unit-coverage-report: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;
 
-test-integration:
-	/bin/bash ./scripts/test/run-test-integration.sh $(shell pwd)  >&2
-
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
