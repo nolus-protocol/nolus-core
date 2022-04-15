@@ -10,6 +10,7 @@ stages:
   - prep
   - verify
   - build
+  - test
   - deploy
 
 variables:
@@ -105,6 +106,16 @@ build-image:
     KANIKO_DOCKER_FILE: build/node_spec
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
+
+test-fuzzer:on-schedule:
+  extends: .go-scheduled-test
+  script:
+    - make fuzz
+
+test-unit-cosmos:on-schedule:
+  extends: .go-scheduled-test
+  script:
+    - make test-unit-cosmos
 
 # Deploy a dev network when a new version is being built
 prep-deploy:
