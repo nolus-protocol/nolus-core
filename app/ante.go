@@ -8,7 +8,6 @@ import (
     "github.com/cosmos/cosmos-sdk/types/tx/signing"
     "github.com/cosmos/cosmos-sdk/x/auth/ante"
     authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-    //~ suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
     taxkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
     taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 
@@ -19,7 +18,6 @@ import (
 type HandlerOptions struct {
     AccountKeeper     ante.AccountKeeper
     BankKeeper        taxtypes.BankKeeper
-    //~ SuspendKeeper     suspendkeeper.Keeper
     TaxKeeper         taxkeeper.Keeper
     TxCounterStoreKey sdk.StoreKey
     WasmConfig        wasmTypes.WasmConfig
@@ -47,14 +45,12 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
     mempoolFeeDecorator := taxkeeper.NewMempoolFeeDecorator(options.TaxKeeper)
     deductFeeDecorator := taxkeeper.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.TaxKeeper)
-    //~ suspendDecorator := suspendkeeper.NewSuspendDecorator(options.SuspendKeeper)
 
     anteDecorators := []sdk.AnteDecorator{
         ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
         wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
         wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
         ante.NewRejectExtensionOptionsDecorator(),
-        //~ suspendDecorator,
         //ante.NewMempoolFeeDecorator(), // we are replacing the original fee decorator with a custom one
         mempoolFeeDecorator,
         //NewMempoolFeeDecorator(options.TreasuryKeeper),

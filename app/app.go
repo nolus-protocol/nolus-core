@@ -97,9 +97,6 @@ import (
 
     // this line is used by starport scaffolding # stargate/app/moduleImport
     appparams "gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-    //~ suspend "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend"
-    //~ suspendkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/keeper"
-    //~ suspendtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/suspend/types"
 )
 
 const (
@@ -177,7 +174,6 @@ var (
         transfer.AppModuleBasic{},
         vesting.AppModuleBasic{},
         wasm.AppModuleBasic{},
-        //~ suspend.AppModuleBasic{},
         taxmodule.AppModuleBasic{},
         // this line is used by starport scaffolding # stargate/app/moduleBasic
     )
@@ -249,7 +245,6 @@ type App struct {
     ScopedTransferKeeper capabilitykeeper.ScopedKeeper
     ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
-    //~ SuspendKeeper suspendkeeper.Keeper
 
     TaxKeeper taxmodulekeeper.Keeper
     // this line is used by starport scaffolding # stargate/app/keeperDeclaration
@@ -288,7 +283,6 @@ func New(
         minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
         govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
         evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey, wasm.StoreKey,
-        //~ suspendtypes.StoreKey,
         taxmoduletypes.StoreKey,
         // this line is used by starport scaffolding # stargate/app/storeKey
     )
@@ -433,12 +427,6 @@ func New(
 
     // this line is used by starport scaffolding # stargate/app/keeperDefinition
 
-    //~ app.SuspendKeeper = suspendkeeper.NewKeeper(
-        //~ appCodec,
-        //~ keys[suspendtypes.StoreKey],
-        //~ keys[suspendtypes.MemStoreKey],
-    //~ )
-    //~ suspendModule := suspend.NewAppModule(appCodec, app.SuspendKeeper)
 
     // Create static IBC router, add transfer route, then set and seal it
     ibcRouter := ibcporttypes.NewRouter()
@@ -478,7 +466,6 @@ func New(
         params.NewAppModule(app.ParamsKeeper),
         transferModule,
         wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper),
-        //~ suspendModule,
         taxModule,
         // this line is used by starport scaffolding # stargate/app/appModule
     )
@@ -491,12 +478,10 @@ func New(
         upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName, slashingtypes.ModuleName,
         evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
         banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName, authtypes.ModuleName, crisistypes.ModuleName,
-        //~ govtypes.ModuleName, suspendtypes.ModuleName, taxmoduletypes.ModuleName, wasm.ModuleName,
         govtypes.ModuleName, taxmoduletypes.ModuleName, wasm.ModuleName,
     )
 
     app.mm.SetOrderEndBlockers(crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
-        //~ paramstypes.ModuleName, slashingtypes.ModuleName, upgradetypes.ModuleName, suspendtypes.ModuleName, authtypes.ModuleName,
         paramstypes.ModuleName, slashingtypes.ModuleName, upgradetypes.ModuleName, authtypes.ModuleName,
         capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName, ibctransfertypes.ModuleName,
         genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName, wasm.ModuleName,
@@ -527,7 +512,6 @@ func New(
         paramstypes.ModuleName,
         // wasm after ibc transfer
         wasm.ModuleName,
-        //~ suspendtypes.ModuleName,
         // this line is used by starport scaffolding # stargate/app/initGenesis
     )
 
@@ -563,7 +547,6 @@ func New(
         HandlerOptions{
             AccountKeeper:     app.AccountKeeper,
             BankKeeper:        app.BankKeeper,
-            //~ SuspendKeeper:     app.SuspendKeeper,
             TaxKeeper:         app.TaxKeeper,
             TxCounterStoreKey: keys[wasm.StoreKey],
             WasmConfig:        wasmConfig,
@@ -744,7 +727,6 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
     paramsKeeper.Subspace(ibctransfertypes.ModuleName)
     paramsKeeper.Subspace(ibchost.ModuleName)
     paramsKeeper.Subspace(wasm.ModuleName)
-    //~ paramsKeeper.Subspace(suspendtypes.ModuleName)
     // this line is used by starport scaffolding # stargate/app/paramSubspace
 
     return paramsKeeper
