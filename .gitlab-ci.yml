@@ -31,10 +31,6 @@ variables:
   NOLUS_NODE_TAG: "${CI_COMMIT_TAG}"
   NOLUS_NODE_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_NODE_REPO}:${NOLUS_NODE_TAG}"
 
-  NOLUS_INTEGRATION_REPO: "integration"
-  NOLUS_INTEGRATION_TAG: "0.12"
-  NOLUS_INTEGRATION_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_INTEGRATION_REPO}:${NOLUS_INTEGRATION_TAG}"
-
 prep-version:check:
   stage: prep
   script:
@@ -57,14 +53,8 @@ prep-builder:check-exist:
     - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
           --repository-name $NOLUS_BUILDER_REPO --region us-east-1
           --image-ids=imageTag=$NOLUS_BUILDER_TAG ;
-      then 
-        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
-      fi
-    - if aws ecr-public describe-images --registry-id $AWS_REGISTRY_ID
-          --repository-name $NOLUS_INTEGRATION_REPO --region us-east-1
-          --image-ids=imageTag=$NOLUS_INTEGRATION_TAG ;
       then
-        echo "NOLUS_INTEGRATION_EXISTS=true" >> builder_exists.env ;
+        echo "NOLUS_BUILDER_EXISTS=true" >> builder_exists.env ;
       fi
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "true"'
@@ -107,16 +97,6 @@ build-image:
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
 
-# Builds an integration tests image only if a new NOLUS_INTEGRATION_TAG is pushed to a protected git ref.
-build-integration:
-  stage: build
-  needs: ["prep-builder:check-exist"]
-  extends: .kaniko
-  variables:
-    KANIKO_DOCKER_FILE: build/integration_spec
-    KANIKO_IMAGE: ${NOLUS_INTEGRATION_IMAGE}
-    KANIKO_IMAGE_EXISTS: ${NOLUS_INTEGRATION_EXISTS}
-
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
   script:
@@ -126,15 +106,6 @@ test-unit-cosmos:on-schedule:
   extends: .go-scheduled-test
   script:
     - make test-unit-cosmos
-
-test-integration:
-  stage: test
-  needs: ["build-binary"]
-  image: "${NOLUS_INTEGRATION_IMAGE}"
-  script:
-    - tar -xvf $ARTIFACT_BIN
-    - export PATH="$(pwd)":$PATH
-    - make test-integration
 
 # Deploy a dev network when a new version is being built
 prep-deploy:
