@@ -53,18 +53,6 @@ Sample usage:
 config/edit.sh --home ./validator_setup/node1 --enable-api true
 ```
 
-## create-vesting-account.sh
-
-Support library for vesting account creation (internally used in the `penultimate-genesis.sh`).
-
-Sample usage:
-```shell
-  source create-vesting-account.sh
-  row="{\"address\": \"$addr\", \"amount\": \"$amnt\", \"vesting\": { \"type\": \"periodic\", \"start-time\": \"$start_date\", \"end-time\": \"$end_date\", \"amount\": \"$amnt\", \"periods\": 4, \"length\": 14400}}"
-  add_vesting_account "$row" "unolus" "./validator_setup/node1"
-
-```
-
 ## collect-validator-gentxs.sh
 
 Used to collect a directory of messages gentx into a single genesis file.
