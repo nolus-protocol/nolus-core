@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testkeeper 	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
+	testkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 )
 

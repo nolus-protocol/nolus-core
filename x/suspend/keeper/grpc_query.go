@@ -14,7 +14,7 @@ func (k Keeper) SuspendedState(c context.Context, _ *types.QuerySuspendRequest) 
 	ctx := sdk.UnwrapSDKContext(c)
 	state := k.GetState(ctx)
 	qs := types.QuerySuspendResponse{
-		State:  state,
+		State: state,
 	}
 	return &qs, nil
 }
