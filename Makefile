@@ -1,5 +1,3 @@
-SHELL := /bin/bash
-GOFMT := gofmt
 BUILDDIR ?= $(CURDIR)/target/release
 PACKAGES=$(shell go list ./... | grep -v '/simulation')
 TMVERSION := $(shell go list -m github.com/tendermint/tendermint | sed 's:.* ::')
@@ -124,7 +122,7 @@ fuzz:
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
 check-format:
-	@eval "$$({ err=$$({ out=$$($(GOFMT) -l .); err_code=$$?; } 2>&1; declare -p out err_code >&2); declare -p err; } 2>&1)"; ret_code=0; if [[ $$err_code -ne 0 ]]; then echo -e "Following errors found in Go code:\n\n$$err\n"; ret_code=1; fi; if [[ -n "$$out" ]]; then echo -e "Please re-check format of following Go source files:\n\n$$out\n"; ret_code=1; fi; exit $$ret_code
+	$(SHELL) ./scripts/check-format.sh
 
 static-code-check:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
