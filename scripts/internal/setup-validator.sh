@@ -59,13 +59,18 @@ setup_nodes() {
   [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_public_ips_arr[@]} ]]
   [[ ${#sentry_aws_instance_ids_arr[@]} -eq ${#sentry_aws_private_ips_arr[@]} ]]
 
+  local -r scripts_remote_dir="/opt/deploy/scripts/remote"
+  # HOME is required by 'nolusd init'
+  local -r init_validator="export HOME=/home/ssm-user && $scripts_remote_dir/validator-init.sh"
+  local -r config_validator="$scripts_remote_dir/validator-config.sh"
+  local -r config_sentry="$scripts_remote_dir/sentry-config.sh"
 
   local validator_node_moniker
   validator_node_moniker=$(__validator_node_moniker "$moniker_base")
 
   local validator_node_id_pub_key
   validator_node_id_pub_key=$("$scripts_home_dir"/aws/run-shell-script.sh \
-                          "export HOME=/home/ssm-user && /opt/deploy/scripts/remote/validator-init.sh \
+                          "$init_validator \
                                   $SETUP_VALIDATOR_HOME_DIR $validator_node_moniker" \
                                   "$validator_aws_instance_id")
   local validator_node_id validator_pub_key validator_node_url
@@ -86,7 +91,7 @@ setup_nodes() {
   
     local sentry_node_id_pub_key
     sentry_node_id_pub_key=$("$scripts_home_dir"/aws/run-shell-script.sh \
-                            "export HOME=/home/ssm-user && /opt/deploy/scripts/remote/validator-init.sh \
+                            "$init_validator \
                                     $SETUP_VALIDATOR_HOME_DIR $sentry_node_moniker" \
                                     "$sentry_aws_instance_id")
     local sentry_node_id sentry_pub_key
@@ -102,7 +107,7 @@ setup_nodes() {
   local -r sentry_node_private_urls_str=$(__comma_join "${sentry_node_private_urls[@]}")
   local -r sentry_node_ids_str=$(__comma_join "${sentry_node_ids[@]}")
   "$scripts_home_dir"/aws/run-shell-script.sh \
-      "/opt/deploy/scripts/remote/validator-config.sh \
+      "$config_validator \
             $SETUP_VALIDATOR_HOME_DIR $validator_ip $SETUP_VALIDATOR_P2P_PORT \
             $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT \
             $SETUP_VALIDATOR_TIMEOUT_COMMIT $sentry_node_private_urls_str $sentry_node_ids_str" \
@@ -110,7 +115,7 @@ setup_nodes() {
 
   for sentry_aws_index in "${!sentry_aws_instance_ids_arr[@]}"; do
     "$scripts_home_dir"/aws/run-shell-script.sh \
-        "/opt/deploy/scripts/remote/sentry-config.sh \
+        "$config_sentry \
               $SETUP_VALIDATOR_HOME_DIR '0.0.0.0' $SETUP_VALIDATOR_P2P_PORT \
               $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT $SETUP_VALIDATOR_API_PORT \
               $validator_node_url $validator_node_id $sentry_node_private_urls_str $sentry_node_ids_str \
@@ -239,10 +244,10 @@ __ensure_tomlq() {
 
   # tomlq requires jq
   "$scripts_home_dir"/aws/run-shell-script.sh \
-      "sudo yum -y install jq" "$aws_instance_id"
+      "yum -y install jq" "$aws_instance_id"
   "$scripts_home_dir"/aws/run-shell-script.sh \
-      "python3 -m ensurepip --upgrade --user && \
-      pip3 install tomlq --user" "$aws_instance_id"
+      "python3 -m ensurepip --upgrade && \
+      pip3 install tomlq" "$aws_instance_id"
 }
 
 __ensure_tomlq_nodes() {
