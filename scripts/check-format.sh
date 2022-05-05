@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "`find . -type f -name '*.go' | wc -l` file(s) to check"
+
 all=`{ gofmt -l . | sed -e 's/^/__OUT__/g'; } 2>&1`
 out=`echo "$all" | grep "^__OUT__" | sed -e 's/^__OUT__//g'`
 err=`echo "$all" | grep -v "^__OUT__"`
