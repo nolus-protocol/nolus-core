@@ -1,6 +1,13 @@
 .go-verify:
   extends: .go-build
 
+go-check-format:
+  stage: verify
+  allow_failure: true
+  extends: .go-build
+  script:
+    - make check-format
+
 go-examine-source-code:
   stage: verify
   allow_failure: true
