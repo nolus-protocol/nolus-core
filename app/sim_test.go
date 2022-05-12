@@ -13,13 +13,19 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/store"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/spm/cosmoscmd"
 	"github.com/tendermint/tendermint/libs/log"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
+	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 )
 
 var NumSeeds int
@@ -62,6 +68,12 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			db := tmdb.NewMemDB()
 			newApp := app.New(logger, db, nil, true, map[int64]bool{}, app.DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(app.ModuleBasics), simapp.EmptyAppOptions{}, interBlockCacheOpt())
+			params.SetAddressPrefixes()
+			ctx := newApp.(*app.App).BaseApp.NewUncachedContext(true, tmproto.Header{})
+			newApp.(*app.App).TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
+			newApp.(*app.App).MintKeeper.SetParams(ctx, minttypes.DefaultParams())
+			newApp.(*app.App).AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
+			newApp.(*app.App).BankKeeper.SetParams(ctx, banktypes.DefaultParams())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
