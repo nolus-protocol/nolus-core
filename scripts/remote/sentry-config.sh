@@ -24,18 +24,21 @@ declare -r p2p_port="$3"
 declare -r rpc_port="$4"
 declare -r monitoring_port="$5"
 declare -r api_port="$6"
-declare -r validator_node_url="$7"
-declare -r validator_node_id="$8"
-declare -r sibling_sentry_node_urls_str="$9"
-declare -r sibling_sentry_node_ids_str="${10}"
-declare -r other_sentry_node_urls_str="${11}"
+declare -r grpc_port="$7"
+declare -r validator_node_url="$8"
+declare -r validator_node_id="$9"
+declare -r sibling_sentry_node_urls_str="${10}"
+declare -r sibling_sentry_node_ids_str="${11}"
+declare -r other_sentry_node_urls_str="${12}"
 
 # although the API endpoint is deprecated it is still required by Keplr
 # TBD reevaluate the necessity to remain open
+# the grpc endpoint is required by the market data feeder
 update_app "$home_dir" '."api"."enable"' "true"
 update_app "$home_dir" '."api"."address"' '"tcp://'"$external_address:$api_port"'"'
 update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true"
-update_app "$home_dir" '."grpc"."enable"' "false"
+update_app "$home_dir" '."grpc"."enable"' "true" >/dev/null
+update_app "$home_dir" '."grpc"."address"' '"0.0.0.0:'"$grpc_port"'"' >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false"
 update_app "$home_dir" '."telemetry"."enabled"' "true"
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1"

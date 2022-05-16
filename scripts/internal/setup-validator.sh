@@ -4,6 +4,7 @@ SETUP_VALIDATOR_P2P_PORT=26656
 SETUP_VALIDATOR_RPC_PORT=26657
 SETUP_VALIDATOR_MONITORING_PORT=26660
 SETUP_VALIDATOR_API_PORT=1317
+SETUP_VALIDATOR_GRPC_PORT=1318
 SETUP_VALIDATOR_TIMEOUT_COMMIT="5s"
 SETUP_VALIDATOR_HOME_DIR="/opt/deploy/nolus"
 
@@ -118,6 +119,7 @@ setup_nodes() {
         "$config_sentry \
               $SETUP_VALIDATOR_HOME_DIR '0.0.0.0' $SETUP_VALIDATOR_P2P_PORT \
               $SETUP_VALIDATOR_RPC_PORT $SETUP_VALIDATOR_MONITORING_PORT $SETUP_VALIDATOR_API_PORT \
+              $SETUP_VALIDATOR_GRPC_PORT \
               $validator_node_url $validator_node_id $sentry_node_private_urls_str $sentry_node_ids_str \
               $others_sentry_node_urls_str" \
               "${sentry_aws_instance_ids_arr[$sentry_aws_index]}"

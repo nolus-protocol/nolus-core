@@ -31,6 +31,7 @@ P2P_PORT=$((base_port))
 RPC_PORT=$((base_port+1))
 MONITORING_PORT=$((base_port+2))
 API_PORT=$((base_port+3))
+GRPC_PORT=$((base_port+4))
 
 rm -fr "$home_dir"
 mkdir -p "$home_dir"
@@ -38,10 +39,12 @@ mkdir -p "$home_dir"
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
 # although the API endpoint is deprecated it is still required by Keplr
 # TBD reevaluate the necessity to remain open
+# the grpc endpoint is required by the market data feeder
 update_app "$home_dir" '."api"."enable"' "true" >/dev/null
 update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/null
 update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
-update_app "$home_dir" '."grpc"."enable"' "false" >/dev/null
+update_app "$home_dir" '."grpc"."enable"' "true" >/dev/null
+update_app "$home_dir" '."grpc"."address"' '"0.0.0.0:'"$GRPC_PORT"'"' >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
 update_app "$home_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
