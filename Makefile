@@ -110,7 +110,7 @@ endif
 ###############################################################################
 .PHONY: all build install go.sum fuzz
 
-all: check-format build install fuzz test-unit-cosmos test-integration
+all: check-format build install fuzz test-unit-cosmos
 
 BUILD_TARGETS := build install
 
@@ -155,4 +155,4 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install go.sum fuzz test-unit-cosmos test-integration check-format
+.PHONY: all build install go.sum fuzz test-unit-cosmos check-format
