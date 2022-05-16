@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	keyMaxMintableNanoseconds        = "MaxMintableNanoseconds"
+	keyMaxMintableNanoseconds = "MaxMintableNanoseconds"
 )
 
 // ParamChanges defines the parameters that can be modified by param change proposals
