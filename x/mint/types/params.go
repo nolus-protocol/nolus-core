@@ -10,7 +10,7 @@ import (
 
 // Parameter store keys
 var (
-	KeyMintDenom     = []byte("MintDenom")
+	KeyMintDenom              = []byte("MintDenom")
 	KeyMaxMintableNanoseconds = []byte("KeyMaxMintableNanoseconds")
 )
 

@@ -110,7 +110,7 @@ endif
 ###############################################################################
 .PHONY: all build install go.sum fuzz
 
-all: build install fuzz test-unit-cosmos
+all: check-format build install fuzz test-unit-cosmos
 
 BUILD_TARGETS := build install
 
@@ -121,6 +121,8 @@ fuzz:
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
+check-format:
+	$(SHELL) ./scripts/check-format.sh
 
 static-code-check:
 	go install honnef.co/go/tools/cmd/staticcheck@latest
@@ -153,4 +155,4 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install go.sum fuzz test-unit-cosmos
+.PHONY: all build install go.sum fuzz test-unit-cosmos check-format

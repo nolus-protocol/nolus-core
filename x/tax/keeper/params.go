@@ -1,8 +1,8 @@
 package keeper
 
 import (
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 )
 
 // GetParams get all parameters as types.Params
@@ -18,7 +18,6 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
-
 
 // FeeRate returns the FeeRate param
 func (k Keeper) FeeRate(ctx sdk.Context) (res int32) {
