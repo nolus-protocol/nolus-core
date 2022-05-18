@@ -36,6 +36,6 @@ else
 			ARGS=
 		fi
 
-		go test -mod=readonly -tags='cgo norace' $ARGS "$PACKAGE"
+		go test -mod=readonly -tags='cgo ledger test_ledger_mock norace' $ARGS "$PACKAGE"
 	done
 fi
