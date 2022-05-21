@@ -24,10 +24,10 @@ workspace {
 
                         leaser = component "Leaser" "Provide quotes, open new Lease"
                         lease = component "Lease" "Instance per Lease, holds the amount in crypto"
-                        treasury = component "Treasury NLS" "Fees, swap spreads, and interest margin"
+                        treasury = component "Treasury NLS" "Fees and profit"
                         stable_lpp = component "Liquidity Provider Pool UST" "UST Liquidity Pool"
-                        profit = component "Profit UST" "Collect profit and buy NLS back"
-                        deposit = component "Deposit UST" "CW20 shares"
+                        profit = component "Profit" "Collect swap tax and interest margin, and buy NLS back"
+                        rewards = component "Rewards Distributor" "Calculate and distribute rewards to LPPs"
                         swap = component "Swap Gateway" "DEX interaction"
 
                         leaser -> stable_lpp "quote % interest rate"
@@ -45,9 +45,9 @@ workspace {
                         lease -> profit "swap spread, interest margin UST"
                         time_oracle -> profit "alarms on 48 hours"
                         profit -> swap "buy back NLS"
-                        profit -> treasury "transfer profit NLS"
-                        deposit -> stable_lpp "deposit&withdraw UST"
-                        deposit -> treasury "claim rewards"
+                        profit -> treasury "profit NLS"
+                        rewards -> stable_lpp "rewards in NLS"
+                        rewards -> treasury "get rewards"
                     }
                     cosmosapp -> contracts "Execute Trx messages"
                     contracts -> cosmosapp "Store State"
