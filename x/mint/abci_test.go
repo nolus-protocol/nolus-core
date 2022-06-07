@@ -34,16 +34,16 @@ var (
 
 func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredeterminedAmount(t *testing.T) {
 	timeBetweenBlocks := time.Second.Nanoseconds() * 60 // 60 seconds per block
-	secondsInMonth := int64(60) * 24 * 30
-	secondsInFormula := secondsInMonth * types.MonthsInFormula.TruncateInt64()
+	minutesInMonth := int64(60) * 24 * 30
+	minutesInFormula := minutesInMonth * types.MonthsInFormula.TruncateInt64()
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
-	for i := int64(0); i < secondsInFormula; i++ {
+	for i := int64(0); i < minutesInFormula; i++ {
 		coins := calcTokens(timeOffset+i*timeBetweenBlocks, &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
 		mintedMonth = mintedMonth.Add(coins)
-		if i%secondsInMonth == 0 {
+		if i%minutesInMonth == 0 {
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Recieved in this block \n",
-				i/secondsInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
+				i/minutesInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			mintedMonth = sdk.ZeroInt()
 		}
 	}
