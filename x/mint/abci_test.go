@@ -68,7 +68,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	nanoSecondsInPeriod := (nanoSecondsInMonth.Mul(types.MonthsInFormula)).Add(sdk.NewDec(timeOffset)).TruncateInt64()
 	rand.Seed(time.Now().UnixNano())
 	monthThreshold := sdk.NewInt(100_000_000) // 100 tokens
-	var month int
+	month := 0
 	for i := int64(0); timeOffset < nanoSecondsInPeriod; {
 		i = randomTimeBetweenBlocks(5, 60)
 		coins := calcTokens(timeOffset+i, &minter, fiveMinutesInNano)
@@ -165,7 +165,7 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
 	offsetNanoInPeriod := (nanoSecondsInMonth.Mul(sdk.NewDec(121))).Add(sdk.NewDec(timeOffset)).TruncateInt64() // Adding 1 extra to ensure cap is preserved
-	var month int
+	month := 0
 	rand.Seed(time.Now().UnixNano())
 	for i := int64(0); timeOffset < offsetNanoInPeriod; {
 		i = randomTimeBetweenBlocks(60, 120)
