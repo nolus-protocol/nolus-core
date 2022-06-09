@@ -14,3 +14,9 @@ nolusd start --home "networks/nolus/local-validator-1"
 ```
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup (run `init-local-network.sh --help` for more configuration options) and `nolusd start` starts the network. For more details check the [scripts README](./scripts/README.md)
+
+## Upgrade wasmvm
+- Update the Go modules
+- Update the wasmvm version in the builder Dockerfile at build/builder_spec
+- Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
+- (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
