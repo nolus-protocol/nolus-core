@@ -18,6 +18,7 @@ import (
 type HandlerOptions struct {
 	AccountKeeper     ante.AccountKeeper
 	BankKeeper        taxtypes.BankKeeper
+	FeegrantKeeper    ante.FeegrantKeeper
 	TaxKeeper         taxkeeper.Keeper
 	TxCounterStoreKey sdk.StoreKey
 	WasmConfig        wasmTypes.WasmConfig
@@ -51,15 +52,14 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
 		ante.NewRejectExtensionOptionsDecorator(),
-		//ante.NewMempoolFeeDecorator(), // we are replacing the original fee decorator with a custom one
+		// ante.NewMempoolFeeDecorator(),
 		mempoolFeeDecorator,
-		//NewMempoolFeeDecorator(options.TreasuryKeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
+		// ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
 		deductFeeDecorator,
-		//NewNomoDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.TreasuryKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
