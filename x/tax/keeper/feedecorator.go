@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -36,7 +34,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	feeCoins := feeTx.GetFee()
 	gas := feeTx.GetGas()
 
-	ctx.Logger().Info(fmt.Sprintf("Mempool: gas %d", gas))
+	// ctx.Logger().Info(fmt.Sprintf("Mempool: gas %d", gas))
 
 	feeRate := sdk.NewDec(int64(params.FeeRate))
 
