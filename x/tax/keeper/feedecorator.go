@@ -74,12 +74,8 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 func ApplyFeeImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
 	taxFees := sdk.Coins{}
 
-	if feeRate.IsZero() {
+	if feeRate.IsZero() || feeCoins.Empty() {
 		return taxFees, feeCoins, nil
-	}
-
-	if feeCoins.Empty() {
-		return sdk.NewCoins(), feeCoins, nil
 	}
 
 	// we will deduct the fee from every denomination send
