@@ -53,15 +53,15 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrUnknownAddress, "fee payer address: %s does not exist", deductFeesFrom)
 	}
 
-	taxFees, afterTax, err := ApplyFee(feeRate, feeCoins)
-	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, afterTax))
+	taxFees, remainingFees, err := ApplyFee(feeRate, feeCoins)
+	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, remainingFees))
 	if err != nil {
 		return ctx, err
 	}
 
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
-		err = DeductFees(ctx, dfd.bankKeeper, deductFeesFromAcc, treasuryAddr, taxFees, afterTax)
+		err = DeductFees(ctx, dfd.bankKeeper, deductFeesFromAcc, treasuryAddr, taxFees, remainingFees)
 		if err != nil {
 			return ctx, err
 		}
@@ -77,9 +77,9 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 }
 
 // DeductFees deducts fees and tax from the given account.
-func DeductFees(ctx sdk.Context, bankKeeper types.BankKeeper, acc authtypes.AccountI, treasuryAddr sdk.AccAddress, taxFees sdk.Coins, afterTax sdk.Coins) error {
-	if !afterTax.IsValid() {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "invalid fee amount: %s", afterTax)
+func DeductFees(ctx sdk.Context, bankKeeper types.BankKeeper, acc authtypes.AccountI, treasuryAddr sdk.AccAddress, taxFees sdk.Coins, remainingFees sdk.Coins) error {
+	if !remainingFees.IsValid() {
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "invalid fee amount: %s", remainingFees)
 	}
 
 	if !taxFees.IsValid() {
@@ -92,7 +92,7 @@ func DeductFees(ctx sdk.Context, bankKeeper types.BankKeeper, acc authtypes.Acco
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}
 
-	err = bankKeeper.SendCoinsFromAccountToModule(ctx, acc.GetAddress(), authtypes.FeeCollectorName, afterTax)
+	err = bankKeeper.SendCoinsFromAccountToModule(ctx, acc.GetAddress(), authtypes.FeeCollectorName, remainingFees)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}

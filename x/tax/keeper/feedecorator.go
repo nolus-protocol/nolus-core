@@ -46,7 +46,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	if ctx.IsCheckTx() && !simulate {
 
 		// deduct the nomo fee from feeCoins
-		taxFee, feeRemaining, err := ApplyFee(feeRate, feeCoins)
+		taxFees, remainingFees, err := ApplyFee(feeRate, feeCoins)
 		if err != nil {
 			return ctx, err
 		}
@@ -63,8 +63,8 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 			// ensure that enough was paid to cover the validator tax after the custom tax was deduced
-			if !feeRemaining.IsAnyGTE(requiredFees) {
-				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeRemaining.Add(taxFee...), requiredFees.Add(taxFee...))
+			if !remainingFees.IsAnyGTE(requiredFees) {
+				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", remainingFees.Add(taxFees...), requiredFees.Add(taxFees...))
 			}
 		}
 	}
@@ -74,10 +74,10 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 
 //TODO Rename this method
 func ApplyFeeImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
-	proceeds := sdk.Coins{}
+	taxFees := sdk.Coins{}
 
 	if feeRate.IsZero() {
-		return proceeds, feeCoins, nil
+		return taxFees, feeCoins, nil
 	}
 
 	if feeCoins.Empty() {
@@ -86,14 +86,14 @@ func ApplyFeeImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, er
 
 	// we will deduct the fee from every denomination send
 	for _, fee := range feeCoins {
-		proceed := sdk.NewCoin(fee.Denom, feeRate.MulInt(fee.Amount).Quo(HUNDRED).TruncateInt())
-		proceeds = proceeds.Add(proceed)
+		taxFee := sdk.NewCoin(fee.Denom, feeRate.MulInt(fee.Amount).Quo(HUNDRED).TruncateInt())
+		taxFees = taxFees.Add(taxFee)
 	}
 
-	deductedFees, neg := feeCoins.SafeSub(proceeds)
+	remainingFees, neg := feeCoins.SafeSub(taxFees)
 	if neg {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyFee: insufficient fees; got: %s required: %s", feeCoins, proceeds)
+		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyFee: insufficient fees; got: %s required: %s", feeCoins, taxFees)
 	}
 
-	return proceeds, deductedFees, nil
+	return taxFees, remainingFees, nil
 }
