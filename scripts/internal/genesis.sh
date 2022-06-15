@@ -11,9 +11,8 @@ genesis_home_dir=$(mktemp -d)
 genesis_file="$genesis_home_dir"/config/genesis.json
 # end "instance" variables
 
-WASM_BIN_PATH="$SCRIPT_DIR/wasmbin"
 # TODO Add proper account
-GENESIS_SMARTCONTRACT_ADMIN_ADDR="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
+SMARTCONTRACT_ADMIN_ADDR="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
 
 
 cleanup_genesis_sh() {
@@ -28,32 +27,29 @@ generate_genesis() {
   local -r native_currency="$2"
   local -r val_tokens="$3"
   local -r val_stake="$4"
-  local -r genesis_accounts_spec="$5"
-  local -r val_accounts_dir="$6"
-  local -r node_id_and_val_pubkeys="$7"
+  local -r accounts_spec_in="$5"
+  local -r wasm_code_path="$6"
+  local -r treasury_init_tokens_u128="$7"
+  local -r val_accounts_dir="$8"
+  local -r node_id_and_val_pubkeys="$9"
 
-  local -r acl_bpath="$WASM_BIN_PATH/acl.wasm"
-  local -r treasury_bpath="$WASM_BIN_PATH/treasury.wasm"
-
+  local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
-  val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys")"
-  local accounts_spec="$genesis_accounts_spec"
+  val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
+  local accounts_spec="$accounts_spec_in"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  __generate_proto_genesis "$chain_id" "$accounts_spec" "$native_currency" >> /dev/null
+  accounts_spec="$(echo "$accounts_spec" | add_account "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens")"
+
+  source "$wasm_code_path/deploy-contracts-genesis.sh"
+  local treasury_addr
+  treasury_addr="$(treasury_instance_addr)"
+
+  __generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" >> /dev/null
+  add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens" >> /dev/null
+  
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   __integrate_genesis_txs "$create_validator_txs" >> /dev/null
-  __add_wasm_genesis_message "$acl_bpath" "$treasury_bpath" "$GENESIS_SMARTCONTRACT_ADMIN_ADDR" >> /dev/null
   echo "$genesis_file"
-}
-
-generate_proto_genesis() {
-  local chain_id="$1"
-  local accounts_spec="$2"
-  local currency="$3"
-  local proto_genesis_file="$4"
-
-  __generate_proto_genesis "$chain_id" "$accounts_spec" "$currency"
-  cp "$genesis_file" "$proto_genesis_file"
 }
 
 #
@@ -90,7 +86,7 @@ add_genesis_account() {
     vesting_amount=$(echo "$specification" | jq -r '.vesting.amount')
     run_cmd "$home_dir" add-genesis-account "$address" "$amount" \
                 --vesting-amount "$vesting_amount$currency" \
-                --vesting-end-time "$vesting_end_time" $vesting_start_time
+                --vesting-end-time "$vesting_end_time" "$vesting_start_time"
   else
     run_cmd "$home_dir" add-genesis-account "$address" "$amount"
   fi
@@ -99,17 +95,19 @@ add_genesis_account() {
 #####################
 # private functions #
 #####################
-__generate_proto_genesis() {
-  local chain_id="$1"
-  local accounts_spec="$2"
-  local currency="$3"
+__generate_proto_genesis_no_wasm() {
+  local -r chain_id="$1"
+  local -r currency="$2"
+  local -r accounts_spec="$3"
+  local -r treasury_addr="$4"
+
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config keyring-backend test
   run_cmd "$genesis_home_dir" config chain-id "$chain_id"
 
   __set_token_denominations "$genesis_file" "$currency"
-
+  __set_tax_recipient "$genesis_file" "$treasury_addr"
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
@@ -131,18 +129,6 @@ __integrate_genesis_txs() {
   run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
 }
 
-__add_wasm_genesis_message() {
-  local acl_bpath="$1"
-  local treasury_bpath="$2"
-  local admin_addr="$3"
-  local trs_inst='{"acl":"nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"}'
-
-  run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$acl_bpath" --run-as "$admin_addr"
-  run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 1 {} --label acl --run-as "$admin_addr" --admin "$admin_addr"
-  run_cmd "$genesis_home_dir" add-wasm-genesis-message store "$treasury_bpath" --run-as "$admin_addr"
-  run_cmd "$genesis_home_dir" add-wasm-genesis-message instantiate-contract 2 "$trs_inst" --label treasury --run-as "$admin_addr" --admin "$admin_addr"
-}
-
 __set_token_denominations() {
   local genesis_file="$1"
   local currency="$2"
@@ -155,6 +141,16 @@ __set_token_denominations() {
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["mint"]["params"]["mint_denom"]="'"$currency"'"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+__set_tax_recipient() {
+  local -r genesis_file="$1"
+  local -r recipient_addr="$2"
+
+  local genesis_tmp_file="$genesis_file".tmp
+  < "$genesis_file" \
+    jq '.app_state["tax"]["params"]["contractAddress"]="'"$recipient_addr"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
@@ -174,11 +170,12 @@ __as_unix_time() {
 __gen_val_accounts() {
   set -euo pipefail
   local node_id_and_val_pubkeys="$1"
+  local destination_dir="$2"
   while IFS= read -r node_id_and_val_pubkey ; do
     local account_name
     read -r account_name __val_pub_key <<< "$node_id_and_val_pubkey"
     local address
-    address=$(gen_val_account "$account_name")
+    address=$(generate_account "$account_name" "$destination_dir")
     echo "$address"
   done <<< "$node_id_and_val_pubkeys"
 }

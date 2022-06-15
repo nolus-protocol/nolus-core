@@ -13,16 +13,15 @@ trap cleanup INT TERM EXIT
 
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
-USER_DIR="networks/nolus/user"
-POSITIONAL=()
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
 
 NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
-CHAIN_ID="nolus-private"
-TREASURY_TOKENS="1000000000000$NATIVE_CURRENCY"
+CHAIN_ID="nolus-dev"
+WASM_CODE_PATH=""
+TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 
@@ -39,10 +38,10 @@ while [[ $# -gt 0 ]]; do
     [--chain-id <string>]
     [-v|--validators <number>]
     [--validator_accounts_dir <validator_accounts_dir>]
-    [--user-dir <client_user_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
-    [--treasury-tokens <treasury_initial_tokens>]
+    [--wasm-code-path <wasm_code_path>]
+    [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]" \
      "$0"
@@ -83,12 +82,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --user-dir)
-    USER_DIR="$2"
-    shift
-    shift
-    ;;
-
   --validator-tokens)
     VAL_TOKENS="$2"
     shift
@@ -101,8 +94,14 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --treasury-tokens)
-    TREASURY_TOKENS="$2"
+  --wasm-code-path)
+    WASM_CODE_PATH="$2"
+    shift
+    shift
+    ;;
+
+  --treasury-nls-u128)
+    TREASURY_NLS_U128="$2"
     shift
     shift
     ;;
@@ -117,9 +116,9 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  *) # unknown option
-    POSITIONAL+=("$1") # save it in an array for later
-    shift              # past argument
+  *)
+    echo >&2 "The provided option '$key' is not recognized"
+    exit 1    
     ;;
 
   esac
@@ -135,30 +134,14 @@ __verify_mandatory() {
   fi
 }
 
-__recover_faucet_addr() {
-  local mnemonic="$1"
-
-  local account_name="faucet"
-  local tmp_faucet_dir
-  tmp_faucet_dir="$(mktemp -d)"
-  run_cmd "$tmp_faucet_dir" keys add --recover "$account_name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
-  run_cmd "$tmp_faucet_dir" keys show "$account_name" -a --keyring-backend test
-}
-
-
 __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+__verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
-rm -fr "$USER_DIR"
 
-source "$SCRIPT_DIR"/internal/admin-dev.sh
-init_admin_dev_sh "$USER_DIR" "$SCRIPT_DIR"
-treasury_addr=$(admin_dev_create_treasury_account)
-
-accounts_spec=$(echo "[]" | add_account "$(__recover_faucet_addr "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
-accounts_spec=$(echo "$accounts_spec" | add_account "$treasury_addr" "$TREASURY_TOKENS")
+accounts_spec=$(echo "[]" | add_account "$(recover_account "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
@@ -167,6 +150,6 @@ deploy_validators "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
-              "$VAL_STAKE" "$accounts_spec"
+              "$VAL_STAKE" "$accounts_spec" "$WASM_CODE_PATH" "$TREASURY_NLS_U128"
 
 start_validators "$VALIDATORS"

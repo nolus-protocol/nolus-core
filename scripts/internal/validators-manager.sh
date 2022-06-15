@@ -16,14 +16,6 @@ init_val_mngr_sh() {
   run_cmd "$val_mngr_home_dir" config keyring-backend test
 }
 
-gen_val_account() {
-  set -euo pipefail
-  local account_name="$1"
-
-  echo 'y' | run_cmd "$val_mngr_home_dir" keys add "$account_name" --output json --keyring-backend test 1>/dev/null
-  run_cmd "$val_mngr_home_dir" keys show -a "$account_name"
-}
-
 # outputs the generated create validator transaction to the standard output
 gen_val_txn() {
   set -euo pipefail
