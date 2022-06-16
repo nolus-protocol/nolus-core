@@ -1,10 +1,10 @@
 #!/bin/sh
 
-echo "`find . -type f -name '*.go' | wc -l` file(s) to check"
+echo "$(find . -type f -name '*.go' | wc -l) file(s) to check"
 
-all=`{ gofmt -l . | sed -e 's/^/__OUT__/g'; } 2>&1`
-out=`echo "$all" | grep "^__OUT__" | sed -e 's/^__OUT__//g'`
-err=`echo "$all" | grep -v "^__OUT__"`
+all=$({ gofmt -l . | sed -e 's/^/__OUT__/g'; } 2>&1)
+out=$(echo "$all" | grep "^__OUT__" | sed -e 's/^__OUT__//g')
+err=$(echo "$all" | grep -v "^__OUT__")
 
 ret_code=0
 if test -n "$err"; then
