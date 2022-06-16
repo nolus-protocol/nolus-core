@@ -8,6 +8,10 @@ The binary `nolusd` must be on the system path to allow scripts to run it.
 
 A script setups a network comprised of one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
 
+The genesis generation embeds the smart contracts. Therefore the smart-contracts git repo should exist locally and be known for the network init script. By default, the scripts looks at a directory next to the this repo root. If necessary, that could be overridden providing --wasm-script-path and --wasm-code-path. For more details run
+```shell
+./init-local-network.sh --help
+```
 The nodes are ready to be started. The nolus client is configured at the default home, "$HOME/.nolus", to point to the first validator node.
 
 Sample usage which generates 2 validator nodes:
@@ -20,45 +24,39 @@ For simplicity, and for the most use-cases, a single node local network would su
 ./init-local-network.sh
 ```
 
-## Setup and run a remotely hosted network
+## Setup and run a network hosted remotely on a single machine
+
+A script setups a network comprised of one or more validator nodes on a remote AWS EC2 machine.
 
 ```shell
 ./init-dev-network.sh
 ```
 
-## penultimate-genesis.sh
+## Setup and run a network comprised of validator ans sentry nodes hosted remotely on multiple machines
 
-Script that generates a non-final genesis, namely without any gen_txs. For more details check the Cosmos hub [GENESIS CEREMONY](https://github.com/cosmos/mainnet/blob/master/GENESIS-CEREMONY.md) process.
+This setup involves multiple steps that are not orchestrated by a single main script. The aim is to allow the deployer to setup networks with different number of validators, and to have better control over the entire process.
 
-Sample usage:
+The topology follows the Tendermint recommended model where each validator is guarded by a few sentry nodes, in our case three.  The steps are:
+- stop an existing validator and its associated sentry nodes. Continue with the rest until done.
+- setup a group of nodes, a validator and three sentry nodes. Continue with the rest until done.
+- generate the genesis
+- send the genesis to a validator and its associated sentry nodes. Continue with the rest until done.
+- start a validator and its associated sentry nodes. Continue with the rest until done.
+
+All steps are done by the commands implemented in `validator.sh` and `genesis.sh`.
+
+### validator.sh
+
+The script has commands for starting, setting up and stopping a group of a validator and sentry nodes.
+
 ```shell
-  penultimate-genesis.sh --output "proto-genesis.json"
+./validator.sh --help
 ```
 
-## init-validator-node.sh
+The `./validator.sh setup` outputs the fill ID and public key of the nodes. The first line contains the ones of the validator node followed by those of sentry nodes, one at a line.
 
-Generate full node file structure by receiving a penultimate genesis and validator specific configurations. The script calls `nolusd gentx` thus it will have a gentx file in the `<node_dir>/config/gentx` directory.
-
-Sample usage:
-```shell
-init-validator-node.sh -g "penultimate-genesis.json" -d "node1" --moniker "validator-1" --mnemonic "<24 words mnemonic>"
-```
-
-## Edit Configuration
-
-Edits full node configuration files such as `app.toml` and `config.toml`.
-
-Sample usage:
-```shell
-config/edit.sh --home ./validator_setup/node1 --enable-api true
-```
-
-## collect-validator-gentxs.sh
-
-Used to collect a directory of messages gentx into a single genesis file.
-
-Sample usage:
+### genesis.sh
 
 ```shell
-collect-validator-gentxs.sh --collector "node1" --gentxs "gentxs"
+./genesis.sh --help
 ```
