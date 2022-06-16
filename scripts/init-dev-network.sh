@@ -4,6 +4,7 @@ set -euxo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
+source "$SCRIPT_DIR"/internal/verify.sh
 
 cleanup() {
   cleanup_init_network_sh
@@ -132,21 +133,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-__verify_mandatory() {
-  local value="$1"
-  local description="$2"
-
-  if [[ -z "$value" ]]; then
-    echo >&2 "$description was not set"
-    exit 1
-  fi
-}
-
-__verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
-__verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
-__verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
-__verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
-__verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
+verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
+verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
+verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
+verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 

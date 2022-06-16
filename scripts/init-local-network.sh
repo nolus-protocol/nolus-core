@@ -4,6 +4,7 @@ set -euxo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
+source "$SCRIPT_DIR"/internal/verify.sh
 
 cleanup() {
   cleanup_init_network_sh
@@ -141,12 +142,8 @@ __config_client() {
   run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
 }
 
-# TODO same for the scripts
-if ! [ -d "$WASM_CODE_PATH" ]
-then
-  echo "The required wasm code path '$WASM_CODE_PATH' does not point to an existing directory."
-  exit 1
-fi
+verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
+verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
 
 rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"

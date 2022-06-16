@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/internal/setup-validator.sh
+source "$SCRIPT_DIR"/internal/verify.sh
 
 __print_usage() {
     printf \
@@ -18,25 +19,6 @@ __print_usage() {
     [--ec2-private-ip-sentries <space delimited AWS EC2 sentry private IPs>]
     [--known-sentry-urls <comma delimited sentry urls>]" \
      "$1"
-}
-
-__verify_mandatory() {
-  local value="$1"
-  local description="$2"
-
-  if [[ -z "$value" ]]; then
-    echo >&2 "$description was not set"
-    exit 1
-  fi
-}
-
-__verify_mandatory_array() {
-  local -r length="$1"
-  local -r description="$2"
-  if [[ length -eq 0 ]]; then
-    echo >&2 "$description was not set"
-    exit 1
-  fi
 }
 
 COMMAND_STOP="stop"
@@ -139,17 +121,17 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-__verify_mandatory "$AWS_EC2_VALIDATOR_INSTANCE_ID" "AWS EC2 validator instance ID"
-__verify_mandatory_array "${#AWS_EC2_SENTRY_INSTANCE_IDS[@]}" "AWS EC2 sentry instance IDs"
+verify_mandatory "$AWS_EC2_VALIDATOR_INSTANCE_ID" "AWS EC2 validator instance ID"
+verify_mandatory_array "${#AWS_EC2_SENTRY_INSTANCE_IDS[@]}" "AWS EC2 sentry instance IDs"
 
 if [[ "$COMMAND" == "$COMMAND_STOP" ]]; then
   stop_nodes "$SCRIPT_DIR" "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
 elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
-  __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
-  __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
-  __verify_mandatory "$AWS_EC2_VALIDATOR_PRIVATE_IP" "AWS EC2 validator private IP"
-  __verify_mandatory_array "${#AWS_EC2_SENTRY_PUBLIC_IPS[@]}" "AWS EC2 sentry public IPs"
-  __verify_mandatory_array "${#AWS_EC2_SENTRY_PRIVATE_IPS[@]}" "AWS EC2 sentry private IPs"
+  verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
+  verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+  verify_mandatory "$AWS_EC2_VALIDATOR_PRIVATE_IP" "AWS EC2 validator private IP"
+  verify_mandatory_array "${#AWS_EC2_SENTRY_PUBLIC_IPS[@]}" "AWS EC2 sentry public IPs"
+  verify_mandatory_array "${#AWS_EC2_SENTRY_PRIVATE_IPS[@]}" "AWS EC2 sentry private IPs"
   deploy_nodes "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$AWS_S3_ARTIFACTS_MEDIUM_BUCKET" \
                 "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
   setup_nodes "$SCRIPT_DIR" "$MONIKER_BASE" "$AWS_EC2_VALIDATOR_INSTANCE_ID" \
@@ -157,7 +139,7 @@ elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
               AWS_EC2_SENTRY_INSTANCE_IDS AWS_EC2_SENTRY_PUBLIC_IPS AWS_EC2_SENTRY_PRIVATE_IPS \
               ",$KNOWN_SENTRY_NODE_URLS"
 elif [[ "$COMMAND" == "$COMMAND_SEND_GENESIS" ]]; then
-  __verify_mandatory "$GENESIS_FILE" "Nolus genesis file"
+  verify_mandatory "$GENESIS_FILE" "Nolus genesis file"
   propagate_genesis "$SCRIPT_DIR" "$GENESIS_FILE" "$AWS_S3_ARTIFACTS_MEDIUM_BUCKET" \
                     "$AWS_EC2_VALIDATOR_INSTANCE_ID" AWS_EC2_SENTRY_INSTANCE_IDS
 elif [[ "$COMMAND" == "$COMMAND_START" ]]; then

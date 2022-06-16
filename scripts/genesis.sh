@@ -3,6 +3,7 @@ set -euox pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/internal/genesis.sh
+source "$SCRIPT_DIR"/internal/verify.sh
 
 cleanup() {
   cleanup_genesis_sh
@@ -25,16 +26,6 @@ __print_usage() {
     [--validator-stake <tokens_validator_stakes>]
     [-o|--output <genesis_file_path>]" \
      "$1"
-}
-
-__verify_mandatory() {
-  local value="$1"
-  local description="$2"
-
-  if [[ -z "$value" ]]; then
-    echo >&2 "$description was not set"
-    exit 1
-  fi
 }
 
 COMMAND_FULL_GEN="full-gen"
@@ -143,13 +134,13 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
-  __verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
-  __verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
-  __verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
-  __verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
-  __verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
-  __verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
-  __verify_mandatory "$OUTPUT_FILE" "Genesis output file"
+  verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
+  verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
+  verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
+  verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
+  verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
+  verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
+  verify_mandatory "$OUTPUT_FILE" "Genesis output file"
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
