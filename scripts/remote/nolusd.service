@@ -6,6 +6,8 @@ User=root
 WorkingDirectory=/opt/deploy/nolus
 ExecStart=/usr/bin/nolusd start --home /opt/deploy/nolus
 Restart=always
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
