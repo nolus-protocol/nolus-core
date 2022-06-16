@@ -20,7 +20,8 @@ NATIVE_CURRENCY="unolus"
 
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
-WASM_CODE_PATH="$SCRIPT_DIR/../../smart-contracts/scripts"
+WASM_SCRIPT_PATH="$SCRIPT_DIR/../../smart-contracts/scripts"
+WASM_CODE_PATH="$SCRIPT_DIR/../../smart-contracts/artifacts"
 CHAIN_ID="nolus-local"
 TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
@@ -41,6 +42,7 @@ while [[ $# -gt 0 ]]; do
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
+    [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
@@ -95,6 +97,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --wasm-script-path)
+    WASM_SCRIPT_PATH="$2"
+    shift
+    shift
+    ;;
+
   --wasm-code-path)
     WASM_CODE_PATH="$2"
     shift
@@ -133,6 +141,13 @@ __config_client() {
   run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
 }
 
+# TODO same for the scripts
+if ! [ -d "$WASM_CODE_PATH" ]
+then
+  echo "The required wasm code path '$WASM_CODE_PATH' does not point to an existing directory."
+  exit 1
+fi
+
 rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
@@ -144,7 +159,8 @@ init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
-              "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_CODE_PATH" \
+              "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
+              "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
               "$TREASURY_NLS_U128"
 
 __config_client

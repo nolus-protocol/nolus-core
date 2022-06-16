@@ -20,6 +20,7 @@ NATIVE_CURRENCY="unolus"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-dev"
+WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
@@ -40,6 +41,7 @@ while [[ $# -gt 0 ]]; do
     [--validator_accounts_dir <validator_accounts_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
+    [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
@@ -94,6 +96,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --wasm-script-path)
+    WASM_SCRIPT_PATH="$2"
+    shift
+    shift
+    ;;
+
   --wasm-code-path)
     WASM_CODE_PATH="$2"
     shift
@@ -136,6 +144,7 @@ __verify_mandatory() {
 
 __verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 __verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+__verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
 __verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 __verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 
@@ -150,6 +159,7 @@ deploy_validators "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
-              "$VAL_STAKE" "$accounts_spec" "$WASM_CODE_PATH" "$TREASURY_NLS_U128"
+              "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
+              "$TREASURY_NLS_U128"
 
 start_validators "$VALIDATORS"

@@ -17,6 +17,7 @@ __print_usage() {
     [-c|--chain_id <string>]
     [--currency <native_currency>]
     [--accounts <accounts_spec_json>]
+    [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
     [--validator-node-urls-pubkeys <validator_node_urls_and_validator_pubkeys>]
     [--validator-accounts-dir <validator_accounts_dir>]
@@ -40,6 +41,7 @@ COMMAND_FULL_GEN="full-gen"
 CHAIN_ID=""
 NATIVE_CURRENCY="unolus"
 ACCOUNTS_SPEC=""
+WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
 TREASURY_INIT_TOKENS_U128=""
 VAL_NODE_URLS_AND_VAL_PUBKEYS=""
@@ -80,6 +82,12 @@ while [[ $# -gt 0 ]]; do
 
   --accounts)
     ACCOUNTS_SPEC="$2"
+    shift
+    shift
+    ;;
+
+  --wasm-script-path)
+    WASM_SCRIPT_PATH="$2"
     shift
     shift
     ;;
@@ -137,13 +145,15 @@ done
 if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   __verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
   __verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
+  __verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
   __verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
   __verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
   __verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
   __verify_mandatory "$OUTPUT_FILE" "Genesis output file"
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
-                                  "$ACCOUNTS_SPEC" "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
+                                  "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
+                                  "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
