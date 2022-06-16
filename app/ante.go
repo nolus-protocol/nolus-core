@@ -16,9 +16,9 @@ import (
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
-	AccountKeeper     ante.AccountKeeper
-	BankKeeper        taxtypes.BankKeeper
-	FeegrantKeeper    ante.FeegrantKeeper
+	AccountKeeper ante.AccountKeeper
+	BankKeeper    taxtypes.BankKeeper
+	//FeegrantKeeper    ante.FeegrantKeeper
 	TaxKeeper         taxkeeper.Keeper
 	TxCounterStoreKey sdk.StoreKey
 	WasmConfig        wasmTypes.WasmConfig
