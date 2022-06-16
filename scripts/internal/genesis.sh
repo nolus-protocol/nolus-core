@@ -3,6 +3,7 @@
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/validators-manager.sh
 source "$SCRIPT_DIR"/accounts.sh
+source "$SCRIPT_DIR"/verify.sh
 source "$SCRIPT_DIR"/../common/cmd.sh
 "$SCRIPT_DIR"/check-jq.sh
 
@@ -41,7 +42,9 @@ generate_genesis() {
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
   accounts_spec="$(echo "$accounts_spec" | add_account "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens")"
 
-  source "$wasm_script_path/deploy-contracts-genesis.sh"
+  local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
+  verify_file_exist "$wasm_script" "wasm script file"
+  source "$wasm_script"
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
   

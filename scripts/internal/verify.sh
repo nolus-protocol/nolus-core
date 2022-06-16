@@ -27,3 +27,13 @@ verify_dir_exist() {
     exit 1
   fi
 }
+
+verify_file_exist() {
+  local -r file="$1"
+  local -r description="$2"
+  if ! [ -f "$file" ]
+  then
+    echo "The required $description '$file' does not exist."
+    exit 1
+  fi
+}
