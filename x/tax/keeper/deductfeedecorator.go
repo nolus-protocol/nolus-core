@@ -54,10 +54,10 @@ func (dfd DeductFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	}
 
 	taxFees, remainingFees, err := ApplyFee(feeRate, feeCoins)
-	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, remainingFees))
 	if err != nil {
 		return ctx, err
 	}
+	ctx.Logger().Info(fmt.Sprintf("DeductFees: tax: %s, fee: %s", taxFees, remainingFees))
 
 	// deduct the fees
 	if !feeTx.GetFee().IsZero() {
