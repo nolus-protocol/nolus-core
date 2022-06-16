@@ -147,7 +147,7 @@ setup-dev-network:
         ./.cicd/download_wasm.sh $CONTRACTS_VERSION
         ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
               --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
-              --wasm-code-path "artifacts"
+              --wasm-script-path "artifacts" --wasm-code-path "artifacts"
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
               --faucet-tokens "$FAUCET_TOKENS_DEV" ;
