@@ -19,7 +19,10 @@ code-coverage:
     - make test-unit-coverage
   artifacts:
     reports:
-      cobertura: coverage.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: cobertura.xml
+
 
 code-coverage-report:
   extends: .go-test
