@@ -23,7 +23,7 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
   # TODO consider determining the last one dynamically from the GitLab API
-  CONTRACTS_VERSION: "v0.1.10"
+  CONTRACTS_VERSION: "v0.1.11"
   CONTRACTS_DIR: "artifacts"
 
   NOLUS_BUILDER_REPO: "builder"
