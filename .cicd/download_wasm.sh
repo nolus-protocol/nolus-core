@@ -12,5 +12,5 @@ JOB_NAME="build-and-optimization:cargo"
 ARCHVE_NAME="$JOB_NAME.zip"
 
 curl --output "$ARCHVE_NAME" --header "$TOKEN_TYPE: $TOKEN_VALUE" \
-        "$GITLAB_API/projects/$PROJECT_ID/jobs/artifacts/v$version/download?job=$JOB_NAME"
+        "$GITLAB_API/projects/$PROJECT_ID/jobs/artifacts/$version/download?job=$JOB_NAME"
 echo 'A' | unzip "$ARCHVE_NAME".zip
