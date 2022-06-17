@@ -83,6 +83,8 @@ build-binary:
     - .go-build
   script:
     - make build
+    - echo "Ensuring binary is statically linked ..." 
+        && (file target/release/nolusd | grep "statically linked")
     - tar -C target/release/ -czvf $ARTIFACT_BIN .
   artifacts:
     name: "nolusd-$CI_COMMIT_REF_SLUG"
@@ -140,6 +142,7 @@ setup-dev-network:
     - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
     - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
+        set -euox pipefail
         yum install -y tar gzip unzip jq ;
         tar -xvf $ARTIFACT_BIN ;
         export PATH="$(pwd)":$PATH ;
