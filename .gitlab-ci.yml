@@ -147,7 +147,7 @@ setup-dev-network:
         tar -xvf $ARTIFACT_BIN ;
         export PATH="$(pwd)":$PATH ;
 
-        ./.cicd/download_wasm.sh $CONTRACTS_VERSION
+        ./.cicd/download_wasm.sh $CONTRACTS_VERSION ;
         ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
               --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
               --wasm-script-path "artifacts" --wasm-code-path "artifacts"

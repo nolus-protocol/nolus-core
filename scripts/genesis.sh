@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euox pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR"/internal/genesis.sh
-source "$SCRIPT_DIR"/internal/verify.sh
+SCRIPT_GENESIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_GENESIS_DIR"/internal/genesis.sh
+source "$SCRIPT_GENESIS_DIR"/internal/verify.sh
 
 cleanup() {
   cleanup_genesis_sh
@@ -20,6 +20,7 @@ __print_usage() {
     [--accounts <accounts_spec_json>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
+    [--treasury-nls-u128 <init treasury amount of uNLS>
     [--validator-node-urls-pubkeys <validator_node_urls_and_validator_pubkeys>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
