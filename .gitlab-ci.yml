@@ -140,7 +140,7 @@ setup-dev-network:
     - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
     - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
-        yum install -y tar unzip jq ;
+        yum install -y tar gzip unzip jq ;
         tar -xvf $ARTIFACT_BIN ;
         export PATH="$(pwd)":$PATH ;
 
