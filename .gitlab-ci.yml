@@ -142,7 +142,7 @@ setup-dev-network:
     - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
     - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
-        set -euox pipefail
+        set -euox pipefail ;
         yum install -y tar gzip unzip jq ;
         tar -xvf $ARTIFACT_BIN ;
         export PATH="$(pwd)":$PATH ;
