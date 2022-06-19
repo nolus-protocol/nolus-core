@@ -16,9 +16,9 @@ import (
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
-	AccountKeeper ante.AccountKeeper
-	BankKeeper    taxtypes.BankKeeper
-	//FeegrantKeeper    ante.FeegrantKeeper
+	AccountKeeper     ante.AccountKeeper
+	BankKeeper        taxtypes.BankKeeper
+	FeegrantKeeper    ante.FeegrantKeeper
 	TaxKeeper         taxkeeper.Keeper
 	TxCounterStoreKey sdk.StoreKey
 	WasmConfig        wasmTypes.WasmConfig
@@ -44,22 +44,19 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		sigGasConsumer = ante.DefaultSigVerificationGasConsumer
 	}
 
-	mempoolFeeDecorator := taxkeeper.NewMempoolFeeDecorator(options.TaxKeeper)
-	deductFeeDecorator := taxkeeper.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.TaxKeeper)
-
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
 		ante.NewRejectExtensionOptionsDecorator(),
-		// ante.NewMempoolFeeDecorator(),
-		mempoolFeeDecorator,
+		ante.NewMempoolFeeDecorator(),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		// ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
-		deductFeeDecorator,
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper),
+		// Tax calculation must be called after fees
+		taxkeeper.NewDeductTaxDecorator(options.AccountKeeper, options.BankKeeper, options.TaxKeeper),
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
