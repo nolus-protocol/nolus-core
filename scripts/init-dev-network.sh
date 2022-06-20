@@ -26,6 +26,7 @@ WASM_CODE_PATH=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
+STABLE_DENOM="$STABLE_DENOM_DEV"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -62,7 +63,7 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
-  
+
    --chain-id)
     CHAIN_ID="$2"
     shift
@@ -127,7 +128,7 @@ while [[ $# -gt 0 ]]; do
     ;;
   *)
     echo >&2 "The provided option '$key' is not recognized"
-    exit 1    
+    exit 1
     ;;
 
   esac
@@ -151,6 +152,6 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128"
+              "$TREASURY_NLS_U128" "$STABLE_DENOM"
 
 start_validators "$VALIDATORS"

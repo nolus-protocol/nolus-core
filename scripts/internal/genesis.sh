@@ -34,6 +34,7 @@ generate_genesis() {
   local -r treasury_init_tokens_u128="$8"
   local -r val_accounts_dir="$9"
   local -r node_id_and_val_pubkeys="${10}"
+  local -r stable_denom="${11}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -47,11 +48,11 @@ generate_genesis() {
   source "$wasm_script"
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
-  
+
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens")
-  
+  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens" "$stable_denom")
+
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   _=$(__integrate_genesis_txs "$create_validator_txs")
   echo "$genesis_file"
