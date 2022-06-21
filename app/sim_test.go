@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -22,6 +24,7 @@ import (
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
+	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
 	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
@@ -52,6 +55,19 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.OnOperation = false
 	config.AllInvariants = false
 	config.ChainID = helpers.SimAppChainID
+
+	appParams := simtypes.AppParams{
+		wasmsim.OpReflectContractPath: []byte(`"../testdata/reflect.wasm"`),
+	}
+	bz, err := json.Marshal(appParams)
+	if err != nil {
+		t.Fatal("Marshaling of simulation parameters failed")
+	}
+	config.ParamsFile = filepath.Join(t.TempDir(), "app-params.json")
+	err = ioutil.WriteFile(config.ParamsFile, bz, 0o600)
+	if err != nil {
+		t.Fatal("Writing of simulation parameters failed")
+	}
 
 	appHashList := make([]json.RawMessage, NumTimesToRunPerSeed)
 
