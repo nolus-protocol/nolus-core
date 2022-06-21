@@ -25,23 +25,23 @@ func NewDeductTaxDecorator(ak types.AccountKeeper, bk types.BankKeeper, tk Keepe
 	}
 }
 
-func (dfd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
+func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
-	if addr := dfd.ak.GetModuleAddress(authtypes.FeeCollectorName); addr == nil {
+	if addr := dtd.ak.GetModuleAddress(authtypes.FeeCollectorName); addr == nil {
 		panic(fmt.Sprintf("%s module account has not been set", authtypes.FeeCollectorName))
 	}
 
-	treasuryAddr, err := sdk.AccAddressFromBech32(dfd.tk.ContractAddress(ctx))
+	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.ContractAddress(ctx))
 	if err != nil {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("Invalid Treasury Smart Contract Address [ %s ]", err.Error()))
 	}
 
 	feeCoins := feeTx.GetFee()
-	feeRate := sdk.NewDec(int64(dfd.tk.FeeRate(ctx)))
+	feeRate := sdk.NewDec(int64(dtd.tk.FeeRate(ctx)))
 
 	taxFees, remainingFees, err := ApplyTax(feeRate, feeCoins)
 	if err != nil {
@@ -50,7 +50,8 @@ func (dfd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, fee: %s", taxFees, remainingFees))
 
 	// Send taxFees from fee collector to the treasury smart contract
-	err = dfd.bk.SendCoins(ctx, dfd.ak.GetModuleAddress(authtypes.FeeCollectorName), treasuryAddr, taxFees)
+	// err = dtd.bk.SendCoins(ctx, dtd.ak.GetModuleAddress(authtypes.FeeCollectorName), treasuryAddr, taxFees)
+	err = dtd.bk.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, taxFees)
 	if err != nil {
 		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}
@@ -63,7 +64,7 @@ func (dfd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	return next(ctx, tx, simulate)
 }
 
-func ApplyTax(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
+func ApplyTaxImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
 	taxFees := sdk.Coins{}
 
 	if feeRate.IsZero() || feeCoins.Empty() {
@@ -78,7 +79,7 @@ func ApplyTax(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error)
 
 	remainingFees, neg := feeCoins.SafeSub(taxFees)
 	if neg {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyFee: insufficient fees; got: %s required: %s", feeCoins, taxFees)
+		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyTax: insufficient fees; got: %s required: %s", feeCoins, taxFees)
 	}
 
 	return taxFees, remainingFees, nil
