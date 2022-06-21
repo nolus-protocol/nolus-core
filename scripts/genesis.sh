@@ -43,6 +43,7 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 OUTPUT_FILE=""
 LPP_NATIVE=""
+CONTRACTS_INFO_FILE="contracts-info.json"
 
 if [[ $# -lt 1 ]]; then
   echo "Missing command!"
@@ -155,7 +156,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
                                   "$TREASURY_INIT_TOKENS_U128" \
-                                  "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE")
+                                  "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #

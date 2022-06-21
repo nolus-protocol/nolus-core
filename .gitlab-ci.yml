@@ -138,6 +138,7 @@ setup-dev-network:
     entrypoint: [ "" ]
   variables:
     ACCOUNTS_DIR: accounts
+    CONTRACTS_INFO_FILE: "contracts-info.json"
   script:
     - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
     - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
@@ -153,11 +154,13 @@ setup-dev-network:
               --wasm-script-path "artifacts" --wasm-code-path "artifacts"
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
-              --faucet-tokens "$FAUCET_TOKENS_DEV" ;
+              --faucet-tokens "$FAUCET_TOKENS_DEV" ----contracts_info_file $CONTRACTS_INFO_FILE ;
+
       else
         echo "Skip preparation for deploy since this is not a new version build" ;
       fi
   artifacts:
-    name: "accounts-$CI_COMMIT_REF_SLUG"
+    name: "dev-net-data-$CI_COMMIT_REF_SLUG"
     paths:
       - $ACCOUNTS_DIR
+      - $CONTRACTS_INFO_FILE

@@ -28,6 +28,7 @@ TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 LPP_NATIVE="usdc"
+CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -166,6 +167,6 @@ source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE"
+              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 __config_client
