@@ -10,3 +10,4 @@ users/
 validators/
 coverage.txt
 .vscode/
+testdata/*.wasm
