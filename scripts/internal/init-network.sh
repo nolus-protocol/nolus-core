@@ -19,7 +19,7 @@ init_network() {
   local -r wasm_script_path="$8"
   local -r wasm_code_path="$9"
   local -r treasury_init_tokens_u128="${10}"
-  local -r stable_denom="${11}"
+  local -r usdc="${11}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
@@ -28,6 +28,6 @@ init_network() {
                                           "$genesis_accounts_spec" \
                                           "$wasm_script_path" "$wasm_code_path" \
                                           "$treasury_init_tokens_u128" \
-                                          "$val_accounts_dir" "$node_id_and_val_pubkeys" "$stable_denom")
+                                          "$val_accounts_dir" "$node_id_and_val_pubkeys" "$usdc")
   propagate_genesis "$final_genesis_file" "$validators"
 }
