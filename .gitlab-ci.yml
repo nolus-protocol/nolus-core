@@ -23,7 +23,7 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
   # TODO consider determining the last one dynamically from the GitLab API
-  CONTRACTS_VERSION: "v0.1.10"
+  CONTRACTS_VERSION: "v0.1.11"
   CONTRACTS_DIR: "artifacts"
 
   NOLUS_BUILDER_REPO: "builder"
@@ -83,6 +83,8 @@ build-binary:
     - .go-build
   script:
     - make build
+    - echo "Ensuring binary is statically linked ..." 
+        && (file target/release/nolusd | grep "statically linked")
     - tar -C target/release/ -czvf $ARTIFACT_BIN .
   artifacts:
     name: "nolusd-$CI_COMMIT_REF_SLUG"
@@ -140,11 +142,12 @@ setup-dev-network:
     - echo "BUILD_NOLUS_VERSION=$BUILD_NOLUS_VERSION"
     - if [[ $BUILD_NOLUS_VERSION == "true" ]] ;
       then
-        yum install -y tar gzip jq ;
+        set -euox pipefail ;
+        yum install -y tar gzip unzip jq ;
         tar -xvf $ARTIFACT_BIN ;
         export PATH="$(pwd)":$PATH ;
 
-        ./.cicd/download_wasm.sh $CONTRACTS_VERSION
+        ./.cicd/download_wasm.sh $CONTRACTS_VERSION ;
         ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
               --chain-id nolus-dev-1 -v 3 --validator_accounts_dir "$ACCOUNTS_DIR"
               --wasm-script-path "artifacts" --wasm-code-path "artifacts"

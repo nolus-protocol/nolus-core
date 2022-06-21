@@ -1,9 +1,9 @@
 #!/bin/bash
 set -euox pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "$SCRIPT_DIR"/internal/genesis.sh
-source "$SCRIPT_DIR"/internal/verify.sh
+SCRIPT_GENESIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_GENESIS_DIR"/internal/genesis.sh
+source "$SCRIPT_GENESIS_DIR"/internal/verify.sh
 
 cleanup() {
   cleanup_genesis_sh
@@ -20,10 +20,12 @@ __print_usage() {
     [--accounts <accounts_spec_json>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
+    [--treasury-nls-u128 <init treasury amount of uNLS>
     [--validator-node-urls-pubkeys <validator_node_urls_and_validator_pubkeys>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
+    [--lpp_native <lpp_native>]
     [-o|--output <genesis_file_path>]" \
      "$1"
 }
@@ -40,6 +42,7 @@ VAL_ACCOUNTS_DIR="val-accounts"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 OUTPUT_FILE=""
+LPP_NATIVE=""
 
 if [[ $# -lt 1 ]]; then
   echo "Missing command!"
@@ -119,12 +122,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --lpp_native)
+    LPP_NATIVE="$2"
+    shift
+    shift
+    ;;
+
   -o | --output)
     OUTPUT_FILE="$2"
     shift
     shift
     ;;
-  
+
   *)
     echo "unknown option '$key'"
     exit 1
@@ -140,12 +149,13 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
   verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
   verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
+  verify_mandatory "$LPP_NATIVE" "Lpp native currency symbol"
   verify_mandatory "$OUTPUT_FILE" "Genesis output file"
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
                                   "$TREASURY_INIT_TOKENS_U128" \
-                                  "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS")
+                                  "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #
