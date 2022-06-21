@@ -26,7 +26,7 @@ WASM_CODE_PATH=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
-USDC="$STABLE_DENOM_DEV"
+LPP_NATIVE="$STABLE_DENOM_DEV"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -152,6 +152,6 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$USDC"
+              "$TREASURY_NLS_U128" "$LPP_NATIVE"
 
 start_validators "$VALIDATORS"

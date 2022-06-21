@@ -27,7 +27,7 @@ CHAIN_ID="nolus-local"
 TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
-USDC="ibc/8A34AF0C1943FD0DFCDE9ADBF0B2C9959C45E87E6088EA2FC6ADACD59261B8A2"
+LPP_NATIVE="usdc"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -48,7 +48,7 @@ while [[ $# -gt 0 ]]; do
     [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
-    [--usdc <usdc>]
+    [--lpp_native <lpp_native>]
     [--user-dir <client_user_dir>]" \
      "$0"
     exit 0
@@ -124,8 +124,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --usdc)
-    USDC="$2"
+  --lpp_native)
+    LPP_NATIVE="$2"
     shift
     shift
     ;;
@@ -166,6 +166,6 @@ source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$USDC"
+              "$TREASURY_NLS_U128" "$LPP_NATIVE"
 
 __config_client
