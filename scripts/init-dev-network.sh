@@ -27,6 +27,7 @@ TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 LPP_NATIVE="$STABLE_DENOM_DEV"
+CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -40,14 +41,15 @@ while [[ $# -gt 0 ]]; do
     [--artifact-scripts <tar_gz_scripts>]
     [--chain-id <string>]
     [-v|--validators <number>]
-    [--validator_accounts_dir <validator_accounts_dir>]
+    [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
-    [--faucet-tokens <initial_balance>]" \
+    [--faucet-tokens <initial_balance>]
+    [--contracts-info-file <contracts_info_file>]" \
      "$0"
     exit 0
     ;;
@@ -80,7 +82,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-   --validator_accounts_dir)
+   --validator-accounts-dir)
     VAL_ACCOUNTS_DIR="$2"
     shift
     shift
@@ -121,8 +123,15 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+
   --faucet-tokens)
     FAUCET_TOKENS="$2"
+    shift
+    shift
+    ;;
+
+  --contracts-info-file)
+    CONTRACTS_INFO_FILE="$2"
     shift
     shift
     ;;
@@ -152,6 +161,6 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE"
+              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 start_validators "$VALIDATORS"
