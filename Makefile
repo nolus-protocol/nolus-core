@@ -106,6 +106,10 @@ ifneq (${WASMVM_DIR},)
 	export CGO_LDFLAGS=-L${WASMVM_DIR}
 endif
 
+ifeq (${GOROOT},)
+	export GOROOT=$(shell go env GOROOT)
+endif
+
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 ###############################################################################
@@ -120,7 +124,6 @@ BUILD_TARGETS := build install
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
 fuzz:
-	sh ./scripts/test/prepare-contracts.sh
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h

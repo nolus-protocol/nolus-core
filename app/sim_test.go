@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go/build"
 	"io/ioutil"
 	"math/rand"
 	"os"
@@ -56,8 +57,24 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.AllInvariants = false
 	config.ChainID = helpers.SimAppChainID
 
+	pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
+	if err != nil {
+		t.Fatalf("CosmWasm module path not found: %v", err)
+	}
+
+	wasmData, err := ioutil.ReadFile(filepath.Join(pkg.Dir, "testdata/reflect.wasm"))
+	if err != nil {
+		t.Fatalf("Failed to read reflect contract: %v", err)
+	}
+
+	reflectContractPath := filepath.Join(t.TempDir(), "reflect.wasm")
+	err = ioutil.WriteFile(reflectContractPath, wasmData, 0o600)
+	if err != nil {
+		t.Fatalf("Failed to store reflect contract: %v", err)
+	}
+
 	appParams := simtypes.AppParams{
-		wasmsim.OpReflectContractPath: []byte(`"../testdata/reflect.wasm"`),
+		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
 	}
 	bz, err := json.Marshal(appParams)
 	if err != nil {
