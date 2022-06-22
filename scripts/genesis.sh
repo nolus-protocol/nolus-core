@@ -25,7 +25,7 @@ __print_usage() {
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
-    [--lpp_native <lpp_native>]
+    [--lpp-native <lpp_native>]
     [-o|--output <genesis_file_path>]" \
      "$1"
 }
@@ -123,7 +123,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --lpp_native)
+  --lpp-native)
     LPP_NATIVE="$2"
     shift
     shift
@@ -154,9 +154,10 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   verify_mandatory "$OUTPUT_FILE" "Genesis output file"
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
-                                  "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-                                  "$TREASURY_INIT_TOKENS_U128" \
-                                  "$VAL_ACCOUNTS_DIR" "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE")
+                                  "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
+                                  "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
+                                  "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
+                                  "$CONTRACTS_INFO_FILE")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #

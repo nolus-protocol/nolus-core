@@ -26,9 +26,10 @@ init_network() {
   local final_genesis_file;
   final_genesis_file=$(generate_genesis "$chain_id" "$native_currency" \
                                           "$val_tokens" "$val_stake" \
-                                          "$genesis_accounts_spec" \
+                                          "$val_accounts_dir" "$genesis_accounts_spec" \
                                           "$wasm_script_path" "$wasm_code_path" \
                                           "$treasury_init_tokens_u128" \
-                                          "$val_accounts_dir" "$node_id_and_val_pubkeys" "$lpp_native" "$contracts_info_file")
+                                          "$node_id_and_val_pubkeys" \
+                                          "$lpp_native" "$contracts_info_file")
   propagate_genesis "$final_genesis_file" "$validators"
 }

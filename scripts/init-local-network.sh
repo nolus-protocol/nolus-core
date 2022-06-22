@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
-    [--lpp_native <lpp_native>]
+    [--lpp-native <lpp_native>]
     [--user-dir <client_user_dir>]" \
      "$0"
     exit 0
@@ -125,7 +125,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --lpp_native)
+  --lpp-native)
     LPP_NATIVE="$2"
     shift
     shift

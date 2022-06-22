@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
     [--artifact-scripts <tar_gz_scripts>]
     [--chain-id <string>]
     [-v|--validators <number>]
-    [--validator_accounts_dir <validator_accounts_dir>]
+    [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
     [--wasm-script-path <wasm_script_path>]
@@ -82,7 +82,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-   --validator_accounts_dir)
+   --validator-accounts-dir)
     VAL_ACCOUNTS_DIR="$2"
     shift
     shift
@@ -130,7 +130,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --contracts_info_file)
+  --contracts-info-file)
     CONTRACTS_INFO_FILE="$2"
     shift
     shift

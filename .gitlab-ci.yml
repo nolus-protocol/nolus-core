@@ -154,7 +154,8 @@ setup-dev-network:
               --wasm-script-path "artifacts" --wasm-code-path "artifacts"
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
-              --faucet-tokens "$FAUCET_TOKENS_DEV" ----contracts_info_file $CONTRACTS_INFO_FILE ;
+              --faucet-tokens "$FAUCET_TOKENS_DEV"
+              --contracts-info-file $CONTRACTS_INFO_FILE ;
 
       else
         echo "Skip preparation for deploy since this is not a new version build" ;
