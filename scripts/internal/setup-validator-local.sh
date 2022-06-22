@@ -17,6 +17,7 @@ init_setup_validator_local_sh() {
 #
 # The node ids and validator public keys are printed on the standard output one at a line.
 setup_validators() {
+  set -euo pipefail
   local validators_nb="$1"
 
   for i in $(seq "$validators_nb"); do
