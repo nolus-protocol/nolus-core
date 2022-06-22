@@ -67,7 +67,11 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 func ApplyTaxImpl(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
 	taxFees := sdk.Coins{}
 
-	if feeRate.IsZero() || feeCoins.Empty() {
+	if feeCoins.Empty() {
+		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyTax: no fees provided")
+	}
+
+	if feeRate.IsZero() {
 		return taxFees, feeCoins, nil
 	}
 
