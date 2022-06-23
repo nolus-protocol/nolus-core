@@ -106,6 +106,10 @@ ifneq (${WASMVM_DIR},)
 	export CGO_LDFLAGS=-L${WASMVM_DIR}
 endif
 
+ifeq (${GOROOT},)
+	export GOROOT=$(shell go env GOROOT)
+endif
+
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
 ###############################################################################
