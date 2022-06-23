@@ -47,13 +47,14 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	if err != nil {
 		return ctx, err
 	}
-	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, fee: %s", taxFees, remainingFees))
+	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, final fee: %s", taxFees, remainingFees))
 
-	// Send taxFees from fee collector to the treasury smart contract
-	// err = dtd.bk.SendCoins(ctx, dtd.ak.GetModuleAddress(authtypes.FeeCollectorName), treasuryAddr, taxFees)
-	err = dtd.bk.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, taxFees)
-	if err != nil {
-		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
+	if !taxFees.Empty() {
+		// Send taxFees from fee collector to the treasury smart contract
+		err = dtd.bk.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, taxFees)
+		if err != nil {
+			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
+		}
 	}
 
 	events := sdk.Events{sdk.NewEvent(sdk.EventTypeTx,
@@ -67,11 +68,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 func ApplyTax(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
 	taxFees := sdk.Coins{}
 
-	if feeCoins.Empty() {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyTax: no fees provided")
-	}
-
-	if feeRate.IsZero() {
+	if feeRate.IsZero() || feeCoins.Empty() {
 		return taxFees, feeCoins, nil
 	}
 
