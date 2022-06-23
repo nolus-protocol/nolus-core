@@ -1,16 +1,15 @@
 package keeper_test
 
 import (
-	"errors"
-
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
 )
 
-func (suite *KeeperTestSuite) TestDeductFees() {
+func (suite *KeeperTestSuite) TestTaxes() {
 	suite.SetupTest(true) // setup
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
 
@@ -19,7 +18,7 @@ func (suite *KeeperTestSuite) TestDeductFees() {
 
 	// msg and signatures
 	msg := sdktestutil.NewTestMsg(addr1)
-	feeAmount := sdktestutil.NewTestFeeAmount()
+	feeAmount := sdktestutil.NewTestFeeAmount() // 150atom
 	gasLimit := sdktestutil.NewTestGasLimit()
 	suite.Require().NoError(suite.txBuilder.SetMsgs(msg))
 	suite.txBuilder.SetFeeAmount(feeAmount)
@@ -32,34 +31,28 @@ func (suite *KeeperTestSuite) TestDeductFees() {
 	// Set account with insufficient funds
 	acc := suite.app.AccountKeeper.NewAccountWithAddress(suite.ctx, addr1)
 	suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
-	coins := sdk.NewCoins(sdk.NewCoin("nolus", sdk.NewInt(10)))
-	err = simapp.FundAccount(suite.app.BankKeeper, suite.ctx, addr1, coins)
+	err = simapp.FundAccount(suite.app.BankKeeper, suite.ctx, addr1, sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(10))))
 	suite.Require().NoError(err)
 
-	dfd := keeper.NewDeductFeeDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, suite.app.TaxKeeper)
-	antehandler := sdk.ChainAnteDecorators(dfd)
-	_, err = antehandler(suite.ctx, tx, false)
+	dfd := ante.NewDeductFeeDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, nil)
+	dtd := keeper.NewDeductTaxDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, suite.app.TaxKeeper)
+	antehandler := sdk.ChainAnteDecorators(dfd, dtd)
 
+	treasuryAddr, err := sdk.AccAddressFromBech32(suite.app.TaxKeeper.ContractAddress(suite.ctx))
+	suite.Require().NoError(err)
+
+	_, err = antehandler(suite.ctx, tx, false)
 	suite.Require().NotNil(err, "Tx did not error when fee payer had insufficient funds")
 
 	// Set account with sufficient funds
 	suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
 	err = simapp.FundAccount(suite.app.BankKeeper, suite.ctx, addr1, sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(200))))
 	suite.Require().NoError(err)
-	_, err = antehandler(suite.ctx, tx, false)
 
+	_, err = antehandler(suite.ctx, tx, false)
 	suite.Require().Nil(err, "Tx errored after account has been set with sufficient funds")
 
-	keeper.ApplyFee = func(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
-		return nil, nil, errors.New("ApplyFee failure")
-	}
+	reqTax := sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(60)))
 
-	// Set account with sufficient funds
-	suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
-	err = simapp.FundAccount(suite.app.BankKeeper, suite.ctx, addr1, sdk.NewCoins(sdk.NewCoin("atom", sdk.NewInt(200))))
-	suite.Require().NoError(err)
-	_, err = antehandler(suite.ctx, tx, false)
-	suite.Require().EqualError(err, "ApplyFee failure")
-
-	keeper.ApplyFee = keeper.ApplyFeeImpl
+	suite.EqualValues(reqTax, suite.app.BankKeeper.GetAllBalances(suite.ctx, treasuryAddr), "Tax differs from 40%")
 }
