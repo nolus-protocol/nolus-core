@@ -62,17 +62,7 @@ func TestAppStateDeterminism(t *testing.T) {
 		t.Fatalf("CosmWasm module path not found: %v", err)
 	}
 
-	wasmData, err := ioutil.ReadFile(filepath.Join(pkg.Dir, "testdata/reflect.wasm"))
-	if err != nil {
-		t.Fatalf("Failed to read reflect contract: %v", err)
-	}
-
-	reflectContractPath := filepath.Join(t.TempDir(), "reflect.wasm")
-	err = ioutil.WriteFile(reflectContractPath, wasmData, 0o600)
-	if err != nil {
-		t.Fatalf("Failed to store reflect contract: %v", err)
-	}
-
+	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect.wasm")
 	appParams := simtypes.AppParams{
 		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
 	}
