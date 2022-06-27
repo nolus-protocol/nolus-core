@@ -54,25 +54,25 @@ while [[ $# -gt 0 ]]; do
     exit 0
     ;;
 
-   --artifact-bin)
+  --artifact-bin)
     ARTIFACT_BIN="$2"
     shift
     shift
     ;;
 
-   --artifact-scripts)
+  --artifact-scripts)
     ARTIFACT_SCRIPTS="$2"
     shift
     shift
     ;;
 
-   --chain-id)
+  --chain-id)
     CHAIN_ID="$2"
     shift
     shift
     ;;
 
-   -v | --validators)
+  -v | --validators)
     VALIDATORS="$2"
     [ "$VALIDATORS" -gt 0 ] || {
       echo >&2 "validators must be a positive number"
@@ -82,7 +82,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-   --validator-accounts-dir)
+  --validator-accounts-dir)
     VAL_ACCOUNTS_DIR="$2"
     shift
     shift
