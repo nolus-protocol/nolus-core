@@ -23,6 +23,7 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-dev"
 WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
+WASM_ADMIN_TOKENS="1000000000""$NATIVE_CURRENCY"
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
@@ -160,6 +161,8 @@ verify_mandatory "$LPP_NATIVE" "LPP native currency"
 rm -fr "$VAL_ACCOUNTS_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(recover_account "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
+wasm_admin_addr=$(generate_account "wasm_admin" "$USER_DIR")
+accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$WASM_ADMIN_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
@@ -169,6 +172,6 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
+              "$wasm_admin_addr" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 start_validators "$VALIDATORS"

@@ -155,7 +155,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
-                                  "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
+                                  "$WASM_CODE_PATH" "" "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
                                   "$CONTRACTS_INFO_FILE")
   mv "$genesis_file" "$OUTPUT_FILE"
