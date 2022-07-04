@@ -26,7 +26,7 @@ WASM_CODE_PATH=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
-LPP_NATIVE="$STABLE_DENOM_DEV"
+LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
@@ -49,6 +49,7 @@ while [[ $# -gt 0 ]]; do
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]
+    [--lpp-native <currency>]
     [--contracts-info-file <contracts_info_file>]" \
      "$0"
     exit 0
@@ -130,6 +131,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --lpp-native)
+    LPP_NATIVE="$2"
+    shift
+    shift
+    ;;
+
   --contracts-info-file)
     CONTRACTS_INFO_FILE="$2"
     shift
@@ -148,6 +155,7 @@ verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
 verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
+verify_mandatory "$LPP_NATIVE" "LPP native currency"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 

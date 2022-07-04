@@ -155,6 +155,7 @@ setup-dev-network:
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
               --faucet-tokens "$FAUCET_TOKENS_DEV"
+              --lpp-native "$STABLE_DENOM_DEV"
               --contracts-info-file $CONTRACTS_INFO_FILE ;
 
       else
