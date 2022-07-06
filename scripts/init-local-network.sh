@@ -23,7 +23,6 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 WASM_SCRIPT_PATH="$SCRIPT_DIR/../../smart-contracts/scripts"
 WASM_CODE_PATH="$SCRIPT_DIR/../../smart-contracts/artifacts"
-WASM_ADMIN_TOKENS="1000000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-local"
 TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
@@ -161,7 +160,6 @@ rm -fr "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
 wasm_admin_addr=$(generate_account "wasm_admin" "$USER_DIR")
-accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$WASM_ADMIN_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"

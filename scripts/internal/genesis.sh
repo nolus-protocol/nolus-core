@@ -39,6 +39,7 @@ generate_genesis() {
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
   local accounts_spec="$accounts_spec_in"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
+  accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$treasury_init_tokens")
 
   local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
   verify_file_exist "$wasm_script" "wasm script file"

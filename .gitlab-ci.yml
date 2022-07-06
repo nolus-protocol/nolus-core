@@ -152,6 +152,7 @@ setup-dev-network:
         ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
               --chain-id nolus-dev-1 -v 3 --validator-accounts-dir "$ACCOUNTS_DIR"
               --wasm-script-path "artifacts" --wasm-code-path "artifacts"
+              --wasm-admin-addr "$SMART_CONTRACTS_ADMIN_ADDR"
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
               --faucet-tokens "$FAUCET_TOKENS_DEV"
