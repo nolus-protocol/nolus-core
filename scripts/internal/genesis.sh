@@ -12,10 +12,6 @@ genesis_home_dir=$(mktemp -d)
 genesis_file="$genesis_home_dir"/config/genesis.json
 # end "instance" variables
 
-# TODO Add proper account
-SMARTCONTRACT_ADMIN_ADDR="nolus1ga3l8gj8kpddksvgdly4qrs597jejkf8yl8kly"
-
-
 cleanup_genesis_sh() {
   if [[ -n "${genesis_home_dir:-}" ]]; then
     rm -rf "$genesis_home_dir"
@@ -32,17 +28,18 @@ generate_genesis() {
   local -r accounts_spec_in="$6"
   local -r wasm_script_path="$7"
   local -r wasm_code_path="$8"
-  local -r treasury_init_tokens_u128="$9"
-  local -r node_id_and_val_pubkeys="${10}"
-  local -r lpp_native="${11}"
-  local -r contracts_info_file="${12}"
+  local -r wasm_admin_addr="$9"
+  local -r treasury_init_tokens_u128="${10}"
+  local -r node_id_and_val_pubkeys="${11}"
+  local -r lpp_native="${12}"
+  local -r contracts_info_file="${13}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
   local accounts_spec="$accounts_spec_in"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  accounts_spec="$(echo "$accounts_spec" | add_account "$SMARTCONTRACT_ADMIN_ADDR" "$treasury_init_tokens")"
+  accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$treasury_init_tokens")
 
   local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
   verify_file_exist "$wasm_script" "wasm script file"
@@ -52,7 +49,7 @@ generate_genesis() {
 
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$SMARTCONTRACT_ADMIN_ADDR" \
+  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$wasm_admin_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"

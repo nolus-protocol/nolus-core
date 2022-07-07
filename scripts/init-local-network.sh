@@ -27,7 +27,7 @@ CHAIN_ID="nolus-local"
 TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
-LPP_NATIVE="usdc"
+LPP_NATIVE="uusdc"
 CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
@@ -159,6 +159,7 @@ rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
+wasm_admin_addr=$(generate_account "wasm_admin" "$USER_DIR")
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
@@ -167,6 +168,6 @@ source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
+              "$wasm_admin_addr" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 __config_client

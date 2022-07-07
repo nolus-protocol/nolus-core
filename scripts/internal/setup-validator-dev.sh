@@ -56,7 +56,7 @@ start_validators() {
   local validators_nb="$1"
 
   __do_cmd_services "$validators_nb" "start"
-} 
+}
 
 #
 # Return the node ids and validator public keys printed on the standard output delimited with a space.

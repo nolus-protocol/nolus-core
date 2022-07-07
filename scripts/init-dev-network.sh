@@ -23,10 +23,11 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID="nolus-dev"
 WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
+WASM_ADMIN_ADDR=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
-LPP_NATIVE="$STABLE_DENOM_DEV"
+LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
@@ -46,9 +47,11 @@ while [[ $# -gt 0 ]]; do
     [--validator-stake <tokens_val_will_stake>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
+    [--wasm-admin-addr <wasm_admin_address]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]
+    [--lpp-native <currency>]
     [--contracts-info-file <contracts_info_file>]" \
      "$0"
     exit 0
@@ -112,6 +115,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --wasm-admin-addr)
+    WASM_ADMIN_ADDR="$2"
+    shift
+    shift
+    ;;
+
   --treasury-nls-u128)
     TREASURY_NLS_U128="$2"
     shift
@@ -126,6 +135,12 @@ while [[ $# -gt 0 ]]; do
 
   --faucet-tokens)
     FAUCET_TOKENS="$2"
+    shift
+    shift
+    ;;
+
+  --lpp-native)
+    LPP_NATIVE="$2"
     shift
     shift
     ;;
@@ -147,7 +162,9 @@ verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
 verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
+verify_mandatory "$WASM_ADMIN_ADDR" "Wasm admin address"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
+verify_mandatory "$LPP_NATIVE" "LPP native currency"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 
@@ -161,6 +178,6 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
+              "$WASM_ADMIN_ADDR" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 start_validators "$VALIDATORS"
