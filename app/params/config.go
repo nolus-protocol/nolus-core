@@ -8,7 +8,7 @@ import (
 
 const (
 	HumanCoinUnit = "nolus"
-	BaseCoinUnit  = "unolus"
+	BaseCoinUnit  = "unls"
 
 	DefaultBondDenom = BaseCoinUnit
 

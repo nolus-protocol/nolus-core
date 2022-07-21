@@ -33,7 +33,7 @@ __print_usage() {
 
 COMMAND_FULL_GEN="full-gen"
 CHAIN_ID=""
-NATIVE_CURRENCY="unolus"
+NATIVE_CURRENCY="unls"
 ACCOUNTS_SPEC=""
 WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""

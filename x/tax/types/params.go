@@ -18,7 +18,7 @@ var (
 
 var (
 	KeyFeeCaps            = []byte("FeeCaps")
-	DefaultFeeCaps string = "1000unolus"
+	DefaultFeeCaps string = "1000unls"
 )
 
 var (

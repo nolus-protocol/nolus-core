@@ -27,7 +27,7 @@ declare -r sentry_node_ids_str="$8"
 update_app "$home_dir" '."api"."enable"' "false"
 update_app "$home_dir" '."grpc"."enable"' "false"
 update_app "$home_dir" '."grpc-web"."enable"' "false"
-update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unolus"'"'
+update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"'
 update_app "$home_dir" '."telemetry"."enabled"' "true"
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1"
 
