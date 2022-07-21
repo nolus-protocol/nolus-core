@@ -68,7 +68,7 @@ generate_genesis() {
 #                         for example "2022-01-28T13:15:59+02:00"
 # "vesting.end-time" - mandatory string representing a datetime in ISO 8601 format with max precision in seconds,
 #                         for example "2022-01-30T15:15:59-06:00"
-# "vesting.amount" - mandatory number in native currency, e.g. 100 means "100 unolus"
+# "vesting.amount" - mandatory number in native currency, e.g. 100 means "100 unls"
 add_genesis_account() {
   local specification="$1"
   local currency="$2"

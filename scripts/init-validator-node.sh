@@ -10,7 +10,7 @@ IP_ADDRESS=""
 MNEMONIC=""
 NODE_DIR=""
 MONIKER="test-moniker"
-STAKE="1000000unolus"
+STAKE="1000000unls"
 KEYRING="test"
 
 POSITIONAL=()

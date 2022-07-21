@@ -46,7 +46,7 @@ update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
 update_app "$home_dir" '."grpc"."enable"' "true" >/dev/null
 update_app "$home_dir" '."grpc"."address"' '"0.0.0.0:'"$GRPC_PORT"'"' >/dev/null
 update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
-update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unolus"'"' >/dev/null
+update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
 update_app "$home_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
 
