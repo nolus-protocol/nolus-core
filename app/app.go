@@ -434,13 +434,8 @@ func New(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
-
-	app.GovKeeper = govkeeper.NewKeeper(
-		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
-		&stakingKeeper, govRouter,
-	)
+		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper))
+	//AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -451,7 +446,7 @@ func New(
 	var wasmOpts []wasm.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := "iterator,staking,stargate"
+	supportedFeatures := "iterator,staking,stargate,migrate,upgrade"
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -473,9 +468,14 @@ func New(
 	)
 
 	// The gov proposal types can be individually enabled
-	//if len(enabledProposals) != 0 {
-	//  govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
-	//}
+	if len(GetWasmEnabledProposals()) != 0 {
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
+	}
+
+	app.GovKeeper = govkeeper.NewKeeper(
+		appCodec, keys[govtypes.StoreKey], app.GetSubspace(govtypes.ModuleName), app.AccountKeeper, app.BankKeeper,
+		&stakingKeeper, govRouter,
+	)
 
 	app.TaxKeeper = *taxmodulekeeper.NewKeeper(
 		appCodec,
