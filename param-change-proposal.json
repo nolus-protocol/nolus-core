@@ -1,0 +1,14 @@
+{
+    "title": "Foo",
+    "description": "Bar",
+    "changes": [
+      {
+        "subspace": "wasm",
+        "key": "uploadAccess",
+        "value": {
+          "permission": "Nobody"
+        }
+      }
+    ],
+    "deposit": "1000000unls"
+}
