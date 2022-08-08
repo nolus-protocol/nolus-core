@@ -11,3 +11,4 @@ validators/
 coverage.txt
 .vscode/
 contracts-info.json
+out.txt
