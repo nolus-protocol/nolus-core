@@ -516,7 +516,6 @@ func New(
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
-	app.IBCKeeper.SetRouter(ibcRouter)
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -553,6 +552,10 @@ func New(
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
 	}
 
+	// Create static IBC router, add transfer route, then set and seal it
+	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper))
+	app.IBCKeeper.SetRouter(ibcRouter)
+
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		keys[govtypes.StoreKey],
@@ -573,11 +576,7 @@ func New(
 
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
-	//// Create static IBC router, add transfer route, then set and seal it
-	//ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper))
 	// this line is used by starport scaffolding # ibc/app/router
-	// Note: the sealing is done after creating wasmd and wiring that up
-	//app.IBCKeeper.SetRouter(ibcRouter)
 
 	/****  Module Options ****/
 
