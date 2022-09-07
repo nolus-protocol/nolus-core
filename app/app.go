@@ -103,11 +103,16 @@ import (
 	taxmodulekeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
 	taxmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 
+	wasmbinding "github.com/neutron-org/neutron/wasmbinding"
+	interchainqueries "github.com/neutron-org/neutron/x/interchainqueries"
+	interchainquerieskeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
+	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
+	interchaintx "github.com/neutron-org/neutron/x/interchaintxs"
+	interchaintxkeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
+	interchaintxtypes "github.com/neutron-org/neutron/x/interchaintxs/types"
+	transferSudo "github.com/neutron-org/neutron/x/transfer"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 	appparams "gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	intertx "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx"
-	intertxkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx/keeper"
-	intertxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx/types"
 )
 
 const (
@@ -210,8 +215,8 @@ var (
 		wasm.AppModuleBasic{},
 		taxmodule.AppModuleBasic{},
 		ica.AppModuleBasic{},
-		intertx.AppModuleBasic{},
-
+		interchaintx.AppModuleBasic{},
+		interchainqueries.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -275,19 +280,22 @@ type App struct {
 	ParamsKeeper        paramskeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAControllerKeeper icacontrollerkeeper.Keeper
-	InterTxKeeper       intertxkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
-	WasmKeeper          wasm.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
+	ScopedinterchaintxKeeper  capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 
 	TaxKeeper taxmodulekeeper.Keeper
+
+	interchaintxKeeper      interchaintxkeeper.Keeper
+	InterchainQuerieskeeper interchainquerieskeeper.Keeper
+
+	WasmKeeper wasm.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -324,7 +332,8 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, wasm.StoreKey,
-		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey, intertxtypes.StoreKey,
+		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey,
+		capabilitytypes.StoreKey, interchaintxtypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -354,7 +363,7 @@ func New(
 	// grant capabilities for the ibc and ibc-transfer modules
 	app.ScopedIBCKeeper = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	app.ScopedTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-	app.ScopedInterTxKeeper = app.CapabilityKeeper.ScopeToModule(intertxtypes.ModuleName)
+	app.ScopedinterchaintxKeeper = app.CapabilityKeeper.ScopeToModule(interchaintxtypes.ModuleName)
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ScopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
@@ -435,7 +444,7 @@ func New(
 		app.ScopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	transferIBCModule := transferSudo.NewIBCModule(app.TransferKeeper, &app.WasmKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -465,21 +474,35 @@ func New(
 	)
 
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, nil)
-	app.InterTxKeeper = intertxkeeper.NewKeeper(
-		appCodec,
-		keys[intertxtypes.StoreKey],
-		app.ICAControllerKeeper,
-		app.ScopedInterTxKeeper,
-	)
-	interTxModule := intertx.NewAppModule(appCodec, app.InterTxKeeper)
-	interTxIBCModule := intertx.NewIBCModule(app.InterTxKeeper)
 
-	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interTxIBCModule)
+	app.InterchainQuerieskeeper = *interchainquerieskeeper.NewKeeper(
+		appCodec,
+		keys[interchainqueriestypes.StoreKey],
+		keys[interchainqueriestypes.MemStoreKey],
+		app.GetSubspace(interchainqueriestypes.ModuleName),
+		app.IBCKeeper,
+		&app.WasmKeeper,
+	)
+
+	app.interchaintxKeeper = *interchaintxkeeper.NewKeeper(
+		appCodec,
+		keys[interchaintxtypes.StoreKey],
+		memKeys[interchaintxtypes.MemStoreKey],
+		app.GetSubspace(interchaintxtypes.ModuleName),
+		&app.WasmKeeper,
+		app.ICAControllerKeeper,
+		app.ScopedinterchaintxKeeper,
+	)
+	interchaintxModule := interchaintx.NewAppModule(appCodec, app.interchaintxKeeper, app.AccountKeeper, app.BankKeeper)
+	interchainQueriesModule := interchainqueries.NewAppModule(appCodec, app.InterchainQuerieskeeper, app.AccountKeeper, app.BankKeeper)
+	interchaintxIBCModule := interchaintx.NewIBCModule(app.interchaintxKeeper)
+
+	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interchaintxIBCModule)
 
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
+		AddRoute(interchaintxtypes.ModuleName, icaControllerIBCModule)
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -491,6 +514,7 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade"
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&app.interchaintxKeeper, &app.InterchainQuerieskeeper), wasmOpts...)
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -578,7 +602,8 @@ func New(
 		),
 		taxModule,
 		icaModule,
-		interTxModule,
+		interchaintxModule,
+		interchainQueriesModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -592,7 +617,7 @@ func New(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
 		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName,
 		authtypes.ModuleName, crisistypes.ModuleName,
-		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName, icatypes.ModuleName, intertxtypes.ModuleName,
+		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName, icatypes.ModuleName, interchaintxtypes.ModuleName, interchainqueriestypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -601,7 +626,7 @@ func New(
 		capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
-		wasm.ModuleName, icatypes.ModuleName, intertxtypes.ModuleName,
+		wasm.ModuleName, icatypes.ModuleName, interchaintxtypes.ModuleName, interchainqueriestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -624,7 +649,8 @@ func New(
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
-		intertxtypes.ModuleName,
+		interchaintxtypes.ModuleName,
+		interchainqueriestypes.ModuleName,
 		vestingtypes.ModuleName,
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
