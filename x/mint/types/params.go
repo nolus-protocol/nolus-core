@@ -3,15 +3,16 @@ package types
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"strings"
 )
 
 // Parameter store keys
 var (
 	KeyMintDenom              = []byte("MintDenom")
-	KeyMaxMintableNanoseconds = []byte("KeyMaxMintableNanoseconds")
+	KeyMaxMintableNanoseconds = []byte("MaxMintableNanoseconds")
 )
 
 // ParamKeyTable ParamTable for minting module.
