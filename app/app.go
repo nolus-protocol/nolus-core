@@ -333,7 +333,7 @@ func New(
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, wasm.StoreKey,
 		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey,
-		capabilitytypes.StoreKey, interchaintxtypes.StoreKey,
+		capabilitytypes.StoreKey, interchainqueriestypes.StoreKey, interchaintxtypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
