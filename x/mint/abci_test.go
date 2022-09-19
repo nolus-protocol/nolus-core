@@ -32,6 +32,29 @@ var (
 	}
 )
 
+func TestTimeDifference(t *testing.T) {
+	_, _, _, timeOffset := defaultParams()
+	tb := time.Second.Nanoseconds() * 60 // 60 seconds
+	td := calcTimeDifference(timeOffset+tb, timeOffset, fiveMinutesInNano)
+
+	require.Equal(t, td, tb)
+}
+
+func TestTimeDifference_MoreThenMax(t *testing.T) {
+	_, _, _, timeOffset := defaultParams()
+	tb := fiveMinutesInNano + 1
+	td := calcTimeDifference(timeOffset+tb, timeOffset, fiveMinutesInNano)
+
+	require.Equal(t, td, fiveMinutesInNano)
+}
+
+func TestTimeDifference_InvalidTime(t *testing.T) {
+	_, _, _, timeOffset := defaultParams()
+	td := calcTimeDifference(timeOffset-1, timeOffset, fiveMinutesInNano)
+
+	require.Zero(t, td)
+}
+
 func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredeterminedAmount(t *testing.T) {
 	timeBetweenBlocks := time.Second.Nanoseconds() * 60 // 60 seconds per block
 	minutesInMonth := int64(60) * 24 * 30
