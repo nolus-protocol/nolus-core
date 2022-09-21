@@ -1,15 +1,13 @@
 package app
 
 import (
-	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+	"github.com/spf13/cast"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -41,7 +39,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	distr "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/distribution"
 	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -69,7 +67,10 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v3/modules/apps/transfer"
@@ -81,33 +82,37 @@ import (
 	porttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	"github.com/spf13/cast"
+
+	"github.com/tendermint/spm/cosmoscmd"
+	"github.com/tendermint/spm/openapiconsole"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
 	tmos "github.com/tendermint/tendermint/libs/os"
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
+
+	appparams "gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/docs"
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint"
 	mintkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/keeper"
 	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
-
-	"github.com/tendermint/spm/cosmoscmd"
-	"github.com/tendermint/spm/openapiconsole"
-
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/docs"
+	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax"
+	taxmodulekeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
+	taxmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
-	taxmodule "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax"
-	taxmodulekeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
-	taxmoduletypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
-
+	"github.com/neutron-org/neutron/wasmbinding"
+	"github.com/neutron-org/neutron/x/interchainqueries"
+	interchainquerieskeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
+	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
+	"github.com/neutron-org/neutron/x/interchaintxs"
+	interchaintxskeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
+	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
+	transferSudo "github.com/neutron-org/neutron/x/transfer"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
-	appparams "gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	intertx "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx"
-	intertxkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx/keeper"
-	intertxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/inter-tx/types"
 )
 
 const (
@@ -197,7 +202,7 @@ var (
 		capability.AppModuleBasic{},
 		staking.AppModuleBasic{},
 		mint.AppModuleBasic{},
-		distr.AppModuleBasic{},
+		distribution.AppModuleBasic{},
 		gov.NewAppModuleBasic(getGovProposalHandlers()...),
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
@@ -208,10 +213,10 @@ var (
 		transfer.AppModuleBasic{},
 		vesting.AppModuleBasic{},
 		wasm.AppModuleBasic{},
-		taxmodule.AppModuleBasic{},
+		tax.AppModuleBasic{},
 		ica.AppModuleBasic{},
-		intertx.AppModuleBasic{},
-
+		interchaintxs.AppModuleBasic{},
+		interchainqueries.AppModuleBasic{},
 		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
@@ -275,19 +280,22 @@ type App struct {
 	ParamsKeeper        paramskeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAControllerKeeper icacontrollerkeeper.Keeper
-	InterTxKeeper       intertxkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
-	WasmKeeper          wasm.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper      capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedInterTxKeeper       capabilitykeeper.ScopedKeeper
+	ScopedInterchainTxsKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 
 	TaxKeeper taxmodulekeeper.Keeper
+
+	InterchainTxsKeeper     interchaintxskeeper.Keeper
+	InterchainQueriesKeeper interchainquerieskeeper.Keeper
+
+	WasmKeeper wasm.Keeper
 	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
@@ -324,7 +332,8 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, ibchost.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, wasm.StoreKey,
-		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey, intertxtypes.StoreKey,
+		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey,
+		capabilitytypes.StoreKey, interchainqueriestypes.StoreKey, interchaintxstypes.StoreKey,
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
@@ -354,7 +363,7 @@ func New(
 	// grant capabilities for the ibc and ibc-transfer modules
 	app.ScopedIBCKeeper = app.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	app.ScopedTransferKeeper = app.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
-	app.ScopedInterTxKeeper = app.CapabilityKeeper.ScopeToModule(intertxtypes.ModuleName)
+	app.ScopedInterchainTxsKeeper = app.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ScopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	// this line is used by starport scaffolding # stargate/app/scopedKeeper
@@ -435,7 +444,7 @@ func New(
 		app.ScopedTransferKeeper,
 	)
 	transferModule := transfer.NewAppModule(app.TransferKeeper)
-	transferIBCModule := transfer.NewIBCModule(app.TransferKeeper)
+	transferIBCModule := transferSudo.NewIBCModule(app.TransferKeeper, &app.WasmKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	evidenceKeeper := evidencekeeper.NewKeeper(
@@ -451,7 +460,7 @@ func New(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper)).
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
-		AddRoute(distrtypes.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
+		AddRoute(distrtypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
 
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
@@ -465,21 +474,34 @@ func New(
 	)
 
 	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, nil)
-	app.InterTxKeeper = intertxkeeper.NewKeeper(
+
+	app.InterchainQueriesKeeper = *interchainquerieskeeper.NewKeeper(
 		appCodec,
-		keys[intertxtypes.StoreKey],
-		app.ICAControllerKeeper,
-		app.ScopedInterTxKeeper,
+		keys[interchainqueriestypes.StoreKey],
+		keys[interchainqueriestypes.MemStoreKey],
+		app.GetSubspace(interchainqueriestypes.ModuleName),
+		app.IBCKeeper,
+		&app.WasmKeeper,
 	)
-	interTxModule := intertx.NewAppModule(appCodec, app.InterTxKeeper)
-	interTxIBCModule := intertx.NewIBCModule(app.InterTxKeeper)
 
-	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interTxIBCModule)
+	app.InterchainTxsKeeper = *interchaintxskeeper.NewKeeper(
+		appCodec,
+		keys[interchaintxstypes.StoreKey],
+		memKeys[interchaintxstypes.MemStoreKey],
+		app.GetSubspace(interchaintxstypes.ModuleName),
+		&app.WasmKeeper,
+		app.ICAControllerKeeper,
+		app.ScopedInterchainTxsKeeper,
+	)
+	interchainTxsModule := interchaintxs.NewAppModule(appCodec, app.InterchainTxsKeeper, app.AccountKeeper, app.BankKeeper)
+	interchainQueriesModule := interchainqueries.NewAppModule(appCodec, app.InterchainQueriesKeeper, app.AccountKeeper, app.BankKeeper)
+	interchainTxsIBCModule := interchaintxs.NewIBCModule(app.InterchainTxsKeeper)
 
+	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interchainTxsIBCModule)
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
-		AddRoute(intertxtypes.ModuleName, icaControllerIBCModule)
+		AddRoute(interchaintxstypes.ModuleName, icaControllerIBCModule)
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -491,6 +513,7 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade"
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&app.InterchainTxsKeeper, &app.InterchainQueriesKeeper), wasmOpts...)
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -536,7 +559,7 @@ func New(
 		keys[taxmoduletypes.MemStoreKey],
 		app.GetSubspace(taxmoduletypes.ModuleName),
 	)
-	taxModule := taxmodule.NewAppModule(appCodec, app.TaxKeeper, app.AccountKeeper, app.BankKeeper)
+	taxModule := tax.NewAppModule(appCodec, app.TaxKeeper, app.AccountKeeper, app.BankKeeper)
 	// this line is used by starport scaffolding # stargate/app/keeperDefinition
 
 	// this line is used by starport scaffolding # ibc/app/router
@@ -565,7 +588,7 @@ func New(
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		distribution.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
@@ -578,7 +601,8 @@ func New(
 		),
 		taxModule,
 		icaModule,
-		interTxModule,
+		interchainTxsModule,
+		interchainQueriesModule,
 		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
@@ -592,7 +616,7 @@ func New(
 		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
 		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName,
 		authtypes.ModuleName, crisistypes.ModuleName,
-		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName, icatypes.ModuleName, intertxtypes.ModuleName,
+		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName, icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -601,7 +625,7 @@ func New(
 		capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
-		wasm.ModuleName, icatypes.ModuleName, intertxtypes.ModuleName,
+		wasm.ModuleName, icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -624,7 +648,8 @@ func New(
 		evidencetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
-		intertxtypes.ModuleName,
+		interchaintxstypes.ModuleName,
+		interchainqueriestypes.ModuleName,
 		vestingtypes.ModuleName,
 		upgradetypes.ModuleName,
 		paramstypes.ModuleName,
@@ -644,7 +669,7 @@ func New(
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
 		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		distribution.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
