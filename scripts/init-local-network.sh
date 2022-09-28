@@ -27,7 +27,7 @@ CHAIN_ID="nolus-local"
 TREASURY_NLS_U128="1000000000000"
 RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
-LPP_NATIVE="uusdc"
+LPP_NATIVE="ibc/fj29fj0fj"
 CONTRACTS_INFO_FILE="contracts-info.json"
 
 while [[ $# -gt 0 ]]; do
