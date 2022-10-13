@@ -12,13 +12,13 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
 )
 
-// Minting formula f(x)=-2.3108 x^3 + 503.7931 x^2 - 47235.8677 x + 2.0604522270×10^6 integrated over 0.47 to 96
+// Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
 // afterwards minting 55000 tokens each month until reaching the minting cap of 80*10^6 tokens
 var (
-	quadCoef           = sdk.MustNewDecFromStr("-0.5777")
-	cubeCoef           = sdk.MustNewDecFromStr("167.931")
-	squareCoef         = sdk.MustNewDecFromStr("-23617.9")
-	coef               = sdk.MustNewDecFromStr("2060452.2270")
+	quadCoef           = sdk.MustNewDecFromStr("-1.08319")
+	cubeCoef           = sdk.MustNewDecFromStr("314.871")
+	squareCoef         = sdk.MustNewDecFromStr("-44283.6")
+	coef               = sdk.MustNewDecFromStr("3863350")
 	normInitialTotal   = util.ConvertToMicroNolusDec(calcIntegral(types.NormOffset))
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
@@ -45,7 +45,7 @@ func calcTimeDifference(blockTime int64, prevBlockTime int64, maxMintableSeconds
 	return nsecBetweenBlocks
 }
 
-// Integral:  -0.5777 x^4 + 167.931 x^3 - 23617.9 x^2 + 2.0604522270×10^6 x
+// Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
 func calcIntegral(x sdk.Dec) sdk.Dec {
 	xToPower4 := x.Power(4)
 	xToPower3 := x.Power(3)

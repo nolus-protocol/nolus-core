@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	MintingCap        = util.ConvertToMicroNolusInt(sdk.NewInt(80000000))
-	FixedMintedAmount = util.ConvertToMicroNolusInt(sdk.NewInt(55000))
+	MintingCap        = util.ConvertToMicroNolusInt(sdk.NewInt(150000000))
+	FixedMintedAmount = util.ConvertToMicroNolusInt(sdk.NewInt(103125))
 	NormOffset        = sdk.MustNewDecFromStr("0.47")
 	MonthsInFormula   = sdk.MustNewDecFromStr("96")
 	AbsMonthsRange    = MonthsInFormula.Sub(NormOffset)
