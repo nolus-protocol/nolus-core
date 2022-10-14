@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"go/build"
-	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -71,7 +70,7 @@ func TestAppStateDeterminism(t *testing.T) {
 		t.Fatal("Marshaling of simulation parameters failed")
 	}
 	config.ParamsFile = filepath.Join(t.TempDir(), "app-params.json")
-	err = ioutil.WriteFile(config.ParamsFile, bz, 0o600)
+	err = os.WriteFile(config.ParamsFile, bz, 0o600)
 	if err != nil {
 		t.Fatal("Writing of simulation parameters failed")
 	}

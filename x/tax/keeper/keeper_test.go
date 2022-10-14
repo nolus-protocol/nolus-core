@@ -51,7 +51,7 @@ func (suite *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	encodingConfig := simapp.MakeTestEncodingConfig()
 	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
-	suite.txBuilder.SetMsgs([]sdk.Msg{}...)
+	suite.Require().NoError(suite.txBuilder.SetMsgs([]sdk.Msg{}...))
 
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
