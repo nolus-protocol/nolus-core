@@ -117,7 +117,7 @@ __generate_proto_genesis_no_wasm() {
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
-  
+
   __add_bank_balances "$genesis_file" "$wasm_admin_addr" "$treasury_init_tokens_u128" "$native_currency"
 }
 
@@ -170,7 +170,7 @@ __set_wasm_params_only_address() {
 
   < "$genesis_file" \
     jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
-    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f"' \
+    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$wasm_admin"'"' \
     | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="OnlyAddress"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
