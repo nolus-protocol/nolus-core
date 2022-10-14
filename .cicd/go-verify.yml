@@ -21,3 +21,14 @@ go-static-code-check:
   extends: .go-build
   script:
     - make static-code-check
+
+golangci-lint:
+  stage: verify
+  image: golangci/golangci-lint:v1.50
+  allow_failure: true
+  extends: .go-build
+  script:
+    - golangci-lint run
+        --color always
+        --timeout 10m
+        --verbose
