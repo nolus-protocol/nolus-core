@@ -39,7 +39,6 @@ generate_genesis() {
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
   local accounts_spec="$accounts_spec_in"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$treasury_init_tokens")
 
   local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
   verify_file_exist "$wasm_script" "wasm script file"
@@ -118,6 +117,8 @@ __generate_proto_genesis_no_wasm() {
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
+  
+  __add_bank_balances "$genesis_file" "$wasm_admin_addr" "$treasury_init_tokens_u128" "$native_currency"
 }
 
 __integrate_genesis_txs() {
@@ -167,10 +168,31 @@ __set_wasm_params_only_address() {
 
   local genesis_tmp_file="$genesis_file".tmp
 
-< "$genesis_file" \
-    jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]= "OnlyAddress"' \
-    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$wasm_admin"'"' \
-    | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]= "OnlyAddress"' > "$genesis_tmp_file"
+  < "$genesis_file" \
+    jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
+    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f"' \
+    | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="OnlyAddress"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+__add_bank_balances() {
+  local genesis_file="$1"
+  local addr="$2"
+  local init_tokens="$3"
+  local currency="$4"
+
+  local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["bank"]["balances"] += [{
+          "address": "'"$addr"'",
+          "coins": [
+            {
+              "denom": "'"$currency"'",
+              "amount": "'"$init_tokens"'"
+            }
+          ]
+        }]' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 

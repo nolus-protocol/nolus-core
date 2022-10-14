@@ -159,7 +159,8 @@ rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
-wasm_admin_addr=$(generate_account "wasm_admin" "$USER_DIR")
+# we decided to use the leaser's contract address(deterministic) as wasm_admin_addr which will be used to store and instantiate contracts
+wasm_admin_addr="nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f"
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
