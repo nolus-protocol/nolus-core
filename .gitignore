@@ -12,3 +12,5 @@ coverage.txt
 .vscode/
 contracts-info.json
 out.txt
+cover.out
+testreport.xml
