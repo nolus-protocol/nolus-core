@@ -177,7 +177,7 @@ __set_wasm_params_only_address() {
 
 __add_bank_balances() {
   local genesis_file="$1"
-  local addr="$2"
+  local account_addr="$2"
   local init_tokens="$3"
   local currency="$4"
 
@@ -185,7 +185,7 @@ __add_bank_balances() {
 
   < "$genesis_file" \
     jq '.app_state["bank"]["balances"] += [{
-          "address": "'"$addr"'",
+          "address": "'"$account_addr"'",
           "coins": [
             {
               "denom": "'"$currency"'",
