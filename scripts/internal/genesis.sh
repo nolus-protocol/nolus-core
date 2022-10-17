@@ -45,7 +45,7 @@ generate_genesis() {
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
   # we decided to use the leaser's contract address(deterministic) as wasm_admin_addr which will be used to store and instantiate contracts
-  local -r wasm_admin_addr=$(leaser_instance_addr)
+  wasm_admin_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr")
@@ -165,13 +165,13 @@ __set_tax_recipient() {
 
 __set_wasm_params_only_address() {
   local -r genesis_file="$1"
-  local -r wasm_admin="$2"
+  local -r allowed_addr="$2"
 
   local genesis_tmp_file="$genesis_file".tmp
 
   < "$genesis_file" \
     jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
-    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$wasm_admin_addr"'"' \
+    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$allowed_addr"'"' \
     | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="OnlyAddress"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
