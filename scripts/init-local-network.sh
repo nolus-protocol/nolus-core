@@ -158,13 +158,7 @@ rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
-wasm_script="$WASM_SCRIPT_PATH/deploy-contracts-genesis.sh"
-verify_file_exist "$wasm_script" "wasm script file"
-source "$wasm_script"
-
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
-# we decided to use the leaser's contract address(deterministic) as wasm_admin_addr which will be used to store and instantiate contracts
-wasm_admin_addr=$(leaser_instance_addr)
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
@@ -173,6 +167,6 @@ source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$wasm_admin_addr" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
+              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
 
 __config_client
