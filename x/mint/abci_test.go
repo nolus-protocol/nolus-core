@@ -147,7 +147,7 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	}
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
-	mintThreshold := sdk.NewInt(1_300_000) // 1.3 tokens is the max deviation
+	mintThreshold := sdk.NewInt(2_437_500) // 2.4375 tokens is the max deviation
 	if types.FixedMintedAmount.Sub(mintedCoins).Abs().GT(mintThreshold) || types.FixedMintedAmount.Sub(minter.TotalMinted).Abs().GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- 10^6] returned and in store, actual minted %v, actual in store %v",
 			types.FixedMintedAmount, mintedCoins, minter.TotalMinted)
