@@ -3,12 +3,10 @@ package nomo.cosmzone.tax;
 
 import "gogoproto/gogo.proto";
 import "tax/params.proto";
-// this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";
 
 // GenesisState defines the tax module's genesis state.
 message GenesisState {
   Params params = 1 [(gogoproto.nullable) = false];
-  // this line is used by starport scaffolding # genesis/proto/state
 }

@@ -21,7 +21,6 @@ func main() {
 		app.Name,
 		app.ModuleBasics,
 		app.New,
-		// this line is used by starport scaffolding # root/arguments
 		cmdOptions...,
 	)
 	if err := svrcmd.Execute(rootCmd, app.DefaultNodeHome); err != nil {

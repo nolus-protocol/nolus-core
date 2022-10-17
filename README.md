@@ -1,6 +1,5 @@
 # nolus
-**nolus** is a blockchain built using Cosmos SDK and Tendermint and created with [Starport](https://github.com/tendermint/starport).
-
+**nolus** is a blockchain built using Cosmos SDK and Tendermint.
 ## Prerequisites
 
 Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/latest/installation.html) and [jq](https://stedolan.github.io/jq/).
