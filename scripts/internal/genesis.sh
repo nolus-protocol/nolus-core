@@ -117,7 +117,7 @@ __generate_proto_genesis_no_wasm() {
 
   __set_token_denominations "$genesis_file" "$currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
-  __set_wasm_params_only_address "$genesis_file" "$wasm_admin_addr"
+  __set_wasm_permission_params "$genesis_file" "$wasm_admin_addr"
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
@@ -168,7 +168,7 @@ __set_tax_recipient() {
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
-__set_wasm_params_only_address() {
+__set_wasm_permission_params() {
   local -r genesis_file="$1"
   local -r allowed_addr="$2"
 
@@ -177,7 +177,7 @@ __set_wasm_params_only_address() {
   < "$genesis_file" \
     jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
     | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$allowed_addr"'"' \
-    | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="OnlyAddress"' > "$genesis_tmp_file"
+    | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="Everybody"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
