@@ -12,7 +12,7 @@ Technical Story: https://app.clickup.com/t/1yyn7rm
 ### Context
 In the genesis you can set global settings in the wasm module for who can upload and instantiate contracts. The options that we have for access are:
 `Everybody`, `Nobody`, `OnlyAddress` (current wasmd version 0.27.0). If we upgrade the wasmd version, there will be also one more option - `OnlyAddresses`.
-We can also set scoped permission for each instance that we make. This could conflict with the global settings, for example, if we have a contract instance with instantiation permissions set to X address, and in the global scope we have set instantiation to `OnlyAddress` with address Y, there will be conflict.
+We can also set scoped instantiation permission for each code-upload(contract). This could conflict with the global settings, for example, if we have a contract with instantiation permissions set to X address, and in the global scope we have set instantiation to `OnlyAddress` with address Y, there will be conflict.
 Each smart contract has an optional admin role. If a contract instance has an admin(address) set, then this admin could interact with the contract directly(for example invoking migrate-contract) rather than with gov proposals.
 There is a `owner/privileged` contracts user that is only authorized to perform some administrative tasks, this user is set by the contracts to be the user who instantiated the contracts. 
 
