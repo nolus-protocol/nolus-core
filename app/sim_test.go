@@ -109,7 +109,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				simapp.AppStateFn(newApp.(*app.App).AppCodec(), newApp.(*app.App).SimulationManager()),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simapp.SimulationOperations(newApp.(*app.App), newApp.(*app.App).AppCodec(), config),
-				newApp.(*app.App).ModuleAccountAddrs(),
+				newApp.(*app.App).BlockedAddrs(),
 				config,
 				newApp.(*app.App).AppCodec(),
 			)
