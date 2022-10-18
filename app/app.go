@@ -112,14 +112,12 @@ import (
 	interchaintxskeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
-	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
 const (
 	Name = "nolus"
 )
 
-// this line is used by starport scaffolding # stargate/wasm/app/enabledProposals
 var (
 	// WasmProposalsEnabled enables all x/wasm proposals when it's value is "true"
 	// and EnableSpecificWasmProposals is empty. Otherwise, all x/wasm proposals
@@ -171,7 +169,6 @@ var (
 
 func getGovProposalHandlers() []govclient.ProposalHandler {
 	var govProposalHandlers []govclient.ProposalHandler
-	// this line is used by starport scaffolding # stargate/app/govProposalHandlers
 
 	govProposalHandlers = append(
 		govProposalHandlers,
@@ -179,8 +176,6 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 		distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
 		upgradeclient.CancelProposalHandler,
-
-		// this line is used by starport scaffolding # stargate/app/govProposalHandler
 	)
 
 	govProposalHandlers = append(govProposalHandlers, wasmclient.ProposalHandlers...)
@@ -217,7 +212,6 @@ var (
 		ica.AppModuleBasic{},
 		interchaintxs.AppModuleBasic{},
 		interchainqueries.AppModuleBasic{},
-		// this line is used by starport scaffolding # stargate/app/moduleBasic
 	)
 
 	// module account permissions
@@ -231,7 +225,6 @@ var (
 		ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
 		wasm.ModuleName:                {authtypes.Burner},
 		icatypes.ModuleName:            nil,
-		// this line is used by starport scaffolding # stargate/app/maccPerms
 	}
 )
 
@@ -296,7 +289,6 @@ type App struct {
 	InterchainQueriesKeeper interchainquerieskeeper.Keeper
 
 	WasmKeeper wasm.Keeper
-	// this line is used by starport scaffolding # stargate/app/keeperDeclaration
 
 	// the module manager
 	mm *module.Manager
@@ -334,7 +326,6 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, wasm.StoreKey,
 		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey,
 		capabilitytypes.StoreKey, interchainqueriestypes.StoreKey, interchaintxstypes.StoreKey,
-		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -366,7 +357,6 @@ func New(
 	app.ScopedInterchainTxsKeeper = app.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ScopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
-	// this line is used by starport scaffolding # stargate/app/scopedKeeper
 
 	//seal capabilities after scoping modules
 	app.CapabilityKeeper.Seal()
@@ -560,9 +550,6 @@ func New(
 		app.GetSubspace(taxmoduletypes.ModuleName),
 	)
 	taxModule := tax.NewAppModule(appCodec, app.TaxKeeper, app.AccountKeeper, app.BankKeeper)
-	// this line is used by starport scaffolding # stargate/app/keeperDefinition
-
-	// this line is used by starport scaffolding # ibc/app/router
 
 	/****  Module Options ****/
 
@@ -603,7 +590,6 @@ func New(
 		icaModule,
 		interchainTxsModule,
 		interchainQueriesModule,
-		// this line is used by starport scaffolding # stargate/app/appModule
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -656,7 +642,6 @@ func New(
 		// wasm after ibc transfer
 		wasm.ModuleName,
 		govtypes.ModuleName,
-		// this line is used by starport scaffolding # stargate/app/initGenesis
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -724,8 +709,6 @@ func New(
 			panic(err)
 		}
 	}
-
-	// this line is used by starport scaffolding # stargate/app/beforeInitReturn
 
 	return app
 }
@@ -882,6 +865,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
-	// this line is used by starport scaffolding # stargate/app/paramSubspace
+
 	return paramsKeeper
 }
