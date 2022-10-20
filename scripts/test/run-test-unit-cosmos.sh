@@ -8,8 +8,7 @@ if [ -z "$COSMOSSDK_DIR" ]
 then
 	echo "There is no Cosmos SDK"
 else
-	cd "$COSMOSSDK_DIR"
-	COSMOSSDK_PACKAGES=$(go list ./... | uniq)
+	COSMOSSDK_PACKAGES=$(go list $COSMOSSDK_DIR/... | uniq)
 	echo "Cosmos SDK packages:"
 	echo "$COSMOSSDK_PACKAGES"
 
