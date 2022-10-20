@@ -51,7 +51,7 @@ generate_genesis() {
   leaser_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
-  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr")
+  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
@@ -108,6 +108,7 @@ __generate_proto_genesis_no_wasm() {
   local -r currency="$2"
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
+  local -r leaser_addr="$5"
 
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
