@@ -47,7 +47,7 @@ generate_genesis() {
   treasury_addr="$(treasury_instance_addr)"
   # for PROD we decided to use the leaser's contract address(deterministic) as contracts_owner_addr which will be used to store and instantiate contracts,
   # because we would only change our contracts via gov proposals.
-  # for other envs, we are having a normal address for contracts_owner which will be used for testing purposes
+  # for local&&dev, we are having a normal address for contracts_owner which will be used for testing purposes
   leaser_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
@@ -122,7 +122,7 @@ __generate_proto_genesis_no_wasm() {
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
-  # This will used for MAINNET/TESTNET to have initial balance for the contracts_owner_addr(The leaser contract's address)
+  # This will be used for MAINNET/TESTNET to have initial balance for the contracts_owner_addr(The leaser contract's address)
   if [ "$contracts_owner_addr" == "$leaser_addr" ]; then
     __add_bank_balances "$genesis_file" "$contracts_owner_addr" "$treasury_init_tokens_u128" "$native_currency"
   fi

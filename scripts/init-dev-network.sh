@@ -171,7 +171,7 @@ rm -fr "$VAL_ACCOUNTS_DIR"
 accounts_spec=$(echo "[]" | add_account "$(recover_account "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
 # We handle the contracts_owner account as normal address.
 treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
-accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$treasury_init_tokens")
+accounts_spec=$(echo "$accounts_spec" | add_account "$CONTRACTS_OWNER_ADDR" "$treasury_init_tokens")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
