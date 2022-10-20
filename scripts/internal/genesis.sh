@@ -28,7 +28,7 @@ generate_genesis() {
   local -r accounts_spec_in="$6"
   local -r wasm_script_path="$7"
   local -r wasm_code_path="$8"
-  local -r wasm_admin_addr="$9"
+  local -r contracts_owner_addr="$9"
   local -r treasury_init_tokens_u128="${10}"
   local -r node_id_and_val_pubkeys="${11}"
   local -r lpp_native="${12}"
@@ -39,21 +39,20 @@ generate_genesis() {
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
   local accounts_spec="$accounts_spec_in"
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
-  accounts_spec=$(echo "$accounts_spec" | add_account "$wasm_admin_addr" "$treasury_init_tokens")
 
   local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
   verify_file_exist "$wasm_script" "wasm script file"
   source "$wasm_script"
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
-  # for PROD we decided to use the leaser's contract address(deterministic) as wasm_admin_addr which will be used to store and instantiate contracts,
+  # for PROD we decided to use the leaser's contract address(deterministic) as contracts_owner_addr which will be used to store and instantiate contracts,
   # because we would only change our contracts via gov proposals.
-  # wasm_admin_addr=$(leaser_instance_addr)
-  # for other envs, we are having a wasm_admin which will be used for testing purposes
+  # for local&&dev, we are having a normal address for contracts_owner which will be used for testing purposes
+  leaser_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
-  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$wasm_admin_addr" \
+  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr")
+  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
@@ -109,6 +108,7 @@ __generate_proto_genesis_no_wasm() {
   local -r currency="$2"
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
+  local -r leaser_addr="$5"
 
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
@@ -117,14 +117,16 @@ __generate_proto_genesis_no_wasm() {
 
   __set_token_denominations "$genesis_file" "$currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
-  __set_wasm_permission_params "$genesis_file" "$wasm_admin_addr"
+  __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
-  # This will be used for PROD to have initial balance for the wasm_admin_addr(The leaser contract's address)
-  # __add_bank_balances "$genesis_file" "$wasm_admin_addr" "$treasury_init_tokens_u128" "$native_currency"
+  # This will be used for MAINNET/TESTNET to have initial balance for the contracts_owner_addr(The leaser contract's address)
+  if [ "$contracts_owner_addr" == "$leaser_addr" ]; then
+    __add_bank_balances "$genesis_file" "$contracts_owner_addr" "$treasury_init_tokens_u128" "$native_currency"
+  fi
 }
 
 __integrate_genesis_txs() {
