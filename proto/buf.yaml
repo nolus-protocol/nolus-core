@@ -1,7 +1,6 @@
 version: v1
 name: buf.build/nomo/nolus-core
 deps:
-  - buf.build/googleapis/googleapis
   - buf.build/cosmos/cosmos-sdk
 breaking:
   use:

@@ -9,7 +9,7 @@ option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";
 message Params {
   option (gogoproto.goproto_stringer) = false;
   
-  int32 feeRate = 1 [(gogoproto.moretags) = "yaml:\"fee_rate\""];
-  string feeCaps = 2 [(gogoproto.moretags) = "yaml:\"fee_caps\""];
-  string contractAddress = 3 [(gogoproto.moretags) = "yaml:\"contract_address\""];
+  int32 fee_rate = 1 [(gogoproto.moretags) = "yaml:\"fee_rate\""];
+  string fee_caps = 2 [(gogoproto.moretags) = "yaml:\"fee_caps\""];
+  string contract_address = 3 [(gogoproto.moretags) = "yaml:\"contract_address\""];
 }

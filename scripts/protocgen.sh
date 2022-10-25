@@ -30,3 +30,11 @@ cp -r ./gitlab-nomo.credissimo.net/nomo/cosmzone/x/* x/
 rm -rf ./gitlab-nomo.credissimo.net
 
 go mod tidy
+
+# TODO
+# **/*.pb.gw.go"github.com/golang/protobuf/descriptor" is deprecated: See the "google.golang.org/protobuf/reflect/protoreflect" package for how to obtain an EnumDescriptor or MessageDescriptor in order to programatically interact with the protobuf type system.  (SA1019)
+# **/*.pb.gw.go"github.com/golang/protobuf/proto" is deprecated: Use the "google.golang.org/protobuf/proto" package instead.  (SA1019)
+# **/*.pb.gw.godescriptor.ForMessage is deprecated: Not all concrete message types satisfy the Message interface. Use MessageDescriptorProto instead. If possible, the calling code should be rewritten to use protobuf reflection instead. See package "google.golang.org/protobuf/reflect/protoreflect" for details.  (SA1019)
+# Temporary adding lint ignore
+sed -i '1s/^/\/\/ lint:file-ignore SA1019\n/' ./x/mint/types/query.pb.gw.go
+sed -i '1s/^/\/\/ lint:file-ignore SA1019\n/' ./x/tax/types/query.pb.gw.go
