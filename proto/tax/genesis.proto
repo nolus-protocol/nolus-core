@@ -1,5 +1,5 @@
 syntax = "proto3";
-package nomo.cosmzone.tax;
+package tax;
 
 import "gogoproto/gogo.proto";
 import "tax/params.proto";
