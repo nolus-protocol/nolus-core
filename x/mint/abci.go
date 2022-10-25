@@ -13,7 +13,7 @@ import (
 )
 
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
-// afterwards minting 55000 tokens each month until reaching the minting cap of 80*10^6 tokens
+// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
 	quadCoef           = sdk.MustNewDecFromStr("-1.08319")
 	cubeCoef           = sdk.MustNewDecFromStr("314.871")
