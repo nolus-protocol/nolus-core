@@ -23,7 +23,7 @@ variables:
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
   # TODO consider determining the last one dynamically from the GitLab API
-  CONTRACTS_VERSION: "v0.2.4"
+  CONTRACTS_VERSION: "v0.2.5"
   CONTRACTS_DIR: "artifacts"
 
   NOLUS_BUILDER_REPO: "builder"
@@ -156,7 +156,7 @@ setup-dev-network:
               --treasury-nls-u128 "1000000000000"
               --faucet-mnemonic "$FAUCET_MNEMONIC_DEV"
               --faucet-tokens "$FAUCET_TOKENS_DEV"
-              --lpp-native "$STABLE_DENOM_DEV"
+              --lpp-native "$STABLE_TICKER_DEV"
               --contracts-info-file $CONTRACTS_INFO_FILE ;
 
       else
