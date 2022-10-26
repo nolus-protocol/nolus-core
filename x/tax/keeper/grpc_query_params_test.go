@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	testkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	testkeeper "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestParamsQuery(t *testing.T) {

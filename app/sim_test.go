@@ -25,10 +25,10 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
-	taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 var NumSeeds int

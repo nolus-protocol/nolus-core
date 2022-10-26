@@ -1,4 +1,4 @@
-module gitlab-nomo.credissimo.net/nomo/cosmzone
+module gitlab-nomo.credissimo.net/nomo/nolus-core
 
 go 1.18
 

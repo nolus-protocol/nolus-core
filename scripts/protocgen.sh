@@ -26,7 +26,7 @@ cd ..
 buf generate
 
 # move proto files to the right places
-cp -r ./gitlab-nomo.credissimo.net/nomo/cosmzone/x/* x/  
+cp -r ./gitlab-nomo.credissimo.net/nomo/nolus-core/x/* x/  
 rm -rf ./gitlab-nomo.credissimo.net
 
 go mod tidy

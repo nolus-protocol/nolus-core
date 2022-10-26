@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

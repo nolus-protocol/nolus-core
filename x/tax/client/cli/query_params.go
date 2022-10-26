@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func CmdQueryParams() *cobra.Command {

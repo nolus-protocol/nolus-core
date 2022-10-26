@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/simulation"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
 )
 
 func TestParamChanges(t *testing.T) {

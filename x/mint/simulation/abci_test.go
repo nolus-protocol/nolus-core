@@ -8,9 +8,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/simapp"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"
 
 	"github.com/stretchr/testify/require"
 )

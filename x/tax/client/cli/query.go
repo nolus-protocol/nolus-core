@@ -10,7 +10,7 @@ import (
 	// "github.com/cosmos/cosmos-sdk/client/flags"
 	// sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module

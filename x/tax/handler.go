@@ -5,8 +5,8 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // NewHandler ...

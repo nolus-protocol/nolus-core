@@ -12,8 +12,8 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/simulation"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.

@@ -2,16 +2,17 @@ package rest_test
 
 import (
 	"fmt"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/network"
 	"testing"
 	"time"
+
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/network"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
-	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 type IntegrationTestSuite struct {

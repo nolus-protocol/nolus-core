@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	taxkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
-	taxtypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	taxkeeper "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
+	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )

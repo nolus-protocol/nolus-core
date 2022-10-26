@@ -2,12 +2,13 @@ package simapp
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/tendermint/tendermint/libs/json"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -18,7 +19,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
 )
 
 // New creates application instance with in-memory database and disabled logging.

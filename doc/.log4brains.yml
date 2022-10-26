@@ -4,8 +4,8 @@ project:
   adrFolder: ./adr
   packages:
     - name: Cosmos-Zone
-      path: ./cosmzone
-      adrFolder: ./cosmzone/adr
+      path: ./nolus-core
+      adrFolder: ./nolus-core/adr
     # - name: Smart-Contracts
     #   path: ./smart-contracts
     #   adrFolder: ./smart-contracts/adr

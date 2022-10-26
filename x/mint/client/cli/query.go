@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // GetQueryCmd returns the cli query commands for the minting module.

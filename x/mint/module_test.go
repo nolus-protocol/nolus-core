@@ -9,7 +9,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {

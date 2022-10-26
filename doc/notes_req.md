@@ -18,7 +18,7 @@
 
 16.12.2021
 ==========
-- [cosmzone][contracts][web-app] identified tasks to complete before the network launch and filed corresponding clickup tickets
+- [nolus-core][contracts][web-app] identified tasks to complete before the network launch and filed corresponding clickup tickets
 - went over the web-app mock-ups and validated with the product owner the use-cases
 - IBC connectivity would be necessary post network launch to enable some of use-cases, e.g. DEX, bridge, supply NLS liquidity, etc.
 - connectivity to a ramp would be necessary post network launch to enable `deposit` and `withdraw` use-cases
