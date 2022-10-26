@@ -6,7 +6,7 @@ This repo contains:
 - additional documentation in form of Markdown files, and
 - Architectural Decision Records (ADRs) expressed in [MADR](https://adr.github.io/madr/) format.
 
-It has hierarchical organization mirroring the static system structure. For example, the documentation of container "Smart Contracts" is located in `smart-contracts` directory.
+It has hierarchical organization mirroring the static system structure. For example, the documentation of container "Smart Contracts" is located in `nolus-money-market` directory.
 
 ## Authoring
 The easiest way to create and edit the model and views is using Structurizr DSL. The [Web console](https://structurizr.com/dsl) provides an editor and a convenient side view. Other option is to use any text editor of preference. In either way, the [DSL reference](https://github.com/structurizr/dsl/blob/master/docs/language-reference.md) is helpful.

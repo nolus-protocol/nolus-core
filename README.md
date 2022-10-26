@@ -6,7 +6,7 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
 
 ## Get started
 
-Make sure smart-contracts repo is checked out as a sibling to this repo.
+Make sure nolus-money-market repo is checked out as a sibling to this repo.
 
 ```
 make install

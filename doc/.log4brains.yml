@@ -6,9 +6,9 @@ project:
     - name: Cosmos-Zone
       path: ./nolus-core
       adrFolder: ./nolus-core/adr
-    # - name: Smart-Contracts
-    #   path: ./smart-contracts
-    #   adrFolder: ./smart-contracts/adr
+    # - name: nolus-money-market
+    #   path: ./nolus-money-market
+    #   adrFolder: ./nolus-money-market/adr
     # - name: Application-Server
     #   path: ./appserver
     #   adrFolder: ./appserver/adr
