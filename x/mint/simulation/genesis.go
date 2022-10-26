@@ -10,7 +10,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // simulation parameter constants

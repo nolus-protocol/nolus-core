@@ -6,8 +6,8 @@ import (
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 	"github.com/tendermint/spm/cosmoscmd"
 	tmcmds "github.com/tendermint/tendermint/cmd/tendermint/commands"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
 )
 
 func main() {

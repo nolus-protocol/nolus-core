@@ -6,7 +6,7 @@ import (
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
 )
 
 func (suite *KeeperTestSuite) TestTaxes() {

@@ -6,9 +6,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/nullify"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/simapp"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/nullify"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
 )
 
 func TestSetMinter(t *testing.T) {

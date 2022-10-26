@@ -5,13 +5,13 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "tax/params.proto";
 
-option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";
+option go_package = "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types";
 
 // Query defines the gRPC querier service.
 service Query {
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/nomo/cosmzone/tax/params";
+    option (google.api.http).get = "/nomo/nolus-core/tax/params";
   }
 }
 

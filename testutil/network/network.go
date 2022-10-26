@@ -18,8 +18,8 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
 )
 
 type (

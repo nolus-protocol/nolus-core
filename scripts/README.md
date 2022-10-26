@@ -8,7 +8,7 @@ The binary `nolusd` must be on the system path to allow scripts to run it.
 
 A script setups a network comprised of one or more validator nodes on the local file system. First it creates accounts for the validators and generates a proto genesis. Then it lets validator nodes to create validators and stake amount. Finally, the script collects the created transactions and produces the final genesis.
 
-The genesis generation embeds the smart contracts. Therefore the smart-contracts git repo should exist locally and be known for the network init script. By default, the scripts looks at a directory next to the this repo root. If necessary, that could be overridden providing --wasm-script-path and --wasm-code-path. For more details run
+The genesis generation embeds the smart contracts. Therefore the nolus-money-market git repo should exist locally and be known for the network init script. By default, the scripts looks at a directory next to the this repo root. If necessary, that could be overridden providing --wasm-script-path and --wasm-code-path. For more details run
 ```shell
 ./init-local-network.sh --help
 ```

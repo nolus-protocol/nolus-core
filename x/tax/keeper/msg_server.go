@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 type msgServer struct {

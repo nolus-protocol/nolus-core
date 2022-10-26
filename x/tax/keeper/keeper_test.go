@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
-	nolusapp "gitlab-nomo.credissimo.net/nomo/cosmzone/app"
+	nolusapp "gitlab-nomo.credissimo.net/nomo/nolus-core/app"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -21,7 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // TestAccount represents an account used in the tests in x/auth/ante.

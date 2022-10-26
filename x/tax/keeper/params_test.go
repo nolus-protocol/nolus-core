@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	testkeeper "gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	testkeeper "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGetParams(t *testing.T) {

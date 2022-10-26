@@ -2,7 +2,8 @@ package keeper
 
 import (
 	"context"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )

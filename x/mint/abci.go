@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/custom/util"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/keeper"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96

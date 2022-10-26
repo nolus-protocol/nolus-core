@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	keepertest "gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/keeper"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/nullify"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	keepertest "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/keeper"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/nullify"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGenesis(t *testing.T) {

@@ -4,16 +4,16 @@ import (
 	"fmt"
 	"strings"
 
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/app/params"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/testutil/network"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/network"
 
 	"github.com/stretchr/testify/suite"
 	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/client/cli"
-	minttypes "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/client/cli"
+	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 type IntegrationTestSuite struct {

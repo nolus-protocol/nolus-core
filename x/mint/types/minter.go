@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/cosmzone/custom/util"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 )
 
 var (
