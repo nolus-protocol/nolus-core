@@ -163,3 +163,15 @@ go.sum: go.mod
 	@go mod verify
 
 .PHONY: all build install go.sum fuzz test-unit-cosmos check-format
+
+###############################################################################
+###                                  Proto                                  ###
+###############################################################################
+protoVer=v0.7
+protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
+containerProtoGen=nolus-proto-gen-$(protoVer)
+
+proto-gen:
+	@echo "Generating Protobuf files"
+	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
+		sh ./scripts/protocgen.sh; fi

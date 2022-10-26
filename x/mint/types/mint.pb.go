@@ -6,7 +6,7 @@ package types
 import (
 	fmt "fmt"
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
-	_ "github.com/gogo/protobuf/gogoproto"
+	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
 	math "math"
@@ -71,6 +71,7 @@ func (m *Minter) GetPrevBlockTimestamp() int64 {
 	return 0
 }
 
+// Params holds parameters for the mint module.
 type Params struct {
 	// type of coin to mint
 	MintDenom              string `protobuf:"bytes,1,opt,name=mint_denom,json=mintDenom,proto3" json:"mint_denom,omitempty"`

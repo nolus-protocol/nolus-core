@@ -1,9 +1,8 @@
 syntax = "proto3";
-package nomo.cosmzone.tax;
+package tax;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "tax/params.proto";
 
 option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";

@@ -1,9 +1,9 @@
 syntax = "proto3";
 package nolus.mint.v1beta1;
 
-option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types";
-
 import "gogoproto/gogo.proto";
+
+option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/mint/types";
 
 // Minter represents the minting state.
 message Minter {
@@ -18,6 +18,7 @@ message Minter {
   int64 prev_block_timestamp = 4;
 }
 
+// Params holds parameters for the mint module.
 message Params {
   // type of coin to mint
   string mint_denom = 1;

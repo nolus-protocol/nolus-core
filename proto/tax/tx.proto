@@ -1,5 +1,5 @@
 syntax = "proto3";
-package nomo.cosmzone.tax;
+package tax;
 
 option go_package = "gitlab-nomo.credissimo.net/nomo/cosmzone/x/tax/types";
 
