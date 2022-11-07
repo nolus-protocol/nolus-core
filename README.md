@@ -29,3 +29,19 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 - Update the wasmvm version in the builder Dockerfile at build/builder_spec
 - Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
 - (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
+
+
+## Build image locally and run a full node with docker 
+
+In order to run, you should put the artifact binary in the nolus-core directory and rename it to `nolus.tar.gz`. 
+The artifact binary is in the git pipeline under the `build-binary` command.
+
+#Testnet rila.
+
+```
+docker build -f build/node_spec.Dockerfile -t rila-testnet-image .
+docker run -d -it \
+  --name testnet-rila \
+  -v nolusDataVol:/.nolus/data \
+  rila-testnet-image
+```
