@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
@@ -52,7 +53,22 @@ func ValidateMinter(minter Minter) error {
 	}
 	if minter.TotalMinted.GT(MintingCap) {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
-			minter.NormTimePassed.String())
+			minter.TotalMinted)
 	}
+	if calcIntegral(MonthsInFormula, NormOffset).GT(sdk.NewDecFromInt(MintingCap)) {
+		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
+			calcIntegral(MonthsInFormula, NormOffset))
+	}
+
 	return nil
+}
+
+func calcIntegral(x sdk.Dec, y sdk.Dec) sdk.Dec {
+	xToPower4 := x.Power(4)
+	xToPower3 := x.Power(3)
+	xToPower2 := x.Power(2)
+	yToPower4 := y.Power(4)
+	yToPower3 := y.Power(3)
+	yToPower2 := y.Power(2)
+	return (((mint.QuadCoef.Mul(xToPower4)).Add(mint.CubeCoef.Mul(xToPower3)).Add(mint.SquareCoef.Mul(xToPower2)).Add(mint.Coef.Mul(x))).Sub(((mint.QuadCoef.Mul(yToPower4)).Add(mint.CubeCoef.Mul(yToPower3)).Add(mint.SquareCoef.Mul(yToPower2)).Add(mint.Coef.Mul(y)))))
 }
