@@ -26,6 +26,11 @@ var (
 	DefaultContractAddress string = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
 )
 
+var (
+	KeyFeeDenoms     = []byte("FeeDenoms")
+	DefaultFeeDenoms = []string{"unls"}
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -36,11 +41,13 @@ func NewParams(
 	feeRate int32,
 	feeCaps string,
 	contractAddress string,
+	feeDenoms []string,
 ) Params {
 	return Params{
 		FeeRate:         feeRate,
 		FeeCaps:         feeCaps,
 		ContractAddress: contractAddress,
+		FeeDenoms:       feeDenoms,
 	}
 }
 
@@ -50,6 +57,7 @@ func DefaultParams() Params {
 		DefaultFeeRate,
 		DefaultFeeCaps,
 		DefaultContractAddress,
+		DefaultFeeDenoms,
 	)
 }
 
@@ -59,6 +67,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
 		paramtypes.NewParamSetPair(KeyFeeCaps, &p.FeeCaps, validateFeeCaps),
 		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
+		paramtypes.NewParamSetPair(KeyFeeDenoms, &p.FeeDenoms, validateFeeDenoms),
 	}
 }
 
@@ -73,6 +82,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateContractAddress(p.ContractAddress); err != nil {
+		return err
+	}
+
+	if err := validateFeeDenoms(p.FeeDenoms); err != nil {
 		return err
 	}
 
@@ -122,6 +135,25 @@ func validateContractAddress(v interface{}) error {
 	_, err := sdk.AccAddressFromBech32(contractAddress)
 	if err != nil {
 		return sdkerrors.Wrap(ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+// validateFeeDenoms validates the FeeDenom param
+func validateFeeDenoms(v interface{}) error {
+	feeDenoms, ok := v.([]string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	// check for duplicate denoms
+	denomMap := make(map[string]struct{})
+	for _, d := range feeDenoms {
+		if _, ok := denomMap[d]; ok {
+			return ErrDuplicateFeeDenom
+		}
+		denomMap[d] = struct{}{}
 	}
 
 	return nil

@@ -11,6 +11,10 @@ import (
 
 var HUNDRED_DEC = sdk.NewDec(100)
 
+// DeductTaxDecorator applies tax by a given fee rate on top of the standard Tx fee.
+// The additional tax is sent it to a treasury account
+// Call next AnteHandler if tax successfully sent to treasury
+// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator
 type DeductTaxDecorator struct {
 	ak types.AccountKeeper
 	tk Keeper
@@ -31,26 +35,56 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
-	if addr := dtd.ak.GetModuleAddress(authtypes.FeeCollectorName); addr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", authtypes.FeeCollectorName))
-	}
-
+	// Ensures the module treasury address has been set
 	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.ContractAddress(ctx))
 	if err != nil {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("Invalid Treasury Smart Contract Address [ %s ]", err.Error()))
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
 	}
 
-	feeCoins := feeTx.GetFee()
-	feeRate := sdk.NewDec(int64(dtd.tk.FeeRate(ctx)))
+	txFees := feeTx.GetFee()
+	if txFees.Empty() {
+		return ctx, types.ErrFeesNotSet
+	}
 
-	taxFees, remainingFees, err := ApplyTax(feeRate, feeCoins)
-	if err != nil {
+	// Ensure not more then one denom for paying tx costs
+	if len(txFees) > 1 {
+		return ctx, types.ErrTooManyFeeCoins
+	}
+
+	feeCoin := txFees[0]
+	if feeCoin.IsNil() || feeCoin.Amount.IsZero() {
+		return ctx, types.ErrAmountNilOrZero
+	}
+
+	if err = feeCoin.Validate(); err != nil {
 		return ctx, err
 	}
-	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, final fee: %s", taxFees, remainingFees))
 
-	if !taxFees.Empty() {
-		// Send taxFees from fee collector to the treasury smart contract
+	allowedDenoms := dtd.tk.FeeDenoms(ctx)
+	if !isAllowed(allowedDenoms, feeCoin.Denom) {
+		return ctx, sdkerrors.Wrap(types.ErrInvalidFeeDenom, txFees[0].Denom)
+	}
+
+	feeRate := sdk.NewDec(int64(dtd.tk.FeeRate(ctx)))
+	if feeRate.IsZero() {
+		return ctx, types.ErrAmountNilOrZero
+	}
+
+	// calculate the tax
+	var taxFees sdk.Coins
+	tax := sdk.NewCoin(feeCoin.Denom, feeRate.MulInt(feeCoin.Amount).Quo(HUNDRED_DEC).TruncateInt())
+	taxFees = taxFees.Add(tax)
+
+	remainingFees := feeCoin.Sub(tax)
+	if remainingFees.IsNegative() {
+		return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "got: %s required: %s", feeCoin, tax)
+	}
+
+	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, final fee: %s", tax, remainingFees))
+
+	fmt.Printf("$$$$$$$$$$$$$$tax is: %v, valid: %v, zero: %v \n", tax, tax.IsValid(), tax.IsZero())
+	if tax.IsValid() && !tax.IsZero() {
+		// Send tax from fee collector to the treasury smart contract
 		err = dtd.bk.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, taxFees)
 		if err != nil {
 			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
@@ -60,28 +94,17 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	events := sdk.Events{sdk.NewEvent(sdk.EventTypeTx,
 		sdk.NewAttribute(sdk.AttributeKeyFee, feeTx.GetFee().String()),
 	)}
+
 	ctx.EventManager().EmitEvents(events)
 
 	return next(ctx, tx, simulate)
 }
 
-func ApplyTax(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
-	taxFees := sdk.Coins{}
-
-	if feeRate.IsZero() || feeCoins.Empty() {
-		return taxFees, feeCoins, nil
+func isAllowed(denoms []string, denom string) bool {
+	for _, d := range denoms {
+		if d == denom {
+			return true
+		}
 	}
-
-	// we will deduct the fee from every denomination send
-	for _, fee := range feeCoins {
-		taxFee := sdk.NewCoin(fee.Denom, feeRate.MulInt(fee.Amount).Quo(HUNDRED_DEC).TruncateInt())
-		taxFees = taxFees.Add(taxFee)
-	}
-
-	remainingFees, neg := feeCoins.SafeSub(taxFees)
-	if neg {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyTax: insufficient fees; got: %s required: %s", feeCoins, taxFees)
-	}
-
-	return taxFees, remainingFees, nil
+	return false
 }
