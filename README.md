@@ -33,7 +33,7 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 
 ## Build image locally and run a full node with docker 
 
-In order to run, you should put the artifact binary in the nolus-core directory and rename it to `nolus.tar.gz`. 
+In order to build the image, you should put the artifact binary in the nolus-core directory and rename it to `nolus.tar.gz`. 
 You should use the nolus version used in the testnet-rila, current is v0.1.37(as of November 8th 2022).
 The artifact binary is in the git pipeline under the `build-binary` command. 
 
