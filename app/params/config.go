@@ -7,8 +7,9 @@ import (
 )
 
 const (
-	HumanCoinUnit = "nolus"
+	HumanCoinUnit = "nls"
 	BaseCoinUnit  = "unls"
+	NolusExponent = 6
 
 	DefaultBondDenom = BaseCoinUnit
 
@@ -37,6 +38,11 @@ func init() {
 
 func RegisterDenoms() {
 	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
+	if err != nil {
+		panic(err)
+	}
+
+	err = sdk.RegisterDenom(BaseCoinUnit, sdk.NewDecWithPrec(1, NolusExponent))
 	if err != nil {
 		panic(err)
 	}
