@@ -50,5 +50,9 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted should be positive, is %s",
 			minter.TotalMinted.String())
 	}
+	if minter.TotalMinted.GT(MintingCap) {
+		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
+			minter.NormTimePassed.String())
+	}
 	return nil
 }
