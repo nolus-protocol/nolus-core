@@ -12,5 +12,4 @@ message Params {
   int32 fee_rate = 1;
   string fee_caps = 2;
   string contract_address = 3;
-  repeated string fee_denoms = 4;
 }

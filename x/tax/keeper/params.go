@@ -11,7 +11,6 @@ func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 		k.FeeRate(ctx),
 		k.FeeCaps(ctx),
 		k.ContractAddress(ctx),
-		k.FeeDenoms(ctx),
 	)
 }
 
@@ -35,10 +34,5 @@ func (k Keeper) FeeCaps(ctx sdk.Context) (res string) {
 // ContractAddress returns the ContractAddress param
 func (k Keeper) ContractAddress(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.KeyContractAddress, &res)
-	return
-}
-
-func (k Keeper) FeeDenoms(ctx sdk.Context) (res []string) {
-	k.paramstore.Get(ctx, types.KeyFeeDenoms, &res)
 	return
 }

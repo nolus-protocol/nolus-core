@@ -1,4 +1,4 @@
-	package mint
+package mint
 
 import (
 	"fmt"
