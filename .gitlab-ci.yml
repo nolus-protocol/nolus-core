@@ -101,7 +101,7 @@ build-image:
     KANIKO_DOCKER_FILE: build/node_spec.Dockerfile
     KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
     KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
-    GITLAB_WIKI_ACCESS_TOKEN: ${{ secrets.DOWNLOAD_ACCESS_TOKEN }}
+    GITHUB_WIKI_ACCESS_TOKEN: ${GITHUB_WIKI_ACCESS_TOKEN}
 
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
