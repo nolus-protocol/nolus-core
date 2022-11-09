@@ -2,13 +2,15 @@ package types
 
 import (
 	"fmt"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 )
 
 var (
+	QuadCoef          = sdk.MustNewDecFromStr("-1.08319")
+	CubeCoef          = sdk.MustNewDecFromStr("314.871")
+	SquareCoef        = sdk.MustNewDecFromStr("-44283.6")
+	Coef              = sdk.MustNewDecFromStr("3863350")
 	MintingCap        = util.ConvertToMicroNolusInt(sdk.NewInt(150000000))
 	FixedMintedAmount = util.ConvertToMicroNolusInt(sdk.NewInt(103125))
 	NormOffset        = sdk.MustNewDecFromStr("0.47")
@@ -70,5 +72,5 @@ func calcIntegral(x sdk.Dec, y sdk.Dec) sdk.Dec {
 	yToPower4 := y.Power(4)
 	yToPower3 := y.Power(3)
 	yToPower2 := y.Power(2)
-	return (((mint.QuadCoef.Mul(xToPower4)).Add(mint.CubeCoef.Mul(xToPower3)).Add(mint.SquareCoef.Mul(xToPower2)).Add(mint.Coef.Mul(x))).Sub(((mint.QuadCoef.Mul(yToPower4)).Add(mint.CubeCoef.Mul(yToPower3)).Add(mint.SquareCoef.Mul(yToPower2)).Add(mint.Coef.Mul(y)))))
+	return (((QuadCoef.Mul(xToPower4)).Add(CubeCoef.Mul(xToPower3)).Add(SquareCoef.Mul(xToPower2)).Add(Coef.Mul(x))).Sub(((QuadCoef.Mul(yToPower4)).Add(CubeCoef.Mul(yToPower3)).Add(SquareCoef.Mul(yToPower2)).Add(Coef.Mul(y)))))
 }

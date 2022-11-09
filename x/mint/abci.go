@@ -15,10 +15,6 @@ import (
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
 // afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
-	QuadCoef           = sdk.MustNewDecFromStr("-1.08319")
-	CubeCoef           = sdk.MustNewDecFromStr("314.871")
-	SquareCoef         = sdk.MustNewDecFromStr("-44283.6")
-	Coef               = sdk.MustNewDecFromStr("3863350")
 	normInitialTotal   = util.ConvertToMicroNolusDec(calcIntegral(types.NormOffset))
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
@@ -50,7 +46,7 @@ func calcIntegral(x sdk.Dec) sdk.Dec {
 	xToPower4 := x.Power(4)
 	xToPower3 := x.Power(3)
 	xToPower2 := x.Power(2)
-	return (QuadCoef.Mul(xToPower4)).Add(CubeCoef.Mul(xToPower3)).Add(SquareCoef.Mul(xToPower2)).Add(Coef.Mul(x))
+	return (types.QuadCoef.Mul(xToPower4)).Add(types.CubeCoef.Mul(xToPower3)).Add(types.SquareCoef.Mul(xToPower2)).Add(types.Coef.Mul(x))
 }
 
 func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64) sdk.Int {
