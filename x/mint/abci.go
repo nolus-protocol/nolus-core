@@ -15,7 +15,7 @@ import (
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
 // afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
-	normInitialTotal   = util.ConvertToMicroNolusDec(calcIntegral(types.NormOffset))
+	normInitialTotal   = util.ConvertToMicroNolusDec(types.CalcIntegral(types.NormOffset))
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
 
@@ -41,14 +41,6 @@ func calcTimeDifference(blockTime int64, prevBlockTime int64, maxMintableSeconds
 	return nsecBetweenBlocks
 }
 
-// Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
-func calcIntegral(x sdk.Dec) sdk.Dec {
-	xToPower4 := x.Power(4)
-	xToPower3 := x.Power(3)
-	xToPower2 := x.Power(2)
-	return (types.QuadCoef.Mul(xToPower4)).Add(types.CubeCoef.Mul(xToPower3)).Add(types.SquareCoef.Mul(xToPower2)).Add(types.Coef.Mul(x))
-}
-
 func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64) sdk.Int {
 	if minter.TotalMinted.GTE(types.MintingCap) {
 		return sdk.ZeroInt()
@@ -66,7 +58,7 @@ func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64)
 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
-		nextIntegral := calcIntegral(newNormTime)
+		nextIntegral := types.CalcIntegral(newNormTime)
 
 		delta := util.ConvertToMicroNolusDec(nextIntegral).Sub(previousTotal)
 

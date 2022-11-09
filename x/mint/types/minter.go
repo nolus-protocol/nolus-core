@@ -57,20 +57,16 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	if calcIntegral(MonthsInFormula, NormOffset).GT(sdk.NewDecFromInt(MintingCap)) {
+	testTotalMinted := CalcIntegral(NormMonthsRange)
+	if testTotalMinted.GT(sdk.NewDecFromInt(MintingCap)) {
 		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
-			calcIntegral(MonthsInFormula, NormOffset))
+			testTotalMinted)
 	}
 
 	return nil
 }
 
-func calcIntegral(x sdk.Dec, y sdk.Dec) sdk.Dec {
-	xToPower4 := x.Power(4)
-	xToPower3 := x.Power(3)
-	xToPower2 := x.Power(2)
-	yToPower4 := y.Power(4)
-	yToPower3 := y.Power(3)
-	yToPower2 := y.Power(2)
-	return (((QuadCoef.Mul(xToPower4)).Add(CubeCoef.Mul(xToPower3)).Add(SquareCoef.Mul(xToPower2)).Add(Coef.Mul(x))).Sub(((QuadCoef.Mul(yToPower4)).Add(CubeCoef.Mul(yToPower3)).Add(SquareCoef.Mul(yToPower2)).Add(Coef.Mul(y)))))
+// Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
+func CalcIntegral(x sdk.Dec) sdk.Dec {
+	return (QuadCoef.Mul(x.Power(4))).Add(CubeCoef.Mul(x.Power(3))).Add(SquareCoef.Mul(x.Power(2))).Add(Coef.Mul(x))
 }
