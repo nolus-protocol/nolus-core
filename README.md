@@ -40,9 +40,17 @@ The artifact binary is in the git pipeline under the `build-binary` command.
 #Testnet rila.
 
 ```
-docker build -f build/node_spec.Dockerfile -t rila-testnet-image .
+ACCESS_TOKEN=<get token for gitlab wiki access>
+docker build \
+  --build-arg ACCESS_TOKEN=$ACCESS_TOKEN \
+  -f build/node_spec.Dockerfile \
+  -t rila-testnet-image .
+
 docker run -d -it \
   --name testnet-rila \
   -v nolusDataVol:/.nolus/data \
   rila-testnet-image
 ```
+
+*Notes
+Make sure the genesis.json, presistent_peers.txt files in the wiki repo are for the same version of the artifact binary.
