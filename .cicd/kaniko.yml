@@ -8,6 +8,7 @@
     - if [ -z ${KANIKO_IMAGE_EXISTS} ] ;
       then
         /kaniko/executor
+          --build-arg ACCESS_TOKEN="${GITHUB_WIKI_ACCESS_TOKEN}"
           --context "${CI_PROJECT_DIR}"
           --dockerfile "${CI_PROJECT_DIR}/${KANIKO_DOCKER_FILE}"
           --destination "${KANIKO_IMAGE}" ;
