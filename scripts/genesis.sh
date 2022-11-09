@@ -15,7 +15,7 @@ __print_usage() {
     printf \
     "Usage: %s
     <$COMMAND_FULL_GEN>
-    [-c|--chain_id <string>]
+    [-c|--chain-id <string>]
     [--currency <native_currency>]
     [--contracts-owner-addr <contracts_owner_address>]
     [--accounts <accounts_spec_json>]

@@ -94,7 +94,7 @@ add_genesis_account() {
     vesting_amount=$(echo "$specification" | jq -r '.vesting.amount')
     run_cmd "$home_dir" add-genesis-account "$address" "$amount" \
                 --vesting-amount "$vesting_amount$currency" \
-                --vesting-end-time "$vesting_end_time" "$vesting_start_time"
+                --vesting-end-time "$vesting_end_time" $vesting_start_time
   else
     run_cmd "$home_dir" add-genesis-account "$address" "$amount"
   fi

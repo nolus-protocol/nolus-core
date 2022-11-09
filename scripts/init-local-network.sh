@@ -163,6 +163,8 @@ contracts_owner_addr=$(generate_account "contracts_owner" "$USER_DIR")
 # We handle the contracts_owner account as normal address.
 treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
 accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$treasury_init_tokens")
+# accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
+#                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
