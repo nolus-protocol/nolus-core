@@ -12,8 +12,6 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
-// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
 	normInitialTotal   = util.ConvertToMicroNolusDec(types.CalcIntegral(types.NormOffset))
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))

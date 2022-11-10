@@ -6,6 +6,8 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 )
 
+// Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
+// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
 	QuadCoef          = sdk.MustNewDecFromStr("-1.08319")
 	CubeCoef          = sdk.MustNewDecFromStr("314.871")
@@ -58,10 +60,10 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	testTotalMinted := CalcIntegral(MonthsInFormula).Sub(CalcIntegral(NormOffset)).Add((TotalMonths.Sub(MonthsInFormula)).Mul(sdk.NewDecFromInt(FixedMintedAmount)))
-	if testTotalMinted.GT(sdk.NewDecFromInt(MintingCap)) {
+	expectedByFormula := CalcIntegral(MonthsInFormula).Sub(CalcIntegral(NormOffset)).Add((TotalMonths.Sub(MonthsInFormula)).Mul(sdk.NewDecFromInt(FixedMintedAmount)))
+	if expectedByFormula.GT(sdk.NewDecFromInt(MintingCap)) {
 		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
-			testTotalMinted)
+			expectedByFormula)
 	}
 
 	return nil
