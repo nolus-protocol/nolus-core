@@ -15,6 +15,7 @@ var (
 	FixedMintedAmount = util.ConvertToMicroNolusInt(sdk.NewInt(103125))
 	NormOffset        = sdk.MustNewDecFromStr("0.47")
 	MonthsInFormula   = sdk.MustNewDecFromStr("96")
+	TotalMonths       = sdk.MustNewDecFromStr("120")
 	AbsMonthsRange    = MonthsInFormula.Sub(NormOffset)
 	NormMonthsRange   = AbsMonthsRange.Quo(MonthsInFormula)
 )
@@ -57,7 +58,7 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	testTotalMinted := CalcIntegral(NormMonthsRange)
+	testTotalMinted := CalcIntegral(MonthsInFormula).Sub(CalcIntegral(NormOffset)).Add(TotalMonths.Mul(sdk.NewDecFromInt(FixedMintedAmount)))
 	if testTotalMinted.GT(sdk.NewDecFromInt(MintingCap)) {
 		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
 			testTotalMinted)
@@ -68,5 +69,5 @@ func ValidateMinter(minter Minter) error {
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
 func CalcIntegral(x sdk.Dec) sdk.Dec {
-	return (QuadCoef.Mul(x.Power(4))).Add(CubeCoef.Mul(x.Power(3))).Add(SquareCoef.Mul(x.Power(2))).Add(Coef.Mul(x))
+	return ((((QuadCoef.Mul(x)).Mul(x)).Mul(x)).Add((CubeCoef.Mul(x)).Mul(x).Add(SquareCoef.Mul(x)).Add(Coef)).Mul(x))
 }
