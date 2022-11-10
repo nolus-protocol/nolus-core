@@ -37,8 +37,7 @@ In order to build the image, you should put the artifact binary in the nolus-cor
 You should use the nolus version used in the testnet-rila, current is v0.1.37(as of November 8th 2022).
 The artifact binary is in the git pipeline under the `build-binary` command. 
 
-#Testnet rila.
-
+Testnet rila
 ```
 ACCESS_TOKEN=<get token for gitlab wiki access>
 docker build \
@@ -48,7 +47,7 @@ docker build \
 
 docker run -d -it \
   --name testnet-rila \
-  -v nolusDataVol:/.nolus/data \
+  -v nolusDataVol:/root/.nolus/data \
   rila-testnet-image
 ```
 
