@@ -60,7 +60,7 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	calculatedTokensByFormula := util.ConvertToMicroNolusDec(CalcIntegral(MonthsInFormula)).Sub(util.ConvertToMicroNolusDec((CalcIntegral(NormOffset))))
+	calculatedTokensByFormula := util.ConvertToMicroNolusDec(CalcIntegral(MonthsInFormula).Sub(CalcIntegral(NormOffset)))
 	expectedTotalMinted := calculatedTokensByFormula.Add((util.ConvertToMicroNolusDec(TotalMonths.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
 	if expectedTotalMinted.GT(MintingCap) {
 		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
