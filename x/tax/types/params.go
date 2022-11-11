@@ -17,11 +17,6 @@ var (
 )
 
 var (
-	KeyFeeCaps            = []byte("FeeCaps")
-	DefaultFeeCaps string = "1000unls"
-)
-
-var (
 	KeyContractAddress            = []byte("ContractAddress")
 	DefaultContractAddress string = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
 )
@@ -34,12 +29,10 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams(
 	feeRate int32,
-	feeCaps string,
 	contractAddress string,
 ) Params {
 	return Params{
 		FeeRate:         feeRate,
-		FeeCaps:         feeCaps,
 		ContractAddress: contractAddress,
 	}
 }
@@ -48,7 +41,6 @@ func NewParams(
 func DefaultParams() Params {
 	return NewParams(
 		DefaultFeeRate,
-		DefaultFeeCaps,
 		DefaultContractAddress,
 	)
 }
@@ -57,7 +49,6 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
-		paramtypes.NewParamSetPair(KeyFeeCaps, &p.FeeCaps, validateFeeCaps),
 		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
 	}
 }
@@ -65,10 +56,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 // Validate validates the set of params
 func (p Params) Validate() error {
 	if err := validateFeeRate(p.FeeRate); err != nil {
-		return err
-	}
-
-	if err := validateFeeCaps(p.FeeCaps); err != nil {
 		return err
 	}
 
@@ -95,19 +82,6 @@ func validateFeeRate(v interface{}) error {
 	if feeRate < 0 || feeRate > 100 {
 		return ErrInvalidFeeRate
 	}
-
-	return nil
-}
-
-// validateFeeCaps validates the FeeCaps param
-func validateFeeCaps(v interface{}) error {
-	feeCaps, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", v)
-	}
-
-	// TODO implement validation
-	_ = feeCaps
 
 	return nil
 }
