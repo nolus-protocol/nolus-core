@@ -60,7 +60,7 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	calculatedTokensByFormula := util.ConvertToMicroNolusDec(CalcIntegral(MonthsInFormula).Sub(CalcIntegral(NormOffset)))
+	calculatedTokensByFormula := CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset))
 	expectedTotalMinted := calculatedTokensByFormula.Add((util.ConvertToMicroNolusDec(TotalMonths.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
 	if expectedTotalMinted.GT(MintingCap) {
 		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
@@ -71,6 +71,7 @@ func ValidateMinter(minter Minter) error {
 }
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
-func CalcIntegral(x sdk.Dec) sdk.Dec {
-	return ((((QuadCoef.Mul(x)).Mul(x)).Mul(x)).Add((CubeCoef.Mul(x)).Mul(x).Add(SquareCoef.Mul(x)).Add(Coef)).Mul(x))
+// transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x
+func CalcTokensByIntegral(x sdk.Dec) sdk.Int {
+	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }

@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
-
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
@@ -13,7 +11,7 @@ import (
 )
 
 var (
-	normInitialTotal   = util.ConvertToMicroNolusDec(types.CalcIntegral(types.NormOffset))
+	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
 
@@ -56,9 +54,9 @@ func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64)
 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
-		nextIntegral := types.CalcIntegral(newNormTime)
+		nextIntegral := types.CalcTokensByIntegral(newNormTime)
 
-		delta := util.ConvertToMicroNolusDec(nextIntegral).Sub(previousTotal)
+		delta := nextIntegral.Sub(previousTotal)
 
 		return updateMinter(minter, blockTime, newNormTime, delta)
 	} else {
