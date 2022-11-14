@@ -6,6 +6,7 @@ ARG ACCESS_TOKEN
 COPY $ARTIFACT_BIN /tmp/
 RUN tar -xvf /tmp/$ARTIFACT_BIN --directory /usr/bin/
 RUN rm /tmp/$ARTIFACT_BIN
+RUN apk add --no-cache bash
 
 RUN wget -O genesis.json --header="Authorization: Token $ACCESS_TOKEN" https://raw.githubusercontent.com/Nolus-Protocol/Wiki/main/testnet-rila/genesis.json
 RUN wget -O persistent_peers.txt --header="Authorization: Token $ACCESS_TOKEN" https://raw.githubusercontent.com/Nolus-Protocol/Wiki/main/testnet-rila/persistent_peers.txt
