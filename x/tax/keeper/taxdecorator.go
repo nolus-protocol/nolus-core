@@ -11,6 +11,10 @@ import (
 
 var HUNDRED_DEC = sdk.NewDec(100)
 
+// DeductTaxDecorator deducts tax by a given fee rate from the standard collected fee.
+// The tax is sent to a treasury account
+// Call next AnteHandler if tax successfully sent to treasury or no fee provided
+// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator
 type DeductTaxDecorator struct {
 	ak types.AccountKeeper
 	tk Keeper
@@ -31,57 +35,76 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
-	if addr := dtd.ak.GetModuleAddress(authtypes.FeeCollectorName); addr == nil {
-		panic(fmt.Sprintf("%s module account has not been set", authtypes.FeeCollectorName))
+	// If fees are not specified we call the next AnteHandler
+	txFees := feeTx.GetFee()
+	if txFees.Empty() {
+		return next(ctx, tx, simulate)
 	}
 
+	// Ensures the module treasury address has been set
 	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.ContractAddress(ctx))
 	if err != nil {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("Invalid Treasury Smart Contract Address [ %s ]", err.Error()))
+		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
 	}
 
-	feeCoins := feeTx.GetFee()
-	feeRate := sdk.NewDec(int64(dtd.tk.FeeRate(ctx)))
+	// Ensure not more then one denom for paying tx costs
+	if len(txFees) > 1 {
+		return ctx, types.ErrTooManyFeeCoins
+	}
 
-	taxFees, remainingFees, err := ApplyTax(feeRate, feeCoins)
+	feeCoin := txFees[0]
+	if feeCoin.IsNil() || feeCoin.Amount.IsZero() {
+		return ctx, types.ErrAmountNilOrZero
+	}
+
+	if err = feeCoin.Validate(); err != nil {
+		return ctx, err
+	}
+
+	baseDenom, err := sdk.GetBaseDenom()
 	if err != nil {
 		return ctx, err
 	}
-	ctx.Logger().Info(fmt.Sprintf("DeductTaxes: tax: %s, final fee: %s", taxFees, remainingFees))
 
-	if !taxFees.Empty() {
-		// Send taxFees from fee collector to the treasury smart contract
-		err = dtd.bk.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, taxFees)
-		if err != nil {
-			return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
-		}
+	if baseDenom != feeCoin.Denom {
+		return ctx, sdkerrors.Wrap(types.ErrInvalidFeeDenom, txFees[0].Denom)
+	}
+
+	if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, treasuryAddr); err != nil {
+		return ctx, err
 	}
 
 	events := sdk.Events{sdk.NewEvent(sdk.EventTypeTx,
 		sdk.NewAttribute(sdk.AttributeKeyFee, feeTx.GetFee().String()),
 	)}
+
 	ctx.EventManager().EmitEvents(events)
 
 	return next(ctx, tx, simulate)
 }
-
-func ApplyTax(feeRate sdk.Dec, feeCoins sdk.Coins) (sdk.Coins, sdk.Coins, error) {
-	taxFees := sdk.Coins{}
-
-	if feeRate.IsZero() || feeCoins.Empty() {
-		return taxFees, feeCoins, nil
+func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, feeCoin sdk.Coin, treasuryAddr sdk.AccAddress) error {
+	feeRate := sdk.NewDec(int64(taxKeeper.FeeRate(ctx)))
+	if feeRate.IsZero() {
+		return types.ErrAmountNilOrZero
 	}
 
-	// we will deduct the fee from every denomination send
-	for _, fee := range feeCoins {
-		taxFee := sdk.NewCoin(fee.Denom, feeRate.MulInt(fee.Amount).Quo(HUNDRED_DEC).TruncateInt())
-		taxFees = taxFees.Add(taxFee)
+	tax := sdk.NewCoin(feeCoin.Denom, feeRate.MulInt(feeCoin.Amount).Quo(HUNDRED_DEC).TruncateInt())
+	if !tax.IsValid() || tax.IsZero() {
+		return types.ErrInvalidTax
 	}
 
-	remainingFees, neg := feeCoins.SafeSub(taxFees)
-	if neg {
-		return nil, nil, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "ApplyTax: insufficient fees; got: %s required: %s", feeCoins, taxFees)
+	remainingFees := feeCoin.Sub(tax)
+	if remainingFees.IsNegative() { // seems like impossible to happen - probably should be removed
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "got: %s required: %s", feeCoin, tax)
 	}
 
-	return taxFees, remainingFees, nil
+	ctx.Logger().Info(fmt.Sprintf("Deducted tax: %s, final fee: %s", tax, remainingFees))
+
+	// Send tax from fee collector to the treasury smart contract address
+	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
+	if err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
+	}
+
+	return nil
 }
