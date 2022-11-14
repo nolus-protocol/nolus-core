@@ -4,22 +4,14 @@ import (
 	"fmt"
 	"time"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
-
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
-// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
 var (
-	quadCoef           = sdk.MustNewDecFromStr("-1.08319")
-	cubeCoef           = sdk.MustNewDecFromStr("314.871")
-	squareCoef         = sdk.MustNewDecFromStr("-44283.6")
-	coef               = sdk.MustNewDecFromStr("3863350")
-	normInitialTotal   = util.ConvertToMicroNolusDec(calcIntegral(types.NormOffset))
+	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
 
@@ -45,14 +37,6 @@ func calcTimeDifference(blockTime int64, prevBlockTime int64, maxMintableSeconds
 	return nsecBetweenBlocks
 }
 
-// Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
-func calcIntegral(x sdk.Dec) sdk.Dec {
-	xToPower4 := x.Power(4)
-	xToPower3 := x.Power(3)
-	xToPower2 := x.Power(2)
-	return (quadCoef.Mul(xToPower4)).Add(cubeCoef.Mul(xToPower3)).Add(squareCoef.Mul(xToPower2)).Add(coef.Mul(x))
-}
-
 func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64) sdk.Int {
 	if minter.TotalMinted.GTE(types.MintingCap) {
 		return sdk.ZeroInt()
@@ -70,9 +54,9 @@ func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64)
 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
-		nextIntegral := calcIntegral(newNormTime)
+		nextTotal := types.CalcTokensByIntegral(newNormTime)
 
-		delta := util.ConvertToMicroNolusDec(nextIntegral).Sub(previousTotal)
+		delta := nextTotal.Sub(previousTotal)
 
 		return updateMinter(minter, blockTime, newNormTime, delta)
 	} else {
