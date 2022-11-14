@@ -54,9 +54,9 @@ func calcTokens(blockTime int64, minter *types.Minter, maxMintableSeconds int64)
 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
-		nextIntegral := types.CalcTokensByIntegral(newNormTime)
+		nextTotal := types.CalcTokensByIntegral(newNormTime)
 
-		delta := nextIntegral.Sub(previousTotal)
+		delta := nextTotal.Sub(previousTotal)
 
 		return updateMinter(minter, blockTime, newNormTime, delta)
 	} else {
