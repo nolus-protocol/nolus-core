@@ -10,7 +10,6 @@ message Params {
   option (gogoproto.goproto_stringer) = false;
 
   int32 fee_rate = 1;
-  string fee_caps = 2;
-  string contract_address = 3;
-  string base_denom = 4;
+  string contract_address = 2;
+  string base_denom = 3;
 }

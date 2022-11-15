@@ -11,24 +11,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var _ paramtypes.ParamSet = (*Params)(nil)
-
 var (
 	KeyFeeRate           = []byte("FeeRate")
 	DefaultFeeRate int32 = 40
-)
 
-var (
-	KeyFeeCaps            = []byte("FeeCaps")
-	DefaultFeeCaps string = "1000unls"
-)
-
-var (
 	KeyContractAddress            = []byte("ContractAddress")
 	DefaultContractAddress string = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-)
 
-var (
 	KeyBaseDenom            = []byte("BaseDenom")
 	DefaultBaseDenom string = sdk.DefaultBondDenom
 )
@@ -41,13 +30,11 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NewParams creates a new Params instance
 func NewParams(
 	feeRate int32,
-	feeCaps string,
 	contractAddress string,
 	baseDenom string,
 ) Params {
 	return Params{
 		FeeRate:         feeRate,
-		FeeCaps:         feeCaps,
 		ContractAddress: contractAddress,
 		BaseDenom:       baseDenom,
 	}
@@ -57,7 +44,6 @@ func NewParams(
 func DefaultParams() Params {
 	return NewParams(
 		DefaultFeeRate,
-		DefaultFeeCaps,
 		DefaultContractAddress,
 		DefaultBaseDenom,
 	)
@@ -67,7 +53,6 @@ func DefaultParams() Params {
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
-		paramtypes.NewParamSetPair(KeyFeeCaps, &p.FeeCaps, validateFeeCaps),
 		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
 		paramtypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
 	}
@@ -76,10 +61,6 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 // Validate validates the set of params
 func (p Params) Validate() error {
 	if err := validateFeeRate(p.FeeRate); err != nil {
-		return err
-	}
-
-	if err := validateFeeCaps(p.FeeCaps); err != nil {
 		return err
 	}
 
@@ -100,7 +81,6 @@ func (p Params) String() string {
 	return string(out)
 }
 
-// validateFeeRate validates the FeeRate param
 func validateFeeRate(v interface{}) error {
 	feeRate, ok := v.(int32)
 	if !ok {
@@ -114,20 +94,6 @@ func validateFeeRate(v interface{}) error {
 	return nil
 }
 
-// validateFeeCaps validates the FeeCaps param
-func validateFeeCaps(v interface{}) error {
-	feeCaps, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("invalid parameter type: %T", v)
-	}
-
-	// TODO implement validation
-	_ = feeCaps
-
-	return nil
-}
-
-// validateContractAddress validates the ContractAddress param
 func validateContractAddress(v interface{}) error {
 	contractAddress, ok := v.(string)
 	if !ok {
