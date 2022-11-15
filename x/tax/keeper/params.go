@@ -9,7 +9,6 @@ import (
 func (k Keeper) GetParams(ctx sdk.Context) types.Params {
 	return types.NewParams(
 		k.FeeRate(ctx),
-		k.FeeCaps(ctx),
 		k.ContractAddress(ctx),
 		k.BaseDenom(ctx),
 	)
@@ -20,19 +19,13 @@ func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
 	k.paramstore.SetParamSet(ctx, &params)
 }
 
-// FeeRate returns the FeeRate param
+// FeeRate returns the fee rate
 func (k Keeper) FeeRate(ctx sdk.Context) (res int32) {
 	k.paramstore.Get(ctx, types.KeyFeeRate, &res)
 	return
 }
 
-// FeeCaps returns the FeeCaps param
-func (k Keeper) FeeCaps(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyFeeCaps, &res)
-	return
-}
-
-// ContractAddress returns the ContractAddress param
+// ContractAddress returns the contract address
 func (k Keeper) ContractAddress(ctx sdk.Context) (res string) {
 	k.paramstore.Get(ctx, types.KeyContractAddress, &res)
 	return
