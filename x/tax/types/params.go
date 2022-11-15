@@ -1,7 +1,9 @@
 package types
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -26,6 +28,11 @@ var (
 	DefaultContractAddress string = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
 )
 
+var (
+	KeyBaseDenom            = []byte("BaseDenom")
+	DefaultBaseDenom string = sdk.DefaultBondDenom
+)
+
 // ParamKeyTable the param key table for launch module
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
@@ -36,11 +43,13 @@ func NewParams(
 	feeRate int32,
 	feeCaps string,
 	contractAddress string,
+	baseDenom string,
 ) Params {
 	return Params{
 		FeeRate:         feeRate,
 		FeeCaps:         feeCaps,
 		ContractAddress: contractAddress,
+		BaseDenom:       baseDenom,
 	}
 }
 
@@ -50,6 +59,7 @@ func DefaultParams() Params {
 		DefaultFeeRate,
 		DefaultFeeCaps,
 		DefaultContractAddress,
+		DefaultBaseDenom,
 	)
 }
 
@@ -59,6 +69,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
 		paramtypes.NewParamSetPair(KeyFeeCaps, &p.FeeCaps, validateFeeCaps),
 		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
+		paramtypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
 	}
 }
 
@@ -73,6 +84,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateContractAddress(p.ContractAddress); err != nil {
+		return err
+	}
+
+	if err := validateBaseDenom(p.BaseDenom); err != nil {
 		return err
 	}
 
@@ -122,6 +137,24 @@ func validateContractAddress(v interface{}) error {
 	_, err := sdk.AccAddressFromBech32(contractAddress)
 	if err != nil {
 		return sdkerrors.Wrap(ErrInvalidAddress, err.Error())
+	}
+
+	return nil
+}
+
+func validateBaseDenom(v interface{}) error {
+	baseDenom, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", v)
+	}
+
+	if strings.TrimSpace(baseDenom) == "" {
+		return errors.New("base denom cannot be blank")
+	}
+
+	err := sdk.ValidateDenom(baseDenom)
+	if err != nil {
+		return err
 	}
 
 	return nil

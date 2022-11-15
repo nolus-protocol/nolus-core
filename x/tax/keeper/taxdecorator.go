@@ -61,11 +61,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, err
 	}
 
-	baseDenom, err := sdk.GetBaseDenom()
-	if err != nil {
-		return ctx, err
-	}
-
+	baseDenom := dtd.tk.BaseDenom(ctx)
 	if baseDenom != feeCoin.Denom {
 		return ctx, sdkerrors.Wrap(types.ErrInvalidFeeDenom, txFees[0].Denom)
 	}
