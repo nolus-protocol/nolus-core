@@ -156,6 +156,7 @@ __set_token_denominations() {
     | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
+    | jq '.app_state["tax"]["params"]["base_denom"]="'"$currency"'"' \
     | jq '.app_state["mint"]["params"]["mint_denom"]="'"$currency"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }

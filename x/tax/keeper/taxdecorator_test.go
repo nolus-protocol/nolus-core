@@ -12,10 +12,10 @@ import (
 )
 
 func (suite *KeeperTestSuite) TestTaxDecorator() {
-	const rnDenom = "atom"
+	suite.SetupTest(true)
 
-	baseDenom, err := sdk.GetBaseDenom()
-	suite.Require().NoError(err)
+	const rnDenom = "atom"
+	baseDenom := suite.app.TaxKeeper.BaseDenom(suite.ctx)
 
 	testCases := []struct {
 		title              string
