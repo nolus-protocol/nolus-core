@@ -2,6 +2,7 @@ package mint
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"testing"
 	"time"
@@ -54,9 +55,9 @@ func TestTimeDifference_MoreThenMax(t *testing.T) {
 
 func TestTimeDifference_InvalidTime(t *testing.T) {
 	_, _, _, timeOffset := defaultParams()
-	td := calcTimeDifference(timeOffset-1, timeOffset, fiveMinutesInNano)
-
-	require.Zero(t, td)
+	require.Panics(t, assert.PanicTestFunc(func() {
+		calcTimeDifference(timeOffset-1, timeOffset, fiveMinutesInNano)
+	}))
 }
 
 func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredeterminedAmount(t *testing.T) {
