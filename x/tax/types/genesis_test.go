@@ -22,7 +22,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		},
 		{
 			desc:     "valid genesis state",
-			genState: &types.GenesisState{Params: types.NewParams(100, "nolus", types.DefaultContractAddress)},
+			genState: &types.GenesisState{Params: types.NewParams(types.DefaultFeeRate, types.DefaultContractAddress, types.DefaultBaseDenom)},
 			valid:    true,
 		},
 		{
