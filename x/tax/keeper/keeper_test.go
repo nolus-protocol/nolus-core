@@ -1,8 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
-	"strconv"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client"
@@ -21,10 +19,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// TestAccount represents an account used in the tests in x/auth/ante.
+// TestAccount represents a client Account that can be used in unit tests.
 type TestAccount struct {
 	acc  authtypes.AccountI
 	priv cryptotypes.PrivKey
@@ -42,72 +39,52 @@ type KeeperTestSuite struct {
 }
 
 // SetupTest setups a new test, with new app, context, and anteHandler.
-func (suite *KeeperTestSuite) SetupTest(isCheckTx bool) {
-	tempDir := suite.T().TempDir()
-	suite.app, suite.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
-	suite.ctx = suite.ctx.WithBlockHeight(1)
+func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
+	tempDir := s.T().TempDir()
+	s.app, s.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
+	s.ctx = s.ctx.WithBlockHeight(1)
 
-	// Set up TxConfig.
+	// set up TxConfig
 	encodingConfig := simapp.MakeTestEncodingConfig()
-	suite.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
-	suite.txBuilder = suite.clientCtx.TxConfig.NewTxBuilder()
-	suite.Require().NoError(suite.txBuilder.SetMsgs([]sdk.Msg{}...))
+	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
+	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
+	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))
 
 	anteHandler, err := ante.NewAnteHandler(
 		ante.HandlerOptions{
-			AccountKeeper:   suite.app.AccountKeeper,
-			BankKeeper:      suite.app.BankKeeper,
+			AccountKeeper:   s.app.AccountKeeper,
+			BankKeeper:      s.app.BankKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 		},
 	)
+	s.Require().NoError(err)
 
-	suite.Require().NoError(err)
-	suite.anteHandler = anteHandler
+	s.anteHandler = anteHandler
 }
 
-// CreateTestAccounts creates `numAccs` accounts, and return all relevant
-// information about them including their private keys.
-func (suite *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
+// CreateTestAccounts creates accounts.
+func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 	var accounts []TestAccount
-
 	for i := 0; i < numAccs; i++ {
 		priv, _, addr := sdktestutil.KeyTestPubAddr()
-		println("addr: ", addr.String())
-		acc := suite.app.AccountKeeper.NewAccountWithAddress(suite.ctx, addr)
-		err := acc.SetAccountNumber(uint64(i))
-		suite.Require().NoError(err)
-		suite.app.AccountKeeper.SetAccount(suite.ctx, acc)
-		someCoins := sdk.Coins{
-			sdk.NewInt64Coin("nolus", 10000000),
-		}
-
-		fmt.Printf("Mint %d nolus from module %s \n", someCoins.AmountOf("nolus"), minttypes.ModuleName)
-
-		err = suite.app.BankKeeper.MintCoins(suite.ctx, minttypes.ModuleName, someCoins)
-		suite.Require().NoError(err)
-
-		modulacc := suite.app.AccountKeeper.GetModuleAccount(suite.ctx, minttypes.ModuleName)
-		moduleAddrr := modulacc.GetAddress()
-		println("Module address: ", moduleAddrr.String())
-
-		moduleBalance := suite.app.BankKeeper.GetBalance(suite.ctx, moduleAddrr, "nolus")
-		println("Balance module: ", strconv.Itoa(int(moduleBalance.Amount.Int64())))
-
-		err = suite.app.BankKeeper.SendCoinsFromModuleToAccount(suite.ctx, minttypes.ModuleName, addr, someCoins)
-		suite.Require().NoError(err)
-
-		addrBalance := suite.app.BankKeeper.GetBalance(suite.ctx, addr, "nolus")
-		println("Balanace: ", strconv.Itoa(int(addrBalance.Amount.Int64())))
-
+		acc := s.app.AccountKeeper.NewAccountWithAddress(s.ctx, addr)
+		s.Require().NoError(acc.SetAccountNumber(uint64(i)))
+		s.app.AccountKeeper.SetAccount(s.ctx, acc)
 		accounts = append(accounts, TestAccount{acc, priv})
 	}
 
 	return accounts
 }
 
+// FundAcc funds target address with specified amount.
+func (s *KeeperTestSuite) FundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
+	err := simapp.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+	s.Require().NoError(err)
+}
+
 // CreateTestTx is a helper function to create a tx given multiple inputs.
-func (suite *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
+func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
 	// First round: we gather all the signer infos. We use the "set empty
 	// signature" hack to do that.
 	var sigsV2 []signing.SignatureV2
@@ -115,7 +92,7 @@ func (suite *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums 
 		sigV2 := signing.SignatureV2{
 			PubKey: priv.PubKey(),
 			Data: &signing.SingleSignatureData{
-				SignMode:  suite.clientCtx.TxConfig.SignModeHandler().DefaultMode(),
+				SignMode:  s.clientCtx.TxConfig.SignModeHandler().DefaultMode(),
 				Signature: nil,
 			},
 			Sequence: accSeqs[i],
@@ -123,7 +100,7 @@ func (suite *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums 
 
 		sigsV2 = append(sigsV2, sigV2)
 	}
-	err := suite.txBuilder.SetSignatures(sigsV2...)
+	err := s.txBuilder.SetSignatures(sigsV2...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,20 +114,20 @@ func (suite *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums 
 			Sequence:      accSeqs[i],
 		}
 		sigV2, err := tx.SignWithPrivKey(
-			suite.clientCtx.TxConfig.SignModeHandler().DefaultMode(), signerData,
-			suite.txBuilder, priv, suite.clientCtx.TxConfig, accSeqs[i])
+			s.clientCtx.TxConfig.SignModeHandler().DefaultMode(), signerData,
+			s.txBuilder, priv, s.clientCtx.TxConfig, accSeqs[i])
 		if err != nil {
 			return nil, err
 		}
 
 		sigsV2 = append(sigsV2, sigV2)
 	}
-	err = suite.txBuilder.SetSignatures(sigsV2...)
+	err = s.txBuilder.SetSignatures(sigsV2...)
 	if err != nil {
 		return nil, err
 	}
 
-	return suite.txBuilder.GetTx(), nil
+	return s.txBuilder.GetTx(), nil
 }
 
 func TestAnteTestSuite(t *testing.T) {
