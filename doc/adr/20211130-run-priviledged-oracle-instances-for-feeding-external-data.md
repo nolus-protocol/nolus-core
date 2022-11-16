@@ -1,4 +1,4 @@
-# Run priviledged oracle instances as a solution for feeding market data
+# Run privileged oracle instances as a solution for feeding market data
 
 - Status: accepted
 - Deciders: the product owner, the dev team
