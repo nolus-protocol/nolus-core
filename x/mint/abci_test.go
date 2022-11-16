@@ -16,7 +16,7 @@ var (
 	expectedCoins60Sec      = sdk.MustNewDecFromStr("147535251163101").TruncateInt()
 	expectedNormTime20Sec   = sdk.MustNewDecFromStr("95.999976965179227961")
 	normTimeThreshold       = sdk.MustNewDecFromStr("0.0001")
-	fiveMinutesInNano       = time.Minute.Nanoseconds() * 5
+	fiveMinutesInNano       = uint64(time.Minute.Nanoseconds() * 5)
 	expectedTokensInFormula = []int64{3759989678764, 3675042190671, 3591959455921, 3510492761731,
 		3430894735556, 3352957640645, 3276743829430, 3202299947048, 3129456689610, 3058269447752,
 		2988635387331, 2920578426197, 2854081215478, 2789206352970, 2725694534821, 2663751456612,
@@ -39,7 +39,7 @@ var (
 
 func TestTimeDifference(t *testing.T) {
 	_, _, _, timeOffset := defaultParams()
-	tb := time.Second.Nanoseconds() * 60 // 60 seconds
+	tb := uint64(time.Second.Nanoseconds() * 60) // 60 seconds
 	td := calcTimeDifference(timeOffset+tb, timeOffset, fiveMinutesInNano)
 
 	require.Equal(t, td, tb)
@@ -47,7 +47,7 @@ func TestTimeDifference(t *testing.T) {
 
 func TestTimeDifference_MoreThenMax(t *testing.T) {
 	_, _, _, timeOffset := defaultParams()
-	tb := fiveMinutesInNano + 1
+	tb := uint64(fiveMinutesInNano + 1)
 	td := calcTimeDifference(timeOffset+tb, timeOffset, fiveMinutesInNano)
 
 	require.Equal(t, td, fiveMinutesInNano)
@@ -61,11 +61,11 @@ func TestTimeDifference_InvalidTime(t *testing.T) {
 }
 
 func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredeterminedAmount(t *testing.T) {
-	timeBetweenBlocks := time.Second.Nanoseconds() * 60 // 60 seconds per block
-	minutesInMonth := int64(60) * 24 * 30
-	minutesInFormula := minutesInMonth * types.MonthsInFormula.TruncateInt64()
+	timeBetweenBlocks := uint64(time.Second.Nanoseconds() * 60) // 60 seconds per block
+	minutesInMonth := uint64(60) * 24 * 30
+	minutesInFormula := minutesInMonth * uint64(types.MonthsInFormula.TruncateInt64())
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
-	for i := int64(0); i < minutesInFormula; i++ {
+	for i := uint64(0); i < minutesInFormula; i++ {
 		coins := calcTokens(timeOffset+i*timeBetweenBlocks, &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
 		mintedMonth = mintedMonth.Add(coins)
@@ -86,18 +86,18 @@ func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredetermin
 	}
 }
 
-func randomTimeBetweenBlocks(min int64, max int64) int64 {
-	return time.Second.Nanoseconds() * (rand.Int63n(max-min) + min)
+func randomTimeBetweenBlocks(min uint64, max uint64) uint64 {
+	return uint64(time.Second.Nanoseconds()) * (uint64(rand.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + uint64(min))
 }
 
 func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedTokensWithinEpsilon(t *testing.T) {
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
-	nanoSecondsInPeriod := (nanoSecondsInMonth.Mul(types.MonthsInFormula)).Add(sdk.NewDec(timeOffset)).TruncateInt64()
+	nanoSecondsInPeriod := uint64((nanoSecondsInMonth.Mul(types.MonthsInFormula)).Add(sdk.NewDec(sdk.NewIntFromUint64(timeOffset).Int64())).TruncateInt64())
 	rand.Seed(time.Now().UnixNano())
 	monthThreshold := sdk.NewInt(187_500_000) // 187.5 tokens
 	month := 0
-	for i := int64(0); timeOffset < nanoSecondsInPeriod; {
+	for i := uint64(0); timeOffset < nanoSecondsInPeriod; {
 		i = randomTimeBetweenBlocks(5, 60)
 		coins := calcTokens(timeOffset+i, &minter, fiveMinutesInNano)
 		if coins.LT(sdk.ZeroInt()) {
@@ -105,7 +105,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		}
 		mintedCoins = mintedCoins.Add(coins)
 		mintedMonth = mintedMonth.Add(coins)
-		if (timeOffset-prevOffset)/nanoSecondsInMonth.TruncateInt64() != (timeOffset+i-prevOffset)/nanoSecondsInMonth.TruncateInt64() {
+		if (timeOffset-prevOffset)/uint64(nanoSecondsInMonth.TruncateInt64()) != (timeOffset+i-prevOffset)/uint64(nanoSecondsInMonth.TruncateInt64()) {
 			month += 1
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
@@ -132,12 +132,12 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 }
 
 func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWithinEpsilon(t *testing.T) {
-	timeOffset := time.Now().UnixNano()
-	offsetNanoInMonth := nanoSecondsInMonth.Add(sdk.NewDec(timeOffset)).TruncateInt64()
+	timeOffset := uint64(time.Now().UnixNano())
+	offsetNanoInMonth := uint64(nanoSecondsInMonth.Add(sdk.NewDec(sdk.NewIntFromUint64(timeOffset).Int64())).TruncateInt64())
 	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroInt(), timeOffset)
 	mintedCoins := sdk.NewInt(0)
 	rand.Seed(time.Now().UnixNano())
-	for i := int64(0); timeOffset < offsetNanoInMonth; {
+	for i := uint64(0); timeOffset < offsetNanoInMonth; {
 		i = randomTimeBetweenBlocks(5, 60)
 		coins := calcTokens(timeOffset+i, &minter, fiveMinutesInNano)
 		if coins.LT(sdk.ZeroInt()) {
@@ -159,14 +159,14 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 }
 
 func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(t *testing.T) {
-	timeOffset := time.Now().UnixNano()
-	offsetNanoInMonth := nanoSecondsInMonth.Add(sdk.NewDec(timeOffset)).TruncateInt64()
+	timeOffset := uint64(time.Now().UnixNano())
+	offsetNanoInMonth := uint64(nanoSecondsInMonth.Add(sdk.NewDec(sdk.NewIntFromUint64(timeOffset).Int64())).TruncateInt64())
 	halfFixedAmount := types.FixedMintedAmount.QuoRaw(2)
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
 	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset)
 	mintedCoins := sdk.NewInt(0)
 	rand.Seed(time.Now().UnixNano())
-	for i := int64(0); timeOffset < offsetNanoInMonth; {
+	for i := uint64(0); timeOffset < offsetNanoInMonth; {
 		i = randomTimeBetweenBlocks(5, 60)
 		coins := calcTokens(timeOffset+i, &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
@@ -192,15 +192,15 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.T) {
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
-	offsetNanoInPeriod := (nanoSecondsInMonth.Mul(sdk.NewDec(121))).Add(sdk.NewDec(timeOffset)).TruncateInt64() // Adding 1 extra to ensure cap is preserved
+	offsetNanoInPeriod := uint64((nanoSecondsInMonth.Mul(sdk.NewDec(121))).Add(sdk.NewDec(sdk.NewIntFromUint64(timeOffset).Int64())).TruncateInt64()) // Adding 1 extra to ensure cap is preserved
 	month := 0
 	rand.Seed(time.Now().UnixNano())
-	for i := int64(0); timeOffset < offsetNanoInPeriod; {
+	for i := uint64(0); timeOffset < offsetNanoInPeriod; {
 		i = randomTimeBetweenBlocks(60, 120)
 		coins := calcTokens(timeOffset+i, &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
 		mintedMonth = mintedMonth.Add(coins)
-		if (timeOffset-prevOffset)/nanoSecondsInMonth.TruncateInt64() != (timeOffset+i-prevOffset)/nanoSecondsInMonth.TruncateInt64() {
+		if (timeOffset-prevOffset)/uint64(nanoSecondsInMonth.TruncateInt64()) != (timeOffset+i-prevOffset)/uint64(nanoSecondsInMonth.TruncateInt64()) {
 			month += 1
 			rand.Seed(time.Now().UnixNano())
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
@@ -220,19 +220,19 @@ func Test_CalcTokens_WhenGivenBlockWithDiffBiggerThanMax_MaxMintedTokensAreCreat
 	timeOffset := time.Now()
 	nextOffset := timeOffset.Add(time.Hour)
 	originalMinter := types.InitialMinter()
-	originalMinter.PrevBlockTimestamp = timeOffset.UnixNano()
+	originalMinter.PrevBlockTimestamp = uint64(timeOffset.UnixNano())
 	minter := types.InitialMinter()
-	minter.PrevBlockTimestamp = timeOffset.UnixNano()
+	minter.PrevBlockTimestamp = uint64(timeOffset.UnixNano())
 
-	coins := calcTokens(nextOffset.UnixNano(), &minter, fiveMinutesInNano)
-	expectedCoins := calcTokens(timeOffset.UnixNano()+fiveMinutesInNano, &originalMinter, fiveMinutesInNano)
+	coins := calcTokens(uint64(nextOffset.UnixNano()), &minter, fiveMinutesInNano)
+	expectedCoins := calcTokens(uint64(timeOffset.UnixNano())+fiveMinutesInNano, &originalMinter, fiveMinutesInNano)
 	require.Equal(t, expectedCoins, coins)
 }
 
 func Test_CalcIncrementDuringFormula_OutputsExpectedIncrementWithinEpsilon(t *testing.T) {
-	increment5s := calcFunctionIncrement(time.Second.Nanoseconds() * 5)
-	increment30s := calcFunctionIncrement(time.Second.Nanoseconds() * 30)
-	increment60s := calcFunctionIncrement(time.Second.Nanoseconds() * 60)
+	increment5s := calcFunctionIncrement(uint64(time.Second.Nanoseconds() * 5))
+	increment30s := calcFunctionIncrement(uint64(time.Second.Nanoseconds() * 30))
+	increment60s := calcFunctionIncrement(uint64(time.Second.Nanoseconds() * 60))
 	minutesInPeriod := int64(60) * 24 * 30 * types.MonthsInFormula.TruncateInt64()
 	sumIncrements5s := sdk.NewDec(12 * minutesInPeriod).Mul(increment5s)
 	sumIncrements30s := sdk.NewDec(2 * minutesInPeriod).Mul(increment30s)
@@ -252,9 +252,9 @@ func Test_CalcIncrementDuringFormula_OutputsExpectedIncrementWithinEpsilon(t *te
 }
 
 func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T) {
-	increment5s := calcFixedIncrement(time.Second.Nanoseconds() * 5)
-	increment30s := calcFixedIncrement(time.Second.Nanoseconds() * 30)
-	increment60s := calcFixedIncrement(time.Second.Nanoseconds() * 60)
+	increment5s := calcFixedIncrement(uint64(time.Second.Nanoseconds() * 5))
+	increment30s := calcFixedIncrement(uint64(time.Second.Nanoseconds() * 30))
+	increment60s := calcFixedIncrement(uint64(time.Second.Nanoseconds() * 60))
 	minutesInMonth := int64(60) * 24 * 30
 	sumIncrements5s := sdk.NewDec(12 * minutesInMonth).Mul(increment5s)
 	sumIncrements30s := sdk.NewDec(2 * minutesInMonth).Mul(increment30s)
@@ -273,9 +273,9 @@ func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T)
 	}
 }
 
-func defaultParams() (types.Minter, sdk.Int, sdk.Int, int64) {
+func defaultParams() (types.Minter, sdk.Int, sdk.Int, uint64) {
 	minter := types.InitialMinter()
 	mintedCoins := sdk.NewInt(0)
 	mintedMonth := sdk.NewInt(0)
-	return minter, mintedCoins, mintedMonth, time.Now().UnixNano()
+	return minter, mintedCoins, mintedMonth, uint64(time.Now().UnixNano())
 }
