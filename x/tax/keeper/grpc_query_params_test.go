@@ -19,3 +19,14 @@ func TestParamsQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
 }
+
+func TestParamsQueryNilRequest(t *testing.T) {
+	keeper, ctx := testkeeper.TaxKeeper(t)
+	wctx := sdk.WrapSDKContext(ctx)
+	params := types.DefaultParams()
+	keeper.SetParams(ctx, params)
+
+	response, err := keeper.Params(wctx, nil)
+	require.Error(t, err)
+	require.Nil(t, response)
+}
