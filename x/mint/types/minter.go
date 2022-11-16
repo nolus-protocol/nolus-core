@@ -61,10 +61,10 @@ func ValidateMinter(minter Minter) error {
 			minter.TotalMinted)
 	}
 	calculatedTotalTokens := calcTotalTokens(minter)
-	if minter.NormTimePassed.Equal(TotalMonths) && minter.TotalMinted.GT(MintingCap) {
-		if (minter.TotalMinted.Sub(MintingCap)).GT(FixedMintedAmount) {
+	if minter.NormTimePassed.Equal(TotalMonths) && calculatedTotalTokens.GT(MintingCap) {
+		if (calculatedTotalTokens.Sub(MintingCap)).GT(FixedMintedAmount) {
 			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
-				minter.NormTimePassed, minter.TotalMinted)
+				minter.NormTimePassed, calculatedTotalTokens)
 		}
 	}
 	if !calculatedTotalTokens.Equal(minter.TotalMinted) {
