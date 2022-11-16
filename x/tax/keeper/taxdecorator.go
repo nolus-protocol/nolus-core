@@ -89,12 +89,7 @@ func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, f
 		return types.ErrInvalidTax
 	}
 
-	remainingFees := feeCoin.Sub(tax)
-	if remainingFees.IsNegative() { // seems like impossible to happen - probably should be removed
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "got: %s required: %s", feeCoin, tax)
-	}
-
-	ctx.Logger().Info(fmt.Sprintf("Deducted tax: %s, final fee: %s", tax, remainingFees))
+	ctx.Logger().Info(fmt.Sprintf("Deducted tax: %s, final fee: %s", tax, feeCoin.Sub(tax)))
 
 	// Send tax from fee collector to the treasury smart contract address
 	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
