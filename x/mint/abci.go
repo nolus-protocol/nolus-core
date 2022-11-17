@@ -31,7 +31,7 @@ func calcTimeDifference(blockTime uint64, prevBlockTime uint64, maxMintableSecon
 		nsecBetweenBlocks = maxMintableSeconds
 	}
 	if prevBlockTime > blockTime {
-		panic(fmt.Sprintf("interval between two subsequent blocks cannot be smaller than 0, is: "))
+		panic("interval between two subsequent blocks cannot be smaller than 0")
 	}
 	return nsecBetweenBlocks
 }
