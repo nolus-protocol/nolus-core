@@ -6,11 +6,9 @@
 - Tags: tax module, fees, unls, nls, base denom
 
 Technical Story:
-After our initial audit of the protocol an issue was found on how we deduct the tax - In x/tax/keeper/taxdecorator.go:76-81, the ApplyTax function called from the tax module’s AnteHandler is performing an unbounded iteration over the fee Coins provided by users.
+After our initial audit of the protocol an issue was found - the function which deducts the tax called from the tax module’s AnteHandler is performing an unbounded iteration over the fee Coins provided by users.
 
-An attacker could craft a message with a significant number of Coins with the intention of
-slowing down the block production, which in extreme cases may lead to Tendermint’s
-propose timeout to be surpassed.
+An attacker could craft a message with a significant number of Coins with the intention of slowing down the block production, which in extreme cases may lead to Tendermint’s propose timeout to be surpassed.
 
 This triggered a refactoring of the tax ante handler and the unit tests connected to it. Initially we agreed that it is a good time to prepare our code base for accepting fees in different denoms approved by governance.
 
