@@ -60,14 +60,37 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
-	calculatedTokensByIntegral := CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset))
-	calculatedTotalTokens := calculatedTokensByIntegral.Add((util.ConvertToMicroNolusDec(TotalMonths.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
-	if calculatedTotalTokens.GT(MintingCap) {
-		return fmt.Errorf("mint parameters for minting formula can not be bigger than MintingCap, %s",
-			calculatedTotalTokens)
+	calculatedMintedTokens := calcMintedTokens(minter)
+	if minter.NormTimePassed.GT(TotalMonths.Sub(sdk.NewDec(1))) {
+		if calcDiff(calculatedMintedTokens).GT(FixedMintedAmount) || calculatedMintedTokens.GT(MintingCap) {
+			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
+				minter.NormTimePassed, calculatedMintedTokens)
+		}
+	} else if !calculatedMintedTokens.Equal(minter.TotalMinted) {
+		return fmt.Errorf("minted unexpected ammount of tokens for %s months: %s unls",
+			minter.NormTimePassed, minter.TotalMinted)
 	}
 
 	return nil
+}
+
+func calcDiff(calculatedMintedTokens sdk.Int) sdk.Int {
+	if calculatedMintedTokens.GT(MintingCap) {
+		return calculatedMintedTokens.Sub(MintingCap)
+	} else if calculatedMintedTokens.GT(MintingCap) {
+		return MintingCap.Sub(calculatedMintedTokens)
+	} else {
+		return sdk.NewInt(0)
+	}
+}
+
+func calcMintedTokens(m Minter) sdk.Int {
+	fixedMonthsTokens := sdk.NewInt(0)
+	calculatedTokensByIntegral := CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
+	if m.NormTimePassed.GT(MonthsInFormula) {
+		fixedMonthsTokens.Add((util.ConvertToMicroNolusDec(m.NormTimePassed.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
+	}
+	return calculatedTokensByIntegral.Add(fixedMonthsTokens)
 }
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
