@@ -47,7 +47,7 @@ func TestTimeDifference(t *testing.T) {
 
 func TestTimeDifference_MoreThenMax(t *testing.T) {
 	_, _, _, timeOffset := defaultParams()
-	tb := uint64(fiveMinutesInNano + 1)
+	tb := fiveMinutesInNano + uint64(1)
 	td := calcTimeDifference(timeOffset+tb, timeOffset, fiveMinutesInNano)
 
 	require.Equal(t, td, fiveMinutesInNano)
@@ -56,7 +56,7 @@ func TestTimeDifference_MoreThenMax(t *testing.T) {
 func TestTimeDifference_InvalidTime(t *testing.T) {
 	_, _, _, timeOffset := defaultParams()
 	require.Panics(t, assert.PanicTestFunc(func() {
-		calcTimeDifference(timeOffset-1, timeOffset, fiveMinutesInNano)
+		calcTimeDifference(timeOffset, timeOffset+1, fiveMinutesInNano)
 	}))
 }
 
@@ -87,7 +87,7 @@ func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredetermin
 }
 
 func randomTimeBetweenBlocks(min uint64, max uint64) uint64 {
-	return uint64(time.Second.Nanoseconds()) * (uint64(rand.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + uint64(min))
+	return uint64(time.Second.Nanoseconds()) * (uint64(rand.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + min)
 }
 
 func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedTokensWithinEpsilon(t *testing.T) {

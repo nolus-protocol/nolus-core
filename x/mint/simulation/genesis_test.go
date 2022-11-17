@@ -40,10 +40,10 @@ func TestRandomizedGenState(t *testing.T) {
 	var mintGenesis types.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &mintGenesis)
 
-	require.Equal(t, time.Second.Nanoseconds()*13, mintGenesis.Params.MaxMintableNanoseconds)
+	require.Equal(t, uint64(time.Second.Nanoseconds()*13), mintGenesis.Params.MaxMintableNanoseconds)
 	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
 	require.Equal(t, "0.470000000000000000", mintGenesis.Minter.NormTimePassed.String())
-	require.Equal(t, int64(0), mintGenesis.Minter.PrevBlockTimestamp)
+	require.Equal(t, uint64(0), mintGenesis.Minter.PrevBlockTimestamp)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
@@ -77,7 +77,7 @@ func TestRandomizedGenState1(t *testing.T) {
 func TestGenMaxMintableNanoseconds(t *testing.T) {
 	tests := []struct {
 		r                   *rand.Rand
-		expectedMaxMintable int64
+		expectedMaxMintable uint64
 	}{
 		{rand.New(rand.NewSource(1)), 4000000000},
 		{rand.New(rand.NewSource(0)), 50000000000},

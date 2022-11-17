@@ -13,7 +13,7 @@ import (
 
 var (
 	defaultMintDenom              = sdk.DefaultBondDenom
-	defaultMaxMintableNanoseconds = int64(60000000000)
+	defaultMaxMintableNanoseconds = uint64(60000000000)
 )
 
 // SetupTest setups a new test, with new app, context, and anteHandler.
