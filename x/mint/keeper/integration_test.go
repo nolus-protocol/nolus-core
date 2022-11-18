@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,7 +14,7 @@ import (
 // returns context and an app with updated mint keeper
 func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	denom := "unls"
-	maxMintableNanoseconds := uint64(2000)
+	maxMintableNanoseconds := sdk.NewUint(2000)
 
 	params.SetAddressPrefixes()
 	app, err := simapp.TestSetup()

@@ -2,6 +2,7 @@ package simulation_test
 
 import (
 	"encoding/json"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"math/rand"
 	"testing"
 	"time"
@@ -40,10 +41,10 @@ func TestRandomizedGenState(t *testing.T) {
 	var mintGenesis types.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &mintGenesis)
 
-	require.Equal(t, uint64(time.Second.Nanoseconds()*13), mintGenesis.Params.MaxMintableNanoseconds)
+	require.Equal(t, sdk.NewUint(uint64(time.Second.Nanoseconds()*13)), mintGenesis.Params.MaxMintableNanoseconds)
 	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
 	require.Equal(t, "0.470000000000000000", mintGenesis.Minter.NormTimePassed.String())
-	require.Equal(t, uint64(0), mintGenesis.Minter.PrevBlockTimestamp)
+	require.Equal(t, sdk.NewUint(0), mintGenesis.Minter.PrevBlockTimestamp)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
@@ -77,16 +78,16 @@ func TestRandomizedGenState1(t *testing.T) {
 func TestGenMaxMintableNanoseconds(t *testing.T) {
 	tests := []struct {
 		r                   *rand.Rand
-		expectedMaxMintable uint64
+		expectedMaxMintable sdk.Uint
 	}{
-		{rand.New(rand.NewSource(1)), 4000000000},
-		{rand.New(rand.NewSource(0)), 50000000000},
-		{rand.New(rand.NewSource(1241255)), 13000000000},
-		{rand.New(rand.NewSource(4)), 21000000000},
-		{rand.New(rand.NewSource(17)), 12000000000},
-		{rand.New(rand.NewSource(60)), 35000000000},
-		{rand.New(rand.NewSource(22)), 42000000000},
-		{rand.New(rand.NewSource(-2)), 25000000000},
+		{rand.New(rand.NewSource(1)), sdk.NewUint(4000000000)},
+		{rand.New(rand.NewSource(0)), sdk.NewUint(50000000000)},
+		{rand.New(rand.NewSource(1241255)), sdk.NewUint(13000000000)},
+		{rand.New(rand.NewSource(4)), sdk.NewUint(21000000000)},
+		{rand.New(rand.NewSource(17)), sdk.NewUint(12000000000)},
+		{rand.New(rand.NewSource(60)), sdk.NewUint(35000000000)},
+		{rand.New(rand.NewSource(22)), sdk.NewUint(42000000000)},
+		{rand.New(rand.NewSource(-2)), sdk.NewUint(25000000000)},
 	}
 
 	for _, tt := range tests {

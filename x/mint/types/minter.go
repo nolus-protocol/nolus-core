@@ -24,7 +24,7 @@ var (
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
-func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Int, prevBlockTimestamp uint64) Minter {
+func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Uint, prevBlockTimestamp sdk.Uint) Minter {
 	return Minter{
 		NormTimePassed:     normTimePassed,
 		TotalMinted:        totalMinted,
@@ -36,8 +36,8 @@ func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Int, prevBlockTimestamp u
 func InitialMinter() Minter {
 	return NewMinter(
 		NormOffset,
-		sdk.NewInt(0),
-		uint64(0),
+		sdk.NewUint(0),
+		sdk.NewUint(0),
 	)
 }
 
@@ -51,10 +51,6 @@ func ValidateMinter(minter Minter) error {
 	if minter.NormTimePassed.IsNegative() {
 		return fmt.Errorf("mint parameter normTimePassed should be positive, is %s",
 			minter.NormTimePassed.String())
-	}
-	if minter.TotalMinted.IsNegative() {
-		return fmt.Errorf("mint parameter totalMinted should be positive, is %s",
-			minter.TotalMinted.String())
 	}
 	if minter.TotalMinted.GT(MintingCap) {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
@@ -74,18 +70,18 @@ func ValidateMinter(minter Minter) error {
 	return nil
 }
 
-func calcDiff(calculatedMintedTokens sdk.Int) sdk.Int {
+func calcDiff(calculatedMintedTokens sdk.Uint) sdk.Uint {
 	if calculatedMintedTokens.GT(MintingCap) {
 		return calculatedMintedTokens.Sub(MintingCap)
 	} else if calculatedMintedTokens.GT(MintingCap) {
 		return MintingCap.Sub(calculatedMintedTokens)
 	} else {
-		return sdk.NewInt(0)
+		return sdk.NewUint(0)
 	}
 }
 
-func calcMintedTokens(m Minter) sdk.Int {
-	fixedMonthsTokens := sdk.NewInt(0)
+func calcMintedTokens(m Minter) sdk.Uint {
+	fixedMonthsTokens := sdk.NewUint(0)
 	calculatedTokensByIntegral := CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
 	if m.NormTimePassed.GT(MonthsInFormula) {
 		fixedMonthsTokens.Add((util.ConvertToMicroNolusDec(m.NormTimePassed.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
@@ -95,6 +91,6 @@ func calcMintedTokens(m Minter) sdk.Int {
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
 // transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x
-func CalcTokensByIntegral(x sdk.Dec) sdk.Int {
+func CalcTokensByIntegral(x sdk.Dec) sdk.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }

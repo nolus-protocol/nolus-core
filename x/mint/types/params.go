@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -21,7 +22,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 func NewParams(
-	mintDenom string, maxMintableNanoseconds uint64,
+	mintDenom string, maxMintableNanoseconds sdk.Uint,
 ) Params {
 
 	return Params{
@@ -34,7 +35,7 @@ func NewParams(
 func DefaultParams() Params {
 	return Params{
 		MintDenom:              sdk.DefaultBondDenom,
-		MaxMintableNanoseconds: uint64(60000000000), // 1 minute default
+		MaxMintableNanoseconds: sdk.NewUint(uint64(time.Minute.Nanoseconds())), // 1 minute default
 	}
 }
 
@@ -60,12 +61,12 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 }
 
 func validateMaxMintableNanoseconds(i interface{}) error {
-	v, ok := i.(uint64)
+	v, ok := i.(sdk.Uint)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v <= 0 {
+	if v.LTE(sdk.NewUint(uint64(0))) {
 		return fmt.Errorf("max mintable period must be positive: %d", v)
 	}
 

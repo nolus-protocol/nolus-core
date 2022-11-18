@@ -64,7 +64,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			map[string]string{},
 			&minttypes.QueryParamsResponse{},
 			&minttypes.QueryParamsResponse{
-				Params: minttypes.NewParams("stake", uint64(time.Second.Nanoseconds()*60)),
+				Params: minttypes.NewParams("stake", sdk.NewUint(uint64(time.Second.Nanoseconds()*60))),
 			},
 		},
 		{
@@ -74,7 +74,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			&minttypes.QueryMintStateResponse{},
 			&minttypes.QueryMintStateResponse{
 				NormTimePassed: minttypes.NormOffset,
-				TotalMinted:    sdk.ZeroInt(),
+				TotalMinted:    sdk.ZeroUint(),
 			},
 		},
 	}

@@ -13,7 +13,7 @@ import (
 
 var (
 	defaultMintDenom              = sdk.DefaultBondDenom
-	defaultMaxMintableNanoseconds = uint64(60000000000)
+	defaultMaxMintableNanoseconds = sdk.NewUint(60000000000)
 )
 
 // SetupTest setups a new test, with new app, context, and anteHandler.
@@ -45,5 +45,5 @@ func (s *KeeperTestSuite) TestMintState() {
 
 	resp, err := minterKeeper.MintState(s.sdkWrappedCtx, &types.QueryMintStateRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(int64(0), resp.TotalMinted.Int64())
+	s.Require().Equal(sdk.NewUint(0), resp.TotalMinted)
 }
