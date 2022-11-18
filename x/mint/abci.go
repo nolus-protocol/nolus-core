@@ -26,7 +26,7 @@ func calcFixedIncrement(nanoSecondsPassed uint64) sdk.Dec {
 
 func calcTimeDifference(blockTime uint64, prevBlockTime uint64, maxMintableSeconds uint64) uint64 {
 	if prevBlockTime > blockTime {
-		panic("interval between two subsequent blocks cannot be smaller than 0")
+		panic("new block time cannot be smaller than previous block time")
 	}
 	nsecBetweenBlocks := blockTime - prevBlockTime
 	if nsecBetweenBlocks > maxMintableSeconds {
