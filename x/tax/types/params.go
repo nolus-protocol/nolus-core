@@ -87,7 +87,7 @@ func validateFeeRate(v interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", v)
 	}
 
-	if feeRate < 0 || feeRate > 100 {
+	if feeRate < 0 || feeRate > 50 {
 		return ErrInvalidFeeRate
 	}
 

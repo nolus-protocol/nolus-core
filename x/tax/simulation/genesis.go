@@ -9,24 +9,17 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
-// simulation parameter constants
-const (
-	FeeRate = "FeeRate"
-)
-
-// GenRandomFeeRate generates random FeeRate in range [1-100)
+// GenRandomFeeRate generates random FeeRate in range [0-50]
 func GenRandomFeeRate(r *rand.Rand) int32 {
-	return int32(r.Intn(99) + 1)
+	return int32(r.Intn(51))
 }
 
 // RandomizedGenState generates a random GenesisState for tax
 func RandomizedGenState(simState *module.SimulationState) {
-	// tax
 	var feeRate int32
 
-	// generate random fee rate between 1 - 100
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, FeeRate, &feeRate, simState.Rand,
+		simState.Cdc, string(types.KeyFeeRate), &feeRate, simState.Rand,
 		func(r *rand.Rand) { feeRate = GenRandomFeeRate(r) },
 	)
 	params := types.NewParams(feeRate, types.DefaultContractAddress, types.DefaultBaseDenom)

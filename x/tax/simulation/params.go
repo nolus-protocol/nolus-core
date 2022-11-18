@@ -10,19 +10,13 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
 
-const (
-	keyFeeRate         = "FeeRate"
-	keyContractAddress = "ContractAddress"
-	keyBaseDenom       = "BaseDenom"
-)
-
 // ParamChanges defines the parameters that can be modified by param change proposals
 // on the simulation
 func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 	return []simtypes.ParamChange{
-		simulation.NewSimParamChange(types.ModuleName, keyFeeRate,
+		simulation.NewSimParamChange(types.ModuleName, string(types.KeyFeeRate),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenRandomFeeRate(r))
+				return fmt.Sprint(GenRandomFeeRate(r))
 			},
 		),
 	}

@@ -8,7 +8,7 @@ import (
 
 // x/tax module sentinel errors
 var (
-	ErrInvalidFeeRate  = sdkerrors.Register(ModuleName, 1, "feeRate should be between 0 and 100")
+	ErrInvalidFeeRate  = sdkerrors.Register(ModuleName, 1, "feeRate should be between 0 and 50")
 	ErrInvalidAddress  = sdkerrors.Register(ModuleName, 2, "invalid address")
 	ErrTooManyFeeCoins = sdkerrors.Register(ModuleName, 3, "only one fee denom per tx")
 	ErrInvalidFeeDenom = sdkerrors.Register(ModuleName, 4, "denom is not allowed")

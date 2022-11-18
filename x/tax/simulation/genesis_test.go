@@ -16,7 +16,7 @@ import (
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.
-// Abonormal scenarios are not tested here.
+// Abnormal scenarios are not tested here.
 func TestRandomizedGenState(t *testing.T) {
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
@@ -78,14 +78,15 @@ func TestGenRandomFeeRate(t *testing.T) {
 		r               *rand.Rand
 		expectedFeeRate int32
 	}{
-		{rand.New(rand.NewSource(1)), int32(24)},
-		{rand.New(rand.NewSource(0)), int32(37)},
-		{rand.New(rand.NewSource(1241255)), int32(78)},
-		{rand.New(rand.NewSource(4)), int32(89)},
-		{rand.New(rand.NewSource(17)), int32(4)},
-		{rand.New(rand.NewSource(60)), int32(16)},
-		{rand.New(rand.NewSource(22)), int32(55)},
-		{rand.New(rand.NewSource(-2)), int32(47)},
+		{rand.New(rand.NewSource(1)), int32(35)},
+		{rand.New(rand.NewSource(0)), int32(6)},
+		{rand.New(rand.NewSource(1241255)), int32(32)},
+		{rand.New(rand.NewSource(14)), int32(50)},
+		{rand.New(rand.NewSource(17)), int32(24)},
+		{rand.New(rand.NewSource(60)), int32(9)},
+		{rand.New(rand.NewSource(22)), int32(48)},
+		{rand.New(rand.NewSource(-2)), int32(28)},
+		{rand.New(rand.NewSource(37)), int32(0)},
 	}
 
 	for _, tt := range tests {
