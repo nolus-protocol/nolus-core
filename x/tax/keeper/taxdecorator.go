@@ -80,12 +80,20 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 }
 func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, feeCoin sdk.Coin, treasuryAddr sdk.AccAddress) error {
 	feeRate := sdk.NewDec(int64(taxKeeper.FeeRate(ctx)))
+	// if feeRate is 0 - we won't deduct any tax
 	if feeRate.IsZero() {
-		return types.ErrAmountNilOrZero
+		return nil
 	}
 
 	tax := sdk.NewCoin(feeCoin.Denom, feeRate.MulInt(feeCoin.Amount).Quo(HUNDRED_DEC).TruncateInt())
-	if !tax.IsValid() || tax.IsZero() {
+	// There are cases where the tax calculation could result in a number between 0 and 1.
+	// In those cases, the tax will be 0, since the lowest registered unit we have is 1unls
+	// **Note - this case probably won't be reached in reality, because we enforce minimum fees(500 currently). So the feeAmount is always expected to be > 500.
+	if tax.IsZero() {
+		return nil
+	}
+
+	if !tax.IsValid() {
 		return types.ErrInvalidTax
 	}
 

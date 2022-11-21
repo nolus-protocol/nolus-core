@@ -13,11 +13,6 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// simulation parameter constants
-const (
-	MaxMintableNanoseconds = "MaxMintableNanoseconds"
-)
-
 // GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60)
 func GenMaxMintableNanoseconds(r *rand.Rand) int64 {
 	return time.Second.Nanoseconds() * int64(r.Intn(59)+1)
@@ -28,7 +23,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// minter
 	var maxMintableNSecs int64
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, MaxMintableNanoseconds, &maxMintableNSecs, simState.Rand,
+		simState.Cdc, string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
 		func(r *rand.Rand) { maxMintableNSecs = GenMaxMintableNanoseconds(r) },
 	)
 	mintDenom := sdk.DefaultBondDenom

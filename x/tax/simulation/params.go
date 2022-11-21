@@ -1,13 +1,11 @@
 package simulation
 
-// DONTCOVER
-
 import (
 	"fmt"
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )
@@ -16,9 +14,9 @@ import (
 // on the simulation
 func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 	return []simtypes.ParamChange{
-		simulation.NewSimParamChange(types.ModuleName, string(types.KeyMaxMintableNanoseconds),
+		simulation.NewSimParamChange(types.ModuleName, string(types.KeyFeeRate),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenMaxMintableNanoseconds(r))
+				return fmt.Sprint(GenRandomFeeRate(r))
 			},
 		),
 	}

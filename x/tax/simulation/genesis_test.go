@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"math/rand"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -12,8 +11,8 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/simulation"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.
@@ -37,17 +36,17 @@ func TestRandomizedGenState(t *testing.T) {
 
 	simulation.RandomizedGenState(&simState)
 
-	var mintGenesis types.GenesisState
-	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &mintGenesis)
+	var taxGenesis types.GenesisState
+	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &taxGenesis)
 
-	require.Equal(t, time.Second.Nanoseconds()*13, mintGenesis.Params.MaxMintableNanoseconds)
-	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
-	require.Equal(t, "0.470000000000000000", mintGenesis.Minter.NormTimePassed.String())
-	require.Equal(t, int64(0), mintGenesis.Minter.PrevBlockTimestamp)
+	require.Equal(t, "stake", taxGenesis.Params.BaseDenom)
+	require.GreaterOrEqual(t, taxGenesis.Params.FeeRate, int32(1))
+	require.GreaterOrEqual(t, int32(100), taxGenesis.Params.FeeRate)
+	require.Equal(t, "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz", taxGenesis.Params.ContractAddress)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
-func TestRandomizedGenState1(t *testing.T) {
+func TestRandomizedGenStateAbnormal(t *testing.T) {
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)
 
@@ -73,24 +72,25 @@ func TestRandomizedGenState1(t *testing.T) {
 	}
 }
 
-// TestGenMaxMintableNanoseconds tests for generation of MaxMintableNanoseconds with different given rand sources.
-func TestGenMaxMintableNanoseconds(t *testing.T) {
+// TestGenRandomFeeRate tests for generation of FeeRate with different given rand sources.
+func TestGenRandomFeeRate(t *testing.T) {
 	tests := []struct {
-		r                   *rand.Rand
-		expectedMaxMintable int64
+		r               *rand.Rand
+		expectedFeeRate int32
 	}{
-		{rand.New(rand.NewSource(1)), 4000000000},
-		{rand.New(rand.NewSource(0)), 50000000000},
-		{rand.New(rand.NewSource(1241255)), 13000000000},
-		{rand.New(rand.NewSource(4)), 21000000000},
-		{rand.New(rand.NewSource(17)), 12000000000},
-		{rand.New(rand.NewSource(60)), 35000000000},
-		{rand.New(rand.NewSource(22)), 42000000000},
-		{rand.New(rand.NewSource(-2)), 25000000000},
+		{rand.New(rand.NewSource(1)), int32(35)},
+		{rand.New(rand.NewSource(0)), int32(6)},
+		{rand.New(rand.NewSource(1241255)), int32(32)},
+		{rand.New(rand.NewSource(14)), int32(50)},
+		{rand.New(rand.NewSource(17)), int32(24)},
+		{rand.New(rand.NewSource(60)), int32(9)},
+		{rand.New(rand.NewSource(22)), int32(48)},
+		{rand.New(rand.NewSource(-2)), int32(28)},
+		{rand.New(rand.NewSource(37)), int32(0)},
 	}
 
 	for _, tt := range tests {
-		actualMaxMintable := simulation.GenMaxMintableNanoseconds(tt.r)
-		require.Equal(t, tt.expectedMaxMintable, actualMaxMintable)
+		actualFeeRate := simulation.GenRandomFeeRate(tt.r)
+		require.Equal(t, tt.expectedFeeRate, actualFeeRate)
 	}
 }

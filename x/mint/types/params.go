@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -11,8 +12,11 @@ import (
 
 // Parameter store keys
 var (
-	KeyMintDenom              = []byte("MintDenom")
-	KeyMaxMintableNanoseconds = []byte("MaxMintableNanoseconds")
+	KeyMintDenom     = []byte("MintDenom")
+	DefaultBondDenom = sdk.DefaultBondDenom
+
+	KeyMaxMintableNanoseconds     = []byte("MaxMintableNanoseconds")
+	DefaultMaxMintablenanoseconds = int64(time.Minute) // 1 minute default
 )
 
 // ParamKeyTable ParamTable for minting module.
@@ -33,8 +37,8 @@ func NewParams(
 // DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		MintDenom:              sdk.DefaultBondDenom,
-		MaxMintableNanoseconds: int64(60000000000), // 1 minute default
+		MintDenom:              DefaultBondDenom,
+		MaxMintableNanoseconds: DefaultMaxMintablenanoseconds, // 1 minute default
 	}
 }
 
