@@ -14,56 +14,73 @@ import (
 func (suite *KeeperTestSuite) TestTaxDecorator() {
 	suite.SetupTest(true)
 
+	var HUNDRED_DEC = sdk.NewDec(100)
 	const rnDenom = "atom"
 	baseDenom := suite.app.TaxKeeper.BaseDenom(suite.ctx)
 
 	testCases := []struct {
-		title              string
-		feeDenoms          []string
-		feeAmount          sdk.Int
-		expPass            bool
-		expTreasuryBalance sdk.Coins
-		expErr             error
+		title     string
+		feeDenoms []string
+		feeAmount sdk.Int
+		feeRate   int32
+		expPass   bool
+		expErr    error
 	}{
 		{
-			title:              "successful tax deduction should increase the treasury balance",
-			feeDenoms:          []string{baseDenom},
-			feeAmount:          sdk.NewInt(10),
-			expPass:            true,
-			expTreasuryBalance: sdk.NewCoins(sdk.NewCoin(baseDenom, sdk.NewInt(4))),
-			expErr:             nil,
+			title:     "successful tax deduction should increase the treasury balance",
+			feeDenoms: []string{baseDenom},
+			feeAmount: sdk.NewInt(100),
+			feeRate:   40,
+			expPass:   true,
+			expErr:    nil,
 		},
 		{
-			title:              "tx without fees should continue to the next AnteHandler",
-			feeDenoms:          []string{},
-			feeAmount:          sdk.NewInt(0),
-			expPass:            true,
-			expTreasuryBalance: sdk.NewCoins(),
-			expErr:             nil,
+			title:     "tx with 0 fee rate should not increase the treasury balance",
+			feeDenoms: []string{baseDenom},
+			feeAmount: sdk.NewInt(100),
+			feeRate:   0,
+			expPass:   true,
+			expErr:    nil,
 		},
 		{
-			title:              "pay fees with insufficient funds should fail",
-			feeDenoms:          []string{baseDenom},
-			feeAmount:          sdk.NewInt(100000),
-			expPass:            false,
-			expTreasuryBalance: nil,
-			expErr:             sdkerrors.ErrInsufficientFunds,
+			title:     "tx with tax is less then 1 should not increase the treasury balance",
+			feeDenoms: []string{baseDenom},
+			feeAmount: sdk.NewInt(1),
+			feeRate:   40,
+			expPass:   true,
+			expErr:    nil,
 		},
 		{
-			title:              "pay fees with not allowed denom should fail",
-			feeDenoms:          []string{rnDenom},
-			feeAmount:          sdk.NewInt(100),
-			expPass:            false,
-			expTreasuryBalance: nil,
-			expErr:             types.ErrInvalidFeeDenom,
+			title:     "tx without fees should continue to the next AnteHandler",
+			feeDenoms: []string{},
+			feeAmount: sdk.NewInt(0),
+			feeRate:   40,
+			expPass:   true,
+			expErr:    nil,
 		},
 		{
-			title:              "pay fees with multiple denoms should fail",
-			feeDenoms:          []string{baseDenom, rnDenom},
-			feeAmount:          sdk.NewInt(100),
-			expPass:            false,
-			expTreasuryBalance: nil,
-			expErr:             types.ErrTooManyFeeCoins,
+			title:     "pay fees with insufficient funds should fail",
+			feeDenoms: []string{baseDenom},
+			feeAmount: sdk.NewInt(100000),
+			feeRate:   40,
+			expPass:   false,
+			expErr:    sdkerrors.ErrInsufficientFunds,
+		},
+		{
+			title:     "pay fees with not allowed denom should fail",
+			feeDenoms: []string{rnDenom},
+			feeAmount: sdk.NewInt(100),
+			feeRate:   40,
+			expPass:   false,
+			expErr:    types.ErrInvalidFeeDenom,
+		},
+		{
+			title:     "pay fees with multiple denoms should fail",
+			feeDenoms: []string{baseDenom, rnDenom},
+			feeAmount: sdk.NewInt(100),
+			feeRate:   40,
+			expPass:   false,
+			expErr:    types.ErrTooManyFeeCoins,
 		},
 	}
 
@@ -100,6 +117,11 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			// set account
 			suite.app.AccountKeeper.SetAccount(suite.ctx, accs[0].acc)
 
+			// set fee rate
+			params := suite.app.TaxKeeper.GetParams(suite.ctx)
+			params.FeeRate = tc.feeRate
+			suite.app.TaxKeeper.SetParams(suite.ctx, params)
+
 			// get chained ante handler
 			dfd := ante.NewDeductFeeDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, nil)
 			dtd := keeper.NewDeductTaxDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, suite.app.TaxKeeper)
@@ -117,17 +139,33 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 
 			suite.txBuilder.SetFeeAmount(txFees)
 
+			// call the ante handler
 			_, err = anteHandler(suite.ctx, tx, false)
-
-			if tc.expPass {
-				suite.Require().NoError(err, "test: %s", tc.title)
-
-				treasuryBalance := suite.app.BankKeeper.GetAllBalances(suite.ctx, treasuryAddr)
-				suite.Require().Equal(tc.expTreasuryBalance, treasuryBalance, "Treasury should have collected correct tax amount")
-			} else {
+			if !tc.expPass {
 				suite.Require().Error(err, "test: %s", tc.title)
 				suite.ErrorIs(err, tc.expErr, tc.title)
+				return
 			}
+
+			// pass is expected
+			suite.Require().NoError(err, "test: %s", tc.title)
+
+			expTreasuryBalance := sdk.Coins{} // empty treasury
+			treasuryBalance := suite.app.BankKeeper.GetAllBalances(suite.ctx, treasuryAddr)
+			feeRate := sdk.NewDec(int64(tc.feeRate))
+			tax := feeRate.MulInt(tc.feeAmount).Quo(HUNDRED_DEC).TruncateInt()
+
+			if txFees.Empty() || tc.feeRate == 0 || tax.LT(sdk.NewInt(1)) {
+				suite.Require().Equal(expTreasuryBalance, treasuryBalance, "Treasury should be empty")
+				return
+			}
+
+			feeDenom := tc.feeDenoms[0]
+			expTreasuryBalance = expTreasuryBalance.Add(
+				sdk.NewCoin(feeDenom, tax),
+			)
+
+			suite.Require().Equal(expTreasuryBalance, treasuryBalance, "Treasury should have collected correct tax amount")
 		})
 	}
 }
