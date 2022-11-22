@@ -10,8 +10,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
@@ -40,10 +42,10 @@ func TestRandomizedGenState(t *testing.T) {
 	var mintGenesis types.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &mintGenesis)
 
-	require.Equal(t, time.Second.Nanoseconds()*13, mintGenesis.Params.MaxMintableNanoseconds)
+	require.Equal(t, sdk.NewUint(uint64(time.Second.Nanoseconds()*13)), mintGenesis.Params.MaxMintableNanoseconds)
 	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
 	require.Equal(t, "0.470000000000000000", mintGenesis.Minter.NormTimePassed.String())
-	require.Equal(t, int64(0), mintGenesis.Minter.PrevBlockTimestamp)
+	require.Equal(t, sdk.ZeroUint(), mintGenesis.Minter.PrevBlockTimestamp)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
@@ -77,16 +79,16 @@ func TestRandomizedGenState1(t *testing.T) {
 func TestGenMaxMintableNanoseconds(t *testing.T) {
 	tests := []struct {
 		r                   *rand.Rand
-		expectedMaxMintable int64
+		expectedMaxMintable sdk.Uint
 	}{
-		{rand.New(rand.NewSource(1)), 4000000000},
-		{rand.New(rand.NewSource(0)), 50000000000},
-		{rand.New(rand.NewSource(1241255)), 13000000000},
-		{rand.New(rand.NewSource(4)), 21000000000},
-		{rand.New(rand.NewSource(17)), 12000000000},
-		{rand.New(rand.NewSource(60)), 35000000000},
-		{rand.New(rand.NewSource(22)), 42000000000},
-		{rand.New(rand.NewSource(-2)), 25000000000},
+		{rand.New(rand.NewSource(1)), sdk.NewUint(uint64((4000000000)))},
+		{rand.New(rand.NewSource(0)), sdk.NewUint(uint64((50000000000)))},
+		{rand.New(rand.NewSource(1241255)), sdk.NewUint(uint64((13000000000)))},
+		{rand.New(rand.NewSource(4)), sdk.NewUint(uint64((21000000000)))},
+		{rand.New(rand.NewSource(17)), sdk.NewUint(uint64((12000000000)))},
+		{rand.New(rand.NewSource(60)), sdk.NewUint(uint64((35000000000)))},
+		{rand.New(rand.NewSource(22)), sdk.NewUint(uint64((42000000000)))},
+		{rand.New(rand.NewSource(-2)), sdk.NewUint(uint64((25000000000)))},
 	}
 
 	for _, tt := range tests {

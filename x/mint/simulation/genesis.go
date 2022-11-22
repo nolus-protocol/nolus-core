@@ -14,14 +14,14 @@ import (
 )
 
 // GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60)
-func GenMaxMintableNanoseconds(r *rand.Rand) int64 {
-	return time.Second.Nanoseconds() * int64(r.Intn(59)+1)
+func GenMaxMintableNanoseconds(r *rand.Rand) sdk.Uint {
+	return sdk.NewUint(uint64(time.Second.Nanoseconds() * int64(r.Intn(59)+1)))
 }
 
 // RandomizedGenState generates a random GenesisState for mint
 func RandomizedGenState(simState *module.SimulationState) {
 	// minter
-	var maxMintableNSecs int64
+	var maxMintableNSecs sdk.Uint
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
 		func(r *rand.Rand) { maxMintableNSecs = GenMaxMintableNanoseconds(r) },

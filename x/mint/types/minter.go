@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 )
@@ -24,7 +25,7 @@ var (
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
-func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Int, prevBlockTimestamp int64) Minter {
+func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Int, prevBlockTimestamp sdk.Uint) Minter {
 	return Minter{
 		NormTimePassed:     normTimePassed,
 		TotalMinted:        totalMinted,
@@ -37,7 +38,7 @@ func InitialMinter() Minter {
 	return NewMinter(
 		NormOffset,
 		sdk.NewInt(0),
-		int64(0),
+		sdk.NewUint(0),
 	)
 }
 

@@ -25,7 +25,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 }
 
 func NewParams(
-	mintDenom string, maxMintableNanoseconds int64,
+	mintDenom string, maxMintableNanoseconds sdk.Uint,
 ) Params {
 
 	return Params{
@@ -37,8 +37,8 @@ func NewParams(
 // DefaultParams default minting module parameters
 func DefaultParams() Params {
 	return Params{
-		MintDenom:              DefaultBondDenom,
-		MaxMintableNanoseconds: DefaultMaxMintablenanoseconds, // 1 minute default
+		MintDenom:              sdk.DefaultBondDenom,
+		MaxMintableNanoseconds: sdk.NewUint(60000000000), // 1 minute default
 	}
 }
 
@@ -64,12 +64,12 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 }
 
 func validateMaxMintableNanoseconds(i interface{}) error {
-	v, ok := i.(int64)
+	v, ok := i.(sdk.Uint)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v <= 0 {
+	if v.LTE(sdk.ZeroUint()) {
 		return fmt.Errorf("max mintable period must be positive: %d", v)
 	}
 
