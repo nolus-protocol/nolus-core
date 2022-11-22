@@ -18,7 +18,7 @@ func ParamChanges(r *rand.Rand) []simtypes.ParamChange {
 	return []simtypes.ParamChange{
 		simulation.NewSimParamChange(types.ModuleName, string(types.KeyMaxMintableNanoseconds),
 			func(r *rand.Rand) string {
-				return fmt.Sprintf("\"%d\"", GenMaxMintableNanoseconds(r))
+				return fmt.Sprintf("\"%s\"", GenMaxMintableNanoseconds(r).String())
 			},
 		),
 	}

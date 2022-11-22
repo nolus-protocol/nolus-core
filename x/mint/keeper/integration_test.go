@@ -3,8 +3,10 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
@@ -22,10 +24,10 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	isCheckTx := false
 	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
 
-	app.MintKeeper.SetParams(ctx, types.NewParams(denom, maxMintableNanoseconds))
+	app.MintKeeper.SetParams(ctx, types.NewParams(denom, sdk.NewUint(maxMintableNanoseconds)))
 	app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
 
 	require.Equal(t, denom, app.MintKeeper.GetParams(ctx).MintDenom)
-	require.Equal(t, maxMintableNanoseconds, app.MintKeeper.GetParams(ctx).MaxMintableNanoseconds)
+	require.Equal(t, sdk.NewUint(maxMintableNanoseconds), app.MintKeeper.GetParams(ctx).MaxMintableNanoseconds)
 	require.Equal(t, types.DefaultInitialMinter(), app.MintKeeper.GetMinter(ctx))
 }

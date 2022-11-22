@@ -15,32 +15,34 @@ var (
 	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
 )
 
-func calcFunctionIncrement(nanoSecondsPassed uint64) sdk.Dec {
-	timePassed := sdk.NewDec(sdk.NewIntFromUint64(nanoSecondsPassed).Int64()).Quo(nanoSecondsInMonth)
+func calcFunctionIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
+	timePassed := sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
 	return types.NormMonthsRange.Mul(timePassed)
 }
 
-func calcFixedIncrement(nanoSecondsPassed uint64) sdk.Dec {
-	return sdk.NewDec(sdk.NewIntFromUint64(nanoSecondsPassed).Int64()).Quo(nanoSecondsInMonth)
+func calcFixedIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
+	return sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
 }
 
-func calcTimeDifference(blockTime uint64, prevBlockTime uint64, maxMintableSeconds uint64) uint64 {
-	if prevBlockTime > blockTime {
+func calcTimeDifference(blockTime sdk.Uint, prevBlockTime sdk.Uint, maxMintableSeconds sdk.Uint) sdk.Uint {
+	if prevBlockTime.GT(blockTime) {
 		panic("new block time cannot be smaller than previous block time")
 	}
-	nsecBetweenBlocks := blockTime - prevBlockTime
-	if nsecBetweenBlocks > maxMintableSeconds {
+
+	nsecBetweenBlocks := blockTime.Sub(prevBlockTime)
+	if nsecBetweenBlocks.GT(maxMintableSeconds) {
 		nsecBetweenBlocks = maxMintableSeconds
 	}
+
 	return nsecBetweenBlocks
 }
 
-func calcTokens(blockTime uint64, minter *types.Minter, maxMintableSeconds uint64) sdk.Int {
+func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk.Uint) sdk.Int {
 	if minter.TotalMinted.GTE(types.MintingCap) {
 		return sdk.ZeroInt()
 	}
 
-	if minter.PrevBlockTimestamp == 0 {
+	if minter.PrevBlockTimestamp.IsZero() {
 		// we do not know how much time has passed since the previous block, thus nothing will be mined
 		minter.PrevBlockTimestamp = blockTime
 		return sdk.ZeroInt()
@@ -71,7 +73,7 @@ func calcTokens(blockTime uint64, minter *types.Minter, maxMintableSeconds uint6
 	}
 }
 
-func updateMinter(minter *types.Minter, blockTime uint64, newNormTime sdk.Dec, deltaInt sdk.Int) sdk.Int {
+func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, deltaInt sdk.Int) sdk.Int {
 	if deltaInt.LT(sdk.ZeroInt()) {
 		// Sanity check, should not happen. However, if this were to happen,
 		// do not update the minter state (primary the previous block timestamp)
@@ -92,7 +94,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	minter := k.GetMinter(ctx)
 	params := k.GetParams(ctx)
 
-	coinAmount := calcTokens(uint64(ctx.BlockTime().UnixNano()), &minter, params.MaxMintableNanoseconds)
+	blockTime := ctx.BlockTime().UnixNano()
+	coinAmount := calcTokens(sdk.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
+
 	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 
 	k.SetMinter(ctx, minter)

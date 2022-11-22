@@ -36,7 +36,7 @@ func (s *KeeperTestSuite) TestParams() {
 	resp, err := minterKeeper.Params(s.sdkWrappedCtx, &types.QueryParamsRequest{})
 	s.Require().NoError(err)
 	s.Require().Equal(defaultMintDenom, resp.Params.MintDenom)
-	s.Require().Equal(defaultMaxMintableNanoseconds, resp.Params.MaxMintableNanoseconds)
+	s.Require().Equal(sdk.NewUint(defaultMaxMintableNanoseconds), resp.Params.MaxMintableNanoseconds)
 }
 
 func (s *KeeperTestSuite) TestMintState() {

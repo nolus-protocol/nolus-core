@@ -11,16 +11,25 @@ message Minter {
   [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
+
   string total_minted = 3
   [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
     (gogoproto.nullable) = false
   ];
-  uint64 prev_block_timestamp = 4;
+
+  string prev_block_timestamp = 4
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+    (gogoproto.nullable) = false
+  ];
 }
 
 // Params holds parameters for the mint module.
 message Params {
   // type of coin to mint
   string mint_denom = 1;
-  uint64 max_mintable_nanoseconds = 2;
+
+  string max_mintable_nanoseconds = 2
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+    (gogoproto.nullable) = false
+  ];
 }
