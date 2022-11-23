@@ -192,7 +192,6 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 	halfFixedAmount := types.FixedMintedAmount.Quo(sdk.NewUint(2))
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
 	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset)
-	t.Logf("minter %v", minter)
 	mintedCoins := sdk.NewUint(0)
 	rand.Seed(time.Now().UnixNano())
 
@@ -202,13 +201,11 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
 		timeOffset = timeOffset.Add(i)
-		t.Logf("coins: %v", coins)
 	}
 
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	mintThreshold := sdk.NewUint(1_000_000) // 1 token
-	t.Logf("totalMinted: %s, mintedcoins: %s, sub: %v, timeoffset: %v", minter.TotalMinted, mintedCoins, types.MintingCap.Sub(minter.TotalMinted), timeOffset)
 	if types.MintingCap.Sub(minter.TotalMinted).GT(sdk.ZeroUint()) {
 		t.Errorf("Minting Cap exeeded, minted total %v, with minting cap %v",
 			minter.TotalMinted, types.MintingCap)
