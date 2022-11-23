@@ -11,8 +11,7 @@ import (
 )
 
 var (
-	normInitialTotal = types.CalcTokensByIntegral(types.NormOffset)
-	//nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
+	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
 	nanoSecondsInMonth = sdk.NewDec(time.Hour.Nanoseconds() * 24 * 30)
 )
 
