@@ -104,7 +104,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
 
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
-		if coins.LT(sdk.ZeroInt()) {
+		if coins.LT(sdk.ZeroUint()) {
 			t.Errorf("Minted negative %v coins", coins)
 		}
 
@@ -123,7 +123,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 
-			if getAbsDiff(mintedMonth, sdk.NewUint(uint64(expectedTokensInFormula[month-1]))).GT(monthThreshold) {
+			if types.GetAbsDiff(mintedMonth, sdk.NewUint(uint64(expectedTokensInFormula[month-1]))).GT(monthThreshold) {
 				t.Errorf("Minted unexpected amount of tokens for month %d, expected [%v +/- %v], actual %v",
 					month, expectedTokensInFormula[month-1], monthThreshold, mintedMonth)
 			}
@@ -139,7 +139,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	mintThreshold := sdk.NewUint(10_000_000) // 10 tokens
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 
-	if getAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || getAbsDiff(expectedCoins60Sec, sdk.Uint(minter.TotalMinted)).GT(mintThreshold) {
+	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdk.Uint(minter.TotalMinted)).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v, actual in store %v",
 			expectedCoins60Sec, mintThreshold, mintedCoins, minter.TotalMinted)
 	}
@@ -154,15 +154,15 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	_, _, _, timeOffset := defaultParams()
 
 	offsetNanoInMonth := timeOffset.Add(sdk.NewUint(nanoSecondsInMonth.TruncateInt().Uint64()))
-	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroInt(), timeOffset)
-	mintedCoins := sdk.NewInt(0)
+	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroUint(), timeOffset)
+	mintedCoins := sdk.ZeroUint()
 	rand.Seed(time.Now().UnixNano())
 
 	for timeOffset.LT(offsetNanoInMonth) {
 		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 
-		if coins.LT(sdk.ZeroInt()) {
+		if coins.LT(sdk.ZeroUint()) {
 			t.Errorf("Minted negative %v coins", coins)
 		}
 
@@ -172,9 +172,9 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
-	mintThreshold := sdk.NewInt(2_437_500) // 2.4375 tokens is the max deviation
+	mintThreshold := sdk.NewUint(2_437_500) // 2.4375 tokens is the max deviation
 
-	if types.FixedMintedAmount.Sub(mintedCoins).Abs().GT(mintThreshold) || types.FixedMintedAmount.Sub(minter.TotalMinted).Abs().GT(mintThreshold) {
+	if types.GetAbsDiff(types.FixedMintedAmount, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(types.FixedMintedAmount, minter.TotalMinted).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v, actual in store %v",
 			types.FixedMintedAmount, mintThreshold, mintedCoins, minter.TotalMinted)
 	}
@@ -189,10 +189,11 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 
 	offsetNanoInMonth := timeOffset.Add(sdk.NewUint(nanoSecondsInMonth.TruncateInt().Uint64()))
 
-	halfFixedAmount := types.FixedMintedAmount.QuoRaw(2)
+	halfFixedAmount := types.FixedMintedAmount.Quo(sdk.NewUint(2))
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
 	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset)
-	mintedCoins := sdk.NewInt(0)
+	t.Logf("minter %v", minter)
+	mintedCoins := sdk.NewUint(0)
 	rand.Seed(time.Now().UnixNano())
 
 	for timeOffset.LT(offsetNanoInMonth) {
@@ -201,16 +202,18 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
 		timeOffset = timeOffset.Add(i)
+		t.Logf("coins: %v", coins)
 	}
 
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n",
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
-	mintThreshold := sdk.NewInt(1_000_000) // 1 token
-	if types.MintingCap.Sub(minter.TotalMinted).Abs().GT(sdk.ZeroInt()) {
+	mintThreshold := sdk.NewUint(1_000_000) // 1 token
+	t.Logf("totalMinted: %s, mintedcoins: %s, sub: %v, timeoffset: %v", minter.TotalMinted, mintedCoins, types.MintingCap.Sub(minter.TotalMinted), timeOffset)
+	if types.MintingCap.Sub(minter.TotalMinted).GT(sdk.ZeroUint()) {
 		t.Errorf("Minting Cap exeeded, minted total %v, with minting cap %v",
 			minter.TotalMinted, types.MintingCap)
 	}
-	if halfFixedAmount.Sub(mintedCoins).Abs().GT(mintThreshold) {
+	if types.GetAbsDiff(halfFixedAmount, mintedCoins).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v",
 			halfFixedAmount, mintThreshold, mintedCoins)
 	}
@@ -308,7 +311,7 @@ func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T)
 	increment30s := calcFixedIncrement(sdk.NewUint(uint64(time.Second.Nanoseconds() * 30)))
 	increment60s := calcFixedIncrement(sdk.NewUint(uint64(time.Second.Nanoseconds() * 60)))
 
-	minutesInMonth := int64(60) * 24 * 30
+	minutesInMonth := int64(time.Hour.Minutes()) * 24 * 30
 	sumIncrements5s := sdk.NewDec(12 * minutesInMonth).Mul(increment5s)
 	sumIncrements30s := sdk.NewDec(2 * minutesInMonth).Mul(increment30s)
 	sumIncrements60s := sdk.NewDec(1 * minutesInMonth).Mul(increment60s)
@@ -329,14 +332,6 @@ func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T)
 	}
 }
 
-func getAbsDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
-	if a.GTE(b) {
-		return a.Sub(b)
-	}
-
-	return b.Sub(a)
-}
-
 func randomTimeBetweenBlocks(min uint64, max uint64) uint64 {
 	return uint64(time.Second.Nanoseconds()) * (uint64(rand.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + min)
 }
@@ -345,5 +340,6 @@ func defaultParams() (types.Minter, sdk.Uint, sdk.Uint, sdk.Uint) {
 	minter := types.InitialMinter()
 	mintedCoins := sdk.NewUint(0)
 	mintedMonth := sdk.NewUint(0)
-	return minter, mintedCoins, mintedMonth, sdk.NewUint(uint64(time.Now().UnixNano()))
+	timeOffset := sdk.NewUint(uint64(time.Now().UnixNano()))
+	return minter, mintedCoins, mintedMonth, timeOffset
 }

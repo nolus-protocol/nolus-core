@@ -35,5 +35,5 @@ func Test_BeginBlock(t *testing.T) {
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
 	fmt.Printf("norm %v, total %v \n", minter.NormTimePassed, minter.TotalMinted)
 	fmt.Printf("balance %v \n", feesCollected)
-	require.Equal(t, minter.TotalMinted, feesCollectedInt.AmountOf(sdk.DefaultBondDenom))
+	require.Equal(t, sdk.NewIntFromBigInt(minter.TotalMinted.BigInt()), feesCollectedInt.AmountOf(sdk.DefaultBondDenom))
 }
