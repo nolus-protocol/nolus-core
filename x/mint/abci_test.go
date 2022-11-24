@@ -2,6 +2,7 @@ package mint
 
 import (
 	"fmt"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 	"math/rand"
 	"testing"
 	"time"
@@ -96,7 +97,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
 	nanoSecondsInPeriod := nanoSecondsInMonth.Mul(types.MonthsInFormula).Add(types.DecFromUint(timeOffset)).TruncateInt64()
-	rand.Seed(getCurrentTime())
+	rand.Seed(util.GetCurrentTimeUnixNano())
 	monthThreshold := sdk.NewUint(187_500_000) // 187.5 tokens
 	month := 0
 
@@ -130,7 +131,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 
 			prevOffset = timeOffset
 			mintedMonth = sdk.ZeroUint()
-			rand.Seed(getCurrentTime())
+			rand.Seed(util.GetCurrentTimeUnixNano())
 		}
 
 		timeOffset = timeOffset.Add(i)
@@ -156,7 +157,7 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	offsetNanoInMonth := timeOffset.Add(uintFromDec(nanoSecondsInMonth))
 	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroUint(), timeOffset)
 	mintedCoins := sdk.ZeroUint()
-	rand.Seed(getCurrentTime())
+	rand.Seed(util.GetCurrentTimeUnixNano())
 
 	for timeOffset.LT(offsetNanoInMonth) {
 		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
@@ -193,7 +194,7 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
 	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset)
 	mintedCoins := sdk.NewUint(0)
-	rand.Seed(getCurrentTime())
+	rand.Seed(util.GetCurrentTimeUnixNano())
 
 	for timeOffset.LT(offsetNanoInMonth) {
 		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
@@ -225,7 +226,7 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 	prevOffset := timeOffset
 	offsetNanoInPeriod := uintFromDec((nanoSecondsInMonth.Mul(sdk.NewDec(121))).Add(types.DecFromUint(timeOffset))) // Adding 1 extra to ensure cap is preserved
 	month := 0
-	rand.Seed(getCurrentTime())
+	rand.Seed(util.GetCurrentTimeUnixNano())
 
 	for timeOffset.LT(offsetNanoInPeriod) {
 		i := sdk.NewUint(randomTimeBetweenBlocks(60, 120))
@@ -243,7 +244,7 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 		if !a.Equal(b) {
 			month++
 
-			rand.Seed(getCurrentTime())
+			rand.Seed(util.GetCurrentTimeUnixNano())
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			prevOffset = timeOffset
@@ -337,11 +338,8 @@ func defaultParams() (types.Minter, sdk.Uint, sdk.Uint, sdk.Uint) {
 	minter := types.InitialMinter()
 	mintedCoins := sdk.NewUint(0)
 	mintedMonth := sdk.NewUint(0)
-	timeOffset := sdk.NewUint(uint64(getCurrentTime()))
+	timeOffset := sdk.NewUint(uint64(util.GetCurrentTimeUnixNano()))
 	return minter, mintedCoins, mintedMonth, timeOffset
-}
-func getCurrentTime() int64 {
-	return time.Now().UnixNano()
 }
 
 func uintFromDec(d sdk.Dec) sdk.Uint {

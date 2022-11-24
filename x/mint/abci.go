@@ -16,8 +16,7 @@ var (
 )
 
 func calcFunctionIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
-	timePassed := types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
-	return types.NormMonthsRange.Mul(timePassed)
+	return types.NormMonthsRange.Mul(calcFixedIncrement(nanoSecondsPassed))
 
 }
 
