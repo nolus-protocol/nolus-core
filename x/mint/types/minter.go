@@ -53,13 +53,16 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter normTimePassed should be positive, is %s",
 			minter.NormTimePassed.String())
 	}
+	if minter.NormTimePassed.GT(TotalMonths) {
+		return fmt.Errorf("mint parameter normTimePassed: %v should not be bigger than TotalMonths: %v", minter.NormTimePassed, TotalMonths)
+	}
 	if minter.TotalMinted.GT(MintingCap) {
 		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
 			minter.TotalMinted)
 	}
 	calculatedMintedTokens := calcMintedTokens(minter)
 	if minter.NormTimePassed.GT(TotalMonths.Sub(sdk.NewDec(1))) {
-		if GetAbsDiff(calculatedMintedTokens, MintingCap).GT(FixedMintedAmount) || calculatedMintedTokens.GT(MintingCap) {
+		if GetDiff(calculatedMintedTokens, MintingCap).GT(FixedMintedAmount) || calculatedMintedTokens.GT(MintingCap) {
 			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
 				minter.NormTimePassed, calculatedMintedTokens)
 		}
@@ -73,9 +76,12 @@ func ValidateMinter(minter Minter) error {
 
 func calcMintedTokens(m Minter) sdk.Uint {
 	fixedMonthsTokens := sdk.NewUint(0)
-	calculatedTokensByIntegral := CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
-	if m.NormTimePassed.GT(MonthsInFormula) {
+	calculatedTokensByIntegral := sdk.NewUint(0)
+	if m.NormTimePassed.GTE(MonthsInFormula) {
 		fixedMonthsTokens.Add((util.ConvertToMicroNolusDec(m.NormTimePassed.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
+		calculatedTokensByIntegral.Add(CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset)))
+	} else {
+		calculatedTokensByIntegral.Add(CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset)))
 	}
 	return calculatedTokensByIntegral.Add(fixedMonthsTokens)
 }
@@ -86,10 +92,14 @@ func CalcTokensByIntegral(x sdk.Dec) sdk.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }
 
-func GetAbsDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
+func GetDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
 	if a.GTE(b) {
 		return a.Sub(b)
 	}
 
 	return b.Sub(a)
+}
+
+func DecFromUint(u sdk.Uint) sdk.Dec {
+	return sdk.NewDecFromBigInt(u.BigInt())
 }

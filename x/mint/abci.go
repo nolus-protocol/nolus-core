@@ -16,12 +16,13 @@ var (
 )
 
 func calcFunctionIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
-	timePassed := sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
+	timePassed := types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
 	return types.NormMonthsRange.Mul(timePassed)
+
 }
 
 func calcFixedIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
-	return sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
+	return types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
 }
 
 func calcTimeDifference(blockTime sdk.Uint, prevBlockTime sdk.Uint, maxMintableSeconds sdk.Uint) sdk.Uint {
@@ -62,7 +63,7 @@ func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk
 	} else {
 		// After reaching 96 normalized time, mint fixed amount of tokens per month until we reach the minting cap
 		normIncrement := calcFixedIncrement(nsecPassed)
-		delta := sdk.NewUint((normIncrement.Mul(sdk.NewDecFromBigInt(types.FixedMintedAmount.BigInt()))).TruncateInt().Uint64())
+		delta := sdk.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
 
 		if minter.TotalMinted.Add(delta).GT(types.MintingCap) {
 			// Trim off excess tokens if the cap is reached
@@ -73,8 +74,8 @@ func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk
 	}
 }
 
-func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, deltaInt sdk.Uint) sdk.Uint {
-	if deltaInt.LT(sdk.ZeroUint()) {
+func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, newlyMinted sdk.Uint) sdk.Uint {
+	if newlyMinted.LT(sdk.ZeroUint()) {
 		// Sanity check, should not happen. However, if this were to happen,
 		// do not update the minter state (primary the previous block timestamp)
 		// and wait for a new block which should increase the minted amount
@@ -82,8 +83,8 @@ func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec,
 	}
 	minter.NormTimePassed = newNormTime
 	minter.PrevBlockTimestamp = blockTime
-	minter.TotalMinted = minter.TotalMinted.Add(deltaInt)
-	return deltaInt
+	minter.TotalMinted = minter.TotalMinted.Add(newlyMinted)
+	return newlyMinted
 }
 
 // BeginBlocker mints new tokens for the previous block.

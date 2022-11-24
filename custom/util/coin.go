@@ -7,5 +7,6 @@ func ConvertToMicroNolusInt(amount sdk.Int) sdk.Uint {
 }
 
 func ConvertToMicroNolusDec(amount sdk.Dec) sdk.Uint {
-	return sdk.NewUint(amount.Mul(sdk.NewDec(10).Power(6)).TruncateInt().Uint64())
+	microNolusCoef := sdk.NewDec(10).Power(6)
+	return sdk.NewUint(amount.Mul(microNolusCoef).TruncateInt().Uint64())
 }
