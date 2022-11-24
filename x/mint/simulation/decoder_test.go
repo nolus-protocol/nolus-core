@@ -2,10 +2,9 @@ package simulation_test
 
 import (
 	"fmt"
-	"testing"
-	"time"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
+	"testing"
 
 	"github.com/stretchr/testify/require"
 
@@ -19,7 +18,7 @@ func TestDecodeStore(t *testing.T) {
 	cdc := simapp.MakeTestEncodingConfig().Marshaler
 	dec := simulation.NewDecodeStore(cdc)
 
-	minter := types.NewMinter(sdk.MustNewDecFromStr("13.123456789"), sdk.NewUint(10003145), sdk.NewUint(uint64(time.Now().UnixNano())))
+	minter := types.NewMinter(sdk.MustNewDecFromStr("13.123456789"), sdk.NewUint(10003145), sdk.NewUint(uint64(util.GetCurrentTimeUnixNano())))
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{
