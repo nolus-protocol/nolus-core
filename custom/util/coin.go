@@ -2,10 +2,12 @@ package util
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
-func ConvertToMicroNolusInt(amount sdk.Int) sdk.Int {
-	return ConvertToMicroNolusDec(sdk.NewDecFromInt(amount))
+const microNolusCoef = 1000000
+
+func ConvertToMicroNolusInt64(amount int64) sdk.Uint {
+	return ConvertToMicroNolusDec(sdk.NewDec(amount))
 }
 
-func ConvertToMicroNolusDec(amount sdk.Dec) sdk.Int {
-	return amount.Mul(sdk.NewDec(10).Power(6)).TruncateInt()
+func ConvertToMicroNolusDec(amount sdk.Dec) sdk.Uint {
+	return sdk.NewUint(amount.Mul(sdk.NewDec(microNolusCoef)).TruncateInt().Uint64())
 }

@@ -12,16 +12,16 @@ import (
 
 var (
 	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
-	nanoSecondsInMonth = sdk.NewDecFromInt(sdk.NewInt(30).Mul(sdk.NewInt(24)).Mul(sdk.NewInt(60)).Mul(sdk.NewInt(60))).Mul(sdk.NewDec(10).Power(9))
+	nanoSecondsInMonth = sdk.NewDec(time.Hour.Nanoseconds() * 24 * 30)
 )
 
 func calcFunctionIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
-	timePassed := sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
-	return types.NormMonthsRange.Mul(timePassed)
+	return types.NormMonthsRange.Mul(calcFixedIncrement(nanoSecondsPassed))
+
 }
 
 func calcFixedIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
-	return sdk.NewDecFromBigInt(nanoSecondsPassed.BigInt()).Quo(nanoSecondsInMonth)
+	return types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
 }
 
 func calcTimeDifference(blockTime sdk.Uint, prevBlockTime sdk.Uint, maxMintableSeconds sdk.Uint) sdk.Uint {
@@ -37,15 +37,15 @@ func calcTimeDifference(blockTime sdk.Uint, prevBlockTime sdk.Uint, maxMintableS
 	return nsecBetweenBlocks
 }
 
-func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk.Uint) sdk.Int {
+func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk.Uint) sdk.Uint {
 	if minter.TotalMinted.GTE(types.MintingCap) {
-		return sdk.ZeroInt()
+		return sdk.ZeroUint()
 	}
 
 	if minter.PrevBlockTimestamp.IsZero() {
 		// we do not know how much time has passed since the previous block, thus nothing will be mined
 		minter.PrevBlockTimestamp = blockTime
-		return sdk.ZeroInt()
+		return sdk.ZeroUint()
 	}
 
 	nsecPassed := calcTimeDifference(blockTime, minter.PrevBlockTimestamp, maxMintableSeconds)
@@ -62,7 +62,7 @@ func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk
 	} else {
 		// After reaching 96 normalized time, mint fixed amount of tokens per month until we reach the minting cap
 		normIncrement := calcFixedIncrement(nsecPassed)
-		delta := (normIncrement.MulInt(types.FixedMintedAmount)).TruncateInt()
+		delta := sdk.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
 
 		if minter.TotalMinted.Add(delta).GT(types.MintingCap) {
 			// Trim off excess tokens if the cap is reached
@@ -73,17 +73,17 @@ func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk
 	}
 }
 
-func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, deltaInt sdk.Int) sdk.Int {
-	if deltaInt.LT(sdk.ZeroInt()) {
+func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, newlyMinted sdk.Uint) sdk.Uint {
+	if newlyMinted.LT(sdk.ZeroUint()) {
 		// Sanity check, should not happen. However, if this were to happen,
 		// do not update the minter state (primary the previous block timestamp)
 		// and wait for a new block which should increase the minted amount
-		return sdk.ZeroInt()
+		return sdk.ZeroUint()
 	}
 	minter.NormTimePassed = newNormTime
 	minter.PrevBlockTimestamp = blockTime
-	minter.TotalMinted = minter.TotalMinted.Add(deltaInt)
-	return deltaInt
+	minter.TotalMinted = minter.TotalMinted.Add(newlyMinted)
+	return newlyMinted
 }
 
 // BeginBlocker mints new tokens for the previous block.
@@ -102,9 +102,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 
 	k.SetMinter(ctx, minter)
-	if coinAmount.IsPositive() {
+	if coinAmount.GT(sdk.ZeroUint()) {
 		// mint coins, update supply
-		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, coinAmount))
+		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, sdk.NewIntFromBigInt(coinAmount.BigInt())))
 
 		err := k.MintCoins(ctx, mintedCoins)
 		if err != nil {
@@ -116,9 +116,9 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		if err != nil {
 			panic(err)
 		}
-		if coinAmount.IsInt64() {
-			defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Int64()), "minted_tokens")
-		}
+
+		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
+
 	}
 
 	ctx.EventManager().EmitEvent(
