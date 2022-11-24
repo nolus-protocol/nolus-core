@@ -63,7 +63,7 @@ func TestTimeDifference_InvalidTime(t *testing.T) {
 
 func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredeterminedAmount(t *testing.T) {
 	timeBetweenBlocks := sdk.NewUint(uint64(time.Second.Nanoseconds() * 60)) // 60 seconds per block
-	minutesInMonth := uint64(60) * 24 * 30
+	minutesInMonth := uint64(time.Hour.Minutes()) * 24 * 30
 	minutesInFormula := minutesInMonth * uint64(types.MonthsInFormula.TruncateInt64())
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 
