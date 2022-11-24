@@ -123,7 +123,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 
-			if types.GetDiff(mintedMonth, sdk.NewUint(uint64(expectedTokensInFormula[month-1]))).GT(monthThreshold) {
+			if types.GetAbsDiff(mintedMonth, sdk.NewUint(uint64(expectedTokensInFormula[month-1]))).GT(monthThreshold) {
 				t.Errorf("Minted unexpected amount of tokens for month %d, expected [%v +/- %v], actual %v",
 					month, expectedTokensInFormula[month-1], monthThreshold, mintedMonth)
 			}
@@ -139,7 +139,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	mintThreshold := sdk.NewUint(10_000_000) // 10 tokens
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 
-	if types.GetDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetDiff(expectedCoins60Sec, sdk.Uint(minter.TotalMinted)).GT(mintThreshold) {
+	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdk.Uint(minter.TotalMinted)).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v, actual in store %v",
 			expectedCoins60Sec, mintThreshold, mintedCoins, minter.TotalMinted)
 	}
@@ -174,7 +174,7 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	mintThreshold := sdk.NewUint(2_437_500) // 2.4375 tokens is the max deviation
 
-	if types.GetDiff(types.FixedMintedAmount, mintedCoins).GT(mintThreshold) || types.GetDiff(types.FixedMintedAmount, minter.TotalMinted).GT(mintThreshold) {
+	if types.GetAbsDiff(types.FixedMintedAmount, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(types.FixedMintedAmount, minter.TotalMinted).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v, actual in store %v",
 			types.FixedMintedAmount, mintThreshold, mintedCoins, minter.TotalMinted)
 	}
@@ -210,7 +210,7 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 		t.Errorf("Minting Cap exeeded, minted total %v, with minting cap %v",
 			minter.TotalMinted, types.MintingCap)
 	}
-	if types.GetDiff(halfFixedAmount, mintedCoins).GT(mintThreshold) {
+	if types.GetAbsDiff(halfFixedAmount, mintedCoins).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v",
 			halfFixedAmount, mintThreshold, mintedCoins)
 	}

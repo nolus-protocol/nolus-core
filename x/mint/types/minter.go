@@ -62,7 +62,7 @@ func ValidateMinter(minter Minter) error {
 	}
 	calculatedMintedTokens := calcMintedTokens(minter)
 	if minter.NormTimePassed.GT(TotalMonths.Sub(sdk.NewDec(1))) {
-		if GetDiff(calculatedMintedTokens, MintingCap).GT(FixedMintedAmount) || calculatedMintedTokens.GT(MintingCap) {
+		if calculatedMintedTokens.GT(MintingCap) || MintingCap.Sub(calculatedMintedTokens).GT(FixedMintedAmount) {
 			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
 				minter.NormTimePassed, calculatedMintedTokens)
 		}
@@ -92,7 +92,7 @@ func CalcTokensByIntegral(x sdk.Dec) sdk.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }
 
-func GetDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
+func GetAbsDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
 	if a.GTE(b) {
 		return a.Sub(b)
 	}
