@@ -5,7 +5,7 @@
 Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/latest/installation.html) and [jq](https://stedolan.github.io/jq/).
 
 ## Get started
-
+### Build, configure and run a single-node locally deployed Nolus chain
 Make sure nolus-money-market repo is checked out as a sibling to this repo.
 
 ```
@@ -15,6 +15,21 @@ nolusd start --home "networks/nolus/local-validator-1"
 ```
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup (run `init-local-network.sh --help` for more configuration options) and `nolusd start` starts the network. For more details check the [scripts README](./scripts/README.md)
+
+### Install, configure and run a local Hermes relayer
+Follow the steps [here](https://gitlab-nomo.credissimo.net/nomo/wiki/-/blob/main/hermes.md#install-and-configure-hermes). Write down the connection and channel identifiers at Nolus and Osmosis for further usage.
+
+### Setup the DEX parameters
+The goal is to let smart contracts know the details of the connectivity to Osmosis. Herebelow is a sample request. 
+
+```
+nolusd tx wasm execute nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}' --fees 387unls --gas auto --gas-adjustment 1.1
+```
+
+Check the transaction has passed:
+```
+nolusd q wasm contract-state smart nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"config":{}}'
+```
 
 ## Build statically linked binary
 
