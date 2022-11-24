@@ -1,8 +1,0 @@
-syntax = "proto3";
-package tax;
-
-option go_package = "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types";
-
-// Msg defines the Msg service.
-service Msg {
-}

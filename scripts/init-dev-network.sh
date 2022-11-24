@@ -47,7 +47,7 @@ while [[ $# -gt 0 ]]; do
     [--validator-stake <tokens_val_will_stake>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
-    [--contracts_owner_addr <contracts_owner_address]
+    [--contracts-owner-addr <contracts_owner_address]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]

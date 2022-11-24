@@ -89,12 +89,14 @@ func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec,
 
 // BeginBlocker mints new tokens for the previous block.
 func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+	minter := k.GetMinter(ctx)
+	if minter.TotalMinted.GTE(types.MintingCap) {
+		return
+	}
+
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	// fetch stored minter & params
-	minter := k.GetMinter(ctx)
 	params := k.GetParams(ctx)
-
 	blockTime := ctx.BlockTime().UnixNano()
 	coinAmount := calcTokens(sdk.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
 
