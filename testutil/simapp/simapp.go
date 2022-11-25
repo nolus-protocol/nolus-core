@@ -79,7 +79,7 @@ var defaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-// NewAppConstructor returns a new simapp AppConstructor
+// NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
 	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
 

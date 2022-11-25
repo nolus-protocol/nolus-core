@@ -9,12 +9,12 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
-// GenRandomFeeRate generates random FeeRate in range [0-50]
+// GenRandomFeeRate generates random FeeRate in range [0-50].
 func GenRandomFeeRate(r *rand.Rand) int32 {
 	return int32(r.Intn(51))
 }
 
-// RandomizedGenState generates a random GenesisState for tax
+// RandomizedGenState generates a random GenesisState for tax.
 func RandomizedGenState(simState *module.SimulationState) {
 	var feeRate int32
 

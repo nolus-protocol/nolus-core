@@ -14,7 +14,7 @@ var HUNDRED_DEC = sdk.NewDec(100)
 // DeductTaxDecorator deducts tax by a given fee rate from the standard collected fee.
 // The tax is sent to a treasury account
 // Call next AnteHandler if tax successfully sent to treasury or no fee provided
-// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator
+// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator.
 type DeductTaxDecorator struct {
 	ak types.AccountKeeper
 	tk Keeper
