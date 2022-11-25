@@ -29,16 +29,11 @@ setup_accounts() {
 
 # Open connection
 open_connection() {
-  declare -r nolusd_home_dir="$1"
-  declare -r nolus_net_address="$2"
-  declare -r hermes_binary_dir="$3"
-  declare -r a_chain="$4"
-  declare -r b_chain="$5"
-  declare -r connection="$6"
+  declare -r hermes_binary_dir="$1"
+  declare -r a_chain="$2"
+  declare -r b_chain="$3"
+  declare -r connection="$4"
 
   "$hermes_binary_dir"/hermes create connection --a-chain "$a_chain" --b-chain "$b_chain"
   "$hermes_binary_dir"/hermes create channel --a-chain "$a_chain" --a-connection "$connection" --a-port transfer --b-port transfer --order unordered
-
-  declare -r counterparty_channel_id=$(run_cmd "$nolusd_home_dir" q ibc channel connections "$connection" --node "$nolus_net_address" --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"')
-  echo "$counterparty_channel_id"
 }

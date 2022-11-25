@@ -157,7 +157,9 @@ source "$SCRIPTS_DIR"/internal/hermes-setup.sh
 setup_accounts "$NOLUS_HOME_DIR" "$NOLUS_NET_ADDRESS" "$WALLET_WITH_FUNDS_KEY" "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$HERMES_MNEMONIC"
 
 CONNECTION="connection-0"
-COUNTERPARTY_CHANNEL_ID=$(open_connection "$NOLUS_HOME_DIR" "$NOLUS_NET_ADDRESS" "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$CONNECTION")
+open_connection "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$CONNECTION"
+
+COUNTERPARTY_CHANNEL_ID=$(run_cmd "$NOLUS_HOME_DIR" q ibc channel connections "$CONNECTION" --node "$NOLUS_NET_ADDRESS" --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"')
 
 # Setup Leaser
 
