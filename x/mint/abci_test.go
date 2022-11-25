@@ -76,7 +76,7 @@ func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredetermin
 		mintedMonth = mintedMonth.Add(sdk.NewUint(coins.Uint64()))
 
 		if i%minutesInMonth == 0 {
-			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Recieved in this block \n",
+			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				i/minutesInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			mintedMonth = sdk.ZeroUint()
 		}
