@@ -78,6 +78,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 
 	return next(ctx, tx, simulate)
 }
+
 func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, feeCoin sdk.Coin, treasuryAddr sdk.AccAddress) error {
 	feeRate := sdk.NewDec(int64(taxKeeper.FeeRate(ctx)))
 	// if feeRate is 0 - we won't deduct any tax

@@ -14,7 +14,7 @@ import (
 func (suite *KeeperTestSuite) TestTaxDecorator() {
 	suite.SetupTest(true)
 
-	var HUNDRED_DEC = sdk.NewDec(100)
+	HUNDRED_DEC := sdk.NewDec(100)
 	const rnDenom = "atom"
 	baseDenom := suite.app.TaxKeeper.BaseDenom(suite.ctx)
 
