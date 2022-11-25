@@ -133,11 +133,11 @@ test-unit-cosmos:
 
 test-unit:
 	go install gotest.tools/gotestsum@latest
-	$(GOPATH)/bin/gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
+	gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
 
 test-unit-coverage: ## Generate global code coverage report
 	go install github.com/boumenot/gocover-cobertura@latest
-	$(GOPATH)/bin/gocover-cobertura < cover.out > coverage.xml
+	gocover-cobertura < cover.out > coverage.xml
 
 test-unit-coverage-report: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;
