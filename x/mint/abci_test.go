@@ -2,10 +2,11 @@ package mint
 
 import (
 	"fmt"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 	"math/rand"
 	"testing"
 	"time"
+
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 
 	"github.com/stretchr/testify/assert"
 
