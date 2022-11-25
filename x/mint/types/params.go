@@ -10,7 +10,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// Parameter store keys
+// Parameter store keys.
 var (
 	KeyMintDenom     = []byte("MintDenom")
 	DefaultBondDenom = sdk.DefaultBondDenom
@@ -31,7 +31,7 @@ func NewParams(mintDenom string, maxMintableNanoseconds sdk.Uint) Params {
 	}
 }
 
-// DefaultParams default minting module parameters
+// DefaultParams default minting module parameters.
 func DefaultParams() Params {
 	return Params{
 		MintDenom:              sdk.DefaultBondDenom,
@@ -39,7 +39,7 @@ func DefaultParams() Params {
 	}
 }
 
-// Validate validate params
+// Validate validate params.
 func (p Params) Validate() error {
 	if err := validateMaxMintableNanoseconds(p.MaxMintableNanoseconds); err != nil {
 		return err
@@ -51,7 +51,7 @@ func (p Params) Validate() error {
 	return nil
 }
 
-// ParamSetPairs Implements params.ParamSet
+// ParamSetPairs Implements params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyMaxMintableNanoseconds, &p.MaxMintableNanoseconds, validateMaxMintableNanoseconds),

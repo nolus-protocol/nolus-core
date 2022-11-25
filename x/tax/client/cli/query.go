@@ -2,18 +2,18 @@ package cli
 
 import (
 	"fmt"
-	// "strings"
+	// "strings".
 
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	// "github.com/cosmos/cosmos-sdk/client/flags"
-	// sdk "github.com/cosmos/cosmos-sdk/types"
+	// sdk "github.com/cosmos/cosmos-sdk/types".
 
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(queryRoute string) *cobra.Command {
 	// Group tax queries under a subcommand
 	cmd := &cobra.Command{

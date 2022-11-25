@@ -55,7 +55,7 @@ func GetCmdQueryParams() *cobra.Command {
 	return cmd
 }
 
-// GetCmdQueryMintState implements a command to return the current minting state
+// GetCmdQueryMintState implements a command to return the current minting state.
 func GetCmdQueryMintState() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "minter",
