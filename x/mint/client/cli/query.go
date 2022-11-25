@@ -42,7 +42,6 @@ func GetCmdQueryParams() *cobra.Command {
 
 			params := &types.QueryParamsRequest{}
 			res, err := queryClient.Params(cmd.Context(), params)
-
 			if err != nil {
 				return err
 			}
@@ -71,7 +70,6 @@ func GetCmdQueryMintState() *cobra.Command {
 
 			params := &types.QueryMintStateRequest{}
 			res, err := queryClient.MintState(cmd.Context(), params)
-
 			if err != nil {
 				return err
 			}

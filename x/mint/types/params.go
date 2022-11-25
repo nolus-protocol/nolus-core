@@ -24,10 +24,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-func NewParams(
-	mintDenom string, maxMintableNanoseconds sdk.Uint,
-) Params {
-
+func NewParams(mintDenom string, maxMintableNanoseconds sdk.Uint) Params {
 	return Params{
 		MintDenom:              mintDenom,
 		MaxMintableNanoseconds: maxMintableNanoseconds,
@@ -52,7 +49,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-
 }
 
 // ParamSetPairs Implements params.ParamSet

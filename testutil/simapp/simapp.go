@@ -47,6 +47,7 @@ func New(dir string, withDefaultGenesisState bool) cosmoscmd.App {
 	})
 	return a
 }
+
 func TestSetup() (*app.App, error) {
 	rootApp := New(app.DefaultNodeHome, true)
 	nolusApp, ok := rootApp.(*app.App)

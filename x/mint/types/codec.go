@@ -5,11 +5,8 @@ import (
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 )
 
-var (
-	amino = codec.NewLegacyAmino()
-)
-
 func init() {
+	amino := codec.NewLegacyAmino()
 	cryptocodec.RegisterCrypto(amino)
 	amino.Seal()
 }
