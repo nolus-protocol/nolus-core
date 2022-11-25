@@ -67,7 +67,7 @@ func ValidateMinter(minter Minter) error {
 				minter.NormTimePassed, calculatedMintedTokens)
 		}
 	} else if !calculatedMintedTokens.Equal(minter.TotalMinted) {
-		return fmt.Errorf("minted unexpected ammount of tokens for %s months: %s unls",
+		return fmt.Errorf("minted unexpected amount of tokens for %s months: %s unls",
 			minter.NormTimePassed, minter.TotalMinted)
 	}
 
