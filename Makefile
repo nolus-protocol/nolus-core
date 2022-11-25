@@ -117,7 +117,7 @@ endif
 ###############################################################################
 .PHONY: all build install go.sum fuzz
 
-all: check-format build install fuzz test-unit-cosmos
+all: build install fuzz test-unit-cosmos
 
 BUILD_TARGETS := build install
 
@@ -127,16 +127,6 @@ fuzz:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
-
-check-format:
-	$(SHELL) ./scripts/check-format.sh
-
-static-code-check:
-	go install honnef.co/go/tools/cmd/staticcheck@latest
-	$(GOPATH)/bin/staticcheck -tags "muslc" ./...
-
-examine-source-code:
-	go vet $(BUILD_FLAGS) $(PACKAGES)
 
 test-unit-cosmos:
 	sh ./scripts/test/run-test-unit-cosmos.sh >&2
