@@ -6,14 +6,7 @@ set -euox pipefail
 SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 source "$SCRIPTS_DIR"/common/cmd.sh
 source "$SCRIPTS_DIR"/internal/verify.sh
-
-key_recover() {
-  local -r nolus_home_dir="$1"
-  local -r mnemonic="$1"
-  local -r key="$2"
-
-  echo "$mnemonic" | run_cmd "$nolus_home_dir" keys add "$key" --recover --keyring-backend "test"
-}
+source "$SCRIPTS_DIR"/internal/accounts.sh
 
 NOLUS_NET_ADDRESS=""
 NOLUS_HOME_DIR=""
@@ -133,22 +126,17 @@ verify_mandatory "$B_CHAIN" "Configured B chain id in Hermes config"
 
 if [ -z "$CONTRACTS_OWNER_MNEMONIC" ]; then
     verify_mandatory "$CONTRACTS_OWNER_KEY" "Smart Contracts owner key"
+else
+  CONTRACTS_OWNER_KEY="contracts_owner"
+  recover_account "$NOLUS_HOME_DIR" "$CONTRACTS_OWNER_MNEMONIC" "$CONTRACTS_OWNER_KEY"
 fi
 
 if [ -z "$FAUCET_MNEMONIC" ]; then
     verify_mandatory "$WALLET_WITH_FUNDS_KEY" "Active key, with funds"
-fi
-
-if [ -n "$CONTRACTS_OWNER_MNEMONIC" ]; then
-    CONTRACTS_OWNER_KEY="contracts_owner"
-    key_recover "$NOLUS_HOME_DIR" "$CONTRACTS_OWNER_MNEMONIC" "$CONTRACTS_OWNER_KEY"
-fi
-
-if [ -n "$FAUCET_MNEMONIC" ]; then
+else
     WALLET_WITH_FUNDS_KEY="faucet"
-    key_recover "$NOLUS_HOME_DIR" "$FAUCET_MNEMONIC" "$WALLET_WITH_FUNDS_KEY"
+    recover_account "$NOLUS_HOME_DIR" "$FAUCET_MNEMONIC" "$WALLET_WITH_FUNDS_KEY"
 fi
-
 
 # Prepare Hermes
 
@@ -163,8 +151,8 @@ COUNTERPARTY_CHANNEL_ID=$(run_cmd "$NOLUS_HOME_DIR" q ibc channel connections "$
 
 # Setup Leaser
 
-CONTRACTS_OWNER_ADDRESS=$(run_cmd "$NOLUS_HOME_DIR" keys show "$CONTRACTS_OWNER_KEY" -a)
 FLAGS="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $NOLUS_NET_ADDRESS"
+CONTRACTS_OWNER_ADDRESS=$(run_cmd "$NOLUS_HOME_DIR" keys show "$CONTRACTS_OWNER_KEY" -a)
 echo 'y' | run_cmd "$NOLUS_HOME_DIR" tx bank send "$WALLET_WITH_FUNDS_KEY" "$CONTRACTS_OWNER_ADDRESS" 10000unls --broadcast-mode block $FLAGS
 
 LEASER_CONTRACT_ADDRESS=$(jq .contracts_info[5].leaser.instance "$CONTRACTS_INFO_FILE_PATH" | tr -d '"')

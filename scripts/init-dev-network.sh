@@ -168,7 +168,9 @@ verify_mandatory "$LPP_NATIVE" "LPP native currency"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 
-accounts_spec=$(echo "[]" | add_account "$(recover_account "$FAUCET_MNEMONIC")" "$FAUCET_TOKENS")
+TMP_FAUCET_DIR="$(mktemp -d)"
+KEY_NAME="anonymous"
+accounts_spec=$(echo "[]" | add_account "$(recover_account "$TMP_FAUCET_DIR" "$FAUCET_MNEMONIC" "$KEY_NAME")" "$FAUCET_TOKENS")
 # We handle the contracts_owner account as normal address.
 treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
 accounts_spec=$(echo "$accounts_spec" | add_account "$CONTRACTS_OWNER_ADDR" "$treasury_init_tokens")
