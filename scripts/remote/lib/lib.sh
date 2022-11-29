@@ -5,15 +5,20 @@ command -v tomlq > /dev/null 2>&1 || {
 }
 
 update_app() {
-  local app_file="$1"/config/app.toml
+  local app_file="$1"/app.toml
 
-  tomlq -t "$2=$3" < "$app_file" > "$app_file".tmp
-  mv "$app_file".tmp "$app_file"
+  _update_toml "$app_file" "$2" "$3"
 }
 
 update_config() {
-  local config_file="$1"/config/config.toml
+  local config_file="$1"/config.toml
 
-  tomlq -t "$2=$3" < "$config_file" > "$config_file".tmp
-  mv "$config_file".tmp "$config_file"
+  _update_toml "$config_file" "$2" "$3"
+}
+
+_update_toml() {
+  local file="$1"
+
+  tomlq -t "$2=$3" < "$file" > "$file".tmp
+  mv "$file".tmp "$file"
 }
