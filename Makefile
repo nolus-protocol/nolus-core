@@ -123,6 +123,10 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
+lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run --verbose
+
 fuzz:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
@@ -143,11 +147,11 @@ test-unit-cosmos:
 
 test-unit:
 	go install gotest.tools/gotestsum@latest
-	gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
+	$(GOPATH)/bin/gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
 
 test-unit-coverage: ## Generate global code coverage report
 	go install github.com/boumenot/gocover-cobertura@latest
-	gocover-cobertura < cover.out > coverage.xml
+	$(GOPATH)/bin/gocover-cobertura < cover.out > coverage.xml
 
 test-unit-coverage-report: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;
