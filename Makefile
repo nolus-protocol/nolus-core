@@ -133,7 +133,7 @@ test-fuzz:
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
 test-unit-cosmos:
-	sh ./scripts/test/run-test-unit-cosmos.sh >&2
+	./scripts/test/run-test-unit-cosmos.sh >&2
 
 test-unit:
 	go install gotest.tools/gotestsum@latest

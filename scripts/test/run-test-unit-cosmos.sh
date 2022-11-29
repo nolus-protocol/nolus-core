@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+set -eu pipefail
 
 COSMOSSDK_DIR=$(go list -m -f '{{.Dir}}' github.com/cosmos/cosmos-sdk)
 echo "Cosmos SDK Path: $COSMOSSDK_DIR"
@@ -25,7 +25,6 @@ if [ -z "$COSMOSSDK_DIR" ]; then
 	echo "There is no Cosmos SDK"
 else
 	COSMOSSDK_PACKAGES=$(go list $COSMOSSDK_DIR/... | uniq)
-	# COSMOSSDK_PACKAGES="github.com/cosmos/cosmos-sdk/server github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	for PACKAGE in $COSMOSSDK_PACKAGES; do
 		TEST_LIST=""
 
