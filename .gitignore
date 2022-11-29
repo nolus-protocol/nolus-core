@@ -1,5 +1,3 @@
-vue/node_modules
-vue/dist
 release/
 .idea
 target/
@@ -8,9 +6,12 @@ scripts/genesis.json
 networks/
 users/
 validators/
-coverage.txt
 .vscode/
 contracts-info.json
+
+## unit test coverage
 out.txt
 cover.out
+coverage.txt
+coverage.xml
 testreport.xml
