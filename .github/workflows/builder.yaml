@@ -1,0 +1,61 @@
+name: Builder
+# Builder checks we builder image is present on AWS registry
+# If there is no image with the specified version new image is built and pushed
+on:
+  # TODO: remove PR
+  pull_request: 
+  push:
+    tags:
+      - v*.*.*
+env:
+  AWS_REGISTRY_ID: "013603813222"
+  NOLUS_BUILDER_REPO: "builder"
+  NOLUS_BUILDER_TAG: "0.7"
+  CI_OCI_REGISTRY: "public.ecr.aws/nolus"
+  NOLUS_BUILDER_IMAGE: "${CI_OCI_REGISTRY}/${NOLUS_BUILDER_REPO}:${NOLUS_BUILDER_TAG}"
+  KANIKO_DOCKER_FILE: build/builder_spec
+  KANIKO_IMAGE: ${NOLUS_BUILDER_IMAGE}
+  KANIKO_IMAGE_EXISTS: ${NOLUS_BUILDER_EXISTS}
+
+jobs:
+  check-exist:
+    # if: $GITHUB_REF_PROTECTED == "true"
+    name: Check image exists in registry
+    runs-on: ubuntu-latest
+    container: amazon/aws-cli
+    environment: dev chain
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Run check exist image
+        run: |
+          if
+            aws ecr-public describe-images \
+                --registry-id $AWS_REGISTRY_ID \
+                --repository-name $NOLUS_BUILDER_REPO \
+                --region "us-east-1" \
+                --image-ids=imageTag=$NOLUS_BUILDER_TAG
+          then
+            echo "NOLUS_BUILDER_EXISTS=true" >>builder_exists.env
+          fi
+      
+      - name: Archive .env
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-results-out
+          path: builder_exists.env
+
+  # build-builder-image:
+  #   name: Build builder image and push to registry
+  #   runs-on: ubuntu-latest
+  #   needs: check-exist
+  #   steps:
+  #     - name: Kaniko build
+  #       uses: aevea/action-kaniko@master
+  #       with:
+  #         image: aevea/kaniko

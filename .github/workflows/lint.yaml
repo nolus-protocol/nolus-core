@@ -1,4 +1,5 @@
 name: Lint
+# Lint runs golangci-lint with standard Go linters to ensure good code quality
 on:
   pull_request:
   push:

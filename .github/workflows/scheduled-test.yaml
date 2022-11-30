@@ -1,4 +1,5 @@
 name: Scheduled Test
+# Scheduled Test runs every day at 3am only on main branch
 on:
   schedule:
     - cron: '0 3 * * *'

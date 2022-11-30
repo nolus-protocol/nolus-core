@@ -1,0 +1,61 @@
+# name: Build
+# # Builds a new node image on a new version only.
+# # A version is denoted with a protected tag.
+# on:
+#   # TODO: remove PR
+#   pull_request: 
+#   push:
+#     tags:
+#       - v*.*.*
+
+# env:
+#   ARTIFACT_BIN: "nolus.tar.gz"
+
+# jobs:
+#   prep-version:
+#     name: Prepare version
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Run prepare version
+#       run: |
+#         if [[ $GITHUB_REF_PROTECTED == "true" ]]  &&  [[ -n "$GITHUB_REF_NAME" ]] ;
+#         then
+#           echo "BUILD_NOLUS_VERSION=true" >> build_version.env ;
+#         else
+#           echo "NOLUS_IMAGE_EXIST=true" >> build_version.env ;
+#         fi
+#     - name: Archive build_version.env
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: build-version
+#         path: build_version.env
+
+#   build-binary:
+#     name: Build binary
+#     runs-on: ubuntu-latest
+#     steps:
+#     - name: Run build binary
+#       run: |
+#         make build
+#         echo "Ensuring binary is statically linked ..." 
+#             && (file target/release/nolusd | grep "statically linked")
+#         tar -C target/release/ -czvf $ARTIFACT_BIN .
+
+#     - name: Archive binary
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: "nolusd-$GITHUB_REF_NAME"
+#         paths: $ARTIFACT_BIN
+
+#   # Builds a new node image on a new version only.
+#   # A version is denoted with a protected tag.
+#   build-image:
+#     name: Build image
+#     runs-on: ubuntu-latest
+#     needs: ["prep-version:check","build-binary"]
+#     extends: .kaniko
+#     variables:
+#       KANIKO_DOCKER_FILE: build/node_spec.Dockerfile
+#       KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
+#       KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
+#       GITHUB_WIKI_ACCESS_TOKEN: ${GITHUB_WIKI_ACCESS_TOKEN}
