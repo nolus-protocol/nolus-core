@@ -8,6 +8,17 @@ source "$SCRIPTS_DIR"/common/cmd.sh
 source "$SCRIPTS_DIR"/internal/verify.sh
 source "$SCRIPTS_DIR"/internal/accounts.sh
 
+# Open connection
+open_connection() {
+  declare -r hermes_binary_dir="$1"
+  declare -r a_chain="$2"
+  declare -r b_chain="$3"
+  declare -r connection="$4"
+
+  "$hermes_binary_dir"/hermes create connection --a-chain "$a_chain" --b-chain "$b_chain"
+  "$hermes_binary_dir"/hermes create channel --a-chain "$a_chain" --a-connection "$connection" --a-port transfer --b-port transfer --order unordered
+}
+
 NOLUS_NET_ADDRESS=""
 NOLUS_HOME_DIR=""
 CONTRACTS_OWNER_KEY=""
@@ -140,15 +151,12 @@ fi
 
 # Prepare Hermes
 
-source "$SCRIPTS_DIR"/internal/hermes-setup.sh
-
 FLAGS="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $NOLUS_NET_ADDRESS"
 
 echo 'y' | run_cmd "$NOLUS_HOME_DIR" tx bank send "$WALLET_WITH_FUNDS_KEY" "$HERMES_ADDRESS" 2000000unls $FLAGS --broadcast-mode block
 
 CONNECTION="connection-0"
 open_connection "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$CONNECTION"
-
 COUNTERPARTY_CHANNEL_ID=$(run_cmd "$NOLUS_HOME_DIR" q ibc channel connections "$CONNECTION" --node "$NOLUS_NET_ADDRESS" --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"')
 
 # Setup Leaser
