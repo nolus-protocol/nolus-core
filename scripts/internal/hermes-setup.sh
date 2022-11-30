@@ -5,30 +5,6 @@ set -euox pipefail
 INTERNAL_SCRIPTS_DIR=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
 source "$INTERNAL_SCRIPTS_DIR"/accounts.sh
 
-# Accounts setup
-setup_accounts() {
-  declare -r nolus_home_dir="$1"
-  declare -r nolus_net_address="$2"
-  declare -r wallet_with_funds_key="$3"
-  declare -r hermes_binary_dir="$4"
-  declare -r a_chain="$5"
-  declare -r b_chain="$6"
-  declare -r hermes_mnemonic="$7"
-
-  declare -r hermes_key="hermes"
-  declare -r hermes_mnemonic_file="hermes.seed"
-  touch "$hermes_mnemonic_file"
-  echo "$hermes_mnemonic" > "$hermes_mnemonic_file"
-
-  declare -r hermes_address=$(recover_account "$nolus_home_dir" "$hermes_mnemonic" "$hermes_key")
-  echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$wallet_with_funds_key" "$hermes_address" 2000000unls --fees 500unls --node "$nolus_net_address" --broadcast-mode block
-
-  "$hermes_binary_dir"/hermes keys add --chain "$a_chain" --mnemonic-file "$hermes_mnemonic_file"
-  "$hermes_binary_dir"/hermes keys add --chain "$b_chain" --mnemonic-file "$hermes_mnemonic_file"
-
-  rm "$hermes_mnemonic_file"
-}
-
 # Open connection
 open_connection() {
   declare -r hermes_binary_dir="$1"

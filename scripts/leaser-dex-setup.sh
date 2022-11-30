@@ -16,7 +16,7 @@ CONTRACTS_INFO_FILE_PATH=""
 CONTRACTS_OWNER_MNEMONIC=""
 FAUCET_MNEMONIC=""
 HERMES_BINARY_DIR=""
-HERMES_MNEMONIC=""
+HERMES_ADDRESS=""
 A_CHAIN=""
 B_CHAIN=""
 
@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
     [--contracts-owner-mnemonic <contracts_owner_mnemonic_to_be_recovered  (if exists)>]
     [--faucet-mnemonic <faucet_mnemonic_to_be_recovered (if exists)>]
     [--hermes-binary-dir <hermes_binary_dir_path>]
-    [--hermes-mnemonic <hermes_account_mnemonic>]
+    [--hermes-address-nolus <hermes_account_address_nolus>]
     [--a-chain-id <configured_a_chain_id>]
     [--b-chain-id <configured_a_chain_id>]" \
     "$0"
@@ -91,8 +91,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --hermes-mnemonic)
-    HERMES_MNEMONIC="$2"
+  --hermes-address-nolus)
+    HERMES_ADDRESS="$2"
     shift
     shift
     ;;
@@ -120,7 +120,7 @@ verify_mandatory "$NOLUS_NET_ADDRESS" "Nolus address"
 verify_mandatory "$NOLUS_HOME_DIR" "Nolus home directory path"
 verify_mandatory "$CONTRACTS_INFO_FILE_PATH" "Smart Contracts information file path"
 verify_mandatory "$HERMES_BINARY_DIR" "Hermes binary directory path"
-verify_mandatory "$HERMES_MNEMONIC" "Hermes account mnemonic"
+verify_mandatory "$HERMES_ADDRESS" "Hermes account address"
 verify_mandatory "$A_CHAIN" "Configured A chain id in Hermes config"
 verify_mandatory "$B_CHAIN" "Configured B chain id in Hermes config"
 
@@ -142,7 +142,9 @@ fi
 
 source "$SCRIPTS_DIR"/internal/hermes-setup.sh
 
-setup_accounts "$NOLUS_HOME_DIR" "$NOLUS_NET_ADDRESS" "$WALLET_WITH_FUNDS_KEY" "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$HERMES_MNEMONIC"
+FLAGS="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $NOLUS_NET_ADDRESS"
+
+echo 'y' | run_cmd "$NOLUS_HOME_DIR" tx bank send "$WALLET_WITH_FUNDS_KEY" "$HERMES_ADDRESS" 2000000unls $FLAGS --broadcast-mode block
 
 CONNECTION="connection-0"
 open_connection "$HERMES_BINARY_DIR" "$A_CHAIN" "$B_CHAIN" "$CONNECTION"
@@ -151,7 +153,6 @@ COUNTERPARTY_CHANNEL_ID=$(run_cmd "$NOLUS_HOME_DIR" q ibc channel connections "$
 
 # Setup Leaser
 
-FLAGS="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $NOLUS_NET_ADDRESS"
 CONTRACTS_OWNER_ADDRESS=$(run_cmd "$NOLUS_HOME_DIR" keys show "$CONTRACTS_OWNER_KEY" -a)
 echo 'y' | run_cmd "$NOLUS_HOME_DIR" tx bank send "$WALLET_WITH_FUNDS_KEY" "$CONTRACTS_OWNER_ADDRESS" 10000unls --broadcast-mode block $FLAGS
 
