@@ -53,17 +53,17 @@ update_app "$config_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
 update_app "$config_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$config_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
 
-update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
-update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
-update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/null
-update_config "$home_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
-update_config "$home_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
-update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
-update_config "$home_dir" '."proxy_app"' '""' >/dev/null
-update_config "$home_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"' >/dev/null
-update_config "$home_dir" '."instrumentation"."prometheus"' "true" >/dev/null
-update_config "$home_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$MONITORING_PORT"'"' >/dev/null
-update_config "$home_dir" '."log_format"' '"json"'
+update_config "$config_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
+update_config "$config_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
+update_config "$config_dir" '."p2p"."laddr"' '"tcp://'"$HOST:$P2P_PORT"'"' >/dev/null
+update_config "$config_dir" '."p2p"."addr_book_strict"' 'false' >/dev/null
+update_config "$config_dir" '."p2p"."allow_duplicate_ip"' 'true' >/dev/null
+update_config "$config_dir" '."p2p"."persistent_peers"' '"'"$first_node_id"'"' >/dev/null
+update_config "$config_dir" '."proxy_app"' '""' >/dev/null
+update_config "$config_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"' >/dev/null
+update_config "$config_dir" '."instrumentation"."prometheus"' "true" >/dev/null
+update_config "$config_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$MONITORING_PORT"'"' >/dev/null
+update_config "$config_dir" '."log_format"' '"json"'
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)
