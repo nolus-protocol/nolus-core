@@ -24,23 +24,25 @@ declare -r timeout_commit="$6"
 declare -r sentry_node_urls_str="$7"
 declare -r sentry_node_ids_str="$8"
 
-update_app "$home_dir" '."api"."enable"' "false"
-update_app "$home_dir" '."grpc"."enable"' "false"
-update_app "$home_dir" '."grpc-web"."enable"' "false"
-update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"'
-update_app "$home_dir" '."telemetry"."enabled"' "true"
-update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1"
+declare -r config_dir="$home_dir"/config
 
-update_config "$home_dir" '."rpc"."laddr"' '"tcp://'"$ip_address:$rpc_port"'"'
-update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$ip_address:$p2p_port"'"'
-update_config "$home_dir" '."p2p"."seed_mode"' "false"
-update_config "$home_dir" '."p2p"."pex"' "false"
-update_config "$home_dir" '."p2p"."persistent_peers"' '"'"$sentry_node_urls_str"'"'
-update_config "$home_dir" '."p2p"."unconditional_peer_ids"' '"'"$sentry_node_ids_str"'"'
-update_config "$home_dir" '."p2p"."addr_book_strict"' "false"
-update_config "$home_dir" '."p2p"."allow_duplicate_ip"' "false"
-update_config "$home_dir" '."consensus"."double_sign_check_height"' "10"
-update_config "$home_dir" '."proxy_app"' '""'
-update_config "$home_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"'
-update_config "$home_dir" '."instrumentation"."prometheus"' "true"
-update_config "$home_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$monitoring_port"'"'
+update_app "$config_dir" '."api"."enable"' "false"
+update_app "$config_dir" '."grpc"."enable"' "false"
+update_app "$config_dir" '."grpc-web"."enable"' "false"
+update_app "$config_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"'
+update_app "$config_dir" '."telemetry"."enabled"' "true"
+update_app "$config_dir" '."telemetry"."prometheus-retention-time"' "1"
+
+update_config "$config_dir" '."rpc"."laddr"' '"tcp://'"$ip_address:$rpc_port"'"'
+update_config "$config_dir" '."p2p"."laddr"' '"tcp://'"$ip_address:$p2p_port"'"'
+update_config "$config_dir" '."p2p"."seed_mode"' "false"
+update_config "$config_dir" '."p2p"."pex"' "false"
+update_config "$config_dir" '."p2p"."persistent_peers"' '"'"$sentry_node_urls_str"'"'
+update_config "$config_dir" '."p2p"."unconditional_peer_ids"' '"'"$sentry_node_ids_str"'"'
+update_config "$config_dir" '."p2p"."addr_book_strict"' "false"
+update_config "$config_dir" '."p2p"."allow_duplicate_ip"' "false"
+update_config "$config_dir" '."consensus"."double_sign_check_height"' "10"
+update_config "$config_dir" '."proxy_app"' '""'
+update_config "$config_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"'
+update_config "$config_dir" '."instrumentation"."prometheus"' "true"
+update_config "$config_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$monitoring_port"'"'
