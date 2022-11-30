@@ -24,12 +24,7 @@ declare -r timeout_commit="$6"
 declare -r sentry_node_urls_str="$7"
 declare -r sentry_node_ids_str="$8"
 
-update_app "$home_dir" '."api"."enable"' "false"
-update_app "$home_dir" '."grpc"."enable"' "false"
-update_app "$home_dir" '."grpc-web"."enable"' "false"
-update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"'
-update_app "$home_dir" '."telemetry"."enabled"' "true"
-update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1"
+declare -r config_dir="$home_dir"/config
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://'"$ip_address:$rpc_port"'"'
 update_config "$home_dir" '."p2p"."laddr"' '"tcp://'"$ip_address:$p2p_port"'"'

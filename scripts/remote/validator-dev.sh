@@ -37,18 +37,21 @@ rm -fr "$home_dir"
 mkdir -p "$home_dir"
 
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
+
+declare -r config_dir="$home_dir"/config
+
 # although the API endpoint is deprecated it is still required by Keplr
 # TBD reevaluate the necessity to remain open
 # the grpc endpoint is required by the market data feeder
-update_app "$home_dir" '."api"."enable"' "true" >/dev/null
-update_app "$home_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/null
-update_app "$home_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
-update_app "$home_dir" '."grpc"."enable"' "true" >/dev/null
-update_app "$home_dir" '."grpc"."address"' '"0.0.0.0:'"$GRPC_PORT"'"' >/dev/null
-update_app "$home_dir" '."grpc-web"."enable"' "false" >/dev/null
-update_app "$home_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
-update_app "$home_dir" '."telemetry"."enabled"' "true" >/dev/null
-update_app "$home_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
+update_app "$config_dir" '."api"."enable"' "true" >/dev/null
+update_app "$config_dir" '."api"."address"' '"tcp://0.0.0.0:'"$API_PORT"'"' >/dev/null
+update_app "$config_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
+update_app "$config_dir" '."grpc"."enable"' "true" >/dev/null
+update_app "$config_dir" '."grpc"."address"' '"0.0.0.0:'"$GRPC_PORT"'"' >/dev/null
+update_app "$config_dir" '."grpc-web"."enable"' "false" >/dev/null
+update_app "$config_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
+update_app "$config_dir" '."telemetry"."enabled"' "true" >/dev/null
+update_app "$config_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
 
 update_config "$home_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$home_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
