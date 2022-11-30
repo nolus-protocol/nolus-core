@@ -44,3 +44,4 @@ update_config "$home_dir" '."proxy_app"' '""'
 update_config "$home_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"'
 update_config "$home_dir" '."instrumentation"."prometheus"' "true"
 update_config "$home_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$monitoring_port"'"'
+update_config "$home_dir" '."log_format"' '"json"'
