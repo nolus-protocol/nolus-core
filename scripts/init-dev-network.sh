@@ -12,6 +12,16 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
+determine_faucet_addr() {
+  local -r faucet_mnemonic="$1"
+  local -r faucet_dir="$(mktemp -d)"
+  local -r key_name="anonymous"
+
+  recover_account "$faucet_dir" "$faucet_mnemonic" "$key_name"
+
+  rm -fr "$faucet_dir"
+}
+
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 ARTIFACT_BIN=""
@@ -168,9 +178,9 @@ verify_mandatory "$LPP_NATIVE" "LPP native currency"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 
-TMP_FAUCET_DIR="$(mktemp -d)"
-KEY_NAME="anonymous"
-accounts_spec=$(echo "[]" | add_account "$(recover_account "$TMP_FAUCET_DIR" "$FAUCET_MNEMONIC" "$KEY_NAME")" "$FAUCET_TOKENS")
+FAUCET_ADDR=$(determine_faucet_addr "$FAUCET_MNEMONIC")
+accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
+
 # We handle the contracts_owner account as normal address.
 treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
 accounts_spec=$(echo "$accounts_spec" | add_account "$CONTRACTS_OWNER_ADDR" "$treasury_init_tokens")
