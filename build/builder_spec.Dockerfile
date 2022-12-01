@@ -23,8 +23,8 @@ ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
 # pointing the linker to the dir the library is stored
 ENV WASMVM_DIR=${WASMVM_DIR}
 ARG WASMVM_LIB_LOCAL="libwasmvm_muslc.a"
-ARG WASMVM_LOCAL_PATH="$WASMVM_DIR"/"$WASMVM_LIB_LOCAL"
-ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL"/checksums.txt
+ARG WASMVM_LOCAL_PATH="$WASMVM_DIR/$WASMVM_LIB_LOCAL"
+ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL/checksums.txt"
 
 RUN mkdir -p $WASMVM_DIR
 RUN wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
