@@ -63,6 +63,7 @@ update_config "$config_dir" '."proxy_app"' '""' >/dev/null
 update_config "$config_dir" '."consensus"."timeout_commit"' '"'"$timeout_commit"'"' >/dev/null
 update_config "$config_dir" '."instrumentation"."prometheus"' "true" >/dev/null
 update_config "$config_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$MONITORING_PORT"'"' >/dev/null
+update_config "$config_dir" '."log_format"' '"json"'
 
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)
