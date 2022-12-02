@@ -46,6 +46,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -202,6 +205,7 @@ var (
 		params.AppModuleBasic{},
 		crisis.AppModuleBasic{},
 		slashing.AppModuleBasic{},
+		feegrantmodule.AppModuleBasic{},
 		ibc.AppModuleBasic{},
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
@@ -275,6 +279,7 @@ type App struct {
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      ibctransferkeeper.Keeper
+	FeegrantKeeper      feegrantkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -326,6 +331,7 @@ func New(
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, wasm.StoreKey,
 		taxmoduletypes.StoreKey, govtypes.StoreKey, icacontrollertypes.StoreKey,
 		capabilitytypes.StoreKey, interchainqueriestypes.StoreKey, interchaintxstypes.StoreKey,
+		feegrant.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -382,6 +388,11 @@ func New(
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.GetSubspace(stakingtypes.ModuleName),
+	)
+	app.FeegrantKeeper = feegrantkeeper.NewKeeper(
+		appCodec,
+		keys[feegrant.StoreKey],
+		app.AccountKeeper,
 	)
 	app.MintKeeper = mintkeeper.NewKeeper(
 		appCodec,
@@ -598,6 +609,7 @@ func New(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeegrantKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		transferModule,
@@ -617,20 +629,23 @@ func New(
 	// NOTE: staking module is required if HistoricalEntries param > 0
 	app.mm.SetOrderBeginBlockers(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName, distrtypes.ModuleName,
-		slashingtypes.ModuleName,
-		evidencetypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
-		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName, paramstypes.ModuleName,
-		authtypes.ModuleName, crisistypes.ModuleName,
-		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName, icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
+		slashingtypes.ModuleName, evidencetypes.ModuleName, stakingtypes.ModuleName,
+		ibchost.ModuleName, genutiltypes.ModuleName, feegrant.ModuleName,
+		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName,
+		paramstypes.ModuleName, authtypes.ModuleName, crisistypes.ModuleName,
+		taxmoduletypes.ModuleName, wasm.ModuleName, govtypes.ModuleName,
+		icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
-		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName, ibchost.ModuleName,
-		paramstypes.ModuleName, slashingtypes.ModuleName, upgradetypes.ModuleName, authtypes.ModuleName,
-		capabilitytypes.ModuleName, vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName,
-		ibctransfertypes.ModuleName,
-		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
-		wasm.ModuleName, icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
+		crisistypes.ModuleName, govtypes.ModuleName, stakingtypes.ModuleName,
+		ibchost.ModuleName, paramstypes.ModuleName, slashingtypes.ModuleName,
+		upgradetypes.ModuleName, authtypes.ModuleName, capabilitytypes.ModuleName,
+		vestingtypes.ModuleName, minttypes.ModuleName, evidencetypes.ModuleName,
+		ibctransfertypes.ModuleName, genutiltypes.ModuleName, feegrant.ModuleName,
+		banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
+		wasm.ModuleName, icatypes.ModuleName, interchaintxstypes.ModuleName,
+		interchainqueriestypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -651,6 +666,7 @@ func New(
 		genutiltypes.ModuleName,
 		ibchost.ModuleName,
 		evidencetypes.ModuleName,
+		feegrant.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
 		interchaintxstypes.ModuleName,
