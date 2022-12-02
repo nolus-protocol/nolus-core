@@ -11,6 +11,7 @@
 # arg: chain2 IP address, mandatory
 # arg: chain2 RPC port, mandatory
 # arg: chain2 GRPC port, mandatory
+# arg: hermes account seed, mandatory
 
 set -euox pipefail
 
@@ -28,6 +29,7 @@ declare -r chain2id="$7"
 declare -r chain2IpAddr="$8"
 declare -r chain2rpcPort="$9"
 declare -r chain2grpcPort="${10}"
+declare -r hermes_mnemonic="${11}"
 
 # Install
 
@@ -100,18 +102,17 @@ update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator :
 # Accounts setup
 
 declare -r hermes_key="hermes"
-declare -r hermes_seed_path="$hermes_config_dir"/hermes.seed
-run_cmd "$nolus_root" keys mnemonic > "$hermes_seed_path".tmp
+declare -r hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
+touch "$hermes_mnemonic_file".tmp
+echo "$hermes_mnemonic" > "$hermes_mnemonic_file".tmp
 
-run_cmd "$nolus_root"/.nolus keys add --recover "$hermes_key" --keyring-backend "test" < "$hermes_seed_path".tmp
+run_cmd "$nolus_root"/.nolus keys add --recover "$hermes_key" --keyring-backend "test" < "$hermes_mnemonic_file".tmp
 
-mv "$hermes_seed_path".tmp "$hermes_seed_path"
+mv "$hermes_mnemonic_file".tmp "$hermes_mnemonic_file"
 
-"$hermes_binary_dir"/hermes keys add --chain "$chain1id" --mnemonic-file "$hermes_seed_path"
-"$hermes_binary_dir"/hermes keys add --chain "$chain2id" --mnemonic-file "$hermes_seed_path"
+"$hermes_binary_dir"/hermes keys add --chain "$chain1id" --mnemonic-file "$hermes_mnemonic_file"
+"$hermes_binary_dir"/hermes keys add --chain "$chain2id" --mnemonic-file "$hermes_mnemonic_file"
 
 declare hermes_address_nolus
 hermes_address_nolus=$(jq -r '.account' "$hermes_config_dir/keys/$chain1id/keyring-test/$chain1keyName.json")
-declare hermes_address_osmosis
-hermes_address_osmosis=$(jq -r '.account' "$hermes_config_dir/keys/$chain2id/keyring-test/$chain2keyName.json")
-echo "$hermes_address_nolus" "$hermes_address_osmosis"
+echo "$hermes_address_nolus"
