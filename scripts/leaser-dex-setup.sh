@@ -24,8 +24,6 @@ NOLUS_HOME_DIR=""
 CONTRACTS_OWNER_KEY=""
 WALLET_WITH_FUNDS_KEY=""
 CONTRACTS_INFO_FILE_PATH=""
-CONTRACTS_OWNER_MNEMONIC=""
-FAUCET_MNEMONIC=""
 HERMES_BINARY_DIR=""
 HERMES_ADDRESS=""
 A_CHAIN=""
@@ -41,11 +39,9 @@ while [[ $# -gt 0 ]]; do
     "Usage: %s
     [--nolus-net-address <nolus_net_address>]
     [--nolus-home-dir <nolus_home_dir_path>]
-    [--contracts-owner-key <contracts_owner_key (if exists)>]
-    [--wallet-with-funds-key <wallet_with_funds_key (if exists)>]
+    [--contracts-owner-key <contracts_owner_key>]
+    [--wallet-with-funds-key <wallet_with_funds_key>]
     [--contracts-info-file-path <contracts_info_file_full_path>]
-    [--contracts-owner-mnemonic <contracts_owner_mnemonic_to_be_recovered  (if exists)>]
-    [--faucet-mnemonic <faucet_mnemonic_to_be_recovered (if exists)>]
     [--hermes-binary-dir <hermes_binary_dir_path>]
     [--hermes-address-nolus <hermes_account_address_nolus>]
     [--a-chain-id <configured_a_chain_id>]
@@ -84,18 +80,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --contracts-owner-mnemonic)
-    CONTRACTS_OWNER_MNEMONIC="$2"
-    shift
-    shift
-    ;;
-
-  --faucet-mnemonic)
-    FAUCET_MNEMONIC="$2"
-    shift
-    shift
-    ;;
-
   --hermes-binary-dir)
     HERMES_BINARY_DIR="$2"
     shift
@@ -129,25 +113,13 @@ done
 
 verify_mandatory "$NOLUS_NET_ADDRESS" "Nolus address"
 verify_mandatory "$NOLUS_HOME_DIR" "Nolus home directory path"
+verify_mandatory "$CONTRACTS_OWNER_KEY" "Contracts owner key"
+verify_mandatory "$WALLET_WITH_FUNDS_KEY" "Wallet with funds key"
 verify_mandatory "$CONTRACTS_INFO_FILE_PATH" "Smart Contracts information file path"
 verify_mandatory "$HERMES_BINARY_DIR" "Hermes binary directory path"
 verify_mandatory "$HERMES_ADDRESS" "Hermes account address"
 verify_mandatory "$A_CHAIN" "Configured A chain id in Hermes config"
 verify_mandatory "$B_CHAIN" "Configured B chain id in Hermes config"
-
-if [ -z "$CONTRACTS_OWNER_MNEMONIC" ]; then
-    verify_mandatory "$CONTRACTS_OWNER_KEY" "Smart Contracts owner key"
-else
-  CONTRACTS_OWNER_KEY="contracts_owner"
-  recover_account "$NOLUS_HOME_DIR" "$CONTRACTS_OWNER_MNEMONIC" "$CONTRACTS_OWNER_KEY"
-fi
-
-if [ -z "$FAUCET_MNEMONIC" ]; then
-    verify_mandatory "$WALLET_WITH_FUNDS_KEY" "Active key, with funds"
-else
-    WALLET_WITH_FUNDS_KEY="faucet"
-    recover_account "$NOLUS_HOME_DIR" "$FAUCET_MNEMONIC" "$WALLET_WITH_FUNDS_KEY"
-fi
 
 # Prepare Hermes
 
