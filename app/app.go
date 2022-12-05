@@ -718,6 +718,7 @@ func New(
 		HandlerOptions{
 			AccountKeeper:     app.AccountKeeper,
 			BankKeeper:        app.BankKeeper,
+			FeegrantKeeper:    app.FeegrantKeeper,
 			TaxKeeper:         app.TaxKeeper,
 			TxCounterStoreKey: keys[wasm.StoreKey],
 			WasmConfig:        wasmConfig,
