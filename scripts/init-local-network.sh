@@ -5,6 +5,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/verify.sh
+source "$SCRIPT_DIR"/internal/leaser-dex-setup.sh
 
 cleanup() {
   cleanup_init_network_sh
@@ -12,10 +13,12 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
+NOLUS_NET_RPC="http://localhost:26612/"
 VALIDATORS=1
 VALIDATORS_ROOT_DIR="networks/nolus"
 VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
+HERMES_BINARY_DIR="$HOME/hermes"
 
 NATIVE_CURRENCY="unls"
 
@@ -30,6 +33,11 @@ RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 LPP_NATIVE_TICKER="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
 
+HERMES_BINARY_DIR="$HOME/hermes"
+HERMES_ADDRESS=""
+A_CHAIN=""
+B_CHAIN=""
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -38,7 +46,8 @@ while [[ $# -gt 0 ]]; do
   -h | --help)
     printf \
     "Usage: %s
-    [--chain_id <string>]
+    [--chain-id <string>]
+    [--nolus-net-rpc <string>]
     [--currency <native_currency>]
     [-v|--validators <number>]
     [--validators-root-dir <validators_root_dir>]
@@ -50,13 +59,23 @@ while [[ $# -gt 0 ]]; do
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
     [--lpp-native <lpp_native>]
-    [--user-dir <client_user_dir>]" \
-     "$0"
+    [--user-dir <client_user_dir>]
+    [--hermes-binary-dir <hermes_binary_dir>]
+    [--hermes-address <hermes_address_nolus]
+    [--a-chain <configured_hermes_chain_1_id]
+    [--b-chain <configured_hermes_chain_2_id]" \
+    "$0"
     exit 0
     ;;
 
   --chain-id)
     CHAIN_ID="$2"
+    shift
+    shift
+    ;;
+
+  --nolus-net-rpc)
+    NOLUS_NET_RPC="$2"
     shift
     shift
     ;;
@@ -137,6 +156,30 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --hermes-binary-dir)
+    HERMES_BINARY_DIR="$2"
+    shift
+    shift
+    ;;
+
+  --hermes-address)
+    HERMES_ADDRESS="$2"
+    shift
+    shift
+    ;;
+
+  --a-chain)
+    A_CHAIN="$2"
+    shift
+    shift
+    ;;
+
+  --b-chain)
+    B_CHAIN="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -153,13 +196,17 @@ __config_client() {
 
 verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
+verify_mandatory "$A_CHAIN" "configured hermes chain 1 id"
+verify_mandatory "$B_CHAIN" "configured hermes chain 2 id"
+verify_mandatory "$HERMES_ADDRESS" "hermes address nolus"
 
 rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
-contracts_owner_addr=$(generate_account "contracts_owner" "$USER_DIR")
+contracts_owner_name="contracts_owner"
+contracts_owner_addr=$(generate_account "$contracts_owner_name" "$USER_DIR")
 # We handle the contracts_owner account as normal address.
 treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
 accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$treasury_init_tokens")
@@ -178,4 +225,9 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
 
 __config_client
 
-run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start
+run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
+
+sleep 5
+leaser_dex_setup "$NOLUS_NET_RPC" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" "$A_CHAIN" "$B_CHAIN"
+
+"$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
