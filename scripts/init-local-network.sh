@@ -177,3 +177,5 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE"
 
 __config_client
+
+run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start

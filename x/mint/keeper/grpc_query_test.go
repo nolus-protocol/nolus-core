@@ -45,5 +45,5 @@ func (s *KeeperTestSuite) TestMintState() {
 
 	resp, err := minterKeeper.MintState(s.sdkWrappedCtx, &types.QueryMintStateRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(int64(0), resp.TotalMinted.Int64())
+	s.Require().Equal(sdk.ZeroUint(), resp.TotalMinted)
 }
