@@ -227,7 +227,13 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-sleep 5
+declare nolus_node_status=""
+while [ "$nolus_node_status" != "STARTED" ]
+do
+   sleep 1
+   run_cmd "$USER_DIR" status && nolus_node_status="STARTED" || nolus_node_status="ERROR"
+done
+
 leaser_dex_setup "$NOLUS_NET_RPC" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" "$A_CHAIN" "$B_CHAIN"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
