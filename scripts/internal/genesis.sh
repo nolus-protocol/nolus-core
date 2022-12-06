@@ -118,6 +118,7 @@ __generate_proto_genesis_no_wasm() {
   __set_token_denominations "$genesis_file" "$currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
   __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
+  __modify_gov_slashing_and_staking_params_ "$genesis_file"
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
@@ -143,6 +144,20 @@ __integrate_genesis_txs() {
   }
 
   run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
+}
+
+__modify_gov_slashing_and_staking_params_() {
+  local genesis_file="$1"
+
+  local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
+    | jq '.app_state["gov"]["voting_params"]["voting_period"]="43200s"' \
+    | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="10000"' \
+    | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
+    | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
 }
 
 __set_token_denominations() {
