@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       
       - run: |
-          make test-unit
+          make test-unit -f gh-makefile
       
       - name: Archive code coverage results
         uses: actions/upload-artifact@v3
@@ -46,8 +46,8 @@ jobs:
           name: coverage-results-out
       
       - run: |
-          make test-unit-coverage
-          make test-unit-coverage-report
+          make test-unit-coverage -f gh-makefile
+          make test-unit-coverage-report -f gh-makefile
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
