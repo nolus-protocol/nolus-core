@@ -2,10 +2,11 @@ package mint
 
 import (
 	"fmt"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 	"math/rand"
 	"testing"
 	"time"
+
+	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 
 	"github.com/stretchr/testify/assert"
 
@@ -19,7 +20,8 @@ var (
 	expectedNormTime20Sec   = sdk.MustNewDecFromStr("95.999976965179227961")
 	normTimeThreshold       = sdk.MustNewDecFromStr("0.0001")
 	fiveMinutesInNano       = sdk.NewUint(uint64(time.Minute.Nanoseconds() * 5))
-	expectedTokensInFormula = []int64{3759989678764, 3675042190671, 3591959455921, 3510492761731,
+	expectedTokensInFormula = []int64{
+		3759989678764, 3675042190671, 3591959455921, 3510492761731,
 		3430894735556, 3352957640645, 3276743829430, 3202299947048, 3129456689610, 3058269447752,
 		2988635387331, 2920578426197, 2854081215478, 2789206352970, 2725694534821, 2663751456612,
 		2603392455686, 2544229951801, 2486586312604, 2430266441855, 2375370186150, 2321790458408,
@@ -75,7 +77,7 @@ func Test_CalcTokensDuringFormula_WhenUsingConstantIncrements_OutputsPredetermin
 		mintedMonth = mintedMonth.Add(sdk.NewUint(coins.Uint64()))
 
 		if i%minutesInMonth == 0 {
-			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Recieved in this block \n",
+			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				i/minutesInMonth, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			mintedMonth = sdk.ZeroUint()
 		}

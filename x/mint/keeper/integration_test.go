@@ -12,7 +12,7 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// returns context and an app with updated mint keeper
+// returns context and an app with updated mint keeper.
 func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	denom := "unls"
 	maxMintableNanoseconds := uint64(2000)

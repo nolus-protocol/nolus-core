@@ -22,12 +22,12 @@ var (
 	DefaultBaseDenom string = sdk.DefaultBondDenom
 )
 
-// ParamKeyTable the param key table for launch module
+// ParamKeyTable the param key table for launch module.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// NewParams creates a new Params instance
+// NewParams creates a new Params instance.
 func NewParams(
 	feeRate int32,
 	contractAddress string,
@@ -40,7 +40,7 @@ func NewParams(
 	}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(
 		DefaultFeeRate,
@@ -49,7 +49,7 @@ func DefaultParams() Params {
 	)
 }
 
-// ParamSetPairs get the params.ParamSet
+// ParamSetPairs get the params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
@@ -58,7 +58,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// Validate validates the set of params
+// Validate validates the set of params.
 func (p Params) Validate() error {
 	if err := validateFeeRate(p.FeeRate); err != nil {
 		return err

@@ -2,9 +2,10 @@ package simulation_test
 
 import (
 	"fmt"
+	"testing"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
-	"testing"
 
 	"github.com/stretchr/testify/require"
 

@@ -1,0 +1,34 @@
+linters:
+  disable-all: true
+  enable:
+    # Default linters
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    # Enable linters that are disabled by default 
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - depguard  
+    - godot
+    - gofmt
+    - gofumpt
+    - goimports
+    - misspell
+    - whitespace
+
+run:
+  timeout: 5m
+  skip-dirs:
+    - build # docker files
+    - .cicd #
+    - doc
+
+output:
+  # Sort results by: filepath, line and column.
+  sort-results: true

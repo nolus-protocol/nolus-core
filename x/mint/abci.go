@@ -17,7 +17,6 @@ var (
 
 func calcFunctionIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
 	return types.NormMonthsRange.Mul(calcFixedIncrement(nanoSecondsPassed))
-
 }
 
 func calcFixedIncrement(nanoSecondsPassed sdk.Uint) sdk.Dec {
@@ -118,7 +117,6 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		}
 
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
-
 	}
 
 	ctx.EventManager().EmitEvent(

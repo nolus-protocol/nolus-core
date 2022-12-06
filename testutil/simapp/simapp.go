@@ -47,6 +47,7 @@ func New(dir string, withDefaultGenesisState bool) cosmoscmd.App {
 	})
 	return a
 }
+
 func TestSetup() (*app.App, error) {
 	rootApp := New(app.DefaultNodeHome, true)
 	nolusApp, ok := rootApp.(*app.App)
@@ -78,7 +79,7 @@ var defaultConsensusParams = &abci.ConsensusParams{
 	},
 }
 
-// NewAppConstructor returns a new simapp AppConstructor
+// NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
 	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
 
