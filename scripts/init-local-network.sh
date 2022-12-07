@@ -227,20 +227,9 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-declare nolus_node_status=""
-declare latest_block_height=0
-while [ "$latest_block_height" -le 0 ]
-do
-  sleep 1
-  nolus_node_status=$(run_cmd "$USER_DIR" status) && nolus_node_status="STARTED"
+verify_nolus_is_ready "$USER_DIR"
+verify_hermes_config_is_healthy "$HERMES_BINARY_DIR"
 
-  if [ "$nolus_node_status" == "STARTED" ]
-  then
-    latest_block_height=$(run_cmd "$USER_DIR" status | jq .SyncInfo.latest_block_height | tr -d '"')
-  fi
-done
-
-sleep 3
 leaser_dex_setup "$NOLUS_NET_RPC" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" "$A_CHAIN" "$B_CHAIN"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
