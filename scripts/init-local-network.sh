@@ -19,7 +19,6 @@ VALIDATORS=1
 VALIDATORS_ROOT_DIR="networks/nolus"
 VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
-HERMES_BINARY_DIR="$HOME/hermes"
 
 NATIVE_CURRENCY="unls"
 
@@ -34,7 +33,7 @@ RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 LPP_NATIVE_TICKER="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
 
-HERMES_BINARY_DIR="$HOME/hermes"
+HERMES_BINARY_DIR=""
 HERMES_ADDRESS=""
 A_CHAIN=""
 B_CHAIN=""
@@ -199,6 +198,7 @@ verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
 verify_mandatory "$A_CHAIN" "configured hermes chain 1 id"
 verify_mandatory "$B_CHAIN" "configured hermes chain 2 id"
+verify_mandatory "$HERMES_BINARY_DIR" "hermes binary dir path"
 verify_mandatory "$HERMES_ADDRESS" "hermes address nolus"
 
 rm -fr "$VALIDATORS_ROOT_DIR"

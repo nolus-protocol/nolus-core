@@ -14,7 +14,7 @@ Make sure "nolus-money-market" repo is checked out as a sibling to this repo.
 
 ```sh
 make install
-./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --a-chain <configured_hermes_a_chain_id> --b-chain <configured_hermes_b_chain_id> --hermes-address <configured_hermes_address_nolus>
+./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --a-chain <configured_hermes_a_chain_id> --b-chain <configured_hermes_b_chain_id> --hermes-address <configured_hermes_address_nolus> --hermes-binary-dir <hermes_binary_dir_path>
 ```
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup, including setting the dex parameter (run `init-local-network.sh --help` for more configuration options). For more details check the [scripts README](./scripts/README.md)
