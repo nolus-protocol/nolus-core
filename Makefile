@@ -123,6 +123,10 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
+lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run --verbose
+
 fuzz:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
@@ -139,7 +143,7 @@ examine-source-code:
 	go vet $(BUILD_FLAGS) $(PACKAGES)
 
 test-unit-cosmos:
-	sh ./scripts/test/run-test-unit-cosmos.sh >&2
+	./scripts/test/run-test-unit-cosmos.sh >&2
 
 test-unit:
 	go install gotest.tools/gotestsum@latest
