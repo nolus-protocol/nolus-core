@@ -5,6 +5,7 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/verify.sh
+source "$SCRIPT_DIR"/internal/wait_services.sh
 source "$SCRIPT_DIR"/internal/leaser-dex-setup.sh
 
 cleanup() {
@@ -227,8 +228,8 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-verify_nolus_is_ready "$USER_DIR"
-verify_hermes_config_is_healthy "$HERMES_BINARY_DIR"
+wait_nolus_gets_ready "$USER_DIR"
+wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
 leaser_dex_setup "$NOLUS_NET_RPC" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" "$A_CHAIN" "$B_CHAIN"
 
