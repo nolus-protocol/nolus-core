@@ -17,7 +17,6 @@ default_target: all
 .PHONY: default_target
 
 # process build tags
-
 build_tags = netgo
 ifeq ($(LEDGER_ENABLED),true)
 	ifeq ($(OS),Windows_NT)
@@ -112,20 +111,41 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
-###############################################################################
-###                              Documentation                              ###
-###############################################################################
-.PHONY: all build install go.sum fuzz
+.PHONY: all install
+all: build install test-fuzz test-unit-cosmos
 
-all: build install fuzz test-unit-cosmos
+###############################################################################
+###                                  Build                                  ###
+###############################################################################
+.PHONY: build go.sum
 
 BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILDDIR)/:
+	mkdir -p $(BUILDDIR)/
+
+go.sum: go.mod
+	@echo "--> Ensure dependencies have not been modified"
+	@go mod verify
+
+###############################################################################
+###                                  Lint                                   ###
+###############################################################################
+.PHONY: lint
+
 lint:
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	golangci-lint run --verbose
+
+###############################################################################
+###                                  Test                                   ###
+###############################################################################
+.PHONY: test-fuzz test-unit-cosmos test-unit test-unit-coverage test-unit-coverage-report
 
 test-fuzz:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
@@ -146,24 +166,14 @@ test-unit-coverage: ## Generate global code coverage report
 test-unit-coverage-report: ## Generate global code coverage report in HTML
 	sh  ./scripts/test/coverage.sh html;
 
-$(BUILD_TARGETS): go.sum $(BUILDDIR)/
-	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
-
-$(BUILDDIR)/:
-	mkdir -p $(BUILDDIR)/
-
-go.sum: go.mod
-	@echo "--> Ensure dependencies have not been modified"
-	@go mod verify
-
-.PHONY: all build install go.sum fuzz test-unit-cosmos check-format
-
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
 protoVer=v0.7
 protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
 containerProtoGen=nolus-proto-gen-$(protoVer)
+
+.PHONY: proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
