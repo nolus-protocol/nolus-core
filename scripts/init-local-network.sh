@@ -32,17 +32,16 @@ LPP_NATIVE_TICKER="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
 HERMES_KEY="hermes"
 
-HERMES_CONFIG_CHAIN_1_ADDR="127.0.0.1"
-HERMES_CONFIG_CHAIN_1_RPC_PORT="26612"
-HERMES_CONFIG_CHAIN_1_GRPC_PORT="26615"
-HERMES_CONFIG_CHAIN_2_ID="osmo-test-4"
-HERMES_CONFIG_CHAIN_2_ADDR="10.215.65.11"
-HERMES_CONFIG_CHAIN_2_RPC_PORT="26657"
-HERMES_CONFIG_CHAIN_2_GRPC_PORT="9090"
+NOLUS_NETWORK_ADDR="127.0.0.1"
+NOLUS_NETWORK_RPC_PORT="26612"
+NOLUS_NETWORK_GRPC_PORT="26615"
+DEX_NETWORK_ID="osmo-test-4"
+DEX_NETWORK_ADDR="10.215.65.11"
+DEX_NETWORK_RPC_PORT="26657"
+DEX_NETWORK_GRPC_PORT="9090"
 HERMES_ACCOUNT_MNEMONIC=""
 
-
-NOLUS_NET="http://localhost:$HERMES_CONFIG_CHAIN_1_RPC_PORT/"
+NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -65,13 +64,10 @@ while [[ $# -gt 0 ]]; do
     [--reserve-tokens <initial_reserve_tokens>]
     [--lpp-native <lpp_native>]
     [--user-dir <client_user_dir>]
-    [--hermes-config-chain-1-addr <hermes_config_chain_1_addr>]
-    [--hermes-config-chain-1-rpc-port <hermes_config_chain_1_rpc_port>]
-    [--hermes-config-chain-1-grpc-port <hermes_config_chain_1_grpc_port>]
-    [--hermes-config-chain-2-id <hermes_config_chain_2_id]
-    [--hermes-config-chain-2-addr <hermes_config_chain_2_addr>]
-    [--hermes-config-chain-2-rpc-port <hermes_config_chain_2_rpc_port>]
-    [--hermes-config-chain-2-grpc-port <hermes_config_chain_2_grpc_port>]
+    [--dex-network-id <dex_network_id]
+    [--dex-network-addr <dex_network_addr>]
+    [--dex-network-rpc-port <dex_network_rpc_port>]
+    [--dex-network-grpc-port <dex_network_grpc_port>]
     [--hermes-mnemonic <hermes_account_mnemonic]" \
     "$0"
     exit 0
@@ -159,45 +155,27 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --hermes-config-chain-1-addr)
-    HERMES_CONFIG_CHAIN_1_ADDR="$2"
-    shift
-    shift
-    ;;
-
-  --hermes-config-chain-1-rpc-port)
-    HERMES_CONFIG_CHAIN_1_RPC_PORT="$2"
-    shift
-    shift
-    ;;
-
-  --hermes-config-chain-1-grpc-port)
-    HERMES_CONFIG_CHAIN_1_GRPC_PORT="$2"
-    shift
-    shift
-    ;;
-
-  --hermes-config-chain-2-id)
-    HERMES_CONFIG_CHAIN_2_ID="$2"
+  --dex-network-id)
+    DEX_NETWORK_ID="$2"
     shift
     shift
     ;;
 
 
-  --hermes-config-chain-2-addr)
-    HERMES_CONFIG_CHAIN_2_ADDR="$2"
+  --dex-network-addr)
+    DEX_NETWORK_ADDR="$2"
     shift
     shift
     ;;
 
-  --hermes-config-chain-2-rpc-port)
-    HERMES_CONFIG_CHAIN_2_RPC_PORT="$2"
+  --dex-network-rpc-port)
+    DEX_NETWORK_RPC_PORT="$2"
     shift
     shift
     ;;
 
-  --hermes-config-chain-2-grpc-port)
-    HERMES_CONFIG_CHAIN_2_GRPC_PORT="$2"
+  --dex-network-grpc-port)
+    DEX_NETWORK_GRPC_PORT="$2"
     shift
     shift
     ;;
@@ -239,10 +217,10 @@ accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$tr
 # accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
 #                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
-/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$HERMES_CONFIG_CHAIN_1_ADDR" \
-                                                "$HERMES_CONFIG_CHAIN_1_RPC_PORT" "$HERMES_CONFIG_CHAIN_1_GRPC_PORT" \
-                                                "$HERMES_CONFIG_CHAIN_2_ID" "$HERMES_CONFIG_CHAIN_2_ADDR" "$HERMES_CONFIG_CHAIN_2_RPC_PORT" \
-                                                "$HERMES_CONFIG_CHAIN_2_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
+/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
+                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
+                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
 
 HERMES_BINARY_DIR="$HOME"/hermes
 
@@ -266,6 +244,6 @@ wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 HERMES_ADDRESS=$(run_cmd "$USER_DIR" keys show "$HERMES_KEY" -a)
 
 leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" \
-                 "$CHAIN_ID" "$HERMES_CONFIG_CHAIN_2_ID"
+                 "$CHAIN_ID" "$DEX_NETWORK_ID"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
