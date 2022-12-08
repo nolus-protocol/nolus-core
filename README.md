@@ -16,7 +16,7 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
   make install
   ```
 
-#### Init && setup the DEX parameters && run
+#### Init, setup the DEX parameters and run
 
 First generate the mnemonic you will use for Hermes:
 
