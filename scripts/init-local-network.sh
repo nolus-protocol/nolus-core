@@ -20,13 +20,13 @@ VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
 NATIVE_CURRENCY="unls"
 
-TAG=`git describe --tags`
+TAG=$(git describe --tags)
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 WASM_SCRIPT_PATH="$SCRIPT_DIR/../../nolus-money-market/scripts"
 WASM_CODE_PATH="$SCRIPT_DIR/../../nolus-money-market/artifacts"
 # Tags would look like (v0.1.37-60-g321dbd1), we want to cut the last part(abbreviated object name)
-VERSION=`echo $(cut -f1,2 -d'-' <<< "$TAG")`
+VERSION=$(cut -f1,2 -d'-' <<< "$TAG")
 # date +%s returns the number of seconds since the epoch
 CHAIN_ID="nolus-local""-$VERSION-$(date +%s)"
 TREASURY_NLS_U128="1000000000000"
