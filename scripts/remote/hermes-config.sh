@@ -30,6 +30,7 @@ declare -r chain2IpAddr="$8"
 declare -r chain2rpcPort="$9"
 declare -r chain2grpcPort="${10}"
 declare -r hermes_mnemonic="${11}"
+declare -r hermes_key="${12}"
 
 # Install
 
@@ -47,6 +48,7 @@ declare -r chain1keyName="hermes-nolus"
 declare -r chain2keyName="hermes-osmosis"
 
 declare -r hermes_config_dir="$HOME"/.hermes
+rm -rf "$hermes_config_dir"
 mkdir -p "$hermes_config_dir"
 config_file="$hermes_config_dir"/config.toml
 touch "$config_file"
@@ -101,7 +103,6 @@ update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator :
 
 # Accounts setup
 
-declare -r hermes_key="hermes"
 declare -r hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
 touch "$hermes_mnemonic_file".tmp
 echo "$hermes_mnemonic" > "$hermes_mnemonic_file".tmp
@@ -112,7 +113,3 @@ mv "$hermes_mnemonic_file".tmp "$hermes_mnemonic_file"
 
 "$hermes_binary_dir"/hermes keys add --chain "$chain1id" --mnemonic-file "$hermes_mnemonic_file"
 "$hermes_binary_dir"/hermes keys add --chain "$chain2id" --mnemonic-file "$hermes_mnemonic_file"
-
-declare hermes_address_nolus
-hermes_address_nolus=$(jq -r '.account' "$hermes_config_dir/keys/$chain1id/keyring-test/$chain1keyName.json")
-echo "$hermes_address_nolus"

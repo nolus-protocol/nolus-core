@@ -14,12 +14,10 @@ cleanup() {
 }
 trap cleanup INT TERM EXIT
 
-NOLUS_NET_RPC="http://localhost:26612/"
 VALIDATORS=1
 VALIDATORS_ROOT_DIR="networks/nolus"
 VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
-
 NATIVE_CURRENCY="unls"
 
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
@@ -32,11 +30,19 @@ RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 LPP_NATIVE_TICKER="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
+HERMES_KEY="hermes"
 
-HERMES_BINARY_DIR=""
-HERMES_ADDRESS=""
-A_CHAIN=""
-B_CHAIN=""
+HERMES_CONFIG_CHAIN_1_ADDR="127.0.0.1"
+HERMES_CONFIG_CHAIN_1_RPC_PORT="26612"
+HERMES_CONFIG_CHAIN_1_GRPC_PORT="26615"
+HERMES_CONFIG_CHAIN_2_ID="osmo-test-4"
+HERMES_CONFIG_CHAIN_2_ADDR="10.215.65.11"
+HERMES_CONFIG_CHAIN_2_RPC_PORT="26657"
+HERMES_CONFIG_CHAIN_2_GRPC_PORT="9090"
+HERMES_ACCOUNT_MNEMONIC=""
+
+
+NOLUS_NET="http://localhost:$HERMES_CONFIG_CHAIN_1_RPC_PORT/"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -47,7 +53,6 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--chain-id <string>]
-    [--nolus-net-rpc <string>]
     [--currency <native_currency>]
     [-v|--validators <number>]
     [--validators-root-dir <validators_root_dir>]
@@ -60,22 +65,20 @@ while [[ $# -gt 0 ]]; do
     [--reserve-tokens <initial_reserve_tokens>]
     [--lpp-native <lpp_native>]
     [--user-dir <client_user_dir>]
-    [--hermes-binary-dir <hermes_binary_dir>]
-    [--hermes-address <hermes_address_nolus]
-    [--a-chain <configured_hermes_chain_1_id]
-    [--b-chain <configured_hermes_chain_2_id]" \
+    [--hermes-config-chain-1-addr <hermes_config_chain_1_addr>]
+    [--hermes-config-chain-1-rpc-port <hermes_config_chain_1_rpc_port>]
+    [--hermes-config-chain-1-grpc-port <hermes_config_chain_1_grpc_port>]
+    [--hermes-config-chain-2-id <hermes_config_chain_2_id]
+    [--hermes-config-chain-2-addr <hermes_config_chain_2_addr>]
+    [--hermes-config-chain-2-rpc-port <hermes_config_chain_2_rpc_port>]
+    [--hermes-config-chain-2-grpc-port <hermes_config_chain_2_grpc_port>]
+    [--hermes-mnemonic <hermes_account_mnemonic]" \
     "$0"
     exit 0
     ;;
 
   --chain-id)
     CHAIN_ID="$2"
-    shift
-    shift
-    ;;
-
-  --nolus-net-rpc)
-    NOLUS_NET_RPC="$2"
     shift
     shift
     ;;
@@ -156,26 +159,51 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --hermes-binary-dir)
-    HERMES_BINARY_DIR="$2"
+  --hermes-config-chain-1-addr)
+    HERMES_CONFIG_CHAIN_1_ADDR="$2"
     shift
     shift
     ;;
 
-  --hermes-address)
-    HERMES_ADDRESS="$2"
+  --hermes-config-chain-1-rpc-port)
+    HERMES_CONFIG_CHAIN_1_RPC_PORT="$2"
     shift
     shift
     ;;
 
-  --a-chain)
-    A_CHAIN="$2"
+  --hermes-config-chain-1-grpc-port)
+    HERMES_CONFIG_CHAIN_1_GRPC_PORT="$2"
     shift
     shift
     ;;
 
-  --b-chain)
-    B_CHAIN="$2"
+  --hermes-config-chain-2-id)
+    HERMES_CONFIG_CHAIN_2_ID="$2"
+    shift
+    shift
+    ;;
+
+
+  --hermes-config-chain-2-addr)
+    HERMES_CONFIG_CHAIN_2_ADDR="$2"
+    shift
+    shift
+    ;;
+
+  --hermes-config-chain-2-rpc-port)
+    HERMES_CONFIG_CHAIN_2_RPC_PORT="$2"
+    shift
+    shift
+    ;;
+
+  --hermes-config-chain-2-grpc-port)
+    HERMES_CONFIG_CHAIN_2_GRPC_PORT="$2"
+    shift
+    shift
+    ;;
+
+  --hermes-mnemonic)
+    HERMES_ACCOUNT_MNEMONIC="$2"
     shift
     shift
     ;;
@@ -196,10 +224,7 @@ __config_client() {
 
 verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
-verify_mandatory "$A_CHAIN" "configured hermes chain 1 id"
-verify_mandatory "$B_CHAIN" "configured hermes chain 2 id"
-verify_mandatory "$HERMES_BINARY_DIR" "hermes binary dir path"
-verify_mandatory "$HERMES_ADDRESS" "hermes address nolus"
+verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "hermes account mnemonic"
 
 rm -fr "$VALIDATORS_ROOT_DIR"
 rm -fr "$VAL_ACCOUNTS_DIR"
@@ -213,6 +238,13 @@ treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
 accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$treasury_init_tokens")
 # accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
 #                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
+
+/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$HERMES_CONFIG_CHAIN_1_ADDR" \
+                                                "$HERMES_CONFIG_CHAIN_1_RPC_PORT" "$HERMES_CONFIG_CHAIN_1_GRPC_PORT" \
+                                                "$HERMES_CONFIG_CHAIN_2_ID" "$HERMES_CONFIG_CHAIN_2_ADDR" "$HERMES_CONFIG_CHAIN_2_RPC_PORT" \
+                                                "$HERMES_CONFIG_CHAIN_2_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
+
+HERMES_BINARY_DIR="$HOME"/hermes
 
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
@@ -231,6 +263,9 @@ run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.
 wait_nolus_gets_ready "$USER_DIR"
 wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
-leaser_dex_setup "$NOLUS_NET_RPC" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" "$A_CHAIN" "$B_CHAIN"
+HERMES_ADDRESS=$(run_cmd "$USER_DIR" keys show "$HERMES_KEY" -a)
+
+leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" \
+                 "$CHAIN_ID" "$HERMES_CONFIG_CHAIN_2_ID"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
