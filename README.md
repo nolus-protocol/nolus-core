@@ -10,14 +10,43 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
 
 ### Build, configure and run a single-node locally deployed Nolus chain
 
-Make sure "nolus-money-market" repo is checked out as a sibling to this repo.
+#### Build
+
+  ```sh
+  make install
+  ```
+
+#### Init && setup the DEX parameters && run
+
+First generate the mnemonic you will use for Hermes:
 
 ```sh
-make install
-./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --a-chain <configured_hermes_a_chain_id> --b-chain <configured_hermes_b_chain_id> --hermes-address <configured_hermes_address_nolus> --hermes-binary-dir <hermes_binary_dir_path>
+nolusd keys mnemonic
+```
+
+Then recover osmosis key and use the [UI](https://faucet.osmosis.zone/#/) to get some uosmo:
+
+```sh
+osmosisd keys add hermes_key --recover
+```
+
+Init and start:
+
+```sh
+./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps>
 ```
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup, including setting the dex parameter (run `init-local-network.sh --help` for more configuration options). For more details check the [scripts README](./scripts/README.md)
+
+*Notes:
+
+* Make sure "nolus-money-market" repo is checked out as a sibling to this repo.
+
+* The Osmosis binary is required: [Follow the steps](https://gitlab-nomo.credissimo.net/nomo/wiki/-/blob/main/hermes.md#download-the-latest-osmosis-binary).
+
+* Before running the "./scripts/init-local-network.sh" again, make sure the nolusd and hermes processes are killed.
+
+* The "hermes" and "nolusd" logs are stored in ~/hermes and ~/.nolus respectively.
 
 ### Run already configured single-node
 
@@ -60,10 +89,10 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 
 ## Upgrade wasmvm
 
-- Update the Go modules
-- Update the wasmvm version in the builder Dockerfile at build/builder_spec
-- Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
-- (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
+* Update the Go modules
+* Update the wasmvm version in the builder Dockerfile at build/builder_spec
+* Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
+* (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
 
 ## Build image locally and run a full node with docker
 
@@ -87,4 +116,5 @@ docker run -d -it \
 ```
 
 *Notes:
-Make sure the genesis.json, presistent_peers.txt files in the wiki repo are for the same version of the artifact binary.
+
+* Make sure the genesis.json, presistent_peers.txt files in the wiki repo are for the same version of the artifact binary.
