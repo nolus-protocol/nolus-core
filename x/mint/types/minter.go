@@ -8,7 +8,7 @@ import (
 )
 
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
-// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens
+// afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens.
 var (
 	QuadCoef          = sdk.MustNewDecFromStr("-1.08319")
 	CubeCoef          = sdk.MustNewDecFromStr("314.871")
@@ -67,7 +67,7 @@ func ValidateMinter(minter Minter) error {
 				minter.NormTimePassed, calculatedMintedTokens)
 		}
 	} else if !calculatedMintedTokens.Equal(minter.TotalMinted) {
-		return fmt.Errorf("minted unexpected ammount of tokens for %s months: %s unls",
+		return fmt.Errorf("minted unexpected amount of tokens for %s months: %s unls",
 			minter.NormTimePassed, minter.TotalMinted)
 	}
 
@@ -87,7 +87,7 @@ func calcMintedTokens(m Minter) sdk.Uint {
 }
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
-// transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x
+// transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x.
 func CalcTokensByIntegral(x sdk.Dec) sdk.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }

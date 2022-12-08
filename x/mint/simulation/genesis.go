@@ -13,12 +13,12 @@ import (
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
-// GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60)
+// GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60).
 func GenMaxMintableNanoseconds(r *rand.Rand) sdk.Uint {
 	return sdk.NewUint(uint64(time.Second.Nanoseconds() * int64(r.Intn(59)+1)))
 }
 
-// RandomizedGenState generates a random GenesisState for mint
+// RandomizedGenState generates a random GenesisState for mint.
 func RandomizedGenState(simState *module.SimulationState) {
 	// minter
 	var maxMintableNSecs sdk.Uint

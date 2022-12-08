@@ -14,7 +14,7 @@ var HUNDRED_DEC = sdk.NewDec(100)
 // DeductTaxDecorator deducts tax by a given fee rate from the standard collected fee.
 // The tax is sent to a treasury account
 // Call next AnteHandler if tax successfully sent to treasury or no fee provided
-// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator
+// CONTRACT: Tx must implement FeeTx interface to use DeductTaxDecorator.
 type DeductTaxDecorator struct {
 	ak types.AccountKeeper
 	tk Keeper
@@ -78,6 +78,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 
 	return next(ctx, tx, simulate)
 }
+
 func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, feeCoin sdk.Coin, treasuryAddr sdk.AccAddress) error {
 	feeRate := sdk.NewDec(int64(taxKeeper.FeeRate(ctx)))
 	// if feeRate is 0 - we won't deduct any tax

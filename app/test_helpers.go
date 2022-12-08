@@ -16,7 +16,7 @@ import (
 	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
-// returns context and app with params set on account keeper
+// returns context and app with params set on account keeper.
 func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	encoding := cosmoscmd.MakeEncodingConfig(ModuleBasics)
 

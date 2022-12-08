@@ -5,9 +5,11 @@ import (
 	"testing"
 	"time"
 
+	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
+
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
 	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"

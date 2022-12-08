@@ -31,8 +31,10 @@ import (
 	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
-var NumSeeds int
-var NumTimesToRunPerSeed int
+var (
+	NumSeeds             int
+	NumTimesToRunPerSeed int
+)
 
 func init() {
 	simapp.GetSimulatorFlags()
