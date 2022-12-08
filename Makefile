@@ -143,7 +143,7 @@ examine-source-code:
 	go vet $(BUILD_FLAGS) $(PACKAGES)
 
 test-unit-cosmos:
-	./scripts/test/run-test-unit-cosmos.sh >&2
+	sh ./scripts/test/run-test-unit-cosmos.sh >&2
 
 test-unit:
 	go install gotest.tools/gotestsum@latest
