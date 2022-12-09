@@ -21,17 +21,17 @@ add_vesting_account() {
   local start_time="$4"
   local end_time="$5"
 
-  jq ". += [{ \"address\": \"$address\", \"amount\":  \"$total_amount\", 
+  jq ". += [{ \"address\": \"$address\", \"amount\":  \"$total_amount\",
             \"vesting\": {\"start-time\": \"$start_time\", \"end-time\": \"$end_time\", \"amount\": \"$vesting_amount\"}}]"
 }
 
 recover_account() {
-  local -r mnemonic="$1"
-  local -r name="anonymous"
-  local tmp_faucet_dir
-  tmp_faucet_dir="$(mktemp -d)"
-  run_cmd "$tmp_faucet_dir" keys add --recover "$name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
-  run_cmd "$tmp_faucet_dir" keys show "$name" -a --keyring-backend test
+  local -r home_dir="$1"
+  local -r mnemonic="$2"
+  local -r name="$3"
+
+  run_cmd "$home_dir" keys add --recover "$name" --keyring-backend test <<< "$mnemonic" 1>/dev/null
+  run_cmd "$home_dir" keys show "$name" -a --keyring-backend test
 }
 
 generate_account() {
