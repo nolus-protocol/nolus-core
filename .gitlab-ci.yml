@@ -91,18 +91,6 @@ build-binary:
     paths:
       - $ARTIFACT_BIN
 
-# Builds a new node image on a new version only.
-# A version is denoted with a protected tag.
-build-image:
-  stage: build
-  needs: ["prep-version:check","build-binary"]
-  extends: .kaniko
-  variables:
-    KANIKO_DOCKER_FILE: build/node_spec.Dockerfile
-    KANIKO_IMAGE: ${NOLUS_NODE_IMAGE}
-    KANIKO_IMAGE_EXISTS: ${NOLUS_IMAGE_EXIST}
-    GITHUB_WIKI_ACCESS_TOKEN: ${GITHUB_WIKI_ACCESS_TOKEN}
-
 test-fuzzer:on-schedule:
   extends: .go-scheduled-test
   script:
