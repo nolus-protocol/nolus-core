@@ -155,6 +155,7 @@ __modify_gov_slashing_and_staking_params_() {
     jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
     | jq '.app_state["gov"]["voting_params"]["voting_period"]="43200s"' \
     | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="10000"' \
+    | jq '.app_state["slashing"]["params"]["min_signed_per_window"]="0.050000000000000000"' \
     | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
     | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
