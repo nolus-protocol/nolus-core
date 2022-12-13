@@ -94,27 +94,6 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 * Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
 * (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
 
-## Build image locally and run a full node with docker
+## Run a full node with docker
 
-In order to build the image, you should put the artifact binary in the nolus-core directory and rename it to `nolus.tar.gz`.
-You should use the nolus version used in the testnet-rila, current is v0.1.37(as of November 8th 2022).
-The artifact binary is in the git pipeline under the `build-binary` command.
-
-### Testnet rila
-
-```sh
-ACCESS_TOKEN=<get token for gitlab wiki access>
-docker build \
-  --build-arg ACCESS_TOKEN=$ACCESS_TOKEN \
-  -f build/node_spec.Dockerfile \
-  -t rila-testnet-image .
-
-docker run -d -it \
-  --name testnet-rila \
-  -v nolusDataVol:/.nolus/data \
-  rila-testnet-image
-```
-
-*Notes:
-
-* Make sure the genesis.json, presistent_peers.txt files in the wiki repo are for the same version of the artifact binary.
+https://github.com/Nolus-Protocol/nolus-networks
