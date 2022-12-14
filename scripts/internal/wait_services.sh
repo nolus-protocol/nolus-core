@@ -21,10 +21,7 @@ wait_hermes_config_gets_healthy() {
   local -r hermes_binary_dir="$1"
   local -r hermes_connection_warn="Reason: error in underlying transport when making gRPC call"
   local -r tmp_file="hermes_connection_check.txt"
-  local hermes_connection_check=""
-
-  "$hermes_binary_dir"/hermes health-check &>"$tmp_file"
-  grep -q "$hermes_connection_warn" "$tmp_file" && hermes_connection_check="NOT_STARTED"
+  local hermes_connection_check="NOT_STARTED"
 
   while [ "$hermes_connection_check" == "NOT_STARTED"  ]
   do
