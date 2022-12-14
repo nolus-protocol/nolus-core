@@ -29,6 +29,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
 )
 
 var (
@@ -98,6 +99,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			newApp.(*app.App).MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 			newApp.(*app.App).AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
 			newApp.(*app.App).BankKeeper.SetParams(ctx, banktypes.DefaultParams())
+			newApp.(*app.App).FeeKeeper.SetParams(ctx, feetypes.DefaultParams())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",

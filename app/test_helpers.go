@@ -13,6 +13,7 @@ import (
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
 	dbm "github.com/tendermint/tm-db"
 )
 
@@ -35,6 +36,7 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 	testapp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
 	testapp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
+	testapp.FeeKeeper.SetParams(ctx, feetypes.DefaultParams())
 
 	return testapp, ctx
 }
