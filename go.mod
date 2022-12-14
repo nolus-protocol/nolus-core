@@ -134,4 +134,6 @@ replace (
 	// For more info https://github.com/CosmWasm/wasmd/blob/d63bea442bedf5b3055f3821472c7e6cafc3d813/go.mod#L131
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
+	// Support of latest Ledger Nano S Plus
+	github.com/cosmos/ledger-go => github.com/cosmos/ledger-go v0.9.3
 )
