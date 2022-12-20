@@ -32,17 +32,18 @@ jobs:
 
     steps:
     - name: Check if version exists
+      if: github.ref_protected  
       id: prep
       run: |
-        if [[ $GITHUB_REF_PROTECTED == "true" ]]  &&  [[ -n "$IMAGE_TAG" ]];
+        if [[ -n "$IMAGE_TAG" ]];
         then
           echo "build-new-version=true" >> $GITHUB_OUTPUT
         fi
 
   # Packs deploy scripts.
-  prep-deploy:
+  prep-scripts:
     if: needs.prep-version.outputs.build-new-version
-    name: Prepare deploy
+    name: Prepare scripts
     runs-on: ubuntu-latest
     needs: prep-version
 
@@ -129,7 +130,7 @@ jobs:
     if: needs.prep-version.outputs.build-new-version
     name: Setup dev network
     runs-on: ubuntu-latest
-    needs: [build-binary, prep-deploy, prep-version, download-wasm]
+    needs: [build-binary, prep-scripts, prep-version, download-wasm]
     container: amazon/aws-cli
     environment: dev chain
 
