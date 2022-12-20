@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // GenRandomFeeRate generates random FeeRate in range [0-50].

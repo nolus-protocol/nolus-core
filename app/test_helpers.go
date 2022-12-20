@@ -1,19 +1,19 @@
 package app
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/spm/cosmoscmd"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
 
 	"github.com/tendermint/tendermint/libs/log"
 
+	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	dbm "github.com/tendermint/tm-db"
-	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
-	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // returns context and app with params set on account keeper.

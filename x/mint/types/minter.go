@@ -3,8 +3,8 @@ package types
 import (
 	"fmt"
 
+	"github.com/Nolus-Protocol/nolus-core/custom/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 )
 
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96

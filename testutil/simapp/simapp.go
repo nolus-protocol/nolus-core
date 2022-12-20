@@ -19,7 +19,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app"
 )
 
 // New creates application instance with in-memory database and disabled logging.

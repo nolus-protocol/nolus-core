@@ -3,9 +3,9 @@ package types_test
 import (
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

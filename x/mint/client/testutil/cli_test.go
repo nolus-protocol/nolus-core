@@ -3,8 +3,8 @@ package testutil
 import (
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 	"github.com/stretchr/testify/suite"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/network"
 )
 
 func TestIntegrationTestSuite(t *testing.T) {

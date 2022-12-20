@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
-	nolusapp "gitlab-nomo.credissimo.net/nomo/nolus-core/app"
+	nolusapp "github.com/Nolus-Protocol/nolus-core/app"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"

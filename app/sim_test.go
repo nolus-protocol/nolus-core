@@ -25,10 +25,10 @@ import (
 	tmdb "github.com/tendermint/tm-db"
 
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
-	taxtypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 var (

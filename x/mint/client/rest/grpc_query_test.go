@@ -5,14 +5,14 @@ import (
 	"testing"
 	"time"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/network"
+	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/suite"
 
-	minttypes "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 type IntegrationTestSuite struct {

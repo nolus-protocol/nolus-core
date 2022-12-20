@@ -4,15 +4,15 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/custom/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/kv"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 func TestDecodeStore(t *testing.T) {

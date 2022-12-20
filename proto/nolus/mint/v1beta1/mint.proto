@@ -3,7 +3,7 @@ package nolus.mint.v1beta1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/mint/types";
 
 // Minter represents the minting state.
 message Minter {

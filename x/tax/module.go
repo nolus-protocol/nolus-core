@@ -11,16 +11,16 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/client/cli"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/client/cli"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 var (

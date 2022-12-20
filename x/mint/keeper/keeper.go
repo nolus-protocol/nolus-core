@@ -3,10 +3,10 @@ package keeper
 import (
 	"github.com/tendermint/tendermint/libs/log"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // Keeper of the mint store.

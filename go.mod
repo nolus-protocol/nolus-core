@@ -1,4 +1,4 @@
-module gitlab-nomo.credissimo.net/nomo/nolus-core
+module github.com/Nolus-Protocol/nolus-core
 
 go 1.18
 
@@ -131,9 +131,9 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.1.7-0.20210622111912-ef00f8ac3d76
 	// For more info https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.10
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
+	// Support of latest Ledger Nano S Plus
+	github.com/cosmos/ledger-go => github.com/cosmos/ledger-go v0.9.3
 	// For more info https://github.com/CosmWasm/wasmd/blob/d63bea442bedf5b3055f3821472c7e6cafc3d813/go.mod#L131
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	google.golang.org/grpc => google.golang.org/grpc v1.33.2
-	// Support of latest Ledger Nano S Plus
-	github.com/cosmos/ledger-go => github.com/cosmos/ledger-go v0.9.3
 )

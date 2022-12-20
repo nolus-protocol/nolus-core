@@ -3,8 +3,8 @@ package keeper
 import (
 	"context"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

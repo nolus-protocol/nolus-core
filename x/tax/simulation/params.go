@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )

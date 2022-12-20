@@ -1,9 +1,9 @@
 package tax
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // InitGenesis initializes the capability module's state from a provided genesis

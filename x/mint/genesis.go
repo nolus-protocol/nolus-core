@@ -1,9 +1,9 @@
 package mint
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // InitGenesis new mint genesis.

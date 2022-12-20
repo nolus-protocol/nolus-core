@@ -7,12 +7,12 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.

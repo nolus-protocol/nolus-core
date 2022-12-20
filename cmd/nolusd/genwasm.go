@@ -1,10 +1,10 @@
 package main
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
 	"github.com/tendermint/spm/cosmoscmd"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"

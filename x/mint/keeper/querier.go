@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

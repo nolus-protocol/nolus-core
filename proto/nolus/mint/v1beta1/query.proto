@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "nolus/mint/v1beta1/mint.proto";
 
-option go_package = "gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/mint/types";
 
 // Query provides defines the gRPC querier service.
 service Query {

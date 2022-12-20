@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/gorilla/mux"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/types/rest"

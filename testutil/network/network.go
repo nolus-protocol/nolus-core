@@ -18,8 +18,8 @@ import (
 	tmrand "github.com/tendermint/tendermint/libs/rand"
 	tmdb "github.com/tendermint/tm-db"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
+	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 type (

@@ -1,10 +1,10 @@
 package keeper_test
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	abci "github.com/tendermint/tendermint/abci/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 func (s *KeeperTestSuite) TestQueryParams() {
