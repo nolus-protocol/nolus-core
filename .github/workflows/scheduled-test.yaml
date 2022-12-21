@@ -16,21 +16,3 @@ jobs:
       
       - run: |
           make test-fuzz
-
-  test-unit-cosmos:
-    name: Run cosmos-sdk tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-go@v3
-        with:
-          go-version: 1.18
-      
-      - uses: actions/checkout@v3
-      
-      - name: Pull project dependencies
-        run: go mod tidy
-
-      - name: Run cosmos-sdk tests
-        shell: bash
-        run: |
-          ./scripts/test/run-test-unit-cosmos.sh >&2
