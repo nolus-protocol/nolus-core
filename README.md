@@ -1,9 +1,12 @@
 # NOLUS
+<div align="center">
+<br /><p align="center"><img alt="nolus-core" src="docs/nolus-core-logo.svg" width="100"/></p><br />
 
 [![Lint](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml)
 [![Test](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml)
 
-**nolus** is a blockchain built using Cosmos SDK and Tendermint.
+**Nolus** is a blockchain built using Cosmos SDK and Tendermint.
+</div>
 
 ## Prerequisites
 
