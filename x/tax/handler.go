@@ -3,10 +3,10 @@ package tax
 import (
 	"fmt"
 
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // NewHandler ...

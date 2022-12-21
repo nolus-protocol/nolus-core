@@ -3,12 +3,12 @@ package tax_test
 import (
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
+	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
+	"github.com/Nolus-Protocol/nolus-core/x/tax"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	keepertest "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/nullify"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGenesis(t *testing.T) {

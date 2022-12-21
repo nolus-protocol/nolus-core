@@ -4,8 +4,8 @@ import (
 	"math/rand"
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/simulation"
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
 )
 
 func TestParamChanges(t *testing.T) {

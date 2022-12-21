@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/custom/util"
+	"github.com/Nolus-Protocol/nolus-core/custom/util"
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 var (

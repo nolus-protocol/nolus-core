@@ -8,9 +8,9 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60).

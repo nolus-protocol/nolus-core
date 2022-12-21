@@ -4,13 +4,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
+	"github.com/Nolus-Protocol/nolus-core/testutil/simapp"
+	"github.com/Nolus-Protocol/nolus-core/x/mint"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/stretchr/testify/require"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/nullify"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 func TestGenesis(t *testing.T) {

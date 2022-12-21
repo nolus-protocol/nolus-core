@@ -6,9 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	simulationapp "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 var (

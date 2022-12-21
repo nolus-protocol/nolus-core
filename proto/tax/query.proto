@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "tax/params.proto";
 
-option go_package = "gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/types";
 
 // Query defines the gRPC querier service.
 service Query {

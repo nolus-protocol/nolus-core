@@ -14,8 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/simulation"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.

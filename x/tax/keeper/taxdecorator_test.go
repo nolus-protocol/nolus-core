@@ -7,8 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 func (suite *KeeperTestSuite) TestTaxDecorator() {

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 var (

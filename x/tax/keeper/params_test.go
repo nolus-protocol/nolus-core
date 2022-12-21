@@ -3,9 +3,9 @@ package keeper_test
 import (
 	"testing"
 
+	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/stretchr/testify/require"
-	testkeeper "gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/keeper"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 func TestGetParams(t *testing.T) {

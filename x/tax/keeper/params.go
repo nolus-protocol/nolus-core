@@ -1,8 +1,8 @@
 package keeper
 
 import (
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/tax/types"
 )
 
 // GetParams get all parameters as types.Params.

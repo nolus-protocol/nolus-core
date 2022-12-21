@@ -4,15 +4,15 @@ import (
 	"context"
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/suite"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/nullify"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint/types"
 )
 
 // TestAccount represents a client Account that can be used in unit tests.

@@ -10,9 +10,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/app/params"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/testutil/simapp"
-	"gitlab-nomo.credissimo.net/nomo/nolus-core/x/mint"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	"github.com/Nolus-Protocol/nolus-core/testutil/simapp"
+	"github.com/Nolus-Protocol/nolus-core/x/mint"
 
 	"github.com/stretchr/testify/require"
 )
