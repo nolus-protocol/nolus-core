@@ -17,7 +17,6 @@ default_target: all
 .PHONY: default_target
 
 # process build tags
-
 build_tags = netgo
 ifeq ($(LEDGER_ENABLED),true)
 	ifeq ($(OS),Windows_NT)
@@ -112,49 +111,17 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
-###############################################################################
-###                              Documentation                              ###
-###############################################################################
-.PHONY: all build install go.sum fuzz
+.PHONY: all install
+all: build install test-fuzz test-unit-cosmos
 
-all: check-format build install fuzz test-unit-cosmos
+###############################################################################
+###                                  Build                                  ###
+###############################################################################
+.PHONY: build go.sum
 
 BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
-
-lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-	golangci-lint run --verbose
-
-fuzz:
-	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
-		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
-		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
-
-check-format:
-	$(SHELL) ./scripts/check-format.sh
-
-static-code-check:
-	go install honnef.co/go/tools/cmd/staticcheck@latest
-	$(GOPATH)/bin/staticcheck -tags "muslc" ./...
-
-examine-source-code:
-	go vet $(BUILD_FLAGS) $(PACKAGES)
-
-test-unit-cosmos:
-	sh ./scripts/test/run-test-unit-cosmos.sh >&2
-
-test-unit:
-	go install gotest.tools/gotestsum@latest
-	$(GOPATH)/bin/gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
-
-test-unit-coverage: ## Generate global code coverage report
-	go install github.com/boumenot/gocover-cobertura@latest
-	$(GOPATH)/bin/gocover-cobertura < cover.out > coverage.xml
-
-test-unit-coverage-report: ## Generate global code coverage report in HTML
-	sh  ./scripts/test/coverage.sh html;
 
 $(BUILD_TARGETS): go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
@@ -166,7 +133,38 @@ go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	@go mod verify
 
-.PHONY: all build install go.sum fuzz test-unit-cosmos check-format
+###############################################################################
+###                                  Lint                                   ###
+###############################################################################
+.PHONY: lint
+
+lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run --verbose
+
+###############################################################################
+###                                  Test                                   ###
+###############################################################################
+.PHONY: test-fuzz test-unit-cosmos test-unit test-unit-coverage test-unit-coverage-report
+
+test-fuzz:
+	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
+		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
+		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
+
+test-unit-cosmos:
+	./scripts/test/run-test-unit-cosmos.sh >&2
+
+test-unit:
+	go install gotest.tools/gotestsum@latest
+	gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
+
+test-unit-coverage: ## Generate global code coverage report
+	go install github.com/boumenot/gocover-cobertura@latest
+	gocover-cobertura < cover.out > coverage.xml
+
+test-unit-coverage-report: ## Generate global code coverage report in HTML
+	sh  ./scripts/test/coverage.sh html;
 
 ###############################################################################
 ###                                  Proto                                  ###
@@ -174,6 +172,8 @@ go.sum: go.mod
 protoVer=v0.7
 protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
 containerProtoGen=nolus-proto-gen-$(protoVer)
+
+.PHONY: proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
