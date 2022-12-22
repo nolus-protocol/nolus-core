@@ -169,8 +169,8 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=v0.7
-protoImageName=tendermintdev/sdk-proto-gen:$(protoVer)
+protoVer=v0.8
+protoImageName=osmolabs/osmo-proto-gen:$(protoVer)
 containerProtoGen=nolus-proto-gen-$(protoVer)
 
 .PHONY: proto-gen
