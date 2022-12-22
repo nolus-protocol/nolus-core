@@ -1,4 +1,4 @@
-name: Cosmos Tests
+name: Test Cosmos
 on:
   schedule:
     - cron: '0 3 * * *'
