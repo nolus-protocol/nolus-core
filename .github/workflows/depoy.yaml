@@ -14,13 +14,18 @@ env:
   VERSION_TAG: ${{ github.ref_name }}
   IMAGE_DOCKERFILE: "./build/builder_spec.Dockerfile"
   ACCOUNTS_DIR: "accounts"
+  SMART_CONTRACTS_ADMIN_ADDR: "nolus15jv5h5wjf3haljzfk5vcxx86n33rswsm7u3jgn"
+  NLS_DENOM: "unls"
+  STABLE_BANK_SYMBOL_DEV: "ibc/7FBDBEEEBA9C50C4BCDF7BF438EAB99E64360833D240B32655C96E319559E911"
+  STABLE_TICKER_DEV: "USDC"
+  AWS_REGION: "eu-west-1"
+
   CONTRACTS_INFO_FILE: "contracts-info.json"
   CONTRACTS_REPO: "github.com/Nolus-Protocol/nolus-money-market"
-  SMART_CONTRACTS_ADMIN_ADDR: "nolus15jv5h5wjf3haljzfk5vcxx86n33rswsm7u3jgn" 
-  FAUCET_TOKENS_DEV: "1000000000000$NLS_DENOM,1000000000000$STABLE_BANK_SYMBOL_DEV"
-  STABLE_TICKER_DEV: "USDC"
   CONTRACTS_VERSION: "v0.2.9"
-  
+  CONTRACTS_ZIP: "artifacts.zip"
+  CONTRACTS_DIR: "artifacts"
+
 jobs:
   # Packs deploy scripts.
   prep-scripts:
@@ -60,6 +65,9 @@ jobs:
         make build
         echo "Ensuring binary is statically linked ..."
         file target/release/nolusd | grep "statically linked"
+        
+    - name: Prepare binary tar
+      run: |
         tar -C target/release/ -czvf $ARTIFACT_BIN .
 
     - name: Archive binary
@@ -84,13 +92,19 @@ jobs:
       
       - name: Download wasm
         run: |
-          gh release download --output wasm --repo $CONTRACTS_REPO $CONTRACTS_VERSION
+          gh release download --repo $CONTRACTS_REPO $CONTRACTS_VERSION
+
+      - name: Unzip Contracts Artifact
+        uses: montudor/action-zip@v1
+        with:
+          args: unzip -qq ${{ env.CONTRACTS_ZIP }} -d ${{ env.CONTRACTS_DIR }}
+
 
       - name: Archive wasm
         uses: actions/upload-artifact@v3
         with:
           name: wasm-${{ env.CONTRACTS_VERSION }}
-          path: wasm-${{ env.CONTRACTS_VERSION }}
+          path: ${{ env.CONTRACTS_DIR }}
 
   # Deploy a new version of the dev network.
   setup-dev-network:
@@ -101,6 +115,19 @@ jobs:
     environment: dev chain
 
     steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install tools
+        run: |
+          yum install -y tar gzip unzip jq git
+
+      - uses: actions/checkout@v3
+
       - name: Download scripts
         uses: actions/download-artifact@v3
         with:
@@ -115,23 +142,27 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nolusd-${{ env.VERSION_TAG }}
-        
+          
       - name: Setup dev network
         run: |
           set -euox pipefail
-          yum install -y tar gzip unzip jq
           tar -xvf $ARTIFACT_BIN
           export PATH="$(pwd)":$PATH
 
-          ./scripts/init-dev-network.sh --artifact-bin $ARTIFACT_BIN --artifact-scripts $ARTIFACT_SCRIPTS
-                --chain-id nolus-dev-1 -v 3 --validator-accounts-dir "$ACCOUNTS_DIR"
-                --wasm-script-path "artifacts" --wasm-code-path "artifacts"
-                --contracts-owner-addr "$SMART_CONTRACTS_ADMIN_ADDR"
-                --treasury-nls-u128 "1000000000000"
-                --faucet-mnemonic "${{ secrets.FAUCET_MNEMONIC_DEV }}"
-                --faucet-tokens "$FAUCET_TOKENS_DEV"
-                --lpp-native "$STABLE_TICKER_DEV"
-                --contracts-info-file $CONTRACTS_INFO_FILE
+          ./scripts/init-dev-network.sh \
+            -v 3 \
+            --artifact-bin "$ARTIFACT_BIN" \
+            --artifact-scripts "$ARTIFACT_SCRIPTS" \
+            --chain-id "nolus-dev-1" \
+            --validator-accounts-dir "$ACCOUNTS_DIR" \
+            --wasm-script-path "$CONTRACTS_DIR" \
+            --wasm-code-path "$CONTRACTS_DIR" \
+            --contracts-owner-addr "$SMART_CONTRACTS_ADMIN_ADDR" \
+            --treasury-nls-u128 "1000000000000" \
+            --faucet-mnemonic "${{ secrets.FAUCET_MNEMONIC_DEV }}" \
+            --faucet-tokens "1000000000000$NLS_DENOM,1000000000000$STABLE_BANK_SYMBOL_DEV" \
+            --lpp-native "$STABLE_TICKER_DEV" \
+            --contracts-info-file "$CONTRACTS_INFO_FILE"
 
       - name: Archive dev net data
         uses: actions/upload-artifact@v3
