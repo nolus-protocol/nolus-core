@@ -28,10 +28,9 @@ ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
 
 NATIVE_CURRENCY="unls"
-TAG=$(git describe --tags)
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
-CHAIN_ID="nolus-dev-$TAG"
+CHAIN_ID=""
 WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
 CONTRACTS_OWNER_ADDR=""
@@ -176,6 +175,7 @@ verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 verify_mandatory "$CONTRACTS_OWNER_ADDR" "Contracts owner address"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 verify_mandatory "$LPP_NATIVE" "LPP native currency"
+verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 
