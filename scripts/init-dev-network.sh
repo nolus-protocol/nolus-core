@@ -39,6 +39,7 @@ FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
+GOV_VOTING_PERIOD="3600s"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -62,7 +63,8 @@ while [[ $# -gt 0 ]]; do
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]
     [--lpp-native <currency>]
-    [--contracts-info-file <contracts_info_file>]" \
+    [--contracts-info-file <contracts_info_file>]
+    [--gov-voting-period <voting_period>]" \
      "$0"
     exit 0
     ;;
@@ -160,6 +162,13 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+
+  --gov-voting-period)
+    GOV_VOTING_PERIOD="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -194,6 +203,7 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$CONTRACTS_OWNER_ADDR" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE"
+              "$CONTRACTS_OWNER_ADDR" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
+              "$GOV_VOTING_PERIOD"
 
 start_validators "$VALIDATORS"

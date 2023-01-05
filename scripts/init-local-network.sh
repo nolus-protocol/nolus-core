@@ -47,6 +47,8 @@ HERMES_ACCOUNT_MNEMONIC=""
 
 NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
 
+GOV_VOTING_PERIOD="900s"
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
@@ -67,6 +69,7 @@ while [[ $# -gt 0 ]]; do
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
     [--lpp-native <lpp_native>]
+    [--gov-voting-period <voting_period>]
     [--user-dir <client_user_dir>]
     [--dex-network-id <dex_network_id]
     [--dex-network-addr <dex_network_addr>]
@@ -153,6 +156,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --gov-voting-period)
+    GOV_VOTING_PERIOD="$2"
+    shift
+    shift
+    ;;
+
   --user-dir)
     USER_DIR="$2"
     shift
@@ -221,13 +230,6 @@ accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$tr
 # accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
 #                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
-/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
-                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
-                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
-                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
-
-HERMES_BINARY_DIR="$HOME"/hermes
-
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 
@@ -236,11 +238,19 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
               "$contracts_owner_addr" "$TREASURY_NLS_U128" \
-              "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE"
+              "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE" \
+              "$GOV_VOTING_PERIOD"
 
 __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
+
+/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
+                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
+                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
+
+HERMES_BINARY_DIR="$HOME"/hermes
 
 wait_nolus_gets_ready "$USER_DIR"
 wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"

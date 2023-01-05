@@ -33,6 +33,7 @@ generate_genesis() {
   local -r node_id_and_val_pubkeys="${11}"
   local -r lpp_native="${12}"
   local -r contracts_info_file="${13}"
+  local -r gov_voting_period="${14}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -51,7 +52,7 @@ generate_genesis() {
   leaser_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
-  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr")
+  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr" "$gov_voting_period")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
@@ -109,6 +110,7 @@ __generate_proto_genesis_no_wasm() {
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
   local -r leaser_addr="$5"
+  local -r gov_voting_period="$6"
 
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
@@ -118,7 +120,8 @@ __generate_proto_genesis_no_wasm() {
   __set_token_denominations "$genesis_file" "$currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
   __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
-  __modify_gov_slashing_and_staking_params_ "$genesis_file"
+  __set_gov_parameters "$genesis_file" "$gov_voting_period"
+  __modify_slashing_and_staking_params "$genesis_file"
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
@@ -144,21 +147,6 @@ __integrate_genesis_txs() {
   }
 
   run_cmd "$genesis_home_dir" collect-gentxs --gentx-dir "$txs_dir"
-}
-
-__modify_gov_slashing_and_staking_params_() {
-  local genesis_file="$1"
-
-  local genesis_tmp_file="$genesis_file".tmp
-
-  < "$genesis_file" \
-    jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
-    | jq '.app_state["gov"]["voting_params"]["voting_period"]="43200s"' \
-    | jq '.app_state["slashing"]["params"]["signed_blocks_window"]="10000"' \
-    | jq '.app_state["slashing"]["params"]["min_signed_per_window"]="0.050000000000000000"' \
-    | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
-    | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
-  mv "$genesis_tmp_file" "$genesis_file"
 }
 
 __set_token_denominations() {
@@ -197,6 +185,31 @@ __set_wasm_permission_params() {
     jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
     | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$allowed_addr"'"' \
     | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="Everybody"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+__set_gov_parameters() {
+  local genesis_file="$1"
+  local gov_voting_period="$2"
+
+  local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
+    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$gov_voting_period"'"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+__modify_slashing_and_staking_params() {
+  local genesis_file="$1"
+
+  local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["slashing"]["params"]["signed_blocks_window"]="10000"' \
+    | jq '.app_state["slashing"]["params"]["min_signed_per_window"]="0.050000000000000000"' \
+    | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
+    | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 

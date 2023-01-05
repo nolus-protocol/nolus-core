@@ -27,6 +27,7 @@ __print_usage() {
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
     [--lpp-native <lpp_native>]
+    [--gov-voting-period <voting_period>]
     [-o|--output <genesis_file_path>]" \
      "$1"
 }
@@ -46,6 +47,7 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 OUTPUT_FILE=""
 LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
+GOV_VOTING_PERIOD="43200s"
 
 if [[ $# -lt 1 ]]; then
   echo "Missing command!"
@@ -137,6 +139,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --gov-voting-period)
+    GOV_VOTING_PERIOD="$2"
+    shift
+    shift
+    ;;
+
   -o | --output)
     OUTPUT_FILE="$2"
     shift
@@ -166,7 +174,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
                                   "$WASM_CODE_PATH" "$CONTRACTS_OWNER_ADDR" "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
-                                  "$CONTRACTS_INFO_FILE")
+                                  "$CONTRACTS_INFO_FILE" "$GOV_VOTING_PERIOD")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #
