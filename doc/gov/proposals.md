@@ -37,3 +37,24 @@ After you had voted you can only wait voting period's end to get the result of p
 ````shell
 nolusd query gov proposal [proposal-id]
 ````
+
+## Note
+Changes to the gov module are different from the other kinds of parameter changes because gov has subkeys.
+Notice that there is no underscore in votingparams (in the genesis this parameter is voting_params and it's value is in seconds like this: 500s). 
+We cant use same format(500s) in gov proposals, we must specify the period in *nanoseconds*.
+
+Example .json file for starting a gov proposal to change voting period to 1 hour (3600000000000nanoseconds=1hour):
+````shell
+ {
+    "title": "Decrease Voting Period",
+    "description": "decrease voting period time",
+    "changes": [
+      {
+        "subspace": "gov",
+        "key": "votingparams",
+        "value": {"voting_period":"3600000000000"}
+      }
+    ],
+    "deposit": "10000000unls"
+ }
+ ````
