@@ -34,7 +34,6 @@ RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 LPP_NATIVE_TICKER="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
-HERMES_KEY="hermes"
 
 NOLUS_NETWORK_ADDR="127.0.0.1"
 NOLUS_NETWORK_RPC_PORT="26612"
@@ -213,6 +212,19 @@ __config_client() {
   run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
 }
 
+__nolus_hermes_address() {
+  local -r hermes_binary_dir="$1"
+  local -r chain_id="$2"
+
+  local address
+  address="$("$hermes_binary_dir"/hermes keys list --chain "$chain_id")"
+  # Look for 'Parameter Expansion' at https://linux.die.net/man/1/bash
+  # First strip off the prefix
+  address="${address#*nolus (}"
+  # Then the suffix
+  echo "${address%)}"
+}
+
 verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "hermes account mnemonic"
@@ -245,19 +257,19 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
                                                 "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
                                                 "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
-                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC" "$HERMES_KEY"
+                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC"
 
 HERMES_BINARY_DIR="$HOME"/hermes
 
 wait_nolus_gets_ready "$USER_DIR"
 wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
-HERMES_ADDRESS=$(run_cmd "$USER_DIR" keys show "$HERMES_KEY" -a)
+NOLUS_HERMES_ADDRESS=$(__nolus_hermes_address "$HERMES_BINARY_DIR" "$CHAIN_ID")
 
-leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$HERMES_ADDRESS" \
+leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$NOLUS_HERMES_ADDRESS" \
                  "$CHAIN_ID" "$DEX_NETWORK_ID"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;

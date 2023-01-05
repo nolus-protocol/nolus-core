@@ -2,7 +2,6 @@
 # Install and Configure Hermes
 #
 # arg: Hermes working directory path, mandatory
-# arg: Hermes working directory path, mandatory
 # arg: chain1 id, mandatory
 # arg: chain1 IP address, mandatory
 # arg: chain1 RPC port, mandatory
@@ -20,17 +19,15 @@ source "$SCRIPTS_DIR"/remote/lib/lib.sh
 source "$SCRIPTS_DIR"/common/cmd.sh
 
 declare -r hermes_root="$1"
-declare -r nolus_root="$2"
-declare -r chain1id="$3"
-declare -r chain1IpAddr="$4"
-declare -r chain1rpcPort="$5"
-declare -r chain1grpcPort="$6"
-declare -r chain2id="$7"
-declare -r chain2IpAddr="$8"
-declare -r chain2rpcPort="$9"
-declare -r chain2grpcPort="${10}"
-declare -r hermes_mnemonic="${11}"
-declare -r hermes_key="${12}"
+declare -r chain1id="$2"
+declare -r chain1IpAddr="$3"
+declare -r chain1rpcPort="$4"
+declare -r chain1grpcPort="$5"
+declare -r chain2id="$6"
+declare -r chain2IpAddr="$7"
+declare -r chain2rpcPort="$8"
+declare -r chain2grpcPort="$9"
+declare -r hermes_mnemonic="${10}"
 
 # Install
 
@@ -102,14 +99,8 @@ update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"10days"'
 update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 
 # Accounts setup
-
 declare -r hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
-touch "$hermes_mnemonic_file".tmp
-echo "$hermes_mnemonic" > "$hermes_mnemonic_file".tmp
-
-run_cmd "$nolus_root"/.nolus keys add --recover "$hermes_key" --keyring-backend "test" < "$hermes_mnemonic_file".tmp
-
-mv "$hermes_mnemonic_file".tmp "$hermes_mnemonic_file"
+echo "$hermes_mnemonic" > "$hermes_mnemonic_file"
 
 "$hermes_binary_dir"/hermes keys add --chain "$chain1id" --mnemonic-file "$hermes_mnemonic_file"
 "$hermes_binary_dir"/hermes keys add --chain "$chain2id" --mnemonic-file "$hermes_mnemonic_file"
