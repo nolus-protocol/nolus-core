@@ -52,6 +52,7 @@ update_app "$config_dir" '."grpc-web"."enable"' "false" >/dev/null
 update_app "$config_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
 update_app "$config_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$config_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
+update_app "$config_dir" '."wasm"."query_gas_limit"' "350000" >/dev/null
 
 update_config "$config_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$config_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null
