@@ -242,6 +242,11 @@ accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$tr
 # accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
 #                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
+/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
+                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
+                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC"
+
 source "$SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 
@@ -257,13 +262,7 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
-                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
-                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
-                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC"
-
 HERMES_BINARY_DIR="$HOME"/hermes
-
 wait_nolus_gets_ready "$USER_DIR"
 wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
