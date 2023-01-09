@@ -1,12 +1,12 @@
 #!/bin/bash
 set -euxo pipefail
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-source "$SCRIPT_DIR"/common/cmd.sh
-source "$SCRIPT_DIR"/internal/accounts.sh
-source "$SCRIPT_DIR"/internal/verify.sh
-source "$SCRIPT_DIR"/internal/wait_services.sh
-source "$SCRIPT_DIR"/internal/leaser-dex-setup.sh
+INIT_LOCAL_NETWORK_SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/common/cmd.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/accounts.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/verify.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/wait_services.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/leaser-dex-setup.sh
 
 cleanup() {
   cleanup_init_network_sh
@@ -23,8 +23,8 @@ NATIVE_CURRENCY="unls"
 TAG=$(git describe --tags)
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
-WASM_SCRIPT_PATH="$SCRIPT_DIR/../../nolus-money-market/scripts"
-WASM_CODE_PATH="$SCRIPT_DIR/../../nolus-money-market/artifacts"
+WASM_SCRIPT_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/scripts"
+WASM_CODE_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts"
 # Tags would look like (v0.1.37-60-g321dbd1), we want to cut the last part(abbreviated object name)
 VERSION=$(cut -f1,2 -d'-' <<< "$TAG")
 # date +%s returns the number of seconds since the epoch
@@ -242,10 +242,10 @@ accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$tr
 # accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
 #                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
-source "$SCRIPT_DIR"/internal/setup-validator-local.sh
-init_setup_validator_local_sh "$SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/setup-validator-local.sh
+init_setup_validator_local_sh "$INIT_LOCAL_NETWORK_SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 
-source "$SCRIPT_DIR"/internal/init-network.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
@@ -257,7 +257,7 @@ __config_client
 
 run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-/bin/bash "$SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+/bin/bash "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
                                                 "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
                                                 "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
                                                 "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC"

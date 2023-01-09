@@ -66,8 +66,8 @@ update_config "$hermes_config_dir" '.chains[0]."account_prefix"' '"nolus"'
 update_config "$hermes_config_dir" '.chains[0]."key_name"' '"'"$chain1keyName"'"'
 update_config "$hermes_config_dir" '.chains[0]."address_type"' '{ derivation : "cosmos" }'
 update_config "$hermes_config_dir" '.chains[0]."store_prefix"' '"ibc"'
-update_config "$hermes_config_dir" '.chains[0]."default_gas"' 100000
-update_config "$hermes_config_dir" '.chains[0]."max_gas"' 400000
+update_config "$hermes_config_dir" '.chains[0]."default_gas"' 1000000
+update_config "$hermes_config_dir" '.chains[0]."max_gas"' 4000000
 update_config "$hermes_config_dir" '.chains[0]."gas_price"' '{ price : 0.0025, denom : "unls" }'
 update_config "$hermes_config_dir" '.chains[0]."gas_multiplier"' 1.1
 update_config "$hermes_config_dir" '.chains[0]."max_msg_num"' 30
