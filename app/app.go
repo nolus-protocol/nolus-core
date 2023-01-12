@@ -78,9 +78,6 @@ import (
 	icacontroller "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
-	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
-	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
-	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
@@ -310,7 +307,6 @@ type App struct {
 	UpgradeKeeper       upgradekeeper.Keeper
 	ParamsKeeper        paramskeeper.Keeper
 	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAHostKeeper       icahostkeeper.Keeper
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      wrapkeeper.KeeperTransferWrapper
@@ -382,9 +378,9 @@ func New(
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey,
 		upgradetypes.StoreKey, evidencetypes.StoreKey, ibctransfertypes.StoreKey,
-		taxmoduletypes.StoreKey, icacontrollertypes.StoreKey, icahosttypes.StoreKey,
-		capabilitytypes.StoreKey, interchainqueriestypes.StoreKey, contractmanagermoduletypes.StoreKey,
-		interchaintxstypes.StoreKey, wasm.StoreKey, feetypes.StoreKey, adminmodulemoduletypes.StoreKey,
+		taxmoduletypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey,
+		interchainqueriestypes.StoreKey, contractmanagermoduletypes.StoreKey, interchaintxstypes.StoreKey,
+		wasm.StoreKey, feetypes.StoreKey, adminmodulemoduletypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, feetypes.MemStoreKey)
@@ -417,7 +413,6 @@ func New(
 	app.ScopedInterchainTxsKeeper = app.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	app.ScopedICAControllerKeeper = app.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	app.ScopedWasmKeeper = app.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
-	app.ScopedICAHostKeeper = app.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 
 	// seal capabilities after scoping modules
 	app.CapabilityKeeper.Seal()
@@ -575,18 +570,7 @@ func New(
 		app.ScopedICAControllerKeeper,
 		app.MsgServiceRouter(),
 	)
-
-	app.ICAHostKeeper = icahostkeeper.NewKeeper(
-		appCodec,
-		keys[icahosttypes.StoreKey],
-		app.GetSubspace(icahosttypes.SubModuleName),
-		app.IBCKeeper.ChannelKeeper,
-		&app.IBCKeeper.PortKeeper,
-		app.AccountKeeper,
-		app.ScopedICAHostKeeper,
-		app.MsgServiceRouter(),
-	)
-	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, &app.ICAHostKeeper)
+	icaModule := ica.NewAppModule(&app.ICAControllerKeeper, nil)
 
 	app.InterchainQueriesKeeper = *interchainquerieskeeper.NewKeeper(
 		appCodec,
@@ -666,12 +650,10 @@ func New(
 	transferIBCModule := transferSudo.NewIBCModule(app.TransferKeeper)
 
 	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interchaintxs.NewIBCModule(app.InterchainTxsKeeper))
-	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
-		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerIBCModule).
 		AddRoute(wasm.ModuleName, wasm.NewIBCHandler(app.WasmKeeper, app.IBCKeeper.ChannelKeeper))
@@ -729,8 +711,8 @@ func New(
 		upgradetypes.ModuleName, capabilitytypes.ModuleName, minttypes.ModuleName,
 		distrtypes.ModuleName, slashingtypes.ModuleName, evidencetypes.ModuleName,
 		stakingtypes.ModuleName, ibchost.ModuleName, genutiltypes.ModuleName,
-		banktypes.ModuleName, ibctransfertypes.ModuleName, vestingtypes.ModuleName,
-		paramstypes.ModuleName, authtypes.ModuleName, crisistypes.ModuleName,
+		banktypes.ModuleName, vestingtypes.ModuleName, authtypes.ModuleName,
+		paramstypes.ModuleName, ibctransfertypes.ModuleName, crisistypes.ModuleName,
 		taxmoduletypes.ModuleName, govtypes.ModuleName, icatypes.ModuleName,
 		interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName, contractmanagermoduletypes.ModuleName,
 		wasm.ModuleName, feetypes.ModuleName, adminmodulemoduletypes.ModuleName,
@@ -751,6 +733,7 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
+	// NOTE: Auth module must occur before ibctransfer module(See cosmos/interchain-security#151 and cosmos/interchain-security#495)
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -1007,7 +990,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(wasm.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
-	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName)
