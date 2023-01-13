@@ -2,8 +2,12 @@
 <div align="center">
 <br /><p align="center"><img alt="nolus-core" src="docs/nolus-core-logo.svg" width="100"/></p><br />
 
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/Nolus-Protocol/nolus-core)](https://goreportcard.com/report/github.com/Nolus-Protocol/nolus-core)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/Nolus-Protocol/nolus-core/blob/main/LICENSE)
 [![Lint](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml)
 [![Test](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml)
+[![Test Fuzz](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-fuzz.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-fuzz.yaml)
 
 **Nolus** is a blockchain built using Cosmos SDK and Tendermint.
 </div>
