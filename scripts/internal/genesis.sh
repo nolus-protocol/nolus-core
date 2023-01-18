@@ -34,6 +34,8 @@ generate_genesis() {
   local -r lpp_native="${12}"
   local -r contracts_info_file="${13}"
   local -r gov_voting_period="${14}"
+  local -r feerefunder_ack_fee_min="${15}"
+  local -r feerefunder_timeout_fee_min="${16}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -52,7 +54,7 @@ generate_genesis() {
   leaser_addr=$(leaser_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
-  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr" "$gov_voting_period")
+  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr" "$gov_voting_period"  "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
@@ -106,25 +108,28 @@ add_genesis_account() {
 #####################
 __generate_proto_genesis_no_wasm() {
   local -r chain_id="$1"
-  local -r currency="$2"
+  local -r native_currency="$2"
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
   local -r leaser_addr="$5"
   local -r gov_voting_period="$6"
+  local -r feerefunder_ack_fee_min="$7"
+  local -r feerefunder_timeout_fee_min="$8"
 
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config keyring-backend test
   run_cmd "$genesis_home_dir" config chain-id "$chain_id"
 
-  __set_token_denominations "$genesis_file" "$currency"
+  __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
   __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
   __set_gov_parameters "$genesis_file" "$gov_voting_period"
   __modify_slashing_and_staking_params "$genesis_file"
+  __modify_feerefunder_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
 
   while IFS= read -r account_spec ; do
-    add_genesis_account "$account_spec" "$currency" "$genesis_home_dir"
+    add_genesis_account "$account_spec" "$native_currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
   # This will be used for MAINNET/TESTNET to have initial balance for the contracts_owner_addr(The leaser contract's address)
@@ -210,6 +215,22 @@ __modify_slashing_and_staking_params() {
     | jq '.app_state["slashing"]["params"]["min_signed_per_window"]="0.050000000000000000"' \
     | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
     | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
+  mv "$genesis_tmp_file" "$genesis_file"
+}
+
+__modify_feerefunder_params() {
+  local genesis_file="$1"
+  local -r ack_fee_amount="$2"
+  local -r timeout_fee_amount="$3"
+  local -r native_currency="$4"
+
+   local genesis_tmp_file="$genesis_file".tmp
+
+  < "$genesis_file" \
+    jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["amount"]="'"$ack_fee_amount"'"' \
+    |  jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["denom"]="'"$native_currency"'"' \
+    | jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["amount"]="'"$timeout_fee_amount"'"' \
+    |  jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 

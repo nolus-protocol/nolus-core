@@ -28,6 +28,8 @@ __print_usage() {
     [--validator-stake <tokens_validator_stakes>]
     [--lpp-native <lpp_native>]
     [--gov-voting-period <voting_period>]
+    [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
+    [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
     [-o|--output <genesis_file_path>]" \
      "$1"
 }
@@ -48,6 +50,8 @@ OUTPUT_FILE=""
 LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
 GOV_VOTING_PERIOD="43200s"
+FEEREFUNDER_ACK_FEE_MIN="1"
+FEEREFUNDER_TIMEOUT_FEE_MIN="1"
 
 if [[ $# -lt 1 ]]; then
   echo "Missing command!"
@@ -145,6 +149,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --feerefunder-ack-fee-min)
+    FEEREFUNDER_ACK_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
+  --feerefunder-timeout-fee-min)
+    FEEREFUNDER_TIMEOUT_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
   -o | --output)
     OUTPUT_FILE="$2"
     shift
@@ -174,7 +190,8 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
                                   "$WASM_CODE_PATH" "$CONTRACTS_OWNER_ADDR" "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
-                                  "$CONTRACTS_INFO_FILE" "$GOV_VOTING_PERIOD")
+                                  "$CONTRACTS_INFO_FILE" "$GOV_VOTING_PERIOD" \
+                                  "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #
