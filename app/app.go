@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cast"
 
 	adminmodulemodule "github.com/cosmos/admin-module/x/adminmodule"
-	adminmodulecli "github.com/cosmos/admin-module/x/adminmodule/client/cli"
 	adminmodulemodulekeeper "github.com/cosmos/admin-module/x/adminmodule/keeper"
 	adminmodulemoduletypes "github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -58,7 +57,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -70,7 +68,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
@@ -109,7 +106,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
-	neutronapp "github.com/neutron-org/neutron/app"
 	"github.com/neutron-org/neutron/wasmbinding"
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermodulekeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
@@ -227,20 +223,7 @@ var (
 		interchainqueries.AppModuleBasic{},
 		feerefunder.AppModuleBasic{},
 		contractmanager.AppModuleBasic{},
-		adminmodulemodule.NewAppModuleBasic(
-			govclient.NewProposalHandler(
-				adminmodulecli.NewSubmitParamChangeProposalTxCmd,
-				paramsrest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitUpgradeProposal,
-				upgraderest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitCancelUpgradeProposal,
-				upgraderest.ProposalCancelRESTHandler,
-			),
-		),
+		adminmodulemodule.NewAppModuleBasic(),
 	)
 
 	// module account permissions.
@@ -552,13 +535,12 @@ func New(
 	}
 
 	app.AdminmoduleKeeper = *adminmodulemodulekeeper.NewKeeper(
-		appCodec,
-		keys[adminmodulemoduletypes.StoreKey],
-		keys[adminmodulemoduletypes.MemStoreKey],
-		govRouter,
-		neutronapp.IsConsumerProposalWhitelisted,
+		nil,
+		nil,
+		nil,
+		nil,
+		nil,
 	)
-	adminModule := adminmodulemodule.NewAppModule(appCodec, app.AdminmoduleKeeper)
 
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
@@ -700,7 +682,6 @@ func New(
 		interchainTxsModule,
 		feeModule,
 		contractManagerModule,
-		adminModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -715,7 +696,7 @@ func New(
 		paramstypes.ModuleName, ibctransfertypes.ModuleName, crisistypes.ModuleName,
 		taxmoduletypes.ModuleName, govtypes.ModuleName, icatypes.ModuleName,
 		interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName, contractmanagermoduletypes.ModuleName,
-		wasm.ModuleName, feetypes.ModuleName, adminmodulemoduletypes.ModuleName,
+		wasm.ModuleName, feetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -725,7 +706,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
 		icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
-		contractmanagermoduletypes.ModuleName, wasm.ModuleName, feetypes.ModuleName, adminmodulemoduletypes.ModuleName,
+		contractmanagermoduletypes.ModuleName, wasm.ModuleName, feetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -759,7 +740,6 @@ func New(
 		// wasm after ibc transfer
 		wasm.ModuleName,
 		feetypes.ModuleName,
-		adminmodulemoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
