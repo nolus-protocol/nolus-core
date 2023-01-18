@@ -9,10 +9,6 @@ import (
 
 	"github.com/spf13/cast"
 
-	adminmodulemodule "github.com/cosmos/admin-module/x/adminmodule"
-	adminmodulecli "github.com/cosmos/admin-module/x/adminmodule/client/cli"
-	adminmodulemodulekeeper "github.com/cosmos/admin-module/x/adminmodule/keeper"
-	adminmodulemoduletypes "github.com/cosmos/admin-module/x/adminmodule/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/tmservice"
@@ -58,7 +54,6 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
-	paramsrest "github.com/cosmos/cosmos-sdk/x/params/client/rest"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
@@ -70,9 +65,10 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
-	upgraderest "github.com/cosmos/cosmos-sdk/x/upgrade/client/rest"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	legacyibcCore "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
+	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller"
@@ -86,7 +82,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v3/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v3/modules/core/keeper"
-	ibctesting "github.com/cosmos/ibc-go/v3/testing"
 
 	"github.com/tendermint/spm/cosmoscmd"
 	"github.com/tendermint/spm/openapiconsole"
@@ -99,6 +94,7 @@ import (
 
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/docs"
+	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -110,8 +106,6 @@ import (
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	neutronapp "github.com/neutron-org/neutron/app"
-	"github.com/neutron-org/neutron/wasmbinding"
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermodulekeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
@@ -228,20 +222,6 @@ var (
 		interchainqueries.AppModuleBasic{},
 		feerefunder.AppModuleBasic{},
 		contractmanager.AppModuleBasic{},
-		adminmodulemodule.NewAppModuleBasic(
-			govclient.NewProposalHandler(
-				adminmodulecli.NewSubmitParamChangeProposalTxCmd,
-				paramsrest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitUpgradeProposal,
-				upgraderest.ProposalRESTHandler,
-			),
-			govclient.NewProposalHandler(
-				adminmodulecli.NewCmdSubmitCancelUpgradeProposal,
-				upgraderest.ProposalCancelRESTHandler,
-			),
-		),
 	)
 
 	// module account permissions.
@@ -296,7 +276,6 @@ type App struct {
 
 	// keepers
 	AccountKeeper       authkeeper.AccountKeeper
-	AdminmoduleKeeper   adminmodulemodulekeeper.Keeper
 	BankKeeper          bankkeeper.Keeper
 	CapabilityKeeper    *capabilitykeeper.Keeper
 	StakingKeeper       stakingkeeper.Keeper
@@ -319,7 +298,6 @@ type App struct {
 	ScopedInterchainTxsKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
-	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 
 	TaxKeeper taxmodulekeeper.Keeper
 
@@ -336,7 +314,8 @@ type App struct {
 	sm *module.SimulationManager
 }
 
-func (app *App) GetStakingKeeper() ibcclienttypes.StakingKeeper {
+// GetStakingKeeper implements the TestingApp interface.
+func (app *App) GetStakingKeeper() legacyibcCore.StakingKeeper {
 	return app.StakingKeeper
 }
 
@@ -381,7 +360,7 @@ func New(
 		upgradetypes.StoreKey, evidencetypes.StoreKey, ibctransfertypes.StoreKey,
 		taxmoduletypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey,
 		interchainqueriestypes.StoreKey, contractmanagermoduletypes.StoreKey, interchaintxstypes.StoreKey,
-		wasm.StoreKey, feetypes.StoreKey, adminmodulemoduletypes.StoreKey,
+		wasm.StoreKey, feetypes.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, feetypes.MemStoreKey)
@@ -552,15 +531,6 @@ func New(
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
 	}
 
-	app.AdminmoduleKeeper = *adminmodulemodulekeeper.NewKeeper(
-		appCodec,
-		keys[adminmodulemoduletypes.StoreKey],
-		keys[adminmodulemoduletypes.MemStoreKey],
-		govRouter,
-		neutronapp.IsConsumerProposalWhitelisted,
-	)
-	adminModule := adminmodulemodule.NewAppModule(appCodec, app.AdminmoduleKeeper)
-
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
 		keys[icacontrollertypes.StoreKey],
@@ -612,7 +582,7 @@ func New(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron"
-	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&app.InterchainTxsKeeper, &app.InterchainQueriesKeeper, app.TransferKeeper, &app.AdminmoduleKeeper), wasmOpts...)
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&app.InterchainTxsKeeper, &app.InterchainQueriesKeeper, app.TransferKeeper), wasmOpts...)
 	app.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
@@ -704,7 +674,6 @@ func New(
 		interchainTxsModule,
 		feeModule,
 		contractManagerModule,
-		adminModule,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -719,7 +688,7 @@ func New(
 		paramstypes.ModuleName, ibctransfertypes.ModuleName, crisistypes.ModuleName,
 		taxmoduletypes.ModuleName, govtypes.ModuleName, icatypes.ModuleName,
 		interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName, contractmanagermoduletypes.ModuleName,
-		wasm.ModuleName, feetypes.ModuleName, adminmodulemoduletypes.ModuleName,
+		wasm.ModuleName, feetypes.ModuleName,
 	)
 
 	app.mm.SetOrderEndBlockers(
@@ -729,7 +698,7 @@ func New(
 		ibctransfertypes.ModuleName,
 		genutiltypes.ModuleName, banktypes.ModuleName, distrtypes.ModuleName, taxmoduletypes.ModuleName,
 		icatypes.ModuleName, interchaintxstypes.ModuleName, interchainqueriestypes.ModuleName,
-		contractmanagermoduletypes.ModuleName, wasm.ModuleName, feetypes.ModuleName, adminmodulemoduletypes.ModuleName,
+		contractmanagermoduletypes.ModuleName, wasm.ModuleName, feetypes.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -737,7 +706,6 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
-	// NOTE: Auth module must occur before ibctransfer module(See cosmos/interchain-security#151 and cosmos/interchain-security#495)
 	app.mm.SetOrderInitGenesis(
 		capabilitytypes.ModuleName,
 		authtypes.ModuleName,
@@ -763,7 +731,6 @@ func New(
 		// wasm after ibc transfer
 		wasm.ModuleName,
 		feetypes.ModuleName,
-		adminmodulemoduletypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)

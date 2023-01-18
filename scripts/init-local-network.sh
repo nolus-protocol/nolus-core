@@ -44,9 +44,11 @@ DEX_NETWORK_RPC_PORT="26657"
 DEX_NETWORK_GRPC_PORT="9090"
 HERMES_ACCOUNT_MNEMONIC=""
 
-NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
-
 GOV_VOTING_PERIOD="900s"
+FEEREFUNDER_ACK_FEE_MIN="1"
+FEEREFUNDER_TIMEOUT_FEE_MIN="1"
+
+NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -74,7 +76,9 @@ while [[ $# -gt 0 ]]; do
     [--dex-network-addr <dex_network_addr>]
     [--dex-network-rpc-port <dex_network_rpc_port>]
     [--dex-network-grpc-port <dex_network_grpc_port>]
-    [--hermes-mnemonic <hermes_account_mnemonic]" \
+    [--hermes-mnemonic <hermes_account_mnemonic]
+    [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
+    [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
     "$0"
     exit 0
     ;;
@@ -198,6 +202,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --feerefunder-ack-fee-min)
+    FEEREFUNDER_ACK_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
+  --feerefunder-timeout-fee-min)
+    FEEREFUNDER_TIMEOUT_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -251,7 +267,7 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
               "$contracts_owner_addr" "$TREASURY_NLS_U128" \
               "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE" \
-              "$GOV_VOTING_PERIOD"
+              "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
 
 __config_client
 

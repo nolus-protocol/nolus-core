@@ -23,6 +23,8 @@ init_network() {
   local -r lpp_native="${12}"
   local -r contracts_info_file="${13}"
   local -r gov_voting_period="${14}"
+  local -r feerefunder_ack_fee_min="${15}"
+  local -r feerefunder_timeout_fee_min="${16}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
@@ -33,6 +35,6 @@ init_network() {
                                           "$contracts_owner_addr" "$treasury_init_tokens_u128" \
                                           "$node_id_and_val_pubkeys" \
                                           "$lpp_native" "$contracts_info_file" \
-                                          "$gov_voting_period")
+                                          "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
   propagate_genesis "$final_genesis_file" "$validators"
 }

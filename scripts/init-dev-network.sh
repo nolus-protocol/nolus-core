@@ -40,6 +40,8 @@ FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
 LPP_NATIVE=""
 CONTRACTS_INFO_FILE="contracts-info.json"
 GOV_VOTING_PERIOD="3600s"
+FEEREFUNDER_ACK_FEE_MIN="1"
+FEEREFUNDER_TIMEOUT_FEE_MIN="1"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -64,7 +66,9 @@ while [[ $# -gt 0 ]]; do
     [--faucet-tokens <initial_balance>]
     [--lpp-native <currency>]
     [--contracts-info-file <contracts_info_file>]
-    [--gov-voting-period <voting_period>]" \
+    [--gov-voting-period <voting_period>]
+    [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
+    [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
      "$0"
     exit 0
     ;;
@@ -169,6 +173,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --feerefunder-ack-fee-min)
+    FEEREFUNDER_ACK_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
+  --feerefunder-timeout-fee-min)
+    FEEREFUNDER_TIMEOUT_FEE_MIN="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -204,6 +220,6 @@ source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
               "$CONTRACTS_OWNER_ADDR" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
-              "$GOV_VOTING_PERIOD"
+              "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
 
 start_validators "$VALIDATORS"
