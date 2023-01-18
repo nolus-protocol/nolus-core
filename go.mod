@@ -8,6 +8,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.45.11
 	github.com/cosmos/gogoproto v1.4.2
 	github.com/cosmos/ibc-go/v3 v3.4.0
+	github.com/cosmos/interchain-security v1.0.0-rc1
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/protobuf v1.5.2
 	github.com/gorilla/mux v1.8.0
@@ -137,7 +138,7 @@ replace (
 	// For more info https://github.com/cosmos/cosmos-sdk/releases/tag/v0.45.10
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
 	github.com/cosmos/admin-module => github.com/Ethernal-Tech/admin-module v0.0.0-20221102105340-e693f4d379c3
-	github.com/cosmos/ibc-go/v3 => github.com/informalsystems/ibc-go/v3 v3.0.0-beta1.0.20220816140824-aba9c2f2b943
+	github.com/cosmos/cosmos-sdk => github.com/cosmos/cosmos-sdk v0.45.11-ics
 	// Support of latest Ledger Nano S Plus
 	github.com/cosmos/ledger-go => github.com/cosmos/ledger-go v0.9.3
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
