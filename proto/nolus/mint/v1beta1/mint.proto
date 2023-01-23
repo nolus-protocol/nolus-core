@@ -21,6 +21,11 @@ message Minter {
   [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
     (gogoproto.nullable) = false
   ];
+
+  string annual_inflation = 5 [
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 // Params holds parameters for the mint module.

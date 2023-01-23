@@ -19,7 +19,7 @@ func TestDecodeStore(t *testing.T) {
 	cdc := simapp.MakeTestEncodingConfig().Marshaler
 	dec := simulation.NewDecodeStore(cdc)
 
-	minter := types.NewMinter(sdk.MustNewDecFromStr("13.123456789"), sdk.NewUint(10003145), sdk.NewUint(uint64(util.GetCurrentTimeUnixNano())))
+	minter := types.NewMinter(sdk.MustNewDecFromStr("13.123456789"), sdk.NewUint(10003145), sdk.NewUint(uint64(util.GetCurrentTimeUnixNano())), sdk.ZeroUint())
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{

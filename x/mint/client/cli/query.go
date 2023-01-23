@@ -1,6 +1,8 @@
 package cli
 
 import (
+	"fmt"
+
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 
@@ -21,6 +23,7 @@ func GetQueryCmd() *cobra.Command {
 	mintingQueryCmd.AddCommand(
 		GetCmdQueryParams(),
 		GetCmdQueryMintState(),
+		GetCmdAnnualQueryInflation(),
 	)
 
 	return mintingQueryCmd
@@ -75,6 +78,35 @@ func GetCmdQueryMintState() *cobra.Command {
 			}
 
 			return clientCtx.PrintProto(res)
+		},
+	}
+
+	flags.AddQueryFlagsToCmd(cmd)
+
+	return cmd
+}
+
+// GetCmdAnnualQueryInflation implements a command to return the current minting inflation value.
+func GetCmdAnnualQueryInflation() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "inflation",
+		Short: "Query the current minting inflation value",
+		Args:  cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
+
+			queryClient := types.NewQueryClient(clientCtx)
+			params := &types.QueryAnnualInflationRequest{}
+
+			res, err := queryClient.AnnualInflation(cmd.Context(), params)
+			if err != nil {
+				return err
+			}
+
+			return clientCtx.PrintString(fmt.Sprintf("%s\n", res.AnnualInflation))
 		},
 	}
 
