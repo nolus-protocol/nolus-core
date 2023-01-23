@@ -25,3 +25,11 @@ func (k Keeper) MintState(c context.Context, _ *types.QueryMintStateRequest) (*t
 
 	return &types.QueryMintStateResponse{NormTimePassed: minter.NormTimePassed, TotalMinted: minter.TotalMinted}, nil
 }
+
+// AnnualInflation returns minter.Inflation of the mint module.
+func (k Keeper) AnnualInflation(c context.Context, _ *types.QueryAnnualInflationRequest) (*types.QueryAnnualInflationResponse, error) {
+	ctx := sdk.UnwrapSDKContext(c)
+	minter := k.GetMinter(ctx)
+
+	return &types.QueryAnnualInflationResponse{AnnualInflation: minter.AnnualInflation}, nil
+}

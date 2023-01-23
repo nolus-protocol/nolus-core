@@ -157,7 +157,7 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	_, _, _, timeOffset := defaultParams()
 
 	offsetNanoInMonth := timeOffset.Add(uintFromDec(nanoSecondsInMonth))
-	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroUint(), timeOffset)
+	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroUint(), timeOffset, sdk.ZeroUint())
 	mintedCoins := sdk.ZeroUint()
 	rand.Seed(util.GetCurrentTimeUnixNano())
 
@@ -194,7 +194,7 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 
 	halfFixedAmount := types.FixedMintedAmount.Quo(sdk.NewUint(2))
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
-	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset)
+	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset, sdk.ZeroUint())
 	mintedCoins := sdk.NewUint(0)
 	rand.Seed(util.GetCurrentTimeUnixNano())
 
@@ -329,6 +329,197 @@ func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T)
 	if sumIncrements60s.Sub(sdk.OneDec()).Abs().GT(normTimeThreshold) {
 		t.Errorf("Increment with 60 second step results in range %v, deviating with more than epsilon from expected %v",
 			sumIncrements60s, sdk.OneDec())
+	}
+}
+
+func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
+	expAcceptedDeviation := sdk.NewUint(500_000) // 0.5 token
+
+	for _, tc := range []struct {
+		title             string
+		normTimePassed    sdk.Dec
+		timeAhead         sdk.Dec
+		totalMinted       sdk.Uint
+		expIntegralMinted sdk.Uint
+		expError          bool
+	}{
+		{
+			title:             "start from genesis, 1 month calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("0.47"),
+			timeAhead:         sdk.MustNewDecFromStr("1"),
+			totalMinted:       sdk.ZeroUint(),
+			expIntegralMinted: sdk.NewUintFromString("3_760_114_000_000"),
+			expError:          false,
+		},
+		{
+			title:             "start from genesis, 12 months calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("0.47"),
+			timeAhead:         twelveMonths,
+			totalMinted:       sdk.ZeroUint(),
+			expIntegralMinted: sdk.NewUintFromString("39_897_845_000_000"),
+			expError:          false,
+		},
+		{
+			title:             "in the 96 months range, 12 months calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("5.44552083"),
+			timeAhead:         twelveMonths,
+			totalMinted:       sdk.NewUintFromString("14_537_732_000_000"),
+			expIntegralMinted: sdk.NewUintFromString("38_996_481_000_000"),
+			expError:          false,
+		},
+		{
+			title:             "ends on the 96th month, 12 months calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("84.05875000"),
+			timeAhead:         twelveMonths,
+			totalMinted:       sdk.NewUintFromString("142_977_230_000_000"),
+			expIntegralMinted: sdk.NewUintFromString("4_558_027_000_000"),
+			expError:          false,
+		},
+		{
+			title:             "partially in the 96 months range, 1 month calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("95.00489583"),
+			timeAhead:         twelveMonths,
+			totalMinted:       sdk.NewUintFromString("147_290_028_000_000"),
+			expIntegralMinted: sdk.NewUintFromString("245_229_000_000"),
+			expError:          false,
+		},
+		{
+			title:             "after 96th months, 0 months calculated by integral",
+			normTimePassed:    sdk.MustNewDecFromStr("98"),
+			timeAhead:         twelveMonths,
+			totalMinted:       sdk.NewUintFromString("147_741_507_000_000"),
+			expIntegralMinted: sdk.ZeroUint(),
+			expError:          false,
+		},
+		{
+			title:             "negative time ahead should result in error",
+			normTimePassed:    sdk.MustNewDecFromStr("98"),
+			timeAhead:         sdk.MustNewDecFromStr("-1.0"),
+			totalMinted:       sdk.ZeroUint(),
+			expIntegralMinted: sdk.ZeroUint(),
+			expError:          true,
+		},
+		{
+			title:             "zero time ahead should not mint tokens",
+			normTimePassed:    sdk.MustNewDecFromStr("85.05385417"),
+			timeAhead:         sdk.ZeroDec(),
+			totalMinted:       sdk.NewUintFromString("143_483_520_000_000"),
+			expIntegralMinted: sdk.ZeroUint(),
+			expError:          false,
+		},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			minter := &types.Minter{
+				NormTimePassed: tc.normTimePassed,
+				TotalMinted:    tc.totalMinted,
+			}
+
+			newlyMinted, err := predictMintedByIntegral(minter.TotalMinted, minter.NormTimePassed, tc.timeAhead)
+			if tc.expError && err == nil {
+				t.Error("Error is expected")
+			}
+
+			actExpDiff := types.GetAbsDiff(newlyMinted, tc.expIntegralMinted)
+
+			if actExpDiff.GT(expAcceptedDeviation) {
+				t.Errorf("Minted exp: %v, act: %v, diff: %v", tc.expIntegralMinted, newlyMinted, actExpDiff)
+			}
+		})
+	}
+}
+
+func Test_PredictMintedByFixedAmount_TwelveMonthsAhead(t *testing.T) {
+	expAcceptedDeviation := sdk.NewUint(500) // 0.0005 token
+
+	for _, tc := range []struct {
+		title          string
+		normTimePassed sdk.Dec
+		timeAhead      sdk.Dec
+		totalMinted    sdk.Uint
+		expFixedMinted sdk.Uint
+		expError       bool
+	}{
+		{
+			title:          "in the 96 months range, 0 months calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("0.47"),
+			timeAhead:      twelveMonths,
+			totalMinted:    sdk.ZeroUint(),
+			expFixedMinted: sdk.ZeroUint(),
+			expError:       false,
+		},
+		{
+			title:          "starts on the 96th month, 1 month calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("96"),
+			timeAhead:      sdk.MustNewDecFromStr("1"),
+			totalMinted:    sdk.NewUintFromString("147_535_257_000_000"),
+			expFixedMinted: sdk.NewUintFromString("103_125_000_000"),
+			expError:       false,
+		},
+		{
+			title:          "partially in the 96 months range, 1 month calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("85.05385417"),
+			timeAhead:      twelveMonths,
+			totalMinted:    sdk.NewUintFromString("143_483_520_000_000"),
+			expFixedMinted: sdk.NewUintFromString("103_125_000_000"),
+			expError:       false,
+		},
+		{
+			title:          "starts on the 96th month, all months calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("96"),
+			timeAhead:      twelveMonths,
+			totalMinted:    sdk.NewUintFromString("147_535_257_000_000"),
+			expFixedMinted: sdk.NewUintFromString("103_125_000_000").MulUint64(12),
+			expError:       false,
+		},
+		{
+			title:          "partially in the 96-120 month range, few days calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("119.0"),
+			timeAhead:      twelveMonths,
+			totalMinted:    sdk.NewUintFromString("149_900_000_000_000"),
+			expFixedMinted: sdk.NewUintFromString("100_000_000_000"),
+			expError:       false,
+		},
+		{
+			title:          "after minting cap reached, 0 months calculated by fixed amount",
+			normTimePassed: sdk.MustNewDecFromStr("119.9"),
+			timeAhead:      twelveMonths,
+			totalMinted:    sdk.NewUintFromString("150_000_000_000_000"),
+			expFixedMinted: sdk.ZeroUint(),
+			expError:       false,
+		},
+		{
+			title:          "negative time ahead should result in error",
+			normTimePassed: sdk.MustNewDecFromStr("98"),
+			timeAhead:      sdk.MustNewDecFromStr("-1.0"),
+			totalMinted:    sdk.ZeroUint(),
+			expFixedMinted: sdk.ZeroUint(),
+			expError:       true,
+		},
+		{
+			title:          "zero time ahead should not mint tokens",
+			normTimePassed: sdk.MustNewDecFromStr("85.05385417"),
+			timeAhead:      sdk.ZeroDec(),
+			totalMinted:    sdk.NewUintFromString("143_483_520_000_000"),
+			expFixedMinted: sdk.ZeroUint(),
+			expError:       false,
+		},
+	} {
+		t.Run(tc.title, func(t *testing.T) {
+			minter := &types.Minter{
+				NormTimePassed: tc.normTimePassed,
+				TotalMinted:    tc.totalMinted,
+			}
+
+			newlyMinted, err := predictMintedByFixedAmount(minter.TotalMinted, minter.NormTimePassed, tc.timeAhead)
+			if tc.expError && err == nil {
+				t.Error("Error is expected")
+			}
+
+			actExpDiff := types.GetAbsDiff(newlyMinted, tc.expFixedMinted)
+			if actExpDiff.GT(expAcceptedDeviation) {
+				t.Errorf("Minted exp: %v, act: %v, diff: %v", tc.expFixedMinted, newlyMinted, actExpDiff)
+			}
+		})
 	}
 }
 

@@ -25,11 +25,12 @@ var (
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
-func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Uint, prevBlockTimestamp sdk.Uint) Minter {
+func NewMinter(normTimePassed sdk.Dec, totalMinted, prevBlockTimestamp, inflation sdk.Uint) Minter {
 	return Minter{
 		NormTimePassed:     normTimePassed,
 		TotalMinted:        totalMinted,
 		PrevBlockTimestamp: prevBlockTimestamp,
+		AnnualInflation:    inflation,
 	}
 }
 
@@ -37,8 +38,9 @@ func NewMinter(normTimePassed sdk.Dec, totalMinted sdk.Uint, prevBlockTimestamp 
 func InitialMinter() Minter {
 	return NewMinter(
 		NormOffset,
-		sdk.NewUint(0),
-		sdk.NewUint(0),
+		sdk.ZeroUint(),
+		sdk.ZeroUint(),
+		sdk.ZeroUint(),
 	)
 }
 
