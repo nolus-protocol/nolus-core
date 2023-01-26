@@ -1,4 +1,4 @@
-# NOLUS
+# Nolus Core
 <div align="center">
 <br /><p align="center"><img alt="nolus-core" src="docs/nolus-core-logo.svg" width="100"/></p><br />
 
