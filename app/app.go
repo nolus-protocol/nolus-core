@@ -67,8 +67,6 @@ import (
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradekeeper "github.com/cosmos/cosmos-sdk/x/upgrade/keeper"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
-	legacyibcCore "github.com/cosmos/interchain-security/legacy_ibc_testing/core"
-	ibctesting "github.com/cosmos/interchain-security/legacy_ibc_testing/testing"
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller"
@@ -243,7 +241,6 @@ var (
 var (
 	_ cosmoscmd.CosmosApp     = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
-	_ ibctesting.TestingApp   = (*App)(nil)
 )
 
 func init() {
@@ -312,23 +309,6 @@ type App struct {
 
 	// simulation manager
 	sm *module.SimulationManager
-}
-
-// GetStakingKeeper implements the TestingApp interface.
-func (app *App) GetStakingKeeper() legacyibcCore.StakingKeeper {
-	return app.StakingKeeper
-}
-
-func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
-	return app.IBCKeeper
-}
-
-func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
-	return app.ScopedIBCKeeper
-}
-
-func (app *App) GetTxConfig() client.TxConfig {
-	return app.encodingConfig.TxConfig
 }
 
 // New returns a reference to an initialized Gaia.
@@ -526,11 +506,6 @@ func New(
 		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(app.IBCKeeper.ClientKeeper)).
 		AddRoute(distrtypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(app.DistrKeeper))
 
-	// The gov proposal types can be individually enabled
-	if len(GetWasmEnabledProposals()) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
-	}
-
 	app.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
 		appCodec,
 		keys[icacontrollertypes.StoreKey],
@@ -603,6 +578,11 @@ func New(
 		wasmOpts...,
 	)
 
+	// The gov proposal types can be individually enabled
+	if len(GetWasmEnabledProposals()) != 0 {
+		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.WasmKeeper, GetWasmEnabledProposals()))
+	}
+
 	app.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		keys[govtypes.StoreKey],
@@ -622,7 +602,6 @@ func New(
 	taxModule := tax.NewAppModule(appCodec, app.TaxKeeper, app.AccountKeeper, app.BankKeeper)
 
 	transferIBCModule := transferSudo.NewIBCModule(app.TransferKeeper)
-
 	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interchaintxs.NewIBCModule(app.InterchainTxsKeeper))
 
 	// Create static IBC router, add transfer route, then set and seal it
