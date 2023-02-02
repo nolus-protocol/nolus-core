@@ -8,6 +8,7 @@
 [![Lint](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/lint.yaml)
 [![Test](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test.yaml)
 [![Test Fuzz](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-fuzz.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-fuzz.yaml)
+[![Test cosmos-sdk](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-cosmos.yaml/badge.svg?branch=main)](https://github.com/Nolus-Protocol/nolus-core/actions/workflows/test-cosmos.yaml)
 
 **Nolus** is a blockchain built using Cosmos SDK and Tendermint.
 </div>
