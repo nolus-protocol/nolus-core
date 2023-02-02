@@ -99,13 +99,6 @@ jobs:
         with:
           args: unzip -qq ${{ env.CONTRACTS_ZIP }} -d ${{ env.CONTRACTS_DIR }}
 
-      - name: Move Contracts Artifacts in sub dir
-        run: |
-          cd $CONTRACTS_DIR
-          mkdir $CONTRACTS_DIR
-          mv ./* $CONTRACTS_DIR
-          cd ..
-
       - name: Archive wasm
         uses: actions/upload-artifact@v3
         with:
