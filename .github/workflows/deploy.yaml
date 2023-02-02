@@ -22,8 +22,8 @@ env:
 
   CONTRACTS_INFO_FILE: "contracts-info.json"
   CONTRACTS_REPO: "github.com/Nolus-Protocol/nolus-money-market"
-  CONTRACTS_VERSION: "v0.2.9"
-  CONTRACTS_ZIP: "artifacts.zip"
+  CONTRACTS_VERSION: "v0.2.13"
+  CONTRACTS_ZIP: "optimized-binaries-test-net.zip"
   CONTRACTS_DIR: "artifacts"
 
 jobs:
@@ -99,6 +99,12 @@ jobs:
         with:
           args: unzip -qq ${{ env.CONTRACTS_ZIP }} -d ${{ env.CONTRACTS_DIR }}
 
+      - name: Move Contracts Artifacts in sub dir
+        run: |
+          cd $CONTRACTS_DIR
+          mkdir $CONTRACTS_DIR
+          mv ./* $CONTRACTS_DIR
+          cd ..
 
       - name: Archive wasm
         uses: actions/upload-artifact@v3
