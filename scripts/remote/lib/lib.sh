@@ -16,6 +16,12 @@ update_config() {
   _update_toml "$config_file" "$2" "$3"
 }
 
+update_client() {
+  local config_file="$1"/client.toml
+
+  _update_toml "$config_file" "$2" "$3"
+}
+
 _update_toml() {
   local file="$1"
 

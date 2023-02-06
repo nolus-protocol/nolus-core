@@ -67,6 +67,8 @@ update_config "$config_dir" '."instrumentation"."prometheus_listen_addr"' '"'":$
 update_config "$config_dir" '."log_format"' '"json"'
 update_config "$config_dir" '."log_level"' '"debug"'
 
+update_client "$config_dir" '."node"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
+
 tendermint_node_id=$(run_cmd "$home_dir" tendermint show-node-id)
 validator_pub_key=$(run_cmd "$home_dir" tendermint show-validator)
 echo "$tendermint_node_id@$HOST:$P2P_PORT $validator_pub_key"
