@@ -11,7 +11,7 @@ env:
   IMAGE_NAME: "builder"
   IMAGE_NAME_FULL: "public.ecr.aws/nolus/builder"
   IMAGE_TAG: "0.7"
-  IMAGE_DOCKERFILE: "./build/builder_spec.Dockerfile"
+  IMAGE_DOCKERFILE: ".github/images/builder.Dockerfile"
 
 jobs:
   check-exist:

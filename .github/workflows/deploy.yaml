@@ -12,7 +12,6 @@ env:
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
   IMAGE_NAME: "public.ecr.aws/nolus/node"
   VERSION_TAG: ${{ github.ref_name }}
-  IMAGE_DOCKERFILE: "./build/builder_spec.Dockerfile"
   ACCOUNTS_DIR: "accounts"
   SMART_CONTRACTS_ADMIN_ADDR: "nolus15jv5h5wjf3haljzfk5vcxx86n33rswsm7u3jgn"
   NLS_DENOM: "unls"
