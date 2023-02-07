@@ -8,16 +8,16 @@ on:
       - v*.*.*
 
 env:
+  BUILDER_IMAGE: "public.ecr.aws/nolus/builder:0.7"
+  VERSION_TAG: ${{ github.ref_name }}
   ARTIFACT_BIN: "nolus.tar.gz"
   ARTIFACT_SCRIPTS: "scripts.tar.gz"
-  IMAGE_NAME: "public.ecr.aws/nolus/node"
-  VERSION_TAG: ${{ github.ref_name }}
+  AWS_REGION: "eu-west-1"
   ACCOUNTS_DIR: "accounts"
-  SMART_CONTRACTS_ADMIN_ADDR: "nolus15jv5h5wjf3haljzfk5vcxx86n33rswsm7u3jgn"
   NLS_DENOM: "unls"
+  SMART_CONTRACTS_ADMIN_ADDR: "nolus15jv5h5wjf3haljzfk5vcxx86n33rswsm7u3jgn"
   STABLE_BANK_SYMBOL_DEV: "ibc/7FBDBEEEBA9C50C4BCDF7BF438EAB99E64360833D240B32655C96E319559E911"
   STABLE_TICKER_DEV: "USDC"
-  AWS_REGION: "eu-west-1"
 
   CONTRACTS_INFO_FILE: "contracts-info.json"
   CONTRACTS_REPO: "github.com/Nolus-Protocol/nolus-money-market"
@@ -48,7 +48,7 @@ jobs:
     name: Build binary
     runs-on: ubuntu-latest
     container:
-      image: "public.ecr.aws/nolus/builder:0.7"
+      image: ${{ env.BUILDER_IMAGE }}
 
     steps:
     - uses: actions/checkout@v3
