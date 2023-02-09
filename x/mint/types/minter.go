@@ -49,43 +49,48 @@ func DefaultInitialMinter() Minter {
 	return InitialMinter()
 }
 
-// ValidateMinter validate minter.
+// ValidateMinter ensure minter has valid "normTimePassed" and
+// "totalMinted" tokens do not exceed the minting cap.
 func ValidateMinter(minter Minter) error {
 	if minter.NormTimePassed.IsNegative() {
 		return fmt.Errorf("mint parameter normTimePassed should be positive, is %s",
 			minter.NormTimePassed.String())
 	}
+
 	if minter.NormTimePassed.GT(TotalMonths) {
 		return fmt.Errorf("mint parameter normTimePassed: %v should not be bigger than TotalMonths: %v", minter.NormTimePassed, TotalMonths)
 	}
+
 	if minter.TotalMinted.GT(MintingCap) {
-		return fmt.Errorf("mint parameter totalMinted can not be bigger than MintingCap, is %s",
-			minter.TotalMinted)
+		return fmt.Errorf("mint parameter totalMinted: %v can not be bigger than MintingCap: %v",
+			minter.TotalMinted, MintingCap)
 	}
+
 	calculatedMintedTokens := calcMintedTokens(minter)
+
 	if minter.NormTimePassed.GT(TotalMonths.Sub(sdk.NewDec(1))) {
 		if calculatedMintedTokens.GT(MintingCap) || MintingCap.Sub(calculatedMintedTokens).GT(FixedMintedAmount) {
 			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
 				minter.NormTimePassed, calculatedMintedTokens)
 		}
 	} else if !calculatedMintedTokens.Equal(minter.TotalMinted) {
-		return fmt.Errorf("minted unexpected amount of tokens for %s months: %s unls",
-			minter.NormTimePassed, minter.TotalMinted)
+		return fmt.Errorf("minted unexpected amount of tokens for %s months. act: %v, exp: %v",
+			minter.NormTimePassed, minter.TotalMinted, calculatedMintedTokens)
 	}
 
 	return nil
 }
 
 func calcMintedTokens(m Minter) sdk.Uint {
-	fixedMonthsTokens := sdk.NewUint(0)
-	calculatedTokensByIntegral := sdk.NewUint(0)
 	if m.NormTimePassed.GTE(MonthsInFormula) {
-		fixedMonthsTokens.Add((util.ConvertToMicroNolusDec(m.NormTimePassed.Sub(MonthsInFormula))).Mul(FixedMintedAmount))
-		calculatedTokensByIntegral.Add(CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset)))
+		fixedMonthsPeriod := sdk.NewUint(m.NormTimePassed.Sub(MonthsInFormula).TruncateInt().Uint64())
+		fixedMonthsTokens := fixedMonthsPeriod.Mul(FixedMintedAmount)
+		calculatedTokensByIntegral := CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset))
+
+		return calculatedTokensByIntegral.Add(fixedMonthsTokens)
 	} else {
-		calculatedTokensByIntegral.Add(CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset)))
+		return CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
 	}
-	return calculatedTokensByIntegral.Add(fixedMonthsTokens)
 }
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
