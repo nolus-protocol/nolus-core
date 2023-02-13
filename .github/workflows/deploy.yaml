@@ -169,3 +169,31 @@ jobs:
           path: |
             ${{ env.ACCOUNTS_DIR }}
             ${{ env.CONTRACTS_INFO_FILE }}
+
+  # Drafts a release
+  release:
+    name: Draft release
+    runs-on: ubuntu-latest
+    needs: setup-dev-network
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
+      - name: Prepare dev-net-data zip
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r dev-net-data-${{ env.VERSION_TAG }}.zip dev-net-data-${{ env.VERSION_TAG }}
+
+      # temporary using commit as version until it is merged. Updates node version v12 -> v16
+      - uses: "marvinpinto/action-automatic-releases@6273874b61ebc8c71f1a61b2d98e234cf389b303"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          draft: true
+          files: |
+            dev-net-data-${{ env.VERSION_TAG }}.zip
+            nolusd-${{ env.VERSION_TAG }}
