@@ -1,0 +1,16 @@
+name: Notify Slack on Release
+
+on:
+  release:
+    types: [published, unpublished, created, edited, deleted, prereleased, released]
+
+jobs:
+  notify_slack:
+    environment: dev chain
+    runs-on: ubuntu-latest
+    name: Notify Slack on Release
+    steps:
+      - name: Notify Slack on Release
+        uses: instantish/notify-slack-on-release@v1.3.0
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
