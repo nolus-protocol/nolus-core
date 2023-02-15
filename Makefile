@@ -5,6 +5,7 @@ LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 NOLUS_BINARY=nolusd
+BINDIR ?= $(GOPATH)/bin
 FUZZ_NUM_SEEDS ?= 2
 FUZZ_NUM_RUNS_PER_SEED ?= 3
 FUZZ_NUM_BLOCKS ?= 100
@@ -151,6 +152,12 @@ test-fuzz:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
+
+test-sim-import-export:
+	go get github.com/cosmos/tools/cmd/runsim
+	go install github.com/cosmos/tools/cmd/runsim
+	@echo "Running application import/export simulation. This may take several minutes..."
+	@$(BINDIR)/runsim -Jobs=4 -SimAppPkg=./app -ExitOnFail 10 5 TestAppImportExport
 
 test-unit-cosmos:
 	./scripts/test/run-test-unit-cosmos.sh >&2
