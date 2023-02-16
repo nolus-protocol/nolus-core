@@ -11,10 +11,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
+	"github.com/cosmos/cosmos-sdk/store"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -29,9 +33,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	icacontrollertypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/controller/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v3/modules/core/24-host"
-	"github.com/stretchr/testify/require"
+
 	"github.com/tendermint/spm/cosmoscmd"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -43,9 +48,13 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 
+	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
 	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
+	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
+	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
 var (
@@ -63,12 +72,6 @@ type StoreKeysPrefixes struct {
 	A        sdk.StoreKey
 	B        sdk.StoreKey
 	Prefixes [][]byte
-}
-
-// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
-// an IAVLStore for faster simulation speed.
-func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
-	bapp.SetFauxMerkleMode()
 }
 
 func TestAppStateDeterminism(t *testing.T) {
@@ -213,7 +216,6 @@ func TestAppImportExport(t *testing.T) {
 	}()
 	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, Name, newNolusApp.(*App).Name())
-	// newApp := NewWasmApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simapp.FlagPeriodValue, encConf, wasm.EnableAllProposals, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
 
 	var genesisState GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
@@ -246,11 +248,49 @@ func TestAppImportExport(t *testing.T) {
 		{nolusApp.(*App).keys[ibchost.StoreKey], newNolusApp.(*App).keys[ibchost.StoreKey], [][]byte{}},
 		{nolusApp.(*App).keys[ibctransfertypes.StoreKey], newNolusApp.(*App).keys[ibctransfertypes.StoreKey], [][]byte{}},
 		{nolusApp.(*App).keys[feetypes.StoreKey], newNolusApp.(*App).keys[feetypes.StoreKey], [][]byte{}},
-		// {nolusApp.(*App).keys[wasm.StoreKey], newNolusApp.(*App).keys[wasm.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[minttypes.StoreKey], newNolusApp.(*App).keys[minttypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[taxmoduletypes.StoreKey], newNolusApp.(*App).keys[taxmoduletypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[interchaintxstypes.StoreKey], newNolusApp.(*App).keys[interchaintxstypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[contractmanagermoduletypes.StoreKey], newNolusApp.(*App).keys[contractmanagermoduletypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[interchainqueriestypes.StoreKey], newNolusApp.(*App).keys[interchainqueriestypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[icacontrollertypes.StoreKey], newNolusApp.(*App).keys[icacontrollertypes.StoreKey], [][]byte{}},
+		{nolusApp.(*App).keys[wasm.StoreKey], newNolusApp.(*App).keys[wasm.StoreKey], [][]byte{}},
 	}
 
 	// delete persistent tx counter value
 	ctxA.KVStore(nolusApp.(*App).keys[wasm.StoreKey]).Delete(wasmtypes.TXCounterPrefix)
+
+	// reset contract code index in source DB for comparison with dest DB
+	dropContractHistory := func(s store.KVStore, keys ...[]byte) {
+		for _, key := range keys {
+			prefixStore := prefix.NewStore(s, key)
+			iter := prefixStore.Iterator(nil, nil)
+			for ; iter.Valid(); iter.Next() {
+				prefixStore.Delete(iter.Key())
+			}
+			iter.Close()
+		}
+	}
+	prefixes := [][]byte{wasmtypes.ContractCodeHistoryElementPrefix, wasmtypes.ContractByCodeIDAndCreatedSecondaryIndexPrefix}
+	dropContractHistory(ctxA.KVStore(nolusApp.(*App).keys[wasm.StoreKey]), prefixes...)
+	dropContractHistory(ctxB.KVStore(newNolusApp.(*App).keys[wasm.StoreKey]), prefixes...)
+
+	normalizeContractInfo := func(ctx sdk.Context, nApp *App) {
+		var index uint64
+		nApp.WasmKeeper.IterateContractInfo(ctx, func(address sdk.AccAddress, info wasmtypes.ContractInfo) bool {
+			created := &wasmtypes.AbsoluteTxPosition{
+				BlockHeight: uint64(0),
+				TxIndex:     index,
+			}
+			info.Created = created
+			store := ctx.KVStore(nApp.keys[wasm.StoreKey])
+			store.Set(wasmtypes.GetContractAddressKey(address), nApp.appCodec.MustMarshal(&info))
+			index++
+			return false
+		})
+	}
+	normalizeContractInfo(ctxA, nolusApp.(*App))
+	normalizeContractInfo(ctxB, newNolusApp.(*App))
 
 	// diff both stores
 	for _, skp := range storeKeysPrefixes {
@@ -295,4 +335,10 @@ func AppStateFn(codec codec.Codec, manager *module.SimulationManager) simtypes.A
 		simapp.FlagGenesisTimeValue = time.Now().Unix()
 	}
 	return simapp.AppStateFn(codec, manager)
+}
+
+// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
+// an IAVLStore for faster simulation speed.
+func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
+	bapp.SetFauxMerkleMode()
 }
