@@ -25,7 +25,7 @@ import (
 
 type CustomMessengerTestSuite struct {
 	testutil.IBCConnectionTestSuite
-	neutron         *app.App // TODO: nolus?
+	neutron         *app.App
 	ctx             sdk.Context
 	messenger       *wasmbinding.CustomMessenger
 	contractOwner   sdk.AccAddress
@@ -34,12 +34,12 @@ type CustomMessengerTestSuite struct {
 
 func (suite *CustomMessengerTestSuite) SetupTest() {
 	suite.IBCConnectionTestSuite.SetupTest()
-	suite.neutron = suite.GetNeutronZoneApp(suite.ChainA) // TODO: nolus?
+	suite.neutron = suite.GetNeutronZoneApp(suite.ChainA)
 	suite.ctx = suite.ChainA.GetContext()
 	suite.messenger = &wasmbinding.CustomMessenger{}
-	suite.messenger.Ictxmsgserver = ictxkeeper.NewMsgServerImpl(suite.neutron.InterchainTxsKeeper)   // TODO: nolus?
-	suite.messenger.Keeper = suite.neutron.InterchainTxsKeeper                                       // TODO: nolus?
-	suite.messenger.Icqmsgserver = icqkeeper.NewMsgServerImpl(suite.neutron.InterchainQueriesKeeper) // TODO: nolus?
+	suite.messenger.Ictxmsgserver = ictxkeeper.NewMsgServerImpl(suite.neutron.InterchainTxsKeeper)
+	suite.messenger.Keeper = suite.neutron.InterchainTxsKeeper
+	suite.messenger.Icqmsgserver = icqkeeper.NewMsgServerImpl(suite.neutron.InterchainQueriesKeeper)
 	suite.contractOwner = keeper.RandomAccountAddress(suite.T())
 }
 
@@ -237,7 +237,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTx() {
 
 	senderAddress := suite.ChainA.SenderAccounts[0].SenderAccount.GetAddress()
 	coinsAmnt := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(int64(10_000_000))))
-	bankKeeper := suite.neutron.BankKeeper // TODO: nolus?
+	bankKeeper := suite.neutron.BankKeeper
 	err := bankKeeper.SendCoins(suite.ctx, senderAddress, suite.contractAddress, coinsAmnt)
 	suite.Require().NoError(err)
 

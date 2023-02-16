@@ -26,7 +26,7 @@ type CustomQuerierTestSuite struct {
 
 func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 	var (
-		neutron = suite.GetNeutronZoneApp(suite.ChainA) // TODO: nolus?
+		neutron = suite.GetNeutronZoneApp(suite.ChainA)
 		ctx     = suite.ChainA.GetContext()
 		owner   = keeper.RandomAccountAddress(suite.T()) // We don't care what this address is
 	)
@@ -38,8 +38,8 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 
 	// Register and submit query result
 	clientKey := host.FullClientStateKey(suite.Path.EndpointB.ClientID)
-	lastID := neutron.InterchainQueriesKeeper.GetLastRegisteredQueryKey(ctx) + 1 // TODO: nolus?
-	neutron.InterchainQueriesKeeper.SetLastRegisteredQueryKey(ctx, lastID)       // TODO: nolus?
+	lastID := neutron.InterchainQueriesKeeper.GetLastRegisteredQueryKey(ctx) + 1
+	neutron.InterchainQueriesKeeper.SetLastRegisteredQueryKey(ctx, lastID)
 	registeredQuery := icqtypes.RegisteredQuery{
 		Id: lastID,
 		Keys: []*icqtypes.KVKey{
@@ -49,8 +49,8 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 		UpdatePeriod: 1,
 		ConnectionId: suite.Path.EndpointA.ConnectionID,
 	}
-	neutron.InterchainQueriesKeeper.SetLastRegisteredQueryKey(ctx, lastID) // TODO: nolus?
-	err := neutron.InterchainQueriesKeeper.SaveQuery(ctx, registeredQuery) // TODO: nolus?
+	neutron.InterchainQueriesKeeper.SetLastRegisteredQueryKey(ctx, lastID)
+	err := neutron.InterchainQueriesKeeper.SaveQuery(ctx, registeredQuery)
 	suite.Require().NoError(err)
 
 	chainBResp := suite.ChainB.App.Query(abci.RequestQuery{
@@ -72,7 +72,7 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 		Height:   uint64(chainBResp.Height),
 		Revision: suite.ChainA.LastHeader.GetHeight().GetRevisionNumber(),
 	}
-	err = neutron.InterchainQueriesKeeper.SaveKVQueryResult(ctx, lastID, expectedQueryResult) // TODO: nolus?
+	err = neutron.InterchainQueriesKeeper.SaveKVQueryResult(ctx, lastID, expectedQueryResult)
 	suite.Require().NoError(err)
 
 	// Query interchain query result
@@ -145,7 +145,6 @@ func (suite *CustomQuerierTestSuite) TestInterchainAccountAddress() {
 	err = suite.queryCustom(ctx, contractAddress, query, &resp)
 	suite.Require().NoError(err)
 
-	// TODO: do we even want this? Nolus won't be able to host ICA's as of now
 	hostNeutronApp, ok := suite.ChainB.App.(*app.App)
 	suite.Require().True(ok)
 
@@ -202,7 +201,7 @@ func (suite *CustomQuerierTestSuite) queryCustom(ctx sdk.Context, contract sdk.A
 		return err
 	}
 
-	resBz, err := suite.GetNeutronZoneApp(suite.ChainA).WasmKeeper.QuerySmart(ctx, contract, queryBz) // TODO: nolus?
+	resBz, err := suite.GetNeutronZoneApp(suite.ChainA).WasmKeeper.QuerySmart(ctx, contract, queryBz)
 	if err != nil {
 		return err
 	}
