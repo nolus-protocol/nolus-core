@@ -15,7 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/simapp/helpers"
-	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -72,10 +71,6 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 	bapp.SetFauxMerkleMode()
 }
 
-func interBlockCacheOpt() func(*baseapp.BaseApp) {
-	return baseapp.SetInterBlockCache(store.NewCommitKVStoreCacheManager())
-}
-
 func TestAppStateDeterminism(t *testing.T) {
 	if !simapp.FlagEnabledValue {
 		t.Skip("skipping application simulation")
@@ -121,7 +116,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := tmdb.NewMemDB()
-			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, interBlockCacheOpt())
+			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 			params.SetAddressPrefixes()
 			ctx := newApp.(*App).BaseApp.NewUncachedContext(true, tmproto.Header{})
 			newApp.(*App).TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
@@ -209,7 +204,7 @@ func TestAppImportExport(t *testing.T) {
 
 	t.Log("importing genesis...")
 
-	_, newDB, newDir, _, _, err := SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
@@ -268,30 +263,6 @@ func TestAppImportExport(t *testing.T) {
 		t.Logf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
 		require.Len(t, failedKVAs, 0, GetSimulationLog(skp.A.Name(), nolusApp.(*App).SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
 	}
-}
-
-// SetupSimulation wraps simapp.SetupSimulation in order to create any export directory if they do not exist yet
-func SetupSimulation(dirPrefix, dbName string) (simtypes.Config, tmdb.DB, string, log.Logger, bool, error) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation(dirPrefix, dbName)
-	if err != nil {
-		return simtypes.Config{}, nil, "", nil, false, err
-	}
-
-	paths := []string{config.ExportParamsPath, config.ExportStatePath, config.ExportStatsPath}
-	for _, path := range paths {
-		if len(path) == 0 {
-			continue
-		}
-
-		path = filepath.Dir(path)
-		if _, err := os.Stat(path); os.IsNotExist(err) {
-			if err := os.MkdirAll(path, os.ModePerm); err != nil {
-				panic(err)
-			}
-		}
-	}
-
-	return config, db, dir, logger, skip, err
 }
 
 // GetSimulationLog unmarshals the KVPair's Value to the corresponding type based on the
