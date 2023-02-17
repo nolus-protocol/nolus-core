@@ -147,17 +147,15 @@ lint:
 ###############################################################################
 .PHONY: test-fuzz test-unit-cosmos test-unit test-unit-coverage test-unit-coverage-report
 
-test-fuzz:
+test-sim-nondeterminism:
 	go test ./app $(BUILD_FLAGS) -mod=readonly -run TestAppStateDeterminism -Enabled=true \
 		-NumBlocks=$(FUZZ_NUM_BLOCKS) -BlockSize=$(FUZZ_BLOCK_SIZE) -Commit=true -Period=0 -v \
 		-NumSeeds=$(FUZZ_NUM_SEEDS) -NumTimesToRunPerSeed=$(FUZZ_NUM_RUNS_PER_SEED) -timeout 24h
 
 test-sim-import-export:
-	go get github.com/cosmos/tools/cmd/runsim
-	go install github.com/cosmos/tools/cmd/runsim
+	go install github.com/cosmos/tools/cmd/runsim@latest
 	@echo "Running application import/export simulation. This may take several minutes..."
 	runsim -Jobs=4 -SimAppPkg=./app -ExitOnFail 10 5 TestAppImportExport
-	go mod tidy
 
 test-unit-cosmos:
 	./scripts/test/run-test-unit-cosmos.sh >&2
