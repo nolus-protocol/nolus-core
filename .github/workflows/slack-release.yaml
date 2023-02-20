@@ -11,6 +11,6 @@ jobs:
     name: Notify Slack on Release
     steps:
       - name: Notify Slack on Release
-        uses: instantish/notify-slack-on-release@v1.3.0
+        uses: instantish/notify-slack-on-release@v1.0.0
         with:
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
