@@ -16,7 +16,7 @@ func (app *App) RegisterUpgradeHandlers() {
 	app.registerUpgradeV1_43(upgradeInfo)
 }
 
-// performs upgrade from v0.1.39 -> v0.1.43
+// performs upgrade from v0.1.39 -> v0.1.43.
 func (app *App) registerUpgradeV1_43(_ storetypes.UpgradeInfo) {
 	const UpgradeV1_43Plan = "v0.1.43"
 	app.UpgradeKeeper.SetUpgradeHandler(UpgradeV1_43Plan, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
