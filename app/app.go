@@ -772,6 +772,10 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetInitChainer(app.InitChainer)
 
+	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
+	// Make sure it's called after `app.mm` and `app.configurator` are set.
+	app.RegisterUpgradeHandlers()
+
 	// must be before Loading version
 	// requires the snapshot store to be created and registered as a BaseAppOption
 	// see cmd/wasmd/root.go: 206 - 214 approx
