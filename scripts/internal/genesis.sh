@@ -48,13 +48,17 @@ generate_genesis() {
   source "$wasm_script"
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
-  # for PROD we decided to use the leaser's contract address(deterministic) as contracts_owner_addr which will be used to store and instantiate contracts,
+  # for PROD we decided to use the admin contract's address(deterministic) as
+  # contracts_owner_addr which will be used to store and instantiate contracts,
   # because we would only change our contracts via gov proposals.
-  # for local&&dev, we are having a normal address for contracts_owner which will be used for testing purposes
-  leaser_addr=$(leaser_instance_addr)
+  # for local&&dev, we are having a normal address for contracts_owner which
+  # will be used for testing purposes
+  admin_contract_addr=$(admin_contract_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
-  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" "$accounts_spec" "$treasury_addr" "$leaser_addr" "$gov_voting_period"  "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
+  _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
+    "$accounts_spec" "$treasury_addr" "$admin_contract_addr" "$gov_voting_period" \
+    "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
@@ -111,7 +115,7 @@ __generate_proto_genesis_no_wasm() {
   local -r native_currency="$2"
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
-  local -r leaser_addr="$5"
+  local -r admin_contract_addr="$5"
   local -r gov_voting_period="$6"
   local -r feerefunder_ack_fee_min="$7"
   local -r feerefunder_timeout_fee_min="$8"
@@ -132,8 +136,9 @@ __generate_proto_genesis_no_wasm() {
     add_genesis_account "$account_spec" "$native_currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
-  # This will be used for MAINNET/TESTNET to have initial balance for the contracts_owner_addr(The leaser contract's address)
-  if [ "$contracts_owner_addr" == "$leaser_addr" ]; then
+  # This will be used for MAINNET/TESTNET to have initial balance for the
+  # contracts_owner_addr(The admin contract's address)
+  if [ "$contracts_owner_addr" == "$admin_contract_addr" ]; then
     __add_bank_balances "$genesis_file" "$contracts_owner_addr" "$treasury_init_tokens_u128" "$native_currency"
   fi
 }
