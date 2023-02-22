@@ -552,9 +552,9 @@ func New(
 		panic("error while reading wasm config: " + err.Error())
 	}
 
-	// Set the maximum wasm code size to 1000*1024 (1MB). This is the maximum size of a wasm bytecode that can be uploaded on genesis.
+	// Set the maximum wasm code size to 1500*1024 (1.5MB). This is the maximum size of a wasm bytecode that can be uploaded on genesis.
 	// Starting with wasmd v0.30.0, this variable will also be used to limit the maximum size of a wasm bytecode that can be uploaded via governance.
-	wasmtypes.MaxWasmSize = 1000 * 1024
+	wasmtypes.MaxWasmSize = 1500 * 1024
 	var wasmOpts []wasm.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
