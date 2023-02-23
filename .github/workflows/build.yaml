@@ -10,14 +10,80 @@ on:
 env:
   VERSION_TAG: ${{ github.ref_name }}
   ARTIFACT_BIN: "nolus.tar.gz"
+  AWS_REGISTRY_ID: "013603813222"
+  AWS_REGION: "us-east-1"
+  ERC_REGISTRY: "public.ecr.aws"
+  ERC_REGISTRY_ALIAS: "nolus"
+  ERC_REPOSITORY: "builder"
+  # make sure to update build-binary container tag as well
+  IMAGE_TAG: "0.8"
+  DOCKERFILE: ".github/images/builder.Dockerfile"
 
 jobs:
+  # Checks if builder image exists in docker registry
+  check-exist:
+      name: Check if builder image exists
+      runs-on: ubuntu-latest
+      container: amazon/aws-cli
+      outputs:
+        # 'failure' -  when no image with such tag exists 
+        # 'success' - image exists
+        status: ${{ steps.check.outcome }}
+
+      steps:
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1-node16
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+
+        - name: Run check exist image
+          id: check
+          continue-on-error: true
+          run: |
+            aws ecr-public describe-images \
+                --registry-id $AWS_REGISTRY_ID \
+                --repository-name $ERC_REPOSITORY \
+                --region $AWS_REGION \
+                --image-ids=imageTag=$IMAGE_TAG
+
+  # Builds and pushed builder image if it does not exist
+  builder-push:
+    name: Build and push builder image
+    needs: check-exist
+    if: needs.check-exist.outputs.status == 'failure'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG -f $DOCKERFILE .
+          docker push $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG
+
   # Builds new version of the binary.
   build-binary:
     name: Build binary
+    needs: builder-push
     runs-on: ubuntu-latest
     container:
-      image: "public.ecr.aws/nolus/builder:0.7"
+      # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
+      image: "public.ecr.aws/nolus/builder:0.8"
 
     steps:
     - uses: actions/checkout@v3
