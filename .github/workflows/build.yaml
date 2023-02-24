@@ -21,8 +21,8 @@ env:
 
 jobs:
   # Checks if builder image exists in docker registry
-  check-exist:
-      name: Check if builder image exists
+  builder-exists:
+      name: Builder exists
       runs-on: ubuntu-latest
       container: amazon/aws-cli
       outputs:
@@ -49,10 +49,9 @@ jobs:
                 --image-ids=imageTag=$IMAGE_TAG
 
   # Builds and pushed builder image if it does not exist
-  builder-push:
-    name: Build and push builder image
-    needs: check-exist
-    if: needs.check-exist.outputs.status == 'failure'
+  builder-create:
+    name: Create builder image
+    needs: builder-exists
     runs-on: ubuntu-latest
 
     steps:
@@ -71,15 +70,21 @@ jobs:
         with:
           registry-type: public
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Create new image
+        shell: bash
         run: |
-          docker build -t $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG -f $DOCKERFILE .
-          docker push $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG
+          if [[ ${{ needs.builder-exists.outputs.status }} == 'failure' ]]
+          then
+            docker build -t $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG -f $DOCKERFILE .
+            docker push $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG
+          else
+            echo "Image version $IMAGE_TAG exists. Skipping step..."
+          fi
 
   # Builds new version of the binary.
   build-binary:
     name: Build binary
-    needs: builder-push
+    needs: builder-create
     runs-on: ubuntu-latest
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
