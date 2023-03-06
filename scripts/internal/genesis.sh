@@ -176,7 +176,7 @@ __set_tax_recipient() {
 
   local genesis_tmp_file="$genesis_file".tmp
   < "$genesis_file" \
-    jq '.app_state["tax"]["params"]["contractAddress"]="'"$recipient_addr"'"' > "$genesis_tmp_file"
+    jq '.app_state["tax"]["params"]["contract_address"]="'"$recipient_addr"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
