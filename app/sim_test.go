@@ -228,37 +228,39 @@ func TestAppImportExport(t *testing.T) {
 
 	t.Log("comparing stores...")
 
+	keys := nolusApp.(*App).AppKeepers.GetKVStoreKey()
+	newKeys := newNolusApp.(*App).AppKeepers.GetKVStoreKey()
 	storeKeysPrefixes := []StoreKeysPrefixes{
-		{nolusApp.(*App).keys[authtypes.StoreKey], newNolusApp.(*App).keys[authtypes.StoreKey], [][]byte{}},
+		{keys[authtypes.StoreKey], newKeys[authtypes.StoreKey], [][]byte{}},
 		{
-			nolusApp.(*App).keys[stakingtypes.StoreKey], newNolusApp.(*App).keys[stakingtypes.StoreKey],
+			keys[stakingtypes.StoreKey], newKeys[stakingtypes.StoreKey],
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
 				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingIdKey, stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey,
 			},
 		},
-		{nolusApp.(*App).keys[slashingtypes.StoreKey], newNolusApp.(*App).keys[slashingtypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[minttypes.StoreKey], newNolusApp.(*App).keys[minttypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[distrtypes.StoreKey], newNolusApp.(*App).keys[distrtypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[banktypes.StoreKey], newNolusApp.(*App).keys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
-		{nolusApp.(*App).keys[paramstypes.StoreKey], newNolusApp.(*App).keys[paramstypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[govtypes.StoreKey], newNolusApp.(*App).keys[govtypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[evidencetypes.StoreKey], newNolusApp.(*App).keys[evidencetypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[capabilitytypes.StoreKey], newNolusApp.(*App).keys[capabilitytypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[ibchost.StoreKey], newNolusApp.(*App).keys[ibchost.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[ibctransfertypes.StoreKey], newNolusApp.(*App).keys[ibctransfertypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[feetypes.StoreKey], newNolusApp.(*App).keys[feetypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[minttypes.StoreKey], newNolusApp.(*App).keys[minttypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[taxmoduletypes.StoreKey], newNolusApp.(*App).keys[taxmoduletypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[interchaintxstypes.StoreKey], newNolusApp.(*App).keys[interchaintxstypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[contractmanagermoduletypes.StoreKey], newNolusApp.(*App).keys[contractmanagermoduletypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[interchainqueriestypes.StoreKey], newNolusApp.(*App).keys[interchainqueriestypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[icacontrollertypes.StoreKey], newNolusApp.(*App).keys[icacontrollertypes.StoreKey], [][]byte{}},
-		{nolusApp.(*App).keys[wasm.StoreKey], newNolusApp.(*App).keys[wasm.StoreKey], [][]byte{}},
+		{keys[slashingtypes.StoreKey], newKeys[slashingtypes.StoreKey], [][]byte{}},
+		{keys[minttypes.StoreKey], newKeys[minttypes.StoreKey], [][]byte{}},
+		{keys[distrtypes.StoreKey], newKeys[distrtypes.StoreKey], [][]byte{}},
+		{keys[banktypes.StoreKey], newKeys[banktypes.StoreKey], [][]byte{banktypes.BalancesPrefix}},
+		{keys[paramstypes.StoreKey], newKeys[paramstypes.StoreKey], [][]byte{}},
+		{keys[govtypes.StoreKey], newKeys[govtypes.StoreKey], [][]byte{}},
+		{keys[evidencetypes.StoreKey], newKeys[evidencetypes.StoreKey], [][]byte{}},
+		{keys[capabilitytypes.StoreKey], newKeys[capabilitytypes.StoreKey], [][]byte{}},
+		{keys[ibchost.StoreKey], newKeys[ibchost.StoreKey], [][]byte{}},
+		{keys[ibctransfertypes.StoreKey], newKeys[ibctransfertypes.StoreKey], [][]byte{}},
+		{keys[feetypes.StoreKey], newKeys[feetypes.StoreKey], [][]byte{}},
+		{keys[minttypes.StoreKey], newKeys[minttypes.StoreKey], [][]byte{}},
+		{keys[taxmoduletypes.StoreKey], newKeys[taxmoduletypes.StoreKey], [][]byte{}},
+		{keys[interchaintxstypes.StoreKey], newKeys[interchaintxstypes.StoreKey], [][]byte{}},
+		{keys[contractmanagermoduletypes.StoreKey], newKeys[contractmanagermoduletypes.StoreKey], [][]byte{}},
+		{keys[interchainqueriestypes.StoreKey], newKeys[interchainqueriestypes.StoreKey], [][]byte{}},
+		{keys[icacontrollertypes.StoreKey], newKeys[icacontrollertypes.StoreKey], [][]byte{}},
+		{keys[wasm.StoreKey], newKeys[wasm.StoreKey], [][]byte{}},
 	}
 
 	// delete persistent tx counter value
-	ctxA.KVStore(nolusApp.(*App).keys[wasm.StoreKey]).Delete(wasmtypes.TXCounterPrefix)
+	ctxA.KVStore(keys[wasm.StoreKey]).Delete(wasmtypes.TXCounterPrefix)
 
 	// reset contract code index in source DB for comparison with dest DB
 	dropContractHistory := func(s store.KVStore, keys ...[]byte) {
@@ -272,8 +274,8 @@ func TestAppImportExport(t *testing.T) {
 		}
 	}
 	prefixes := [][]byte{wasmtypes.ContractCodeHistoryElementPrefix, wasmtypes.ContractByCodeIDAndCreatedSecondaryIndexPrefix}
-	dropContractHistory(ctxA.KVStore(nolusApp.(*App).keys[wasm.StoreKey]), prefixes...)
-	dropContractHistory(ctxB.KVStore(newNolusApp.(*App).keys[wasm.StoreKey]), prefixes...)
+	dropContractHistory(ctxA.KVStore(keys[wasm.StoreKey]), prefixes...)
+	dropContractHistory(ctxB.KVStore(newKeys[wasm.StoreKey]), prefixes...)
 
 	normalizeContractInfo := func(ctx sdk.Context, nApp *App) {
 		var index uint64
@@ -283,7 +285,7 @@ func TestAppImportExport(t *testing.T) {
 				TxIndex:     index,
 			}
 			info.Created = created
-			store := ctx.KVStore(nApp.keys[wasm.StoreKey])
+			store := ctx.KVStore(nApp.AppKeepers.GetKVStoreKey()[wasm.StoreKey])
 			store.Set(wasmtypes.GetContractAddressKey(address), nApp.appCodec.MustMarshal(&info))
 			index++
 			return false
