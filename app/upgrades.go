@@ -1,10 +1,17 @@
 package app
 
 import (
+	"encoding/json"
+
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	"github.com/neutron-org/neutron/x/interchainqueries"
+	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
+	"github.com/neutron-org/neutron/x/interchaintxs"
+	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
 func (app *App) RegisterUpgradeHandlers() {
@@ -16,6 +23,7 @@ func (app *App) RegisterUpgradeHandlers() {
 	app.registerUpgradeV1_43(upgradeInfo)
 	app.registerUpgradeV1_44(upgradeInfo)
 	app.registerUpgradeV2_0(upgradeInfo)
+	app.registerUpgradeV2_1(upgradeInfo)
 }
 
 // performs upgrade from v0.1.39 -> v0.1.43.
@@ -36,11 +44,58 @@ func (app *App) registerUpgradeV1_44(_ storetypes.UpgradeInfo) {
 	})
 }
 
-// performs upgrade from v0.1.43 -> v0.2.2.
+// performs upgrade from v0.1.43 -> v0.2.0.
 func (app *App) registerUpgradeV2_0(_ storetypes.UpgradeInfo) {
 	const UpgradeV2_0Plan = "v0.2.0"
 	app.UpgradeKeeper.SetUpgradeHandler(UpgradeV2_0Plan, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Upgrade handler execution", "name", UpgradeV2_0Plan)
 		return fromVM, nil
+	})
+}
+
+// performs upgrade from v0.2.0 -> v0.2.1.
+func (app *App) registerUpgradeV2_1(_ storetypes.UpgradeInfo) {
+	const UpgradeV2_0Plan = "v0.2.1"
+	app.UpgradeKeeper.SetUpgradeHandler(UpgradeV2_0Plan, func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ctx.Logger().Info("Upgrade handler execution", "name", UpgradeV2_0Plan)
+		appCodec := app.appCodec
+		// Register the consensus version in the version map
+		// to avoid the SDK from triggering the default
+		// InitGenesis function.
+		fromVM["interchainqueries"] = interchainqueries.AppModule{}.ConsensusVersion()
+
+		// Make custom genesis state and run InitGenesis for interchainqueries
+		interchainQueriesCustomGenesis := interchainqueriestypes.GenesisState{
+			Params: interchainqueriestypes.Params{
+				QuerySubmitTimeout: 1036800,
+				QueryDeposit:       sdk.NewCoins(sdk.NewCoin("unls", sdk.NewInt(1000000))),
+			},
+			RegisteredQueries: []*interchainqueriestypes.RegisteredQuery{},
+		}
+		interchainQueriesCustomGenesisJSON, err := json.Marshal(interchainQueriesCustomGenesis)
+		if err != nil {
+			return nil, err
+		}
+		app.mm.Modules["interchainqueries"].InitGenesis(ctx, appCodec, interchainQueriesCustomGenesisJSON)
+
+		// Register the consensus version in the version map
+		// to avoid the SDK from triggering the default
+		// InitGenesis function.
+		fromVM["interchaintxs"] = interchaintxs.AppModule{}.ConsensusVersion()
+
+		// Make custom genesis state and run InitGenesis for interchaintxs
+		interchainTxsCustomGenesis := interchaintxstypes.GenesisState{
+			Params: interchaintxstypes.Params{
+				MsgSubmitTxMaxMessages: 16,
+			},
+		}
+		interchainTxsCustomGenesisJSON, err := json.Marshal(interchainTxsCustomGenesis)
+		if err != nil {
+			return nil, err
+		}
+		app.mm.Modules["interchaintxs"].InitGenesis(ctx, appCodec, interchainTxsCustomGenesisJSON)
+
+		ctx.Logger().Info("Running migrations")
+		return app.mm.RunMigrations(ctx, app.configurator, fromVM)
 	})
 }
