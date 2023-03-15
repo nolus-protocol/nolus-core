@@ -39,8 +39,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
-	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	v0 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v0"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -51,12 +49,8 @@ const (
 	Name = "nolus"
 )
 
-var (
-	// DefaultNodeHome default home directories for the application daemon.
-	DefaultNodeHome string
-
-	Upgrades = []upgrades.Upgrade{v0.Upgrade}
-)
+// DefaultNodeHome default home directories for the application daemon.
+var DefaultNodeHome string
 
 var (
 	_ cosmoscmd.CosmosApp     = (*App)(nil)
