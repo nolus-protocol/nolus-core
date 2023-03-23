@@ -130,7 +130,7 @@ __generate_proto_genesis_no_wasm() {
   __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
   __set_gov_parameters "$genesis_file" "$gov_voting_period"
   __modify_slashing_and_staking_params "$genesis_file"
-  __modify_feerefunder_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
+  __modify_neutron_modules_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
 
   while IFS= read -r account_spec ; do
     add_genesis_account "$account_spec" "$native_currency" "$genesis_home_dir"
@@ -223,7 +223,7 @@ __modify_slashing_and_staking_params() {
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
-__modify_feerefunder_params() {
+__modify_neutron_modules_params() {
   local genesis_file="$1"
   local -r ack_fee_amount="$2"
   local -r timeout_fee_amount="$3"
@@ -235,7 +235,8 @@ __modify_feerefunder_params() {
     jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["amount"]="'"$ack_fee_amount"'"' \
     |  jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["denom"]="'"$native_currency"'"' \
     | jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["amount"]="'"$timeout_fee_amount"'"' \
-    |  jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
+    |  jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["denom"]="'"$native_currency"'"' \
+    | jq '.app_state["interchainqueries"]["params"]["query_deposit"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
