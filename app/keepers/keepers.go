@@ -62,7 +62,7 @@ import (
 	contractmanagermodulekeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
 	"github.com/neutron-org/neutron/x/feerefunder"
-	feekeeper "github.com/neutron-org/neutron/x/feerefunder/keeper"
+	feerefunderkeeper "github.com/neutron-org/neutron/x/feerefunder/keeper"
 	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
 	"github.com/neutron-org/neutron/x/interchainqueries"
 	interchainquerieskeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
@@ -145,7 +145,7 @@ type AppKeepers struct {
 	ICAControllerKeeper icacontrollerkeeper.Keeper
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      wrapkeeper.KeeperTransferWrapper
-	FeeKeeper           *feekeeper.Keeper
+	FeeRefunderKeeper   *feerefunderkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -307,7 +307,7 @@ func NewAppKeeper(
 	)
 	appKeepers.ContractManagerModule = contractmanager.NewAppModule(appCodec, appKeepers.ContractManagerKeeper)
 
-	appKeepers.FeeKeeper = feekeeper.NewKeeper(
+	appKeepers.FeeRefunderKeeper = feerefunderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[feetypes.StoreKey],
 		appKeepers.memKeys[feetypes.MemStoreKey],
@@ -315,7 +315,7 @@ func NewAppKeeper(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.BankKeeper,
 	)
-	appKeepers.FeeRefunderModule = feerefunder.NewAppModule(appCodec, *appKeepers.FeeKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	appKeepers.FeeRefunderModule = feerefunder.NewAppModule(appCodec, *appKeepers.FeeRefunderKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
 	appKeepers.TransferKeeper = wrapkeeper.NewKeeper(
 		appCodec,
@@ -327,7 +327,7 @@ func NewAppKeeper(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
-		appKeepers.FeeKeeper,
+		appKeepers.FeeRefunderKeeper,
 		appKeepers.ContractManagerKeeper,
 	)
 	appKeepers.TransferModule = transferSudo.NewAppModule(appKeepers.TransferKeeper)
@@ -382,7 +382,7 @@ func NewAppKeeper(
 		appKeepers.ICAControllerKeeper,
 		appKeepers.ScopedInterchainTxsKeeper,
 		appKeepers.ContractManagerKeeper,
-		appKeepers.FeeKeeper,
+		appKeepers.FeeRefunderKeeper,
 	)
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
@@ -397,7 +397,7 @@ func NewAppKeeper(
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron,cosmwasm_1_1"
-	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&appKeepers.InterchainTxsKeeper, &appKeepers.InterchainQueriesKeeper, appKeepers.TransferKeeper), wasmOpts...)
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&appKeepers.InterchainTxsKeeper, &appKeepers.InterchainQueriesKeeper, appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper), wasmOpts...)
 	appKeepers.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		appKeepers.keys[wasm.StoreKey],

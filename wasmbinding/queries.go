@@ -85,6 +85,11 @@ func (qp *QueryPlugin) GetRegisteredInterchainQuery(ctx sdk.Context, req *bindin
 	return &bindings.QueryRegisteredQueryResponse{RegisteredQuery: &query}, nil
 }
 
+func (qp *QueryPlugin) GetMinIbcFee(ctx sdk.Context, _ *bindings.QueryMinIbcFeeRequest) (*bindings.QueryMinIbcFeeResponse, error) {
+	fee := qp.feeRefunderKeeper.GetMinFee(ctx)
+	return &bindings.QueryMinIbcFeeResponse{MinFee: fee}, nil
+}
+
 func mapGRPCRegisteredQueryToWasmBindings(grpcQuery types.RegisteredQuery) bindings.RegisteredQuery {
 	return bindings.RegisteredQuery{
 		ID:                              grpcQuery.GetId(),
@@ -98,5 +103,6 @@ func mapGRPCRegisteredQueryToWasmBindings(grpcQuery types.RegisteredQuery) bindi
 		LastSubmittedResultRemoteHeight: grpcQuery.GetLastSubmittedResultRemoteHeight(),
 		Deposit:                         grpcQuery.GetDeposit(),
 		SubmitTimeout:                   grpcQuery.GetSubmitTimeout(),
+		RegisteredAtHeight:              grpcQuery.GetRegisteredAtHeight(),
 	}
 }
