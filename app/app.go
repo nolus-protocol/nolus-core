@@ -201,9 +201,6 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetInitChainer(app.InitChainer)
 
-	// TODO start using those functions to follow upgrades patterns from gaia and osmosis.
-	// app.setupUpgradeHandlers()
-	// app.setupUpgradeStoreLoaders()
 	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
 	// Make sure it's called after `app.mm` and `app.configurator` are set.
 	app.RegisterUpgradeHandlers()
@@ -340,38 +337,6 @@ func (app *App) RegisterTxService(clientCtx client.Context) {
 func (app *App) RegisterTendermintService(clientCtx client.Context) {
 	tmservice.RegisterTendermintService(app.BaseApp.GRPCQueryRouter(), clientCtx, app.interfaceRegistry)
 }
-
-// TODO
-// configure store loader that checks if version == upgradeHeight and applies store upgrades.
-// func (app *App) setupUpgradeStoreLoaders() {
-// 	upgradeInfo, err := app.UpgradeKeeper.ReadUpgradeInfoFromDisk()
-// 	if err != nil {
-// 		panic(fmt.Sprintf("failed to read upgrade info from disk %s", err))
-// 	}
-
-// 	if app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-// 		return
-// 	}
-
-// 	for _, upgrade := range Upgrades {
-// 		if upgradeInfo.Name == upgrade.UpgradeName {
-// 			app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &upgrade.StoreUpgrades))
-// 		}
-// 	}
-// }
-
-// func (app *App) setupUpgradeHandlers() {
-// 	for _, upgrade := range Upgrades {
-// 		app.UpgradeKeeper.SetUpgradeHandler(
-// 			upgrade.UpgradeName,
-// 			upgrade.CreateUpgradeHandler(
-// 				app.mm,
-// 				app.configurator,
-// 				&app.AppKeepers,
-// 			),
-// 		)
-// 	}
-// }
 
 // GetMaccPerms returns a copy of the module account permissions.
 func GetMaccPerms() map[string][]string {
