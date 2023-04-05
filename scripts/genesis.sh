@@ -17,7 +17,6 @@ __print_usage() {
     <$COMMAND_FULL_GEN>
     [-c|--chain-id <string>]
     [--currency <native_currency>]
-    [--contracts-owner-addr <contracts_owner_address>]
     [--accounts <accounts_spec_json>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
@@ -36,7 +35,6 @@ __print_usage() {
 
 COMMAND_FULL_GEN="full-gen"
 CHAIN_ID=""
-CONTRACTS_OWNER_ADDR=""
 NATIVE_CURRENCY="unls"
 ACCOUNTS_SPEC=""
 WASM_SCRIPT_PATH=""
@@ -97,12 +95,6 @@ while [[ $# -gt 0 ]]; do
 
   --wasm-code-path)
     WASM_CODE_PATH="$2"
-    shift
-    shift
-    ;;
-
-  --contracts-owner-addr)
-    CONTRACTS_OWNER_ADDR="$2"
     shift
     shift
     ;;
@@ -180,7 +172,6 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
   verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
   verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
-  verify_mandatory "$CONTRACTS_OWNER_ADDR" "Contracts owner address"
   verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
   verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
   verify_mandatory "$LPP_NATIVE" "Lpp native currency symbol"
@@ -188,7 +179,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
-                                  "$WASM_CODE_PATH" "$CONTRACTS_OWNER_ADDR" "$TREASURY_INIT_TOKENS_U128" \
+                                  "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
                                   "$CONTRACTS_INFO_FILE" "$GOV_VOTING_PERIOD" \
                                   "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN")

@@ -39,7 +39,7 @@ NOLUS_NETWORK_ADDR="127.0.0.1"
 NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_NETWORK_GRPC_PORT="26615"
 DEX_NETWORK_ID="osmo-test-4"
-DEX_NETWORK_ADDR="10.215.65.11"
+DEX_NETWORK_ADDR="osmo-net.nolus.io"
 DEX_NETWORK_RPC_PORT="26657"
 DEX_NETWORK_GRPC_PORT="9090"
 HERMES_ACCOUNT_MNEMONIC=""
@@ -250,13 +250,6 @@ rm -fr "$VAL_ACCOUNTS_DIR"
 rm -fr "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
-contracts_owner_name="contracts_owner"
-contracts_owner_addr=$(generate_account "$contracts_owner_name" "$USER_DIR")
-# We handle the contracts_owner account as normal address.
-treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
-accounts_spec=$(echo "$accounts_spec" | add_account "$contracts_owner_addr" "$treasury_init_tokens")
-# accounts_spec=$(echo "$accounts_spec" | add_vesting_account "$contracts_owner_addr" "1000020000000$NATIVE_CURRENCY" \
-#                 "20000000" "2022-10-31T17:15:59+02:00" "2022-10-31T17:30:00+02:00")
 
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$INIT_LOCAL_NETWORK_SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
@@ -265,7 +258,7 @@ source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" \
               "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$contracts_owner_addr" "$TREASURY_NLS_U128" \
+              "$TREASURY_NLS_U128" \
               "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE" \
               "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
 
@@ -285,7 +278,7 @@ wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
 NOLUS_HERMES_ADDRESS=$(__nolus_hermes_address "$HERMES_BINARY_DIR" "$CHAIN_ID")
 
-leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$contracts_owner_name" "$RESERVE_NAME" "$CONTRACTS_INFO_FILE" "$HERMES_BINARY_DIR" "$NOLUS_HERMES_ADDRESS" \
+leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$RESERVE_NAME" "$HERMES_BINARY_DIR" "$NOLUS_HERMES_ADDRESS" \
                  "$CHAIN_ID" "$DEX_NETWORK_ID"
 
 "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;

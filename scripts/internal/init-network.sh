@@ -18,13 +18,12 @@ init_network() {
   local genesis_accounts_spec="$7"
   local -r wasm_script_path="$8"
   local -r wasm_code_path="$9"
-  local -r contracts_owner_addr="${10}"
-  local -r treasury_init_tokens_u128="${11}"
-  local -r lpp_native="${12}"
-  local -r contracts_info_file="${13}"
-  local -r gov_voting_period="${14}"
-  local -r feerefunder_ack_fee_min="${15}"
-  local -r feerefunder_timeout_fee_min="${16}"
+  local -r treasury_init_tokens_u128="${10}"
+  local -r lpp_native="${11}"
+  local -r contracts_info_file="${12}"
+  local -r gov_voting_period="${13}"
+  local -r feerefunder_ack_fee_min="${14}"
+  local -r feerefunder_timeout_fee_min="${15}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
@@ -32,7 +31,7 @@ init_network() {
                                           "$val_tokens" "$val_stake" \
                                           "$val_accounts_dir" "$genesis_accounts_spec" \
                                           "$wasm_script_path" "$wasm_code_path" \
-                                          "$contracts_owner_addr" "$treasury_init_tokens_u128" \
+                                          "$treasury_init_tokens_u128" \
                                           "$node_id_and_val_pubkeys" \
                                           "$lpp_native" "$contracts_info_file" \
                                           "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")

@@ -27,7 +27,7 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
   make install
   ```
 
-#### Init, setup the DEX parameters and run
+#### Init, set up the DEX parameters and run
 
 First generate the mnemonic you will use for Hermes:
 
@@ -46,6 +46,8 @@ Init and start:
 ```sh
 ./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps>
 ```
+
+Set up the DEX parameter: [Set up the DEX parameters manually](#set-up-the-dex-parameters-manually)
 
 The `make install` command will compile and locally install nolusd on your machine. `init-local-network.sh` generates a node setup, including setting the dex parameter (run `init-local-network.sh --help` for more configuration options). For more details check the [scripts README](./scripts/README.md)
 
@@ -69,12 +71,13 @@ nolusd start --home "networks/nolus/local-validator-1"
 
 Follow the steps [here](https://gitlab-nomo.credissimo.net/nomo/wiki/-/blob/main/hermes.md#install-and-configure-hermes). Write down the connection and channel identifiers at Nolus and Osmosis for further usage.
 
-## Setup the DEX parameters manually
+## Set up the DEX parameters manually
 
 The goal is to let smart contracts know the details of the connectivity to Osmosis. Herebelow is a sample request.
+This should be done via sudo gov proposal:
 
 ```sh
-nolusd tx wasm execute nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}' --fees 387unls --gas auto --gas-adjustment 1.1
+nolusd tx gov submit-proposal sudo-contract nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}' --title "Set up the DEX parameter" --description "Thе proposal aims to set the DEX parameters in the Leaser contract" --deposit 10000000unls --fees 900unls --gas auto --gas-adjustment 1.1 --from wallet
 ```
 
 *Notes:

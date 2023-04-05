@@ -33,7 +33,6 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID=""
 WASM_SCRIPT_PATH=""
 WASM_CODE_PATH=""
-CONTRACTS_OWNER_ADDR=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="1000000""$NATIVE_CURRENCY"
@@ -60,7 +59,6 @@ while [[ $# -gt 0 ]]; do
     [--validator-stake <tokens_val_will_stake>]
     [--wasm-script-path <wasm_script_path>]
     [--wasm-code-path <wasm_code_path>]
-    [--contracts-owner-addr <contracts_owner_address]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--faucet-mnemonic <mnemonic_phrase>]
     [--faucet-tokens <initial_balance>]
@@ -131,12 +129,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --contracts-owner-addr)
-    CONTRACTS_OWNER_ADDR="$2"
-    shift
-    shift
-    ;;
-
   --treasury-nls-u128)
     TREASURY_NLS_U128="$2"
     shift
@@ -197,7 +189,6 @@ verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
 verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
-verify_mandatory "$CONTRACTS_OWNER_ADDR" "Contracts owner address"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 verify_mandatory "$LPP_NATIVE" "LPP native currency"
 verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
@@ -207,10 +198,6 @@ rm -fr "$VAL_ACCOUNTS_DIR"
 FAUCET_ADDR=$(determine_faucet_addr "$FAUCET_MNEMONIC")
 accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
-# We handle the contracts_owner account as normal address.
-treasury_init_tokens="$TREASURY_NLS_U128$NATIVE_CURRENCY"
-accounts_spec=$(echo "$accounts_spec" | add_account "$CONTRACTS_OWNER_ADDR" "$treasury_init_tokens")
-
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
 stop_validators "$VALIDATORS"
@@ -219,7 +206,7 @@ deploy_validators "$VALIDATORS"
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
               "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$CONTRACTS_OWNER_ADDR" "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
+              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
               "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
 
 start_validators "$VALIDATORS"
