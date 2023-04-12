@@ -79,8 +79,8 @@ update_config "$hermes_config_dir" '.chains[0]."trust_threshold"' '{ numerator :
 update_config "$hermes_config_dir" '.chains[0]."memo_prefix"' '"''"'
 
 update_config "$hermes_config_dir" '.chains[1]."id"' '"'"$chain2id"'"'
-update_config "$hermes_config_dir" '.chains[1]."rpc_addr"' '"http://'"$chain2IpAddr"':'"$chain2rpcPort"'"'
-update_config "$hermes_config_dir" '.chains[1]."grpc_addr"' '"http://'"$chain2IpAddr"':'"$chain2grpcPort"'"'
+update_config "$hermes_config_dir" '.chains[1]."rpc_addr"' '"https://'"$chain2IpAddr"':'"$chain2rpcPort"'"'
+update_config "$hermes_config_dir" '.chains[1]."grpc_addr"' '"https://'"$chain2IpAddr"':'"$chain2grpcPort"'"'
 update_config "$hermes_config_dir" '.chains[1]."websocket_addr"' '"ws://'"$chain2IpAddr"':'"$chain2rpcPort"'/websocket"'
 update_config "$hermes_config_dir" '.chains[1]."rpc_timeout"' '"10s"'
 update_config "$hermes_config_dir" '.chains[1]."account_prefix"' '"osmo"'

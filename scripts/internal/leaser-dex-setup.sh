@@ -20,13 +20,11 @@ _open_connection() {
 leaser_dex_setup() {
 declare -r nolus_net_address="$1"
 declare -r nolus_home_dir="$2"
-declare -r contracts_owner_key="$3"
-declare -r wallet_with_funds_key="$4"
-declare -r contracts_info_file_path="$5"
-declare -r hermes_binary_dir="$6"
-declare -r hermes_address="$7"
-declare -r a_chain="$8"
-declare -r b_chain="$9"
+declare -r wallet_with_funds_key="$3"
+declare -r hermes_binary_dir="$4"
+declare -r hermes_address="$5"
+declare -r a_chain="$6"
+declare -r b_chain="$7"
 
 # Prepare Hermes
 declare -r wallet_with_funds_addr=$(run_cmd "$nolus_home_dir" keys show "$wallet_with_funds_key" -a)
@@ -36,15 +34,4 @@ echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$wallet_with_funds_addr" "$he
 
 declare -r connection="connection-0"
 _open_connection "$hermes_binary_dir" "$a_chain" "$b_chain" "$connection"
-declare -r counterparty_channel_id=$(run_cmd "$nolus_home_dir" q ibc channel connections "$connection" --node "$nolus_net_address" --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"')
-
-# Setup Leaser
-
-declare -r contracts_owner_address=$(run_cmd "$nolus_home_dir" keys show "$contracts_owner_key" -a)
-echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$wallet_with_funds_addr" "$contracts_owner_address" 10000unls --broadcast-mode block $flags
-
-declare -r leaser_contract_address=$(jq .contracts_info[5].leaser.instance "$contracts_info_file_path" | tr -d '"')
-declare -r setup_dex_msg='{"setup_dex":{"connection_id":"'$connection'","transfer_channel":{"local_endpoint":"channel-0","remote_endpoint":"'$counterparty_channel_id'"}}}'
-echo 'y' | run_cmd "$nolus_home_dir" tx wasm execute "$leaser_contract_address" "$setup_dex_msg" --from "$contracts_owner_key" $flags
-
 }

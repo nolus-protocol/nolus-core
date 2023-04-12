@@ -28,14 +28,13 @@ generate_genesis() {
   local -r accounts_spec_in="$6"
   local -r wasm_script_path="$7"
   local -r wasm_code_path="$8"
-  local -r contracts_owner_addr="$9"
-  local -r treasury_init_tokens_u128="${10}"
-  local -r node_id_and_val_pubkeys="${11}"
-  local -r lpp_native="${12}"
-  local -r contracts_info_file="${13}"
-  local -r gov_voting_period="${14}"
-  local -r feerefunder_ack_fee_min="${15}"
-  local -r feerefunder_timeout_fee_min="${16}"
+  local -r treasury_init_tokens_u128="$9"
+  local -r node_id_and_val_pubkeys="${10}"
+  local -r lpp_native="${11}"
+  local -r contracts_info_file="${12}"
+  local -r gov_voting_period="${13}"
+  local -r feerefunder_ack_fee_min="${14}"
+  local -r feerefunder_timeout_fee_min="${15}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -48,18 +47,13 @@ generate_genesis() {
   source "$wasm_script"
   local treasury_addr
   treasury_addr="$(treasury_instance_addr)"
-  # for PROD we decided to use the admin contract's address(deterministic) as
-  # contracts_owner_addr which will be used to store and instantiate contracts,
-  # because we would only change our contracts via gov proposals.
-  # for local&&dev, we are having a normal address for contracts_owner which
-  # will be used for testing purposes
   admin_contract_addr=$(admin_contract_instance_addr)
 
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
     "$accounts_spec" "$treasury_addr" "$admin_contract_addr" "$gov_voting_period" \
     "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$contracts_owner_addr" \
+  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
@@ -127,7 +121,7 @@ __generate_proto_genesis_no_wasm() {
 
   __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
-  __set_wasm_permission_params "$genesis_file" "$contracts_owner_addr"
+  __set_wasm_permission_params "$genesis_file" "$admin_contract_addr"
   __set_gov_parameters "$genesis_file" "$gov_voting_period"
   __modify_slashing_and_staking_params "$genesis_file"
   __modify_neutron_modules_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
@@ -136,11 +130,7 @@ __generate_proto_genesis_no_wasm() {
     add_genesis_account "$account_spec" "$native_currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
-  # This will be used for MAINNET/TESTNET to have initial balance for the
-  # contracts_owner_addr(The admin contract's address)
-  if [ "$contracts_owner_addr" == "$admin_contract_addr" ]; then
-    __add_bank_balances "$genesis_file" "$contracts_owner_addr" "$treasury_init_tokens_u128" "$native_currency"
-  fi
+  __add_bank_balances "$genesis_file" "$admin_contract_addr" "$treasury_init_tokens_u128" "$native_currency"
 }
 
 __integrate_genesis_txs() {
