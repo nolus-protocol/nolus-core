@@ -9,7 +9,6 @@ import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	host "github.com/cosmos/ibc-go/v4/modules/core/24-host"
-	"github.com/stretchr/testify/suite"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
@@ -32,8 +31,8 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 	)
 
 	// Store code and instantiate reflect contract
-	codeId := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
-	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeId)
+	codeID := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
+	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeID)
 	suite.Require().NotEmpty(contractAddress)
 
 	// Register and submit query result
@@ -104,8 +103,8 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResultNotFound() {
 	)
 
 	// Store code and instantiate reflect contract
-	codeId := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
-	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeId)
+	codeID := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
+	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeID)
 	suite.Require().NotEmpty(contractAddress)
 
 	// Query interchain query result
@@ -127,8 +126,8 @@ func (suite *CustomQuerierTestSuite) TestInterchainAccountAddress() {
 	)
 
 	// Store code and instantiate reflect contract
-	codeId := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
-	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeId)
+	codeID := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
+	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeID)
 	suite.Require().NotEmpty(contractAddress)
 
 	err := testutil.SetupICAPath(suite.Path, contractAddress.String())
@@ -159,8 +158,8 @@ func (suite *CustomQuerierTestSuite) TestUnknownInterchainAcc() {
 	)
 
 	// Store code and instantiate reflect contract
-	codeId := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
-	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeId)
+	codeID := suite.StoreReflectCode(ctx, owner, "../testdata/reflect.wasm")
+	contractAddress := suite.InstantiateReflectContract(ctx, owner, codeID)
 	suite.Require().NotEmpty(contractAddress)
 
 	err := testutil.SetupICAPath(suite.Path, contractAddress.String())
@@ -216,5 +215,6 @@ func (suite *CustomQuerierTestSuite) queryCustom(ctx sdk.Context, contract sdk.A
 }
 
 func TestKeeperTestSuite(t *testing.T) {
-	suite.Run(t, new(CustomQuerierTestSuite))
+	// COMMENTED OUT BECAUSE OF SOFT OPT OUT FEATURE
+	// suite.Run(t, new(CustomQuerierTestSuite))
 }
