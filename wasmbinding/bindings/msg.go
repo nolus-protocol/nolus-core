@@ -105,3 +105,11 @@ type UpdateInterchainQuery struct {
 }
 
 type UpdateInterchainQueryResponse struct{}
+
+// MsgExecuteContract defined separate from wasmtypes since we can get away with just passing the string into bindings.
+type MsgExecuteContract struct {
+	// Contract is the address of the smart contract
+	Contract string `json:"contract,omitempty"`
+	// Msg json encoded message to be passed to the contract
+	Msg string `json:"msg,omitempty"`
+}
