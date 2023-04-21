@@ -996,6 +996,8 @@ github.com/cosmos/ibc-go/v3 v3.0.0/go.mod h1:Mb+1NXiPOLd+CPFlOC6BKeAUaxXlhuWenMm
 github.com/cosmos/ibc-go/v4 v4.3.0 h1:yOzVsyZzsv4XPBux8gq+D0LhZn45yGWKjvT+6Vyo5no=
 github.com/cosmos/ibc-go/v4 v4.3.0/go.mod h1:CcLvIoi9NNtIbNsxs4KjBGjYhlwqtsmXy1AKARKiMzQ=
 github.com/cosmos/interchain-accounts v0.2.4 h1:7UrroFQsCRSp17980mk6anx4YteveIJVkU+a0wlsHQI=
+github.com/cosmos/interchain-security v1.2.0 h1:DHC00F3diTXDBgTgLSB+O8qbs1p7DtTfUeO8XBEXsZo=
+github.com/cosmos/interchain-security v1.2.0/go.mod h1:Y4onDsQuqkemGS7UqfyohahlBLt5gh1i8OVbPeMcuhA=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.11.1/go.mod h1:J8//BsAGTo3OC/vDLjMRFLW6q0WAaXvHnVc7ZmE8iUY=
@@ -2133,10 +2135,8 @@ github.com/neelance/sourcemap v0.0.0-20200213170602-2833bce08e4c/go.mod h1:Qr6/a
 github.com/neilotoole/errgroup v0.1.5/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/neilotoole/errgroup v0.1.6/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/networkplumbing/go-nft v0.2.0/go.mod h1:HnnM+tYvlGAsMU7yoYwXEVLLiDW9gdMmb5HoGcwpuQs=
-github.com/neutron-org/interchain-security v1.0.1-0.20230411132545-f3b496d73bdd h1:j22U7CDX1+hPzAVo9j/Z/mlMMnlpXlbqGRDQSDiyEhw=
-github.com/neutron-org/interchain-security v1.0.1-0.20230411132545-f3b496d73bdd/go.mod h1:a7CvtHNBkghgIrBg4ni4IQzRQULc+3m4vOoqheoeJmY=
-github.com/neutron-org/neutron v0.4.0 h1:a86rtWL4hxwjzhkOTnCb9qtcRlve0GMlBgXriQ22MWI=
-github.com/neutron-org/neutron v0.4.0/go.mod h1:qnEWj+0qi6HOvPRinavqf8UbcjXmN1HLTUUPItFQNaw=
+github.com/neutron-org/neutron v0.4.1 h1:F2DxTYrqCx2YiqFY5YO8tFZbBwqy1Zz7zaqWMDD4Oi4=
+github.com/neutron-org/neutron v0.4.1/go.mod h1:c0Rdb9GjpZnU3XAqzAEcnMmWCWdj3uv9n8OKihks7k8=
 github.com/neutron-org/wasmd v0.30.0-ics-support h1:HsWKg4IQjO0UEe6ukoyCGAA3xDJaw/DA2yjkRFL8JJc=
 github.com/neutron-org/wasmd v0.30.0-ics-support/go.mod h1:umLGeYyowAMMEdOYfDOf8jsDrQ75Qkm1+ogBXT/w01c=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
