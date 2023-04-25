@@ -237,6 +237,7 @@ func TestAppImportExport(t *testing.T) {
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
 				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingDelegationKey, stakingtypes.UnbondingDelegationByValIndexKey, stakingtypes.ValidatorsKey,
+				stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey, stakingtypes.UnbondingIdKey,
 			},
 		},
 		{keys[slashingtypes.StoreKey], newKeys[slashingtypes.StoreKey], [][]byte{}},

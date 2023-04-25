@@ -7,6 +7,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 	"github.com/CosmWasm/wasmvm/types"
 	host "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	"github.com/stretchr/testify/suite"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -302,6 +303,5 @@ func (suite *CustomMessengerTestSuite) craftMarshaledMsgSubmitTxWithNumMsgs(numM
 }
 
 func TestMessengerTestSuite(t *testing.T) {
-	// COMMENTED OUT BECAUSE OF SOFT OPT OUT FEATURE
-	// suite.Run(t, new(CustomMessengerTestSuite))
+	suite.Run(t, new(CustomMessengerTestSuite))
 }
