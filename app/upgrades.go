@@ -9,6 +9,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	contractmanagertypes "github.com/neutron-org/neutron/x/contractmanager/types"
+	feerefundertypes "github.com/neutron-org/neutron/x/feerefunder/types"
 )
 
 func (app *App) RegisterUpgradeHandlers() {
@@ -22,7 +24,7 @@ func (app *App) RegisterUpgradeHandlers() {
 
 func (app *App) registerUpgrade(_ storetypes.UpgradeInfo) {
 	testnetUpgrade := upgrades.Upgrade{
-		UpgradeName:          "v0.2.2-store-fix",
+		UpgradeName:          "v0.2.2-equalize-store-heights",
 		CreateUpgradeHandler: app.createUpgradeHandlerTestnet,
 		StoreUpgrades: storetypes.StoreUpgrades{
 			Added: []string{},
@@ -44,71 +46,50 @@ func (app *App) createUpgradeHandlerTestnet(
 	keepers *keepers.AppKeepers,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
-		ctx.Logger().Info("Upgrade handler execution", "name", "v0.2.2-store-fix")
+		ctx.Logger().Info("Upgrade handler execution v0.2.2-equalize-store-heights")
 		// Get the Commit multistore
-		// cms := app.BaseApp.CommitMultiStore()
+		cms := app.BaseApp.CommitMultiStore()
 
 		// Get the underlying iavl Stores for the contractmanager and feerefunder modules
-		// contractManagerStore := cms.GetCommitKVStore(app.GetKey(contractmanagertypes.StoreKey)).(*iavl.Store)
-		// feeRefunderStore := cms.GetCommitKVStore(app.GetKey(feerefundertypes.StoreKey)).(*iavl.Store)
+		contractManagerStore := cms.GetCommitKVStore(app.GetKey(contractmanagertypes.StoreKey)).(*iavl.Store)
+		feeRefunderStore := cms.GetCommitKVStore(app.GetKey(feerefundertypes.StoreKey)).(*iavl.Store)
 
 		// We found this issue thanks to a code change introduced in the cosmos-sdk v0.45.12
 		// https://github.com/cosmos/gaia/issues/2313
 
-		// Export(at latest commit height) and import the store at the latest block height
+		// Move store's height to latest
 		// We do this because we didn't use a custom store loader
 		// on the upgrade where the two modules(contractmanager && feerefunder) were introduced and
 		// their store versions began from height 0/1 but they should have started at the height of the upgrade
 		// so right now we have a gap, other modules' stores initialized at genesis are at height X, while those two modules are behind at height X-softwareUpgradeHeight
-		// err := exportAndImportStoreAtLatestHeight(ctx, contractManagerStore)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// err = exportAndImportStoreAtLatestHeight(ctx, feeRefunderStore)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		err := commitStoreToLatestHeight(ctx, contractManagerStore)
+		if err != nil {
+			ctx.Logger().Info("Failed to fix contractManager store")
+			return nil, err
+		}
+		err = commitStoreToLatestHeight(ctx, feeRefunderStore)
+		if err != nil {
+			ctx.Logger().Info("Failed to fix feeRefunder store")
+			return nil, err
+		}
 		return app.mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
 
-// the base purpose of this export-import is to update the store's version to the latest height.
-func exportAndImportStoreAtLatestHeight(ctx sdk.Context, store *iavl.Store) error {
-	exporter, err := store.Export(store.LastCommitID().Version)
-	if err != nil {
-		return err
-	}
-	defer exporter.Close()
-
+// this function takes a store and commits the store state, moving it's version/height by X
+// the purpose of this function is to move the height of a store(which is behind) to latest.
+func commitStoreToLatestHeight(ctx sdk.Context, store *iavl.Store) error {
 	// If there is already version for the latest or latest-1 blocks height, then we don't do anything
 	if store.VersionExists(ctx.BlockHeight()) || store.VersionExists(ctx.BlockHeight()-1) {
-		ctx.Logger().Info("Version is already stored. ", "v0.2.2-store-fix")
+		ctx.Logger().Info("Latest version is already stored, the store doesn't need fixing")
 		return nil
 	}
 
-	importer, err := store.Import(ctx.BlockHeight())
-	if err != nil {
-		return err
+	ctx.Logger().Info("Equalizing store height...")
+	for store.LastCommitID().Version < ctx.BlockHeight()-1 {
+		store.Commit()
 	}
-
-	// exporter.Next() can return nil or ExportDone as the second value
-	// In our case, exportDone will be nil because we know that we have at least 1 node to export, and we won't need more
-	exportNode, exportDone := exporter.Next()
-	if exportDone != nil {
-		ctx.Logger().Debug("ExportDone is called when there is no data to export. ", " v0.2.2-store-fix")
-		return nil
-	}
-
-	ctx.Logger().Info("Importing store at height/version ", ctx.BlockHeight(), " v0.2.2-store-fix")
-	err = importer.Add(exportNode)
-	if err != nil {
-		return err
-	}
-	// No need to call importer.Close() as it is called internally inside the Commit() method
-	err = importer.Commit()
-	if err != nil {
-		return err
-	}
+	ctx.Logger().Info("Finished equalizing store height")
 
 	return nil
 }
