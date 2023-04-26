@@ -1,6 +1,6 @@
 module github.com/Nolus-Protocol/nolus-core
 
-go 1.19
+go 1.20
 
 require (
 	github.com/CosmWasm/wasmd v0.31.0
