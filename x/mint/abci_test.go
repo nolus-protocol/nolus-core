@@ -99,12 +99,12 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
 	nanoSecondsInPeriod := nanoSecondsInMonth.Mul(types.MonthsInFormula).Add(types.DecFromUint(timeOffset)).TruncateInt64()
-	rand.Seed(util.GetCurrentTimeUnixNano())
+	r := rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 	monthThreshold := sdk.NewUint(187_500_000) // 187.5 tokens
 	month := 0
 
 	for timeOffset.LT(sdk.NewUint(uint64(nanoSecondsInPeriod))) {
-		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
+		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60, r))
 
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 		if coins.LT(sdk.ZeroUint()) {
@@ -133,7 +133,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 
 			prevOffset = timeOffset
 			mintedMonth = sdk.ZeroUint()
-			rand.Seed(util.GetCurrentTimeUnixNano())
+			r = rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 		}
 
 		timeOffset = timeOffset.Add(i)
@@ -159,10 +159,10 @@ func Test_CalcTokensFixed_WhenNotHittingMintCapInAMonth_OutputsExpectedTokensWit
 	offsetNanoInMonth := timeOffset.Add(uintFromDec(nanoSecondsInMonth))
 	minter := types.NewMinter(types.MonthsInFormula, sdk.ZeroUint(), timeOffset, sdk.ZeroUint())
 	mintedCoins := sdk.ZeroUint()
-	rand.Seed(util.GetCurrentTimeUnixNano())
+	r := rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 
 	for timeOffset.LT(offsetNanoInMonth) {
-		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
+		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60, r))
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 
 		if coins.LT(sdk.ZeroUint()) {
@@ -196,10 +196,10 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 	totalMinted := types.MintingCap.Sub(halfFixedAmount)
 	minter := types.NewMinter(types.MonthsInFormula, totalMinted, timeOffset, sdk.ZeroUint())
 	mintedCoins := sdk.NewUint(0)
-	rand.Seed(util.GetCurrentTimeUnixNano())
+	r := rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 
 	for timeOffset.LT(offsetNanoInMonth) {
-		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60))
+		i := sdk.NewUint(randomTimeBetweenBlocks(5, 60, r))
 
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(coins)
@@ -228,10 +228,10 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 	prevOffset := timeOffset
 	offsetNanoInPeriod := uintFromDec((nanoSecondsInMonth.Mul(sdk.NewDec(121))).Add(types.DecFromUint(timeOffset))) // Adding 1 extra to ensure cap is preserved
 	month := 0
-	rand.Seed(util.GetCurrentTimeUnixNano())
+	r := rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 
 	for timeOffset.LT(offsetNanoInPeriod) {
-		i := sdk.NewUint(randomTimeBetweenBlocks(60, 120))
+		i := sdk.NewUint(randomTimeBetweenBlocks(60, 120, r))
 
 		coins := calcTokens(timeOffset.Add(i), &minter, fiveMinutesInNano)
 		mintedCoins = mintedCoins.Add(sdk.NewUint(coins.Uint64()))
@@ -246,7 +246,7 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 		if !a.Equal(b) {
 			month++
 
-			rand.Seed(util.GetCurrentTimeUnixNano())
+			r = rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
 				month, mintedMonth, minter.TotalMinted, mintedCoins, minter.NormTimePassed, coins)
 			prevOffset = timeOffset
@@ -523,8 +523,8 @@ func Test_PredictMintedByFixedAmount_TwelveMonthsAhead(t *testing.T) {
 	}
 }
 
-func randomTimeBetweenBlocks(min uint64, max uint64) uint64 {
-	return uint64(time.Second.Nanoseconds()) * (uint64(rand.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + min)
+func randomTimeBetweenBlocks(min uint64, max uint64, r *rand.Rand) uint64 {
+	return uint64(time.Second.Nanoseconds()) * (uint64(r.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + min)
 }
 
 func defaultParams() (types.Minter, sdk.Uint, sdk.Uint, sdk.Uint) {
