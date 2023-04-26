@@ -104,9 +104,8 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 ## Upgrade wasmvm
 
 * Update the Go modules
-* Update the wasmvm version in the builder Dockerfile at build/builder_spec
-* Increment the NOLUS_BUILDER_TAG in the Gitlab pipeline definition at .gitlab-ci.yml
-* (optional step if the branch is not Gitlab protected) In order to let the pipeline build and publish the new Nolus builder image, the build should be done on a protected branch. By default only main is protected. If the upgrade is done in another one then turn it protected until a successfull build finishes.
+* Update the wasmvm version in the builder Dockerfile at .github/images/builder.Dockerfile
+* Increment the IMAGE_TAG and use the same version in the build-binary step in .github/workflows/build.yaml
 
 ## Run a full node with docker
 
