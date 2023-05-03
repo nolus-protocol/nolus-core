@@ -26,7 +26,6 @@ VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
-
 NATIVE_CURRENCY="unls"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -53,7 +52,7 @@ while [[ $# -gt 0 ]]; do
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
     [--chain-id <string>]
-    [-v|--validators <number>]
+    [--validators <number>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
@@ -67,7 +66,7 @@ while [[ $# -gt 0 ]]; do
     [--gov-voting-period <voting_period>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
-     "$0"
+      "$0"
     exit 0
     ;;
 
@@ -89,7 +88,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  -v | --validators)
+  --validators)
     VALIDATORS="$2"
     [ "$VALIDATORS" -gt 0 ] || {
       echo >&2 "validators must be a positive number"
@@ -200,13 +199,14 @@ accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
 init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
-stop_validators "$VALIDATORS"
-deploy_validators "$VALIDATORS"
+deploy_binary
+deploy_scripts
+setup_services "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
-              "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-              "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
-              "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
+  "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
+  "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
+  "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"
 
 start_validators "$VALIDATORS"
