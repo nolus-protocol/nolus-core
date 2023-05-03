@@ -26,13 +26,20 @@ For simplicity, and for the most use-cases, a single node local network would su
 
 ## Setup and run a network hosted remotely on a single machine
 
-A script setups a network comprised of one or more validator nodes on a remote AWS EC2 machine.
+Script used to remotely manage network start, stop and replacing nolusd binary. Personal SSH key should be added on the remote host.
+
+```shell
+./dev-operator.sh
+```
+
+This script setups a network comprised of one or more validator nodes on a remote machine.
+Before executing this script make sure all services are stopped.
 
 ```shell
 ./init-dev-network.sh
 ```
 
-## Setup and run a network comprised of validator ans sentry nodes hosted remotely on multiple machines
+## Setup and run a network comprised of validator and sentry nodes hosted remotely on multiple machines
 
 This setup involves multiple steps that are not orchestrated by a single main script. The aim is to allow the deployer to setup networks with different number of validators, and to have better control over the entire process.
 
