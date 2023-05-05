@@ -26,6 +26,8 @@ VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
+SSH_USER=""
+SSH_IP=""
 NATIVE_CURRENCY="unls"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -51,6 +53,8 @@ while [[ $# -gt 0 ]]; do
     "Usage: %s
     [--artifact-bin <tar_gz_nolusd>]
     [--artifact-scripts <tar_gz_scripts>]
+    [--ip <string - ip of the remote host>]
+    [--user <string - ssh key user>]
     [--chain-id <string>]
     [--validators <number>]
     [--validator-accounts-dir <validator_accounts_dir>]
@@ -78,6 +82,18 @@ while [[ $# -gt 0 ]]; do
 
   --artifact-scripts)
     ARTIFACT_SCRIPTS="$2"
+    shift
+    shift
+    ;;
+
+  --ip)
+    SSH_IP=$2
+    shift
+    shift
+    ;;
+
+  --user)
+    SSH_USER=$2
     shift
     shift
     ;;
@@ -191,6 +207,8 @@ verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 verify_mandatory "$LPP_NATIVE" "LPP native currency"
 verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
+verify_mandatory "$SSH_USER" "Server ssh user"
+verify_mandatory "$SSH_IP" "Server ip"
 
 rm -fr "$VAL_ACCOUNTS_DIR"
 
@@ -198,7 +216,8 @@ FAUCET_ADDR=$(determine_faucet_addr "$FAUCET_MNEMONIC")
 accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
-init_setup_validator_dev_sh "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS"
+
+init_setup_validator_dev_sh $SCRIPT_DIR $ARTIFACT_BIN $ARTIFACT_SCRIPTS $SSH_USER $SSH_IP
 deploy_binary
 deploy_scripts
 setup_services "$VALIDATORS"
