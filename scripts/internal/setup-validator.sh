@@ -13,12 +13,12 @@ SETUP_VALIDATOR_DEV_BASE_PORT=26606
 SETUP_VALIDATOR_DEV_HOME_DIR="/opt/deploy/nolus"
 SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT="5s"
 
-init_setup_validator_dev_sh() {
-  setup_validator_dev_scripts_home_dir="$1"
-  setup_validator_dev_binary_artifact="$2"
-  setup_validator_dev_scripts_artifact="$3"
-  setup_validator_dev_server_user="$4"
-  setup_validator_dev_server_ip="$5"
+init_setup_validator() {
+  setup_validator_scripts_home_dir="$1"
+  setup_validator_binary_artifact="$2"
+  setup_validator_scripts_artifact="$3"
+  setup_validator_server_user="$4"
+  setup_validator_server_ip="$5"
 }
 
 deploy_binary() {
@@ -51,7 +51,7 @@ setup_services() {
     node_moniker=$(__node_moniker "$i")
 
     "$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
-      "/opt/deploy/scripts/remote/validator-init-dev.sh \
+      "/opt/deploy/scripts/remote/validator-init-service.sh \
       $SETUP_VALIDATOR_DEV_HOME_DIR $node_moniker" \
       $setup_validator_dev_server_user \
       $setup_validator_dev_server_ip
@@ -94,7 +94,7 @@ config() {
 
   local node_id_val_pub_key
   node_id_val_pub_key=$("$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
-    "/opt/deploy/scripts/remote/validator-dev.sh \
+    "/opt/deploy/scripts/remote/validator-config.sh \
                               $home_dir $node_moniker $node_base_port \
                               $SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT \
                               $setup_validator_dev_prev_node_id" \

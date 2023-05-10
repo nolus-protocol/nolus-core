@@ -1,5 +1,5 @@
 #!/bin/bash
-# Initialize a locally installed validator node for the needs of the test or main networks
+# Initialize a locally installed validator node.
 # The Nolus binary should be accessible on the system path.
 #
 # arg1: home directory of the validator node, mandatory

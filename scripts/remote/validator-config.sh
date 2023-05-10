@@ -1,7 +1,6 @@
 #!/bin/bash
-# Configure a locally installed validator node for the needs of the dev net
+# Configure a locally installed validator node.
 # The Nolus binary should be accessible on the system path.
-# TBD what part of the scripts should be available next to this script
 #
 # arg1: home directory of the validator node, mandatory
 # arg2: node's moniker, mandatory

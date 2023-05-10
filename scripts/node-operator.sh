@@ -11,7 +11,7 @@ ARTIFACT_BIN="nolus.tar.gz"
 cli_help() {
   cli_name=${0##*/}
   echo "$cli_name
-Dev operator CLI
+Node operator CLI
 Usage: $cli_name [flags]
 
 Available Flags:
@@ -68,7 +68,7 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-source "$SCRIPT_DIR"/internal/setup-validator-dev.sh
+source "$SCRIPT_DIR"/internal/setup-validator.sh
 init_setup_validator_dev_sh $SCRIPT_DIR $ARTIFACT_BIN "" $SSH_USER $SSH_IP
 
 case $ACTION in

@@ -67,7 +67,7 @@ __config() {
   node_base_port=$(__node_base_port "$node_index")
 
   local node_id_val_pub_key
-  node_id_val_pub_key=$("$setup_validator_local_scripts_home_dir"/remote/validator-dev.sh "$home_dir" "$node_moniker" \
+  node_id_val_pub_key=$("$setup_validator_local_scripts_home_dir"/remote/validator-config.sh "$home_dir" "$node_moniker" \
                                           "$node_base_port" "$SETUP_VALIDATOR_LOCAL_TIMEOUT_COMMIT" \
                                           "$setup_validator_local_prev_node_id")
   read -r setup_validator_local_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"

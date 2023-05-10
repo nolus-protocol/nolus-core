@@ -29,14 +29,14 @@ For simplicity, and for the most use-cases, a single node local network would su
 Script used to remotely manage network start, stop and replacing nolusd binary. Personal SSH key should be added on the remote host.
 
 ```shell
-./dev-operator.sh
+./node-operator.sh
 ```
 
 This script setups a network comprised of one or more validator nodes on a remote machine.
 Before executing this script make sure all services are stopped.
 
 ```shell
-./init-dev-network.sh
+./init-network.sh
 ```
 
 ## Setup and run a network comprised of validator and sentry nodes hosted remotely on multiple machines
