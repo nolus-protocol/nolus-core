@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # start "instance" variables
-setup_validator_dev_scripts_home_dir=""
-setup_validator_dev_binary_artifact=""
-setup_validator_dev_scripts_artifact=""
-setup_validator_dev_prev_node_id=""
-setup_validator_dev_server_user=""
-setup_validator_dev_server_ip=""
+setup_validator_scripts_home_dir=""
+setup_validator_binary_artifact=""
+setup_validator_scripts_artifact=""
+setup_validator_prev_node_id=""
+setup_validator_server_user=""
+setup_validator_server_ip=""
 
 # end "instance" variables
-SETUP_VALIDATOR_DEV_BASE_PORT=26606
-SETUP_VALIDATOR_DEV_HOME_DIR="/opt/deploy/nolus"
-SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT="5s"
+SETUP_VALIDATOR_BASE_PORT=26606
+SETUP_VALIDATOR_HOME_DIR="/opt/deploy/nolus"
+SETUP_VALIDATOR_TIMEOUT_COMMIT="5s"
 
 init_setup_validator() {
   setup_validator_scripts_home_dir="$1"
@@ -22,13 +22,13 @@ init_setup_validator() {
 }
 
 deploy_binary() {
-  __upload_tar "$setup_validator_dev_binary_artifact" "/usr/bin"
-  __untar "$setup_validator_dev_binary_artifact" "/usr/bin"
+  __upload_tar "$setup_validator_binary_artifact" "/usr/bin"
+  __untar "$setup_validator_binary_artifact" "/usr/bin"
 }
 
 deploy_scripts() {
-  __upload_tar "$setup_validator_dev_scripts_artifact" "/opt/deploy"
-  __untar "$setup_validator_dev_scripts_artifact" "/opt/deploy"
+  __upload_tar "$setup_validator_scripts_artifact" "/opt/deploy"
+  __untar "$setup_validator_scripts_artifact" "/opt/deploy"
 }
 
 # Setup validator nodes and collect their ids and validator public keys
@@ -50,11 +50,11 @@ setup_services() {
     local node_moniker
     node_moniker=$(__node_moniker "$i")
 
-    "$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
+    "$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
       "/opt/deploy/scripts/remote/validator-init-service.sh \
-      $SETUP_VALIDATOR_DEV_HOME_DIR $node_moniker" \
-      $setup_validator_dev_server_user \
-      $setup_validator_dev_server_ip
+      $SETUP_VALIDATOR_HOME_DIR $node_moniker" \
+      $setup_validator_server_user \
+      $setup_validator_server_ip
   done
 }
 
@@ -93,14 +93,14 @@ config() {
   node_base_port=$(__node_base_port "$node_index")
 
   local node_id_val_pub_key
-  node_id_val_pub_key=$("$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
+  node_id_val_pub_key=$("$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
     "/opt/deploy/scripts/remote/validator-config.sh \
                               $home_dir $node_moniker $node_base_port \
-                              $SETUP_VALIDATOR_DEV_TIMEOUT_COMMIT \
-                              $setup_validator_dev_prev_node_id" \
-    $setup_validator_dev_server_user \
-    $setup_validator_dev_server_ip)
-  read -r setup_validator_dev_prev_node_id __val_pub_key <<<"$node_id_val_pub_key"
+                              $SETUP_VALIDATOR_TIMEOUT_COMMIT \
+                              $setup_validator_prev_node_id" \
+    $setup_validator_server_user \
+    $setup_validator_server_ip)
+  read -r setup_validator_prev_node_id __val_pub_key <<<"$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
 }
 
@@ -111,16 +111,16 @@ __home_dir() {
   local node_index=$1
   local node_id
   node_id=$(__node_moniker "$node_index")
-  echo "$SETUP_VALIDATOR_DEV_HOME_DIR/$node_id"
+  echo "$SETUP_VALIDATOR_HOME_DIR/$node_id"
 }
 
 __node_moniker() {
-  echo "dev-validator-$1"
+  echo "validator-$1"
 }
 
 __node_base_port() {
   local node_index=$1
-  echo $((SETUP_VALIDATOR_DEV_BASE_PORT + node_index * 5))
+  echo $((SETUP_VALIDATOR_BASE_PORT + node_index * 5))
 }
 
 __do_cmd_services() {
@@ -130,8 +130,8 @@ __do_cmd_services() {
   for i in $(seq "$validators_nb"); do
     local node_moniker
     node_moniker=$(__node_moniker "$i")
-    $setup_validator_dev_scripts_home_dir/server/run-shell-script.sh \
-      "systemctl -v $cmd $node_moniker" "$setup_validator_dev_server_user" "$setup_validator_dev_server_ip"
+    $setup_validator_scripts_home_dir/server/run-shell-script.sh \
+      "systemctl -v $cmd $node_moniker" "$setup_validator_server_user" "$setup_validator_server_ip"
   done
 }
 
@@ -140,16 +140,16 @@ __upload_tar() {
   local target_dir="$2"
   local archive_name="$(basename $archive_full_path)"
 
-  "$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
+  "$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
     "mkdir -p $target_dir" \
-    $setup_validator_dev_server_user \
-    $setup_validator_dev_server_ip
+    $setup_validator_server_user \
+    $setup_validator_server_ip
 
-  "$setup_validator_dev_scripts_home_dir"/server/copy-file.sh \
+  "$setup_validator_scripts_home_dir"/server/copy-file.sh \
     $archive_full_path \
     $target_dir/$archive_name \
-    $setup_validator_dev_server_user \
-    $setup_validator_dev_server_ip
+    $setup_validator_server_user \
+    $setup_validator_server_ip
 }
 
 __untar() {
@@ -157,10 +157,10 @@ __untar() {
   local target_dir="$2"
   local archive_name="$(basename $archive_full_path)"
 
-  "$setup_validator_dev_scripts_home_dir"/server/run-shell-script.sh \
+  "$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
     "tar -xvf $target_dir/$archive_name -C $target_dir" \
-    $setup_validator_dev_server_user \
-    $setup_validator_dev_server_ip
+    $setup_validator_server_user \
+    $setup_validator_server_ip
 }
 
 __upload_genesis() {
@@ -173,9 +173,9 @@ __upload_genesis() {
   local home_dir
   home_dir=$(__home_dir "$node_index")
 
-  "$setup_validator_dev_scripts_home_dir"/server/copy-file.sh \
+  "$setup_validator_scripts_home_dir"/server/copy-file.sh \
     $genesis_file_path \
     "$home_dir/config" \
-    $setup_validator_dev_server_user \
-    $setup_validator_dev_server_ip
+    $setup_validator_server_user \
+    $setup_validator_server_ip
 }

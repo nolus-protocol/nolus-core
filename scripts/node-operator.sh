@@ -92,7 +92,7 @@ done
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 verify_mandatory "$SSH_USER" "Remote server SSH user"
 verify_mandatory "$SSH_IP" "Remote server IP"
-init_setup_validator_dev_sh $SCRIPT_DIR $ARTIFACT_BIN "" $SSH_USER $SSH_IP
+init_setup_validator $SCRIPT_DIR $ARTIFACT_BIN "" $SSH_USER $SSH_IP
 
 case $COMMAND in
 $COMMAND_STOP)
@@ -110,7 +110,7 @@ $COMMAND_REPLACE_BIN)
 
 $COMMAND_SEND_GENESIS)
   verify_mandatory "$GENESIS_FILE" "Nolus genesis file"
-  propagate_genesis "$GENESIS_FILE" "$nodes"
+  propagate_genesis "$GENESIS_FILE" "$NODES"
   ;;
 *)
   echo "Invalid command"

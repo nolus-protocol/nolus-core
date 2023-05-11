@@ -219,7 +219,7 @@ accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 
-init_setup_validator_dev_sh $SCRIPT_DIR $ARTIFACT_BIN $ARTIFACT_SCRIPTS $SSH_USER $SSH_IP
+init_setup_validator $SCRIPT_DIR $ARTIFACT_BIN $ARTIFACT_SCRIPTS $SSH_USER $SSH_IP
 deploy_binary
 deploy_scripts
 setup_services "$VALIDATORS"
