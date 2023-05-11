@@ -1,37 +1,52 @@
 #!/bin/bash
-set -euxo pipefail
+set -euo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-VALIDATORS=1
-ACTION=""
+source "$SCRIPT_DIR"/internal/verify.sh
+
+NODES=1
 SSH_USER=""
 SSH_IP=""
 ARTIFACT_BIN="nolus.tar.gz"
+GENESIS_FILE=""
+
+COMMAND_STOP="stop"
+COMMAND_START="start"
+COMMAND_SEND_GENESIS="send-genesis"
+COMMAND_REPLACE_BIN="replace-bin"
 
 cli_help() {
   cli_name=${0##*/}
   echo "$cli_name
 Node operator CLI
-Usage: $cli_name [flags]
+Usage: $cli_name <command> [flags]
+
+Available commands:
+  <$COMMAND_STOP | $COMMAND_START | $COMMAND_SEND_GENESIS | $COMMAND_REPLACE_BIN>
 
 Available Flags:
-  [--validators <number>]
-  [--action <start|stop|replace - start or stop all validators or replace nolusd bin on the remote host>]
+  [-h | --help]
+  [--nodes <number - nodes count>]
   [--ip <string - ip of the remote host>]
-  [--user <string - ssh key user>]
+  [--user <string - ssh user>]
+  [--genesis-file <genesis_file_path>]
   [--artifact-bin <*.tar.gz - archive with nolusd bin>]
 "
   exit 1
 }
 
+if [[ $# -lt 1 ]]; then
+  cli_help
+fi
+COMMAND="$1"
+shift
+
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-  --action)
-    ACTION=$2
-    shift
-    shift
+  -h | --help)
+    cli_help
     ;;
 
   --ip)
@@ -46,12 +61,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --validators)
-    VALIDATORS="$2"
-    [ "$VALIDATORS" -gt 0 ] || {
-      echo >&2 "validators must be a positive number"
+  --nodes)
+    NODES="$2"
+    [ "$NODES" -gt 0 ] || {
+      echo >&2 "nodes must be a positive number"
       exit 1
     }
+    shift
+    shift
+    ;;
+
+  --genesis-file)
+    GENESIS_FILE="$2"
     shift
     shift
     ;;
@@ -69,22 +90,29 @@ while [[ $# -gt 0 ]]; do
 done
 
 source "$SCRIPT_DIR"/internal/setup-validator.sh
+verify_mandatory "$SSH_USER" "Remote server SSH user"
+verify_mandatory "$SSH_IP" "Remote server IP"
 init_setup_validator_dev_sh $SCRIPT_DIR $ARTIFACT_BIN "" $SSH_USER $SSH_IP
 
-case $ACTION in
-"stop")
-  stop_validators $VALIDATORS
+case $COMMAND in
+$COMMAND_STOP)
+  stop_validators $NODES
   ;;
 
-"start")
-  start_validators $VALIDATORS
+$COMMAND_START)
+  start_validators $NODES
   ;;
 
-"replace")
+$COMMAND_REPLACE_BIN)
+  verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
   deploy_binary
   ;;
 
+$COMMAND_SEND_GENESIS)
+  verify_mandatory "$GENESIS_FILE" "Nolus genesis file"
+  propagate_genesis "$GENESIS_FILE" "$nodes"
+  ;;
 *)
-  echo "Invalid action"
+  echo "Invalid command"
   ;;
 esac

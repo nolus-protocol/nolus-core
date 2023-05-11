@@ -210,7 +210,9 @@ verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
 
-rm -fr "$VAL_ACCOUNTS_DIR"
+if [[ -n "${VAL_ACCOUNTS_DIR:-}" ]]; then
+  rm -rf "$VAL_ACCOUNTS_DIR"
+fi
 
 FAUCET_ADDR=$(determine_faucet_addr "$FAUCET_MNEMONIC")
 accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")

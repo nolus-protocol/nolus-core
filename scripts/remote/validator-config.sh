@@ -20,19 +20,23 @@ home_dir="$1"
 node_moniker="$2"
 base_port="$3"
 timeout_commit="$4"
-if [[ $# -gt 4 ]]
-then first_node_id="$5"
-else first_node_id=""
+if [[ $# -gt 4 ]]; then
+    first_node_id="$5"
+else
+    first_node_id=""
 fi
 
 HOST="127.0.0.1"
 P2P_PORT=$((base_port))
-RPC_PORT=$((base_port+1))
-MONITORING_PORT=$((base_port+2))
-API_PORT=$((base_port+3))
-GRPC_PORT=$((base_port+4))
+RPC_PORT=$((base_port + 1))
+MONITORING_PORT=$((base_port + 2))
+API_PORT=$((base_port + 3))
+GRPC_PORT=$((base_port + 4))
 
-rm -fr "$home_dir"
+if [[ -n "${home_dir:-}" ]]; then
+    rm -rf "$home_dir"
+fi
+
 mkdir -p "$home_dir"
 
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
