@@ -5,6 +5,7 @@ setup_validator_scripts_home_dir=""
 setup_validator_binary_artifact=""
 setup_validator_scripts_artifact=""
 setup_validator_prev_node_id=""
+setup_validator_moniker_base=""
 setup_validator_server_user=""
 setup_validator_server_ip=""
 
@@ -17,8 +18,9 @@ init_setup_validator() {
   setup_validator_scripts_home_dir="$1"
   setup_validator_binary_artifact="$2"
   setup_validator_scripts_artifact="$3"
-  setup_validator_server_user="$4"
-  setup_validator_server_ip="$5"
+  setup_validator_moniker_base="$4"
+  setup_validator_server_user="$5"
+  setup_validator_server_ip="$6"
 }
 
 deploy_binary() {
@@ -115,7 +117,7 @@ __home_dir() {
 }
 
 __node_moniker() {
-  echo "validator-$1"
+  echo "$setup_validator_moniker_base-$1"
 }
 
 __node_base_port() {

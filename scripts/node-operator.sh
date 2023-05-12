@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/internal/verify.sh
 
+MONIKER_BASE=""
 NODES=1
 SSH_USER=""
 SSH_IP=""
@@ -31,6 +32,7 @@ Available Flags:
   [--user <string - ssh user>]
   [--genesis-file <genesis_file_path>]
   [--artifact-bin <*.tar.gz - archive with nolusd bin>]
+  [--moniker <string - node moniker>]
 "
   exit 1
 }
@@ -83,6 +85,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --moniker)
+    MONIKER_BASE="$2"
+    shift
+    shift
+    ;;
+
   *)
     cli_help
     ;;
@@ -92,14 +100,16 @@ done
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 verify_mandatory "$SSH_USER" "Remote server SSH user"
 verify_mandatory "$SSH_IP" "Remote server IP"
-init_setup_validator $SCRIPT_DIR $ARTIFACT_BIN "" $SSH_USER $SSH_IP
+init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP"
 
 case $COMMAND in
 $COMMAND_STOP)
+  verify_mandatory "$MONIKER_BASE" "Node moniker"
   stop_validators $NODES
   ;;
 
 $COMMAND_START)
+  verify_mandatory "$MONIKER_BASE" "Node moniker"
   start_validators $NODES
   ;;
 

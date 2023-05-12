@@ -22,6 +22,7 @@ determine_faucet_addr() {
   rm -fr "$faucet_dir"
 }
 
+MONIKER_BASE="validator"
 VALIDATORS=1
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 ARTIFACT_BIN=""
@@ -69,7 +70,8 @@ while [[ $# -gt 0 ]]; do
     [--contracts-info-file <contracts_info_file>]
     [--gov-voting-period <voting_period>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
-    [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
+    [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
+    [--moniker <string - node moniker (default: $MONIKER_BASE>]" \
       "$0"
     exit 0
     ;;
@@ -192,6 +194,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --moniker)
+    MONIKER_BASE="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -219,7 +227,7 @@ accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 
-init_setup_validator $SCRIPT_DIR $ARTIFACT_BIN $ARTIFACT_SCRIPTS $SSH_USER $SSH_IP
+init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP"
 deploy_binary
 deploy_scripts
 setup_services "$VALIDATORS"
