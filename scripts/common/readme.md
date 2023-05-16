@@ -1,1 +1,0 @@
-The scripts in this directory are used both locally on the machine executing the scripts, and remotely on the machines being setup.

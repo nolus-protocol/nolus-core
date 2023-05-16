@@ -17,6 +17,7 @@ set -euox pipefail
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
 source "$SCRIPTS_DIR"/remote/lib/lib.sh
 source "$SCRIPTS_DIR"/common/cmd.sh
+source "$SCRIPTS_DIR"/common/rm-dir.sh
 
 declare -r hermes_root="$1"
 declare -r chain1id="$2"
@@ -45,7 +46,7 @@ declare -r chain1keyName="hermes-nolus"
 declare -r chain2keyName="hermes-osmosis"
 
 declare -r hermes_config_dir="$HOME"/.hermes
-rm -rf "$hermes_config_dir"
+rm_dir "$hermes_config_dir"
 mkdir -p "$hermes_config_dir"
 config_file="$hermes_config_dir"/config.toml
 touch "$config_file"

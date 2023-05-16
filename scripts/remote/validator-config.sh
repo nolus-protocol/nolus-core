@@ -15,6 +15,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/lib/lib.sh
 source "$SCRIPT_DIR"/../common/cmd.sh
+source "$SCRIPT_DIR"/../common/rm-dir.sh
 
 home_dir="$1"
 node_moniker="$2"
@@ -33,12 +34,8 @@ MONITORING_PORT=$((base_port + 2))
 API_PORT=$((base_port + 3))
 GRPC_PORT=$((base_port + 4))
 
-if [[ -n "${home_dir:-}" ]]; then
-    rm -rf "$home_dir"
-fi
-
+rm_dir "$home_dir"
 mkdir -p "$home_dir"
-
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
 
 declare -r config_dir="$home_dir"/config

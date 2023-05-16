@@ -11,6 +11,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/../common/cmd.sh
+source "$SCRIPT_DIR"/../common/rm-dir.sh
 
 declare -r home_dir="$1"
 declare -r node_moniker="$2"
@@ -22,7 +23,7 @@ init_systemd_service() {
     systemctl enable $node_moniker >/dev/null
 }
 
-rm -fr "$home_dir"
+rm_dir "$home_dir"
 mkdir -p "$home_dir"
 
 run_cmd "$home_dir" init "$node_moniker" >/dev/null

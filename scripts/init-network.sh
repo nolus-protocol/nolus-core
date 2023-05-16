@@ -3,6 +3,7 @@ set -euxo pipefail
 
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPT_DIR"/common/cmd.sh
+source "$SCRIPT_DIR"/common/rm-dir.sh
 source "$SCRIPT_DIR"/internal/accounts.sh
 source "$SCRIPT_DIR"/internal/verify.sh
 
@@ -19,7 +20,7 @@ determine_faucet_addr() {
 
   recover_account "$faucet_dir" "$faucet_mnemonic" "$key_name"
 
-  rm -fr "$faucet_dir"
+  rm_dir "$faucet_dir"
 }
 
 MONIKER_BASE="validator"
@@ -218,9 +219,7 @@ verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
 
-if [[ -n "${VAL_ACCOUNTS_DIR:-}" ]]; then
-  rm -rf "$VAL_ACCOUNTS_DIR"
-fi
+rm_dir "$VAL_ACCOUNTS_DIR"
 
 FAUCET_ADDR=$(determine_faucet_addr "$FAUCET_MNEMONIC")
 accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")

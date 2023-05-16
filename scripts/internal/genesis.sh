@@ -5,6 +5,8 @@ source "$SCRIPT_DIR"/validators-manager.sh
 source "$SCRIPT_DIR"/accounts.sh
 source "$SCRIPT_DIR"/verify.sh
 source "$SCRIPT_DIR"/../common/cmd.sh
+source "$SCRIPT_DIR"/../common/rm-dir.sh
+
 "$SCRIPT_DIR"/check-jq.sh
 
 # start "instance" variables
@@ -13,9 +15,7 @@ genesis_file="$genesis_home_dir"/config/genesis.json
 # end "instance" variables
 
 cleanup_genesis_sh() {
-  if [[ -n "${genesis_home_dir:-}" ]]; then
-    rm -rf "$genesis_home_dir"
-  fi
+  rm_dir "$genesis_home_dir"
 }
 
 generate_genesis() {

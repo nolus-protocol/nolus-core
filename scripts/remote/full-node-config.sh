@@ -1,18 +1,18 @@
 #!/bin/bash
-# Configure a locally installed full node for the needs of the test or main networks
+# Configure a locally installed full node for the needs of the test or main networks.
+# The Nolus binary should be accessible on the system path.
 #
-# arg: home directory of the full node, mandatory
-# arg: external IP address, mandatory
-# arg: P2P port, mandatory
-# arg: RPC port, mandatory
-# arg: Monitoring port, mandatory
-# arg: API port, mandatory
-
-set -euo pipefail
+# arg1: home directory of the node, mandatory.
+# arg2: node's moniker, mandatory.
+# arg3: base port, mandatory. Used to determine the endpoint ports.
+# arg4: timeout commit, mandatory. Example: "3s".
+# arg5: persistent peers, mandatory.
+# set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/lib/lib.sh
 source "$SCRIPT_DIR"/../common/cmd.sh
+source "$SCRIPT_DIR"/../common/rm-dir.sh
 
 home_dir="$1"
 node_moniker="$2"
@@ -28,12 +28,8 @@ MONITORING_PORT=$((base_port + 2))
 API_PORT=$((base_port + 3))
 GRPC_PORT=$((base_port + 4))
 
-if [[ -n "${home_dir:-}" ]]; then
-    rm -rf "$home_dir"
-fi
-
+rm_dir "$home_dir"
 mkdir -p "$home_dir"
-
 run_cmd "$home_dir" init "$node_moniker" >/dev/null
 
 declare -r config_dir="$home_dir"/config

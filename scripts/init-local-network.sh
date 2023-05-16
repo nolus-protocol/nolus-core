@@ -3,6 +3,7 @@ set -euxo pipefail
 
 INIT_LOCAL_NETWORK_SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/common/cmd.sh
+source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/common/rm-dir.sh
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/accounts.sh
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/verify.sh
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/wait_services.sh
@@ -245,9 +246,9 @@ verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "hermes account mnemonic"
 
-rm -fr "$VALIDATORS_ROOT_DIR"
-rm -fr "$VAL_ACCOUNTS_DIR"
-rm -fr "$USER_DIR"
+rm_dir "$VALIDATORS_ROOT_DIR"
+rm_dir "$VAL_ACCOUNTS_DIR"
+rm_dir "$USER_DIR"
 
 accounts_spec=$(echo "[]" | add_account "$(generate_account "$RESERVE_NAME" "$USER_DIR")" "$RESERVE_TOKENS")
 
