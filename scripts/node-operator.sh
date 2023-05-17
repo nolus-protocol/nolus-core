@@ -10,6 +10,7 @@ SSH_USER=""
 SSH_IP=""
 ARTIFACT_BIN="nolus.tar.gz"
 GENESIS_FILE=""
+SSH_KEY=""
 
 COMMAND_STOP="stop"
 COMMAND_START="start"
@@ -30,6 +31,7 @@ Available Flags:
   [--nodes <number - nodes count>]
   [--ip <string - ip of the remote host>]
   [--user <string - ssh user>]
+  [--ssh-key <string - ssh pvt key file path>]
   [--genesis-file <genesis_file_path>]
   [--artifact-bin <*.tar.gz - archive with nolusd bin>]
   [--moniker <string - node moniker>]
@@ -59,6 +61,12 @@ while [[ $# -gt 0 ]]; do
 
   --user)
     SSH_USER=$2
+    shift
+    shift
+    ;;
+
+  --ssh-key)
+    SSH_KEY=$2
     shift
     shift
     ;;
@@ -100,7 +108,9 @@ done
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 verify_mandatory "$SSH_USER" "Remote server SSH user"
 verify_mandatory "$SSH_IP" "Remote server IP"
-init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP"
+verify_mandatory "$SSH_KEY" "SSH pvt key file path"
+
+init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP" "$SSH_KEY"
 
 case $COMMAND in
 $COMMAND_STOP)

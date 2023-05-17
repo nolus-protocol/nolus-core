@@ -30,6 +30,7 @@ ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
 SSH_USER=""
 SSH_IP=""
+SSH_KEY=""
 NATIVE_CURRENCY="unls"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
@@ -57,6 +58,7 @@ while [[ $# -gt 0 ]]; do
     [--artifact-scripts <tar_gz_scripts>]
     [--ip <string - ip of the remote host>]
     [--user <string - ssh key user>]
+    [--ssh-key <string - ssh pvt key file path>]
     [--chain-id <string>]
     [--validators <number>]
     [--validator-accounts-dir <validator_accounts_dir>]
@@ -97,6 +99,12 @@ while [[ $# -gt 0 ]]; do
 
   --user)
     SSH_USER=$2
+    shift
+    shift
+    ;;
+
+  --ssh-key)
+    SSH_KEY=$2
     shift
     shift
     ;;
@@ -218,6 +226,7 @@ verify_mandatory "$LPP_NATIVE" "LPP native currency"
 verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
+verify_mandatory "$SSH_KEY" "SSH pvt key file path"
 
 rm_dir "$VAL_ACCOUNTS_DIR"
 
@@ -226,7 +235,7 @@ accounts_spec=$(echo "[]" | add_account "$FAUCET_ADDR" "$FAUCET_TOKENS")
 
 source "$SCRIPT_DIR"/internal/setup-validator.sh
 
-init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP"
+init_setup_validator "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$SSH_USER" "$SSH_IP" "$SSH_KEY"
 deploy_binary
 deploy_scripts
 setup_services "$VALIDATORS"

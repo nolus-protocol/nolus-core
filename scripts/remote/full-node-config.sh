@@ -7,7 +7,7 @@
 # arg3: base port, mandatory. Used to determine the endpoint ports.
 # arg4: timeout commit, mandatory. Example: "3s".
 # arg5: persistent peers, mandatory.
-# set -euo pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR"/lib/lib.sh

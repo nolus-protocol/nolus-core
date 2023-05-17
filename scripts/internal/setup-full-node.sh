@@ -7,6 +7,7 @@ setup_full_node_scripts_artifact=""
 setup_full_node_moniker_base=""
 setup_full_node_server_user=""
 setup_full_node_server_ip=""
+setup_full_node_ssh_key=""
 setup_full_node_persistent_peers=""
 
 # end "instance" variables
@@ -22,6 +23,7 @@ init_setup_full_node() {
   setup_full_node_persistent_peers="$5"
   setup_full_node_server_user="$6"
   setup_full_node_server_ip="$7"
+  setup_full_node_ssh_key="$8"
 }
 
 deploy_binary() {
@@ -45,12 +47,13 @@ setup_services() {
       "/opt/deploy/scripts/remote/validator-init-service.sh \
       $SETUP_FULL_NODE_HOME_DIR $node_moniker" \
       $setup_full_node_server_user \
-      $setup_full_node_server_ip
+      $setup_full_node_server_ip \
+      $setup_full_node_ssh_key
   done
 }
 
 setup_full_node() {
-  set -euo pipefail
+  set -euox pipefail
   local COUNT="$1"
 
   for i in $(seq "$COUNT"); do
@@ -78,10 +81,11 @@ __config() {
             $home_dir \
             $node_moniker \
             $node_base_port \
-            $SETUP_FULL_NODE_TIMEOUT_COMMIT
+            $SETUP_FULL_NODE_TIMEOUT_COMMIT \
             $setup_full_node_persistent_peers" \
     $setup_full_node_server_user \
-    $setup_full_node_server_ip
+    $setup_full_node_server_ip \
+    $setup_full_node_ssh_key
 }
 
 __home_dir() {
@@ -108,7 +112,9 @@ __upload_tar() {
   "$setup_full_node_scripts_home_dir"/server/run-shell-script.sh \
     "mkdir -p $target_dir" \
     $setup_full_node_server_user \
-    $setup_full_node_server_ip
+    $setup_full_node_server_ip \
+    $setup_full_node_ssh_key
+
 
   "$setup_full_node_scripts_home_dir"/server/copy-file.sh \
     $archive_full_path \
@@ -125,5 +131,6 @@ __untar() {
   "$setup_full_node_scripts_home_dir"/server/run-shell-script.sh \
     "tar -xvf $target_dir/$archive_name -C $target_dir" \
     $setup_full_node_server_user \
-    $setup_full_node_server_ip
+    $setup_full_node_server_ip \
+    $setup_full_node_ssh_key
 }

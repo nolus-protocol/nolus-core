@@ -11,6 +11,7 @@ ARTIFACT_SCRIPTS=""
 COUNT=2
 SSH_USER=""
 SSH_IP=""
+SSH_KEY=""
 
 __print_usage() {
     printf "Usage: %s
@@ -20,6 +21,7 @@ __print_usage() {
     [--persistent-peers <string - comma delimited list of peers>]
     [--ip <string - ip of the remote host>]
     [--user <string - ssh key user>]
+    [--ssh-key <string - ssh pvt key file path>]
     [--moniker <string - node moniker (default: $MONIKER_BASE)>]" \
         "$1"
 }
@@ -74,6 +76,12 @@ while [[ $# -gt 0 ]]; do
         shift
         ;;
 
+    --ssh-key)
+        SSH_KEY=$2
+        shift
+        shift
+        ;;
+
     --moniker)
         MONIKER_BASE="$2"
         shift
@@ -92,8 +100,9 @@ verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
+verify_mandatory "$SSH_KEY" "SSH pvt key file path"
 
-init_setup_full_node "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$PERSISTENT_PEERS" "$SSH_USER" "$SSH_IP"
+init_setup_full_node "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$PERSISTENT_PEERS" "$SSH_USER" "$SSH_IP" "$SSH_KEY"
 deploy_binary
 deploy_scripts
 setup_services "$COUNT"

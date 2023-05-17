@@ -8,6 +8,7 @@ setup_validator_prev_node_id=""
 setup_validator_moniker_base=""
 setup_validator_server_user=""
 setup_validator_server_ip=""
+setup_validator_ssh_key=""
 
 # end "instance" variables
 SETUP_VALIDATOR_BASE_PORT=26606
@@ -21,6 +22,7 @@ init_setup_validator() {
   setup_validator_moniker_base="$4"
   setup_validator_server_user="$5"
   setup_validator_server_ip="$6"
+  setup_validator_ssh_key="$7"
 }
 
 deploy_binary() {
@@ -56,7 +58,8 @@ setup_services() {
       "/opt/deploy/scripts/remote/validator-init-service.sh \
       $SETUP_VALIDATOR_HOME_DIR $node_moniker" \
       $setup_validator_server_user \
-      $setup_validator_server_ip
+      $setup_validator_server_ip \
+      $setup_validator_ssh_key
   done
 }
 
@@ -101,7 +104,8 @@ config() {
                               $SETUP_VALIDATOR_TIMEOUT_COMMIT \
                               $setup_validator_prev_node_id" \
     $setup_validator_server_user \
-    $setup_validator_server_ip)
+    $setup_validator_server_ip \
+    $setup_validator_ssh_key)
   read -r setup_validator_prev_node_id __val_pub_key <<<"$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
 }
@@ -133,7 +137,10 @@ __do_cmd_services() {
     local node_moniker
     node_moniker=$(__node_moniker "$i")
     $setup_validator_scripts_home_dir/server/run-shell-script.sh \
-      "systemctl -v $cmd $node_moniker" "$setup_validator_server_user" "$setup_validator_server_ip"
+      "systemctl $cmd $node_moniker" \
+      "$setup_validator_server_user" \
+      "$setup_validator_server_ip" \
+      "$setup_validator_ssh_key"
   done
 }
 
@@ -145,7 +152,8 @@ __upload_tar() {
   "$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
     "mkdir -p $target_dir" \
     $setup_validator_server_user \
-    $setup_validator_server_ip
+    $setup_validator_server_ip \
+    $setup_validator_ssh_key
 
   "$setup_validator_scripts_home_dir"/server/copy-file.sh \
     $archive_full_path \
@@ -162,7 +170,8 @@ __untar() {
   "$setup_validator_scripts_home_dir"/server/run-shell-script.sh \
     "tar -xvf $target_dir/$archive_name -C $target_dir" \
     $setup_validator_server_user \
-    $setup_validator_server_ip
+    $setup_validator_server_ip \
+    $setup_validator_ssh_key
 }
 
 __upload_genesis() {
