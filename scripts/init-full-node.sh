@@ -8,6 +8,7 @@ source "$SCRIPT_DIR"/internal/verify.sh
 MONIKER_BASE="full-node"
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
+PERSISTENT_PEERS=""
 COUNT=2
 SSH_USER=""
 SSH_IP=""
