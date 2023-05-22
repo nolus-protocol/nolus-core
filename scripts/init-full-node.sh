@@ -102,6 +102,7 @@ verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
 verify_mandatory "$SSH_KEY" "SSH pvt key file path"
+verify_mandatory "$PERSISTENT_PEERS" "Valilidator peer IDs(comma delimited)"
 
 init_setup_full_node "$SCRIPT_DIR" "$ARTIFACT_BIN" "$ARTIFACT_SCRIPTS" "$MONIKER_BASE" "$PERSISTENT_PEERS" "$SSH_USER" "$SSH_IP" "$SSH_KEY"
 deploy_binary
