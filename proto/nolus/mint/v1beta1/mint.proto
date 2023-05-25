@@ -7,24 +7,24 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/mint/types";
 
 // Minter represents the minting state.
 message Minter {
-  string norm_time_passed = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+  string norm_time_passed = 2
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable) = false
   ];
 
-  string total_minted = 3 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+  string total_minted = 3
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
     (gogoproto.nullable) = false
   ];
 
-  string prev_block_timestamp = 4 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+  string prev_block_timestamp = 4
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
     (gogoproto.nullable) = false
   ];
 
   string annual_inflation = 5 [
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
-    (gogoproto.nullable) = false
+    (gogoproto.nullable)   = false
   ];
 }
 
@@ -33,8 +33,8 @@ message Params {
   // type of coin to mint
   string mint_denom = 1;
 
-  string max_mintable_nanoseconds = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+  string max_mintable_nanoseconds = 2
+  [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
     (gogoproto.nullable) = false
   ];
 }

@@ -1,4 +1,4 @@
-package alloc
+package vestings
 
 import (
 	"context"
@@ -52,7 +52,7 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (a AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	types.RegisterInterfaces(reg)
 }
@@ -134,7 +134,7 @@ func (am AppModule) LegacyQuerierHandler(_ *codec.LegacyAmino) sdk.Querier {
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
-	err := cfg.RegisterMigration(types.ModuleName, 2, func(sdk.Context) error { return nil })
+	err := cfg.RegisterMigration(types.ModuleName, 1, func(sdk.Context) error { return nil })
 	if err != nil {
 		panic(err)
 	}

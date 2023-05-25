@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// AccAddress returns a sample account address
+// AccAddress returns a sample account address.
 func AccAddress() sdk.AccAddress {
 	pk := ed25519.GenPrivKey().PubKey()
 	addr := pk.Address()
@@ -98,7 +98,6 @@ func TestMsgCreateVestingAccount_ValidateBasic(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.msg.ValidateBasic()
 			if tt.err != nil {
-
 				require.EqualError(t, errors.Unwrap(err), tt.err.Error())
 				return
 			}

@@ -19,12 +19,10 @@ service Query {
     option (google.api.http).get = "/nolus/mint/v1beta1/state";
   }
 
-  // AnnualInflation returns the current minting inflation rate for the next 12
-  // months.
-  rpc AnnualInflation(QueryAnnualInflationRequest)
-      returns (QueryAnnualInflationResponse) {
+  // AnnualInflation returns the current minting inflation rate for the next 12 months.
+  rpc AnnualInflation(QueryAnnualInflationRequest) returns (QueryAnnualInflationResponse) {
     option (google.api.http).get = "/nolus/mint/v1beta1/annual_inflation";
-  }
+  }  
 }
 
 // QueryParamsRequest is the request type for the Query/Params RPC method.
@@ -33,7 +31,7 @@ message QueryParamsRequest {}
 // QueryParamsResponse is the response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params defines the parameters of the module.
-  Params params = 1 [ (gogoproto.nullable) = false ];
+  Params params = 1 [(gogoproto.nullable) = false];
 }
 
 // QueryMintStateRequest is the request type for the Query/State RPC method.
@@ -42,26 +40,16 @@ message QueryMintStateRequest {}
 // QueryMintStateResponse is the response type for the Query/State RPC
 // method.
 message QueryMintStateResponse {
-  bytes norm_time_passed = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable) = false
-  ];
-  bytes total_minted = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
-    (gogoproto.nullable) = false
-  ];
+  bytes norm_time_passed = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec", (gogoproto.nullable) = false];
+  bytes total_minted = 2 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint", (gogoproto.nullable) = false];
 }
 
-// QueryAnnualInflationRequest is the request type for the Query/AnnualInflation
-// RPC method.
+// QueryAnnualInflationRequest is the request type for the Query/AnnualInflation RPC method.
 message QueryAnnualInflationRequest {}
 
-// QueryAnnualInflationResponse is the response type for the
-// Query/AnnualInflation RPC method.
+// QueryAnnualInflationResponse is the response type for the Query/AnnualInflation RPC
+// method.
 message QueryAnnualInflationResponse {
   // inflation is the current minting inflation value.
-  bytes annual_inflation = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
-    (gogoproto.nullable) = false
-  ];
+  bytes annual_inflation = 1 [(gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint", (gogoproto.nullable) = false];
 }

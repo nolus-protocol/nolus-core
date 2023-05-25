@@ -46,6 +46,8 @@ import (
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/vestings"
+	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
@@ -89,6 +91,7 @@ var maccPerms = map[string][]string{
 	govtypes.ModuleName:               {authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
 	wasm.ModuleName:                   {authtypes.Burner},
+	vestingstypes.ModuleName:          nil,
 	icatypes.ModuleName:               nil,
 	interchainqueriestypes.ModuleName: nil,
 	feetypes.ModuleName:               nil,
@@ -115,6 +118,7 @@ var ModuleBasics = module.NewBasicManager(
 	transferSudo.AppModuleBasic{},
 	vesting.AppModuleBasic{},
 	wasm.AppModuleBasic{},
+	vestings.AppModuleBasic{},
 	tax.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	interchaintxs.AppModuleBasic{},
@@ -156,6 +160,7 @@ func appModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		app.AppKeepers.TransferModule,
+		app.AppKeepers.VestingsModule,
 		app.AppKeepers.TaxModule,
 		app.AppKeepers.IcaModule,
 		app.AppKeepers.InterchainQueriesModule,
@@ -228,6 +233,7 @@ func orderBeginBlockers() []string {
 		ibctransfertypes.ModuleName,
 		crisistypes.ModuleName,
 		taxmoduletypes.ModuleName,
+		vestingstypes.ModuleName,
 		govtypes.ModuleName,
 		icatypes.ModuleName,
 		interchaintxstypes.ModuleName,
@@ -257,6 +263,7 @@ func orderEndBlockers() []string {
 		banktypes.ModuleName,
 		distrtypes.ModuleName,
 		taxmoduletypes.ModuleName,
+		vestingstypes.ModuleName,
 		icatypes.ModuleName,
 		interchaintxstypes.ModuleName,
 		interchainqueriestypes.ModuleName,
@@ -287,6 +294,7 @@ func orderInitBlockers() []string {
 		minttypes.ModuleName,
 		crisistypes.ModuleName,
 		taxmoduletypes.ModuleName,
+		vestingstypes.ModuleName,
 		ibchost.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,

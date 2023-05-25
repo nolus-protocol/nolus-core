@@ -5,4 +5,5 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/vestings/types";
 
+// Params defines the parameters for the module.
 message Params { option (gogoproto.stringer) = false; }

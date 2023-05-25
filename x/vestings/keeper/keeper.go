@@ -50,12 +50,12 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// GetModuleAccountBalance gets the airdrop coin balance of module account
+// GetModuleAccountBalance gets the airdrop coin balance of module account.
 func (k Keeper) GetModuleAccountAddress(_ sdk.Context) sdk.AccAddress {
 	return k.accountKeeper.GetModuleAddress(types.ModuleName)
 }
 
-// GetModuleAccountBalance gets the airdrop coin balance of module account
+// GetModuleAccountBalance gets the airdrop coin balance of module account.
 func (k Keeper) GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.AccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, moduleName)
 }
