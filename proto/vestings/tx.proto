@@ -1,0 +1,36 @@
+syntax = "proto3";
+package vestings;
+
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/vestings/types";
+
+// Msg defines the vestings Msg service.
+service Msg {
+  // CreateVestingAccount defines a method that enables creating a vesting
+  // account.
+  rpc CreateVestingAccount(MsgCreateVestingAccount)
+      returns (MsgCreateVestingAccountResponse);
+}
+
+// MsgCreateVestingAccount defines a message that enables creating a vesting
+// account.
+message MsgCreateVestingAccount {
+  option (gogoproto.equal) = true;
+
+  string from_address = 1 [ (gogoproto.moretags) = "yaml:\"from_address\"" ];
+  string to_address = 2 [ (gogoproto.moretags) = "yaml:\"to_address\"" ];
+  repeated cosmos.base.v1beta1.Coin amount = 3 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  int64 start_time = 4 [ (gogoproto.moretags) = "yaml:\"start_time\"" ];
+  int64 end_time = 5 [ (gogoproto.moretags) = "yaml:\"end_time\"" ];
+  bool delayed = 6;
+}
+
+// MsgCreateVestingAccountResponse defines the Msg/CreateVestingAccount response
+// type.
+message MsgCreateVestingAccountResponse {}
