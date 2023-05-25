@@ -1,0 +1,8 @@
+syntax = "proto3";
+package vestings;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/vestings/types";
+
+message Params { option (gogoproto.stringer) = false; }
