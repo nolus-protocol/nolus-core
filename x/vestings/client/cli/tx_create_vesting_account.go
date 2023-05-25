@@ -15,7 +15,7 @@ import (
 
 var _ = strconv.Itoa(0)
 
-// Transaction command flags
+// Transaction command flags.
 const (
 	FlagDelayed = "delayed"
 )

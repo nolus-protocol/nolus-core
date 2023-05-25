@@ -13,17 +13,17 @@ func NewParams() Params {
 	return Params{}
 }
 
-// default module parameters
+// default module parameters.
 func DefaultParams() Params {
 	return NewParams()
 }
 
-// validate params
+// validate params.
 func (p Params) Validate() error {
 	return nil
 }
 
-// Implements params.ParamSet
+// Implements params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{}
 }

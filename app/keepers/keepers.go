@@ -54,6 +54,9 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/vestings"
+	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
+	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -154,7 +157,8 @@ type AppKeepers struct {
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
-	TaxKeeper taxmodulekeeper.Keeper
+	TaxKeeper      taxmodulekeeper.Keeper
+	VestingsKeeper vestingskeeper.Keeper
 
 	InterchainTxsKeeper     interchaintxskeeper.Keeper
 	InterchainQueriesKeeper interchainquerieskeeper.Keeper
@@ -170,6 +174,7 @@ type AppKeepers struct {
 	TransferModule          transferSudo.AppModule
 	FeeRefunderModule       feerefunder.AppModule
 	TaxModule               tax.AppModule
+	VestingsModule          vestings.AppModule
 	IcaModule               ica.AppModule
 }
 
@@ -441,6 +446,16 @@ func NewAppKeeper(
 	)
 	appKeepers.TaxModule = tax.NewAppModule(appCodec, appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
+	appKeepers.VestingsKeeper = *vestingskeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[vestingstypes.StoreKey],
+		appKeepers.keys[vestingstypes.MemStoreKey],
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.GetSubspace(vestingstypes.ModuleName),
+	)
+	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, appKeepers.VestingsKeeper)
+
 	transferIBCModule := transferSudo.NewIBCModule(appKeepers.TransferKeeper)
 
 	var icaControllerStack ibcporttypes.IBCModule
@@ -487,6 +502,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName)
+	paramsKeeper.Subspace(vestingstypes.ModuleName)
 
 	return paramsKeeper
 }

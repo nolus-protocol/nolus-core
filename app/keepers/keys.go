@@ -19,6 +19,7 @@ import (
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
@@ -36,7 +37,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		govtypes.StoreKey, paramstypes.StoreKey, ibchost.StoreKey,
 		upgradetypes.StoreKey, evidencetypes.StoreKey, ibctransfertypes.StoreKey,
-		taxmoduletypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey,
+		taxmoduletypes.StoreKey, vestingstypes.StoreKey, icacontrollertypes.StoreKey, capabilitytypes.StoreKey,
 		interchainqueriestypes.StoreKey, contractmanagermoduletypes.StoreKey, interchaintxstypes.StoreKey,
 		wasm.StoreKey, feerefundertypes.StoreKey,
 	)

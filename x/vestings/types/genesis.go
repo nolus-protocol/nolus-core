@@ -6,10 +6,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
-// DefaultIndex is the default capability global index
+// DefaultIndex is the default capability global index.
 const DefaultIndex uint64 = 1
 
-// DefaultGenesis returns the default vestings genesis state
+// DefaultGenesis returns the default vestings genesis state.
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Params: Params{},
@@ -22,7 +22,7 @@ func (gs GenesisState) Validate() error {
 	return gs.Params.Validate()
 }
 
-// GetGenesisStateFromAppState return GenesisState
+// GetGenesisStateFromAppState return GenesisState.
 func GetGenesisStateFromAppState(cdc codec.JSONCodec, appState map[string]json.RawMessage) *GenesisState {
 	var genesisState GenesisState
 

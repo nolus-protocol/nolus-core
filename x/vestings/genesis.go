@@ -1,4 +1,4 @@
-package alloc
+package vestings
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"

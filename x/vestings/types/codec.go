@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgCreateVestingAccount{}, "alloc/CreateVestingAccount", nil)
+	cdc.RegisterConcrete(&MsgCreateVestingAccount{}, "vestings/CreateVestingAccount", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

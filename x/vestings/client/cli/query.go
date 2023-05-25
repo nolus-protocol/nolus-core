@@ -10,7 +10,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(_ string) *cobra.Command {
 	// Group vestings queries under a subcommand
 	cmd := &cobra.Command{
