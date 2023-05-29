@@ -177,6 +177,7 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 protoVer=v0.9
 protoImageName=osmolabs/osmo-proto-gen:$(protoVer)
 containerProtoGen=nolus-proto-gen-$(protoVer)
+PROTO_FORMATTER_IMAGE=tendermintdev/docker-build-proto@sha256:aabcfe2fc19c31c0f198d4cd26393f5e5ca9502d7ea3feafbfe972448fee7cae
 
 .PHONY: proto-gen
 
@@ -184,3 +185,9 @@ proto-gen:
 	@echo "Generating Protobuf files"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
 		sh ./scripts/protocgen.sh; fi
+
+proto-format:
+	@echo "Formatting Protobuf files"
+	docker run --rm -v $(CURDIR):/workspace \
+	--workdir /workspace $(PROTO_FORMATTER_IMAGE) \
+	find ./ -name *.proto -exec clang-format -i {} \;

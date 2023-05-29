@@ -190,7 +190,8 @@ func (m *QueryMintStateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryMintStateResponse proto.InternalMessageInfo
 
-// QueryAnnualInflationRequest is the request type for the Query/AnnualInflation RPC method.
+// QueryAnnualInflationRequest is the request type for the Query/AnnualInflation
+// RPC method.
 type QueryAnnualInflationRequest struct {
 }
 
@@ -227,8 +228,8 @@ func (m *QueryAnnualInflationRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryAnnualInflationRequest proto.InternalMessageInfo
 
-// QueryAnnualInflationResponse is the response type for the Query/AnnualInflation RPC
-// method.
+// QueryAnnualInflationResponse is the response type for the
+// Query/AnnualInflation RPC method.
 type QueryAnnualInflationResponse struct {
 	// inflation is the current minting inflation value.
 	AnnualInflation github_com_cosmos_cosmos_sdk_types.Uint `protobuf:"bytes,1,opt,name=annual_inflation,json=annualInflation,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Uint" json:"annual_inflation"`
@@ -330,7 +331,8 @@ type QueryClient interface {
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// MintState returns the current minting state value.
 	MintState(ctx context.Context, in *QueryMintStateRequest, opts ...grpc.CallOption) (*QueryMintStateResponse, error)
-	// AnnualInflation returns the current minting inflation rate for the next 12 months.
+	// AnnualInflation returns the current minting inflation rate for the next 12
+	// months.
 	AnnualInflation(ctx context.Context, in *QueryAnnualInflationRequest, opts ...grpc.CallOption) (*QueryAnnualInflationResponse, error)
 }
 
@@ -375,7 +377,8 @@ type QueryServer interface {
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// MintState returns the current minting state value.
 	MintState(context.Context, *QueryMintStateRequest) (*QueryMintStateResponse, error)
-	// AnnualInflation returns the current minting inflation rate for the next 12 months.
+	// AnnualInflation returns the current minting inflation rate for the next 12
+	// months.
 	AnnualInflation(context.Context, *QueryAnnualInflationRequest) (*QueryAnnualInflationResponse, error)
 }
 
