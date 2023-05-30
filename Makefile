@@ -11,6 +11,9 @@ FUZZ_NUM_BLOCKS ?= 100
 FUZZ_BLOCK_SIZE ?= 200
 export GO111MODULE = on
 
+GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
+REQUIRE_GO_VERSION = 1.20
+
 # Default target executed when no arguments are given to make.
 default_target: all
 
@@ -111,6 +114,12 @@ endif
 
 #$(info $$BUILD_FLAGS is [$(BUILD_FLAGS)])
 
+check_version:
+ifneq ($(GO_SYSTEM_VERSION), $(REQUIRE_GO_VERSION))
+	@echo "ERROR: Go version ${REQUIRE_GO_VERSION} is required for $(VERSION) version of Nolus."
+	exit 1
+endif
+
 .PHONY: all install
 all: build install test-fuzz test-unit-cosmos
 
@@ -123,7 +132,7 @@ BUILD_TARGETS := build install
 
 build: BUILD_ARGS=-o $(BUILDDIR)/
 
-$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+$(BUILD_TARGETS): check_version go.sum $(BUILDDIR)/
 	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
 
 $(BUILDDIR)/:
