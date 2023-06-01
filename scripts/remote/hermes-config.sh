@@ -33,7 +33,7 @@ declare -r hermes_mnemonic="${10}"
 # Install
 
 declare -r archive_name="hermes-binary.tar.gz"
-wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.2.0/hermes-v1.2.0-x86_64-unknown-linux-gnu.tar.gz
+wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.5.0/hermes-v1.5.0-x86_64-unknown-linux-gnu.tar.gz
 
 declare -r hermes_binary_dir="$hermes_root"/hermes
 mkdir -p  "$hermes_binary_dir"
@@ -96,7 +96,7 @@ update_config "$hermes_config_dir" '.chains[1]."max_msg_num"' 20
 update_config "$hermes_config_dir" '.chains[1]."max_tx_size"' 209715
 update_config "$hermes_config_dir" '.chains[1]."clock_drift"' '"20s"'
 update_config "$hermes_config_dir" '.chains[1]."max_block_time"' '"10s"'
-update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"10days"'
+update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"57600s"'
 update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 
 # Accounts setup
