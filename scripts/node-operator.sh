@@ -9,6 +9,7 @@ NODES=1
 SSH_USER=""
 SSH_IP=""
 ARTIFACT_BIN="nolus.tar.gz"
+BIN_TARGET_DIR=""
 GENESIS_FILE=""
 SSH_KEY=""
 
@@ -34,6 +35,7 @@ Available Flags:
   [--ssh-key <string - ssh pvt key file path>]
   [--genesis-file <genesis_file_path>]
   [--artifact-bin <*.tar.gz - archive with nolusd bin>]
+  [--bin-target-dir <full path on the remote>]
   [--moniker <string - node moniker>]
 "
   exit 1
@@ -93,6 +95,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --bin-target-dir)
+    BIN_TARGET_DIR="$2"
+    shift
+    shift
+    ;;
+
   --moniker)
     MONIKER_BASE="$2"
     shift
@@ -125,7 +133,7 @@ $COMMAND_START)
 
 $COMMAND_REPLACE_BIN)
   verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
-  deploy_binary
+  deploy_binary $BIN_TARGET_DIR
   ;;
 
 $COMMAND_SEND_GENESIS)

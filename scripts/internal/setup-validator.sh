@@ -14,6 +14,8 @@ setup_validator_ssh_key=""
 SETUP_VALIDATOR_BASE_PORT=26606
 SETUP_VALIDATOR_HOME_DIR="/opt/deploy/nolus"
 SETUP_VALIDATOR_TIMEOUT_COMMIT="5s"
+SETUP_VALIDATOR_BINARY_TARGET_DIR="/usr/bin"
+SETUP_VALIDATOR_SCRIPTS_TARGET_DIR="/opt/deploy"
 
 init_setup_validator() {
   setup_validator_scripts_home_dir="$1"
@@ -26,13 +28,14 @@ init_setup_validator() {
 }
 
 deploy_binary() {
-  __upload_tar "$setup_validator_binary_artifact" "/usr/bin"
-  __untar "$setup_validator_binary_artifact" "/usr/bin"
+  local target_dir=${1:-$SETUP_VALIDATOR_BINARY_TARGET_DIR}
+  __upload_tar "$setup_validator_binary_artifact" "$target_dir"
+  __untar "$setup_validator_binary_artifact" "$target_dir"
 }
 
 deploy_scripts() {
-  __upload_tar "$setup_validator_scripts_artifact" "/opt/deploy"
-  __untar "$setup_validator_scripts_artifact" "/opt/deploy"
+  __upload_tar "$setup_validator_scripts_artifact" "$SETUP_VALIDATOR_SCRIPTS_TARGET_DIR"
+  __untar "$setup_validator_scripts_artifact" "$SETUP_VALIDATOR_SCRIPTS_TARGET_DIR"
 }
 
 # Setup validator nodes and collect their ids and validator public keys
