@@ -51,7 +51,7 @@ generate_genesis() {
 
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
-    "$accounts_spec" "$treasury_addr" "$admin_contract_addr" "$gov_voting_period" \
+    "$accounts_spec" "$treasury_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
     "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file")
@@ -109,10 +109,11 @@ __generate_proto_genesis_no_wasm() {
   local -r native_currency="$2"
   local -r accounts_spec="$3"
   local -r treasury_addr="$4"
-  local -r admin_contract_addr="$5"
-  local -r gov_voting_period="$6"
-  local -r feerefunder_ack_fee_min="$7"
-  local -r feerefunder_timeout_fee_min="$8"
+  local -r treasury_init_tokens="$5"
+  local -r admin_contract_addr="$6"
+  local -r gov_voting_period="$7"
+  local -r feerefunder_ack_fee_min="$8"
+  local -r feerefunder_timeout_fee_min="$9"
 
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
@@ -130,7 +131,7 @@ __generate_proto_genesis_no_wasm() {
     add_genesis_account "$account_spec" "$native_currency" "$genesis_home_dir"
   done <<< "$(echo "$accounts_spec" | jq -c '.[]')"
 
-  __add_bank_balances "$genesis_file" "$admin_contract_addr" "$treasury_init_tokens_u128" "$native_currency"
+  __add_bank_balances "$genesis_file" "$admin_contract_addr" "$treasury_init_tokens" "$native_currency"
 }
 
 __integrate_genesis_txs() {
