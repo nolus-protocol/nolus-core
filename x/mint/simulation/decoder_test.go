@@ -5,18 +5,18 @@ import (
 	"testing"
 
 	"github.com/Nolus-Protocol/nolus-core/custom/util"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/stretchr/testify/require"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint/simulation"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 )
 
 func TestDecodeStore(t *testing.T) {
-	cdc := simapp.MakeTestEncodingConfig().Marshaler
+	cdc := sims.MakeTestEncodingConfig().Marshaler
 	dec := simulation.NewDecodeStore(cdc)
 
 	minter := types.NewMinter(sdk.MustNewDecFromStr("13.123456789"), sdk.NewUint(10003145), sdk.NewUint(uint64(util.GetCurrentTimeUnixNano())), sdk.ZeroUint())

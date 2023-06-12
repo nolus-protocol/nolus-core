@@ -8,7 +8,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -103,7 +103,7 @@ func (s *KeeperTestSuite) createTestAccounts(numAccs int) []TestAccount {
 
 // fundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) fundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-	err := simapp.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
 	s.Require().NoError(err)
 }
 

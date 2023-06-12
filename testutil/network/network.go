@@ -5,17 +5,17 @@ import (
 	"testing"
 	"time"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	tmrand "github.com/tendermint/tendermint/libs/rand"
-	tmdb "github.com/tendermint/tm-db"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
@@ -58,7 +58,7 @@ func DefaultConfig() network.Config {
 			return app.New(
 				val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0,
 				encoding,
-				simapp.EmptyAppOptions{},
+				sims.EmptyAppOptions{},
 				baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 				baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 			)
