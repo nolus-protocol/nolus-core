@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cast"
+	"github.com/tendermint/spm/openapiconsole"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"

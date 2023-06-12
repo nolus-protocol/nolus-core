@@ -21,6 +21,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.58.2
 	gopkg.in/yaml.v2 v2.4.0
+	github.com/neutron-org/neutron v1.0.3
 )
 
 require (

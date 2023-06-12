@@ -31,6 +31,8 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
+	main "github.com/Nolus-Protocol/nolus-core/app/cmd/nolusd"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // New creates application instance with in-memory database and disabled logging.

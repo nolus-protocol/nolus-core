@@ -151,7 +151,11 @@ func (s *KeeperTestSuite) createTestAccounts(numAccs int) []TestAccount {
 
 // fundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) fundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
+<<<<<<< HEAD
 	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+=======
+	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+>>>>>>> d3cc522 (wip: continue with go mod tidy)
 	s.Require().NoError(err)
 }
 
