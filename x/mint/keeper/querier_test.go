@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func (s *KeeperTestSuite) TestQueryParams() {

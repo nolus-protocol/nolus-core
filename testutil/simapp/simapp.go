@@ -3,21 +3,24 @@ package simapp
 import (
 	"time"
 
+	"github.com/cometbft/cometbft/libs/json"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
-	"github.com/tendermint/tendermint/libs/json"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	tmdb "github.com/cometbft/cometbft-db"
+	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	abci "github.com/tendermint/tendermint/abci/types"
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtypes "github.com/tendermint/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
+	"github.com/tendermint/spm/cosmoscmd"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
+	main "github.com/Nolus-Protocol/nolus-core/app/cmd/nolusd"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // New creates application instance with in-memory database and disabled logging.
@@ -28,7 +31,7 @@ func New(dir string, withDefaultGenesisState bool) *app.App {
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	a := app.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
-		simapp.EmptyAppOptions{})
+		sims.EmptyAppOptions{})
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
 	if withDefaultGenesisState {
@@ -80,7 +83,7 @@ func NewAppConstructor() network.AppConstructor {
 
 	return func(val network.Validator) servertypes.Application {
 		return app.New(val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0, encoding,
-			simapp.EmptyAppOptions{},
+			sims.EmptyAppOptions{},
 			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
 			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
 		)
