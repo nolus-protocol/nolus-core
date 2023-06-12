@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
 	nolusapp "github.com/Nolus-Protocol/nolus-core/app"
@@ -45,7 +45,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.ctx = s.ctx.WithBlockHeight(1)
 
 	// set up TxConfig
-	encodingConfig := simapp.MakeTestEncodingConfig()
+	encodingConfig := sims.MakeTestEncodingConfig()
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))
@@ -79,7 +79,7 @@ func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 
 // FundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) FundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-	err := simapp.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
 	s.Require().NoError(err)
 }
 

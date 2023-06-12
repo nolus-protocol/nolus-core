@@ -3,8 +3,8 @@ package keeper_test
 import (
 	"time"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
