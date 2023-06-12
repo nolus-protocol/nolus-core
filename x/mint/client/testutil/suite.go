@@ -7,8 +7,8 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 
+	tmcli "github.com/cometbft/cometbft/libs/cli"
 	"github.com/stretchr/testify/suite"
-	tmcli "github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint/client/cli"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"

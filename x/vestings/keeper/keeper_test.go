@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -25,7 +25,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.ctx = s.ctx.WithBlockHeight(1)
 
 	// set up TxConfig
-	encodingConfig := simapp.MakeTestEncodingConfig()
+	encodingConfig := sims.MakeTestEncodingConfig()
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))

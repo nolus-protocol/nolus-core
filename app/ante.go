@@ -10,8 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	ibcante "github.com/cosmos/ibc-go/v4/modules/core/ante"
-	"github.com/cosmos/ibc-go/v4/modules/core/keeper"
+	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
+	"github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )

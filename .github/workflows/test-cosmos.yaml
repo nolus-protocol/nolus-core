@@ -108,7 +108,7 @@ jobs:
       - name: test-sim-nondeterminism
         if: env.GIT_DIFF
         run: |
-          go test github.com/cosmos/cosmos-sdk/simapp -run TestAppStateDeterminism -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
+          go test github.com/cosmos/cosmos-sdk/testutil/sims -run TestAppStateDeterminism -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
   # TODO: run integration tests when we upgrade cosmos-sdk to 0.46+
   # test-integration:

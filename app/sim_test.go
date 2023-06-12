@@ -4,19 +4,17 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"go/build"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
+	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/stretchr/testify/require"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
-	"github.com/cosmos/cosmos-sdk/simapp"
-	"github.com/cosmos/cosmos-sdk/simapp/helpers"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,16 +31,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	icacontrollertypes "github.com/cosmos/ibc-go/v4/modules/apps/27-interchain-accounts/controller/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
+	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
-	"github.com/tendermint/tendermint/libs/log"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmdb "github.com/tendermint/tm-db"
+	tmdb "github.com/cometbft/cometbft-db"
+	"github.com/cometbft/cometbft/libs/log"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
@@ -56,13 +53,16 @@ import (
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
+// SimAppChainID hardcoded chainID for simulation
+const SimAppChainID = "simulation-app"
+
 var (
 	NumSeeds             int
 	NumTimesToRunPerSeed int
 )
 
 func init() {
-	simapp.GetSimulatorFlags()
+	sims.GetSimulatorFlags()
 	flag.IntVar(&NumSeeds, "NumSeeds", 3, "number of random seeds to use")
 	flag.IntVar(&NumTimesToRunPerSeed, "NumTimesToRunPerSeed", 5, "number of time to run the simulation per seed")
 }
@@ -74,25 +74,26 @@ type StoreKeysPrefixes struct {
 }
 
 func TestAppStateDeterminism(t *testing.T) {
-	if !simapp.FlagEnabledValue {
+	if !sims.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
 
-	config := simapp.NewConfigFromFlags()
+	config := sims.NewConfigFromFlags()
 	config.InitialBlockHeight = 1
 	config.ExportParamsPath = ""
 	config.OnOperation = false
 	config.AllInvariants = false
-	config.ChainID = helpers.SimAppChainID
+	config.ChainID = SimAppChainID
 
-	pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
-	if err != nil {
-		t.Fatalf("CosmWasm module path not found: %v", err)
-	}
+	// pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
+	// if err != nil {
+	// 	t.Fatalf("CosmWasm module path not found: %v", err)
+	// }
 
-	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
+	// reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
 	appParams := simtypes.AppParams{
-		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
+		// TODO decide how to handle this, problem is importing wasmsim ( maybe upgrade wasmd version)
+		// wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
 	}
 	bz, err := json.Marshal(appParams)
 	if err != nil {
@@ -111,14 +112,14 @@ func TestAppStateDeterminism(t *testing.T) {
 
 		for j := 0; j < NumTimesToRunPerSeed; j++ {
 			var logger log.Logger
-			if simapp.FlagVerboseValue {
+			if sims.FlagVerboseValue {
 				logger = log.TestingLogger()
 			} else {
 				logger = log.NewNopLogger()
 			}
 
 			db := tmdb.NewMemDB()
-			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, sims.FlagPeriodValue, params.MakeEncodingConfig(ModuleBasics), sims.EmptyAppOptions{}, fauxMerkleModeOpt)
 			params.SetAddressPrefixes()
 			ctx := newApp.BaseApp.NewUncachedContext(true, tmproto.Header{})
 			newApp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
@@ -135,9 +136,9 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				newApp.BaseApp,
-				simapp.AppStateFn(newApp.AppCodec(), newApp.SimulationManager()),
+				sims.AppStateFn(newApp.AppCodec(), newApp.SimulationManager()),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				simapp.SimulationOperations(newApp, newApp.AppCodec(), config),
+				sims.SimulationOperations(newApp, newApp.AppCodec(), config),
 				newApp.BlockedAddrs(),
 				config,
 				newApp.AppCodec(),
@@ -145,7 +146,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			require.NoError(t, err)
 
 			if config.Commit {
-				simapp.PrintStats(db)
+				sims.PrintStats(db)
 			}
 
 			appHash := newApp.LastCommitID().Hash
@@ -162,7 +163,7 @@ func TestAppStateDeterminism(t *testing.T) {
 }
 
 func TestAppImportExport(t *testing.T) {
-	config, db, dir, logger, skip, err := simapp.SetupSimulation("leveldb-app-sim", "Simulation")
+	config, db, dir, logger, skip, err := sims.SetupSimulation("leveldb-app-sim", "Simulation")
 	if skip {
 		t.Skip("skipping application import/export simulation")
 	}
@@ -173,8 +174,8 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	encConf := MakeEncodingConfig(ModuleBasics)
-	nolusApp := New(logger, db, nil, true, map[int64]bool{}, dir, simapp.FlagPeriodValue, encConf, simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+	encConf := params.MakeEncodingConfig(ModuleBasics)
+	nolusApp := New(logger, db, nil, true, map[int64]bool{}, dir, sims.FlagPeriodValue, encConf, sims.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, Name, nolusApp.Name())
 
 	// Run randomized simulation
@@ -184,19 +185,19 @@ func TestAppImportExport(t *testing.T) {
 		nolusApp.BaseApp,
 		AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager()),
 		simtypes.RandomAccounts,
-		simapp.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
+		sims.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
 		nolusApp.ModuleAccountAddrs(),
 		config,
 		nolusApp.AppCodec(),
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(nolusApp, config, simParams)
+	err = sims.CheckExportSimulation(nolusApp, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		sims.PrintStats(db)
 	}
 
 	t.Log("exporting genesis...")
@@ -206,14 +207,14 @@ func TestAppImportExport(t *testing.T) {
 
 	t.Log("importing genesis...")
 
-	_, newDB, newDir, _, _, err := simapp.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
+	_, newDB, newDir, _, _, err := sims.SetupSimulation("leveldb-app-sim-2", "Simulation-2")
 	require.NoError(t, err, "simulation setup failed")
 
 	defer func() {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, sims.FlagPeriodValue, params.MakeEncodingConfig(ModuleBasics), sims.EmptyAppOptions{}, fauxMerkleModeOpt)
 	require.Equal(t, Name, newNolusApp.Name())
 
 	var genesisState GenesisState
@@ -332,11 +333,11 @@ func GetSimulationLog(storeName string, sdr sdk.StoreDecoderRegistry, kvAs, kvBs
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
 func AppStateFn(codec codec.Codec, manager *module.SimulationManager) simtypes.AppStateFn {
 	// quick hack to setup app state genesis with our app modules
-	simapp.ModuleBasics = ModuleBasics
-	if simapp.FlagGenesisTimeValue == 0 { // always set to have a block time
-		simapp.FlagGenesisTimeValue = time.Now().Unix()
+	sims.ModuleBasics = ModuleBasics
+	if sims.FlagGenesisTimeValue == 0 { // always set to have a block time
+		sims.FlagGenesisTimeValue = time.Now().Unix()
 	}
-	return simapp.AppStateFn(codec, manager)
+	return sims.AppStateFn(codec, manager)
 }
 
 // fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of

@@ -9,8 +9,8 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/testutil/simapp"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 )
 
 func TestGenesis(t *testing.T) {
