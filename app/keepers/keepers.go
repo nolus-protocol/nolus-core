@@ -46,8 +46,6 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
 
-	"github.com/tendermint/spm/cosmoscmd"
-
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -178,25 +176,23 @@ type AppKeepers struct {
 	IcaModule               ica.AppModule
 }
 
-func NewAppKeeper(
+func (appKeepers *AppKeepers) NewAppKeepers(
 	appCodec codec.Codec,
 	bApp *baseapp.BaseApp,
-	encodingConfig cosmoscmd.EncodingConfig,
+	cdc *codec.LegacyAmino,
 	maccPerms map[string][]string,
 	blockedAddress map[string]bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
-) AppKeepers {
-	appKeepers := AppKeepers{}
-
+) {
 	// Set keys KVStoreKey, TransientStoreKey, MemoryStoreKey
 	appKeepers.GenerateKeys()
 
 	appKeepers.ParamsKeeper = initParamsKeeper(
 		appCodec,
-		encodingConfig.Amino,
+		cdc,
 		appKeepers.keys[paramstypes.StoreKey],
 		appKeepers.tkeys[paramstypes.TStoreKey],
 	)
@@ -470,8 +466,6 @@ func NewAppKeeper(
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
 		AddRoute(wasm.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
-
-	return appKeepers
 }
 
 // GetSubspace returns a param subspace for a given module name.

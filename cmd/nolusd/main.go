@@ -7,7 +7,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
-	"github.com/tendermint/spm/cosmoscmd"
 )
 
 func main() {
@@ -17,13 +16,12 @@ func main() {
 
 	params.SetAddressPrefixes()
 	cmdOptions := GetWasmCmdOptions()
-	rootCmd, _ := cosmoscmd.NewRootCmd(
+	rootCmd, _ := NewRootCmd(
 		app.Name,
 		params.Bech32PrefixAccAddr,
 		app.DefaultNodeHome,
 		app.Name,
 		app.ModuleBasics,
-		app.New,
 		cmdOptions...,
 	)
 
