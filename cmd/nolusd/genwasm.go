@@ -4,7 +4,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
-	"github.com/tendermint/spm/cosmoscmd"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmcli "github.com/CosmWasm/wasmd/x/wasm/client/cli"
@@ -29,14 +28,14 @@ func AddGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
 	return txCmd
 }
 
-func GetWasmCmdOptions() []cosmoscmd.Option {
-	var options []cosmoscmd.Option
+func GetWasmCmdOptions() []Option {
+	var options []Option
 
 	options = append(options,
-		cosmoscmd.CustomizeStartCmd(func(startCmd *cobra.Command) {
+		CustomizeStartCmd(func(startCmd *cobra.Command) {
 			wasm.AddModuleInitFlags(startCmd)
 		}),
-		cosmoscmd.AddSubCmd(AddGenesisWasmMsgCmd(app.DefaultNodeHome)),
+		AddSubCmd(AddGenesisWasmMsgCmd(app.DefaultNodeHome)),
 	)
 
 	return options

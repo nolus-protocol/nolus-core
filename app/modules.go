@@ -133,7 +133,7 @@ var ModuleBasics = module.NewBasicManager(
 
 func appModules(
 	app *App,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig EncodingConfig,
 	skipGenesisInvariants bool,
 ) []module.AppModule {
 	appCodec := encodingConfig.Marshaler
@@ -179,7 +179,7 @@ func appModules(
 // define the order of the modules for deterministic simulations.
 func simulationModules(
 	app *App,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig EncodingConfig,
 	_ bool,
 ) []module.AppModuleSimulation {
 	appCodec := encodingConfig.Marshaler
