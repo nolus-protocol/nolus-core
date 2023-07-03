@@ -1,7 +1,6 @@
 package simapp
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -12,7 +11,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/simapp"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/tendermint/spm/cosmoscmd"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
@@ -23,11 +21,11 @@ import (
 )
 
 // New creates application instance with in-memory database and disabled logging.
-func New(dir string, withDefaultGenesisState bool) cosmoscmd.App {
+func New(dir string, withDefaultGenesisState bool) *app.App {
 	db := tmdb.NewMemDB()
 	logger := log.NewNopLogger()
 
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	a := app.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
 		simapp.EmptyAppOptions{})
@@ -48,12 +46,9 @@ func New(dir string, withDefaultGenesisState bool) cosmoscmd.App {
 	return a
 }
 
+// TODO: Improve tests that use this function in genesis_test.go files of modules and modify this function's return.
 func TestSetup() (*app.App, error) {
-	rootApp := New(app.DefaultNodeHome, true)
-	nolusApp, ok := rootApp.(*app.App)
-	if !ok {
-		return nil, fmt.Errorf("invalid simapp created: %v", ok)
-	}
+	nolusApp := New(app.DefaultNodeHome, true)
 	return nolusApp, nil
 }
 
@@ -81,7 +76,7 @@ var defaultConsensusParams = &abci.ConsensusParams{
 
 // NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
-	encoding := cosmoscmd.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	return func(val network.Validator) servertypes.Application {
 		return app.New(val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0, encoding,
