@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/server/api"
 	"github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
@@ -29,8 +30,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"github.com/tendermint/spm/cosmoscmd"
-	"github.com/tendermint/spm/openapiconsole"
 	abci "github.com/tendermint/tendermint/abci/types"
 	tmjson "github.com/tendermint/tendermint/libs/json"
 	"github.com/tendermint/tendermint/libs/log"
@@ -39,6 +38,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
+	"github.com/Nolus-Protocol/nolus-core/app/openapiconsole"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v042 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v042"
@@ -60,8 +60,8 @@ var (
 )
 
 var (
-	_ cosmoscmd.CosmosApp     = (*App)(nil)
 	_ servertypes.Application = (*App)(nil)
+	_ simapp.App              = (*App)(nil)
 )
 
 func init() {
@@ -83,7 +83,7 @@ type App struct {
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
-	encodingConfig    appparams.EncodingConfig
+	encodingConfig    EncodingConfig
 	invCheckPeriod    uint
 
 	// the module manager
@@ -93,7 +93,7 @@ type App struct {
 	configurator module.Configurator
 }
 
-// New returns a reference to an initialized Gaia.
+// New returns a reference to an initialized blockchain app.
 func New(
 	logger log.Logger,
 	db dbm.DB,
@@ -102,10 +102,10 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig cosmoscmd.EncodingConfig,
+	encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
-) cosmoscmd.App {
+) *App {
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
@@ -117,18 +117,19 @@ func New(
 
 	app := &App{
 		BaseApp:           bApp,
+		AppKeepers:        keepers.AppKeepers{},
 		cdc:               cdc,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
-		encodingConfig:    appparams.EncodingConfig(encodingConfig),
+		encodingConfig:    EncodingConfig(encodingConfig),
 	}
 
-	// Setup keepers
-	app.AppKeepers = keepers.NewAppKeeper(
+	app.NewAppKeepers(
 		appCodec,
 		bApp,
-		encodingConfig,
+		encodingConfig.Amino,
+		encodingConfig.InterfaceRegistry,
 		maccPerms,
 		app.BlockedAddrs(),
 		skipUpgradeHeights,
@@ -192,8 +193,8 @@ func New(
 			AccountKeeper:     app.AccountKeeper,
 			BankKeeper:        app.BankKeeper,
 			TaxKeeper:         app.TaxKeeper,
-			TxCounterStoreKey: app.AppKeepers.GetKVStoreKey()[wasm.StoreKey],
-			WasmConfig:        &app.AppKeepers.WasmConfig,
+			TxCounterStoreKey: app.GetKVStoreKey()[wasm.StoreKey],
+			WasmConfig:        &app.WasmConfig,
 			SignModeHandler:   encodingConfig.TxConfig.SignModeHandler(),
 			SigGasConsumer:    ante.DefaultSigVerificationGasConsumer,
 			IBCKeeper:         app.IBCKeeper,
