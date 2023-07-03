@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -47,8 +48,6 @@ import (
 	ibcporttypes "github.com/cosmos/ibc-go/v4/modules/core/05-port/types"
 	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v4/modules/core/keeper"
-
-	"github.com/tendermint/spm/cosmoscmd"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
@@ -182,25 +181,24 @@ type AppKeepers struct {
 	AuthzModule             authzmodule.AppModule
 }
 
-func NewAppKeeper(
+func (appKeepers *AppKeepers) NewAppKeepers(
 	appCodec codec.Codec,
 	bApp *baseapp.BaseApp,
-	encodingConfig cosmoscmd.EncodingConfig,
+	cdc *codec.LegacyAmino,
+	interfaceRegistry codectypes.InterfaceRegistry,
 	maccPerms map[string][]string,
 	blockedAddress map[string]bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
-) AppKeepers {
-	appKeepers := AppKeepers{}
-
+) {
 	// Set keys KVStoreKey, TransientStoreKey, MemoryStoreKey
 	appKeepers.GenerateKeys()
 
 	appKeepers.ParamsKeeper = initParamsKeeper(
 		appCodec,
-		encodingConfig.Amino,
+		cdc,
 		appKeepers.keys[paramstypes.StoreKey],
 		appKeepers.tkeys[paramstypes.TStoreKey],
 	)
@@ -480,9 +478,7 @@ func NewAppKeeper(
 		appCodec,
 		bApp.MsgServiceRouter(),
 	)
-	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, appKeepers.AuthzKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper, encodingConfig.InterfaceRegistry)
-
-	return appKeepers
+	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, appKeepers.AuthzKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper, interfaceRegistry)
 }
 
 // GetSubspace returns a param subspace for a given module name.

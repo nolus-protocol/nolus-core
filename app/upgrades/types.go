@@ -2,7 +2,6 @@ package upgrades
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
-
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"

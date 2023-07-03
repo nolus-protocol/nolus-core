@@ -37,7 +37,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v4/modules/apps/transfer/types"
 	ibchost "github.com/cosmos/ibc-go/v4/modules/core/24-host"
 
-	"github.com/tendermint/spm/cosmoscmd"
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 	tmdb "github.com/tendermint/tm-db"
@@ -119,13 +118,13 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := tmdb.NewMemDB()
-			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
 			params.SetAddressPrefixes()
-			ctx := newApp.(*App).BaseApp.NewUncachedContext(true, tmproto.Header{})
-			newApp.(*App).TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
-			newApp.(*App).MintKeeper.SetParams(ctx, minttypes.DefaultParams())
-			newApp.(*App).AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
-			newApp.(*App).BankKeeper.SetParams(ctx, banktypes.DefaultParams())
+			ctx := newApp.BaseApp.NewUncachedContext(true, tmproto.Header{})
+			newApp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
+			newApp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
+			newApp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
+			newApp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
@@ -135,13 +134,13 @@ func TestAppStateDeterminism(t *testing.T) {
 			_, _, err := simulation.SimulateFromSeed(
 				t,
 				os.Stdout,
-				newApp.(*App).BaseApp,
-				simapp.AppStateFn(newApp.(*App).AppCodec(), newApp.(*App).SimulationManager()),
+				newApp.BaseApp,
+				simapp.AppStateFn(newApp.AppCodec(), newApp.SimulationManager()),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				simapp.SimulationOperations(newApp.(*App), newApp.(*App).AppCodec(), config),
-				newApp.(*App).BlockedAddrs(),
+				simapp.SimulationOperations(newApp, newApp.AppCodec(), config),
+				newApp.BlockedAddrs(),
 				config,
-				newApp.(*App).AppCodec(),
+				newApp.AppCodec(),
 			)
 			require.NoError(t, err)
 
@@ -149,7 +148,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				simapp.PrintStats(db)
 			}
 
-			appHash := newApp.(*App).LastCommitID().Hash
+			appHash := newApp.LastCommitID().Hash
 			appHashList[j] = appHash
 
 			if j != 0 {
@@ -174,25 +173,25 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	encConf := cosmoscmd.MakeEncodingConfig(ModuleBasics)
+	encConf := MakeEncodingConfig(ModuleBasics)
 	nolusApp := New(logger, db, nil, true, map[int64]bool{}, dir, simapp.FlagPeriodValue, encConf, simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
-	require.Equal(t, Name, nolusApp.(*App).Name())
+	require.Equal(t, Name, nolusApp.Name())
 
 	// Run randomized simulation
 	_, simParams, simErr := simulation.SimulateFromSeed(
 		t,
 		os.Stdout,
-		nolusApp.(*App).BaseApp,
-		AppStateFn(nolusApp.(*App).AppCodec(), nolusApp.(*App).SimulationManager()),
+		nolusApp.BaseApp,
+		AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager()),
 		simtypes.RandomAccounts,
-		simapp.SimulationOperations(nolusApp.(*App), nolusApp.(*App).AppCodec(), config),
-		nolusApp.(*App).ModuleAccountAddrs(),
+		simapp.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
+		nolusApp.ModuleAccountAddrs(),
 		config,
-		nolusApp.(*App).AppCodec(),
+		nolusApp.AppCodec(),
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(nolusApp.(*App), config, simParams)
+	err = simapp.CheckExportSimulation(nolusApp, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
@@ -214,22 +213,22 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, cosmoscmd.MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
-	require.Equal(t, Name, newNolusApp.(*App).Name())
+	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simapp.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simapp.EmptyAppOptions{}, fauxMerkleModeOpt)
+	require.Equal(t, Name, newNolusApp.Name())
 
 	var genesisState GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(t, err)
 
-	ctxA := nolusApp.(*App).NewContext(true, tmproto.Header{Height: nolusApp.(*App).LastBlockHeight()})
-	ctxB := newNolusApp.(*App).NewContext(true, tmproto.Header{Height: nolusApp.(*App).LastBlockHeight()})
-	newNolusApp.(*App).mm.InitGenesis(ctxB, nolusApp.(*App).AppCodec(), genesisState)
-	newNolusApp.(*App).StoreConsensusParams(ctxB, exported.ConsensusParams)
+	ctxA := nolusApp.NewContext(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
+	ctxB := newNolusApp.NewContext(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
+	newNolusApp.mm.InitGenesis(ctxB, nolusApp.AppCodec(), genesisState)
+	newNolusApp.StoreConsensusParams(ctxB, exported.ConsensusParams)
 
 	t.Log("comparing stores...")
 
-	keys := nolusApp.(*App).AppKeepers.GetKVStoreKey()
-	newKeys := newNolusApp.(*App).AppKeepers.GetKVStoreKey()
+	keys := nolusApp.AppKeepers.GetKVStoreKey()
+	newKeys := newNolusApp.AppKeepers.GetKVStoreKey()
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{keys[authtypes.StoreKey], newKeys[authtypes.StoreKey], [][]byte{}},
 		{
@@ -292,8 +291,8 @@ func TestAppImportExport(t *testing.T) {
 			return false
 		})
 	}
-	normalizeContractInfo(ctxA, nolusApp.(*App))
-	normalizeContractInfo(ctxB, newNolusApp.(*App))
+	normalizeContractInfo(ctxA, nolusApp)
+	normalizeContractInfo(ctxB, newNolusApp)
 
 	// diff both stores
 	for _, skp := range storeKeysPrefixes {
@@ -304,7 +303,7 @@ func TestAppImportExport(t *testing.T) {
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
 		t.Logf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
-		require.Len(t, failedKVAs, 0, GetSimulationLog(skp.A.Name(), nolusApp.(*App).SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
+		require.Len(t, failedKVAs, 0, GetSimulationLog(skp.A.Name(), nolusApp.SimulationManager().StoreDecoders, failedKVAs, failedKVBs))
 	}
 }
 
