@@ -14,7 +14,7 @@ linters:
     - bidichk
     - bodyclose
     - contextcheck
-    # - depguard  TODO - start using depguard again after fix
+    - depguard
     - godot
     - gofmt
     - gofumpt
