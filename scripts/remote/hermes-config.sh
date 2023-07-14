@@ -96,7 +96,7 @@ update_config "$hermes_config_dir" '.chains[1]."max_msg_num"' 20
 update_config "$hermes_config_dir" '.chains[1]."max_tx_size"' 209715
 update_config "$hermes_config_dir" '.chains[1]."clock_drift"' '"20s"'
 update_config "$hermes_config_dir" '.chains[1]."max_block_time"' '"10s"'
-update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"57600s"'
+update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"21600s"'
 update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 
 # Accounts setup
