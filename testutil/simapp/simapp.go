@@ -16,11 +16,8 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/tendermint/spm/cosmoscmd"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
-	main "github.com/Nolus-Protocol/nolus-core/app/cmd/nolusd"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // New creates application instance with in-memory database and disabled logging.

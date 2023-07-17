@@ -18,7 +18,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
-	distrclient "github.com/cosmos/cosmos-sdk/x/distribution/client"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
@@ -45,7 +44,6 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 
-	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
@@ -54,7 +52,6 @@ import (
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
-	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
@@ -73,7 +70,7 @@ func getGovProposalHandlers() []govclient.ProposalHandler {
 	govProposalHandlers = append(
 		govProposalHandlers,
 		paramsclient.ProposalHandler,
-		distrclient.ProposalHandler,
+		// distrclient.ProposalHandler,
 		upgradeclient.ProposalHandler,
 		upgradeclient.CancelProposalHandler,
 		ibcclientclient.UpdateClientProposalHandler,
@@ -112,7 +109,7 @@ var ModuleBasics = module.NewBasicManager(
 	staking.AppModuleBasic{},
 	mint.AppModuleBasic{},
 	distribution.AppModuleBasic{},
-	gov.NewAppModuleBasic(getGovProposalHandlers()...),
+	gov.AppModuleBasic{},
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},
 	slashing.AppModuleBasic{},
