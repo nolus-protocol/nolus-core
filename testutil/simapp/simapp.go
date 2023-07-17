@@ -15,6 +15,7 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cometbfttypes "github.com/cometbft/cometbft/types"
 	tmtypes "github.com/cometbft/cometbft/types"
+<<<<<<< HEAD
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -29,10 +30,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+=======
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+>>>>>>> 19d4b71 (wip)
 
 	"github.com/Nolus-Protocol/nolus-core/app"
-	main "github.com/Nolus-Protocol/nolus-core/app/cmd/nolusd"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // New creates application instance with in-memory database and disabled logging.

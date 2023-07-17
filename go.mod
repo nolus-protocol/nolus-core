@@ -21,7 +21,6 @@ require (
 	github.com/stretchr/testify v1.8.4
 	google.golang.org/grpc v1.58.2
 	gopkg.in/yaml.v2 v2.4.0
-	github.com/neutron-org/neutron v1.0.3
 )
 
 require (
@@ -90,6 +89,7 @@ require (
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
+	github.com/go-playground/validator/v10 v10.11.1 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
 	github.com/gogo/protobuf v1.3.3 // indirect
@@ -194,6 +194,7 @@ require (
 
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
+	github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.40.0-rc.0.0.20230705143547-22c391d461d5
 
 	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
