@@ -2138,8 +2138,8 @@ github.com/neelance/sourcemap v0.0.0-20200213170602-2833bce08e4c/go.mod h1:Qr6/a
 github.com/neilotoole/errgroup v0.1.5/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/neilotoole/errgroup v0.1.6/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/networkplumbing/go-nft v0.2.0/go.mod h1:HnnM+tYvlGAsMU7yoYwXEVLLiDW9gdMmb5HoGcwpuQs=
-github.com/neutron-org/neutron v1.0.3 h1:/cpNLwtbA+/HAMXggIi5VUcPH7WI8pr/Do830FC4RC0=
-github.com/neutron-org/neutron v1.0.3/go.mod h1:n7pshmyI+W/lmC//uh5DNxOd9w+L8UGzbFCQjZbEvmQ=
+github.com/neutron-org/neutron v1.0.4 h1:LAg/xJ+O9D96Ygkc1IMKEOVuM7vstqule8tq9VHssME=
+github.com/neutron-org/neutron v1.0.4/go.mod h1:q9C+3lmpwiwwuNj+UZjKJqAKYvff7jck3VqHOtV7iis=
 github.com/neutron-org/wasmd v0.31.1-neutron-fixes h1:kTjZLA0I0qL6T8SW9TFFpEIOwY4nRWOMR7NdxMvCVvA=
 github.com/neutron-org/wasmd v0.31.1-neutron-fixes/go.mod h1:flAY8k+S04M6ndyZGQTZUY+r7ai+qom33s6PqO8YBCc=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
