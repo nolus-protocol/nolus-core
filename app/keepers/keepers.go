@@ -419,7 +419,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	}
 	appKeepers.WasmConfig = wasmConfig
 
-	var wasmOpts []wasm.Option
+	// refactor: temporary comment until build succeeds
+	// var wasmOpts []wasm.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron,cosmwasm_1_1"
@@ -541,7 +542,8 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
-	paramsKeeper.Subspace(minttypes.ModuleName)
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
@@ -553,7 +555,8 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName)
-	paramsKeeper.Subspace(vestingstypes.ModuleName)
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(vestingstypes.ModuleName)
 
 	return &paramsKeeper
 }
