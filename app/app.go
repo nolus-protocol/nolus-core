@@ -38,6 +38,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	"github.com/Nolus-Protocol/nolus-core/app/openapiconsole"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v041 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v041"
@@ -135,6 +136,7 @@ func New(
 		homePath,
 		invCheckPeriod,
 		appOpts,
+		params.Bech32PrefixAccAddr,
 	)
 
 	/****  Module Options ****/
