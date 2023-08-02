@@ -5,7 +5,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/cosmos/cosmos-sdk/testutil/sims"
+
+	// refactor: fix when simulation refactoring is done
+	// "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
 	nolusapp "github.com/Nolus-Protocol/nolus-core/app"
@@ -16,7 +18,8 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	// refactor: fix when simulation refactoring is done
+	// "github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -38,30 +41,31 @@ type KeeperTestSuite struct {
 	anteHandler sdk.AnteHandler
 }
 
-// SetupTest setups a new test, with new app, context, and anteHandler.
-func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
-	tempDir := s.T().TempDir()
-	s.app, s.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
-	s.ctx = s.ctx.WithBlockHeight(1)
+// refactor: fix when simulation refactoring is done
+// // SetupTest setups a new test, with new app, context, and anteHandler.
+// func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
+// 	tempDir := s.T().TempDir()
+// 	s.app, s.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
+// 	s.ctx = s.ctx.WithBlockHeight(1)
 
-	// set up TxConfig
-	encodingConfig := sims.MakeTestEncodingConfig()
-	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
-	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
-	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))
+// 	// set up TxConfig
+// 	encodingConfig := sims.MakeTestEncodingConfig()
+// 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
+// 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
+// 	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))
 
-	anteHandler, err := ante.NewAnteHandler(
-		ante.HandlerOptions{
-			AccountKeeper:   s.app.AccountKeeper,
-			BankKeeper:      s.app.BankKeeper,
-			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-		},
-	)
-	s.Require().NoError(err)
+// 	anteHandler, err := ante.NewAnteHandler(
+// 		ante.HandlerOptions{
+// 			AccountKeeper:   s.app.AccountKeeper,
+// 			BankKeeper:      s.app.BankKeeper,
+// 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+// 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+// 		},
+// 	)
+// 	s.Require().NoError(err)
 
-	s.anteHandler = anteHandler
-}
+// 	s.anteHandler = anteHandler
+// }
 
 // CreateTestAccounts creates accounts.
 func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
@@ -77,11 +81,12 @@ func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 	return accounts
 }
 
-// FundAcc funds target address with specified amount.
-func (s *KeeperTestSuite) FundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
-	s.Require().NoError(err)
-}
+// refactor: fix when simulation refactoring is done
+// // FundAcc funds target address with specified amount.
+// func (s *KeeperTestSuite) FundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
+// 	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+// 	s.Require().NoError(err)
+// }
 
 // CreateTestTx is a helper function to create a tx given multiple inputs.
 func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
