@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/Nolus-Protocol/nolus-core/custom/util"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -38,9 +39,9 @@ func NewMinter(normTimePassed sdk.Dec, totalMinted, prevBlockTimestamp, inflatio
 func InitialMinter() Minter {
 	return NewMinter(
 		NormOffset,
-		sdk.ZeroUint(),
-		sdk.ZeroUint(),
-		sdk.ZeroUint(),
+		sdkmath.ZeroUint(),
+		sdkmath.ZeroUint(),
+		sdkmath.ZeroUint(),
 	)
 }
 
