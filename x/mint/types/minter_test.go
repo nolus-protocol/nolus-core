@@ -3,6 +3,7 @@ package types
 import (
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -22,22 +23,22 @@ func Test_calcMintedTokens(t *testing.T) {
 		{
 			title:          "starting at the end of 1st month",
 			normTimePassed: sdk.MustNewDecFromStr("1.46510417"),
-			expTotalMinted: sdk.NewUintFromString("3_760_114_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("3_760_114_000_000"),
 		},
 		{
 			title:          "starting at the end of 2nd month",
 			normTimePassed: sdk.MustNewDecFromStr("2.46020833"),
-			expTotalMinted: sdk.NewUintFromString("7_435_238_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("7_435_238_000_000"),
 		},
 		{
 			title:          "starting at the end of 96th month",
 			normTimePassed: sdk.MustNewDecFromStr("96.00000000"),
-			expTotalMinted: sdk.NewUintFromString("147_535_257_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("147_535_257_000_000"),
 		},
 		{
 			title:          "starting at the end of 97th month",
 			normTimePassed: sdk.MustNewDecFromStr("97.00000000"),
-			expTotalMinted: sdk.NewUintFromString("147_638_382_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("147_638_382_000_000"),
 		},
 	} {
 		t.Run(tc.title, func(t *testing.T) {
@@ -90,7 +91,7 @@ func Test_ValidateMinter(t *testing.T) {
 		{
 			title:          "total minted not fitting the minting schedule should return error",
 			normTimePassed: sdk.MustNewDecFromStr("2.46020833"),
-			totalMinted:    sdk.NewUintFromString("7_435_237_908_858").Add(sdk.NewUint(1)),
+			totalMinted:    sdkmath.NewUintFromString("7_435_237_908_858").Add(sdk.NewUint(1)),
 			expErr:         true,
 		},
 	} {

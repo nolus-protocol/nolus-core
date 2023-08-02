@@ -8,6 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -33,7 +34,7 @@ func TestRandomizedGenState(t *testing.T) {
 		Rand:         r,
 		NumBonded:    3,
 		Accounts:     simtypes.RandomAccounts(r, 3),
-		InitialStake: 1000,
+		InitialStake: sdkmath.NewInt(1000),
 		GenState:     make(map[string]json.RawMessage),
 	}
 
@@ -45,7 +46,7 @@ func TestRandomizedGenState(t *testing.T) {
 	require.Equal(t, sdk.NewUint(uint64(time.Second.Nanoseconds()*13)), mintGenesis.Params.MaxMintableNanoseconds)
 	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
 	require.Equal(t, "0.470000000000000000", mintGenesis.Minter.NormTimePassed.String())
-	require.Equal(t, sdk.ZeroUint(), mintGenesis.Minter.PrevBlockTimestamp)
+	require.Equal(t, sdkmath.ZeroUint(), mintGenesis.Minter.PrevBlockTimestamp)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
