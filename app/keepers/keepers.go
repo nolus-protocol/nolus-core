@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -17,6 +17,8 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	consensusparamskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
@@ -49,15 +51,16 @@ import (
 	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
-	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
-	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
-	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	"github.com/Nolus-Protocol/nolus-core/x/tax"
-	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	"github.com/Nolus-Protocol/nolus-core/x/vestings"
-	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
-	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
+	// refactor: temporary comment until build succeeds
+	// "github.com/Nolus-Protocol/nolus-core/wasmbinding"
+	// mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	// minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	// "github.com/Nolus-Protocol/nolus-core/x/tax"
+	// taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	// taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	// "github.com/Nolus-Protocol/nolus-core/x/vestings"
+	// vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
+	// vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -129,28 +132,29 @@ func GetWasmEnabledProposals() []wasm.ProposalType {
 
 type AppKeepers struct {
 	// keys to access the substores
-	keys    map[string]*sdk.KVStoreKey
-	tkeys   map[string]*sdk.TransientStoreKey
-	memKeys map[string]*sdk.MemoryStoreKey
+	keys    map[string]*storetypes.KVStoreKey
+	tkeys   map[string]*storetypes.TransientStoreKey
+	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper       authkeeper.AccountKeeper
-	BankKeeper          bankkeeper.Keeper
-	CapabilityKeeper    *capabilitykeeper.Keeper
-	StakingKeeper       stakingkeeper.Keeper
-	SlashingKeeper      slashingkeeper.Keeper
-	MintKeeper          mintkeeper.Keeper
-	DistrKeeper         distrkeeper.Keeper
-	GovKeeper           govkeeper.Keeper
-	CrisisKeeper        crisiskeeper.Keeper
-	UpgradeKeeper       upgradekeeper.Keeper
-	ParamsKeeper        paramskeeper.Keeper
-	IBCKeeper           *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAControllerKeeper icacontrollerkeeper.Keeper
-	EvidenceKeeper      evidencekeeper.Keeper
-	TransferKeeper      wrapkeeper.KeeperTransferWrapper
-	FeeRefunderKeeper   *feerefunderkeeper.Keeper
-	AuthzKeeper         authzkeeper.Keeper
+	AccountKeeper         authkeeper.AccountKeeper
+	BankKeeper            bankkeeper.Keeper
+	CapabilityKeeper      *capabilitykeeper.Keeper
+	StakingKeeper         stakingkeeper.Keeper
+	SlashingKeeper        slashingkeeper.Keeper
+	MintKeeper            mintkeeper.Keeper
+	DistrKeeper           distrkeeper.Keeper
+	GovKeeper             govkeeper.Keeper
+	CrisisKeeper          crisiskeeper.Keeper
+	UpgradeKeeper         upgradekeeper.Keeper
+	ParamsKeeper          paramskeeper.Keeper
+	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ICAControllerKeeper   icacontrollerkeeper.Keeper
+	EvidenceKeeper        evidencekeeper.Keeper
+	TransferKeeper        wrapkeeper.KeeperTransferWrapper
+	FeeRefunderKeeper     *feerefunderkeeper.Keeper
+	AuthzKeeper           authzkeeper.Keeper
+	ConsensusParamsKeeper *consensusparamskeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -159,8 +163,9 @@ type AppKeepers struct {
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
-	TaxKeeper      taxmodulekeeper.Keeper
-	VestingsKeeper vestingskeeper.Keeper
+	// refactor: temporary comment until build succeeds
+	// TaxKeeper      taxmodulekeeper.Keeper
+	// VestingsKeeper vestingskeeper.Keeper
 
 	InterchainTxsKeeper     interchaintxskeeper.Keeper
 	InterchainQueriesKeeper interchainquerieskeeper.Keeper
@@ -192,6 +197,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	homePath string,
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
+	bech32Prefix string,
 ) {
 	// Set keys KVStoreKey, TransientStoreKey, MemoryStoreKey
 	appKeepers.GenerateKeys()
@@ -203,10 +209,20 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.tkeys[paramstypes.TStoreKey],
 	)
 
-	// set the BaseApp's parameter store
-	bApp.SetParamStore(
-		appKeepers.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
+	consensusKeeper := consensusparamskeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[consensusparamstypes.StoreKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.ConsensusParamsKeeper = &consensusKeeper
+
+	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper)
+
+	// refactor: temporary comment until build succeeds
+	// set the BaseApp's parameter store
+	// bApp.SetParamStore(
+	// 	appKeepers.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
+	// )
 
 	// add capability keeper and ScopeToModule for ibc module
 	appKeepers.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -224,10 +240,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.CapabilityKeeper.Seal()
 
 	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appKeepers.GetSubspace(crisistypes.ModuleName),
+		appCodec,
+		appKeepers.keys[crisistypes.StoreKey],
 		invCheckPeriod,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// Add normal keepers
@@ -235,10 +253,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
 		appCodec,
 		appKeepers.keys[authtypes.StoreKey],
-		appKeepers.GetSubspace(authtypes.ModuleName),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
+		bech32Prefix,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+
 	appKeepers.BankKeeper = bankkeeper.NewBaseKeeper(
 		appCodec,
 		appKeepers.keys[banktypes.StoreKey],
@@ -246,6 +266,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.GetSubspace(banktypes.ModuleName),
 		blockedAddress,
 	)
+
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[stakingtypes.StoreKey],
@@ -253,14 +274,17 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		appKeepers.GetSubspace(stakingtypes.ModuleName),
 	)
-	appKeepers.MintKeeper = mintkeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[minttypes.StoreKey],
-		appKeepers.GetSubspace(minttypes.ModuleName),
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-	)
+
+	// refactor: temporary comment until build succeeds
+	// appKeepers.MintKeeper = mintkeeper.NewKeeper(
+	// 	appCodec,
+	// 	appKeepers.keys[minttypes.StoreKey],
+	// 	appKeepers.GetSubspace(minttypes.ModuleName),
+	// 	appKeepers.AccountKeeper,
+	// 	appKeepers.BankKeeper,
+	// 	authtypes.FeeCollectorName,
+	// )
+
 	appKeepers.DistrKeeper = distrkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[distrtypes.StoreKey],
@@ -271,6 +295,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.FeeCollectorName,
 		blockedAddress,
 	)
+
 	appKeepers.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[slashingtypes.StoreKey],
@@ -400,11 +425,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	}
 	appKeepers.WasmConfig = wasmConfig
 
-	var wasmOpts []wasm.Option
+	// refactor: temporary comment until build succeeds
+	// var wasmOpts []wasm.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron,cosmwasm_1_1"
-	wasmOpts = append(wasmbinding.RegisterCustomPlugins(&appKeepers.InterchainTxsKeeper, &appKeepers.InterchainQueriesKeeper, appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper), wasmOpts...)
+	// wasmOpts = append(wasmbinding.RegisterCustomPlugins(&appKeepers.InterchainTxsKeeper, &appKeepers.InterchainQueriesKeeper, appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper), wasmOpts...)
 	appKeepers.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		appKeepers.keys[wasm.StoreKey],
@@ -422,7 +448,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		wasmOpts...,
+		// refactor: temporary comment until build succeeds
+		// wasmOpts...,
 	)
 
 	// The gov proposal types can be individually enabled
@@ -440,23 +467,25 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		govRouter,
 	)
 
-	appKeepers.TaxKeeper = *taxmodulekeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[taxmoduletypes.StoreKey],
-		appKeepers.keys[taxmoduletypes.MemStoreKey],
-		appKeepers.GetSubspace(taxmoduletypes.ModuleName),
-	)
-	appKeepers.TaxModule = tax.NewAppModule(appCodec, appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	// refactor: temporary comment until build succeeds
+	// appKeepers.TaxKeeper = *taxmodulekeeper.NewKeeper(
+	// 	appCodec,
+	// 	appKeepers.keys[taxmoduletypes.StoreKey],
+	// 	appKeepers.keys[taxmoduletypes.MemStoreKey],
+	// 	appKeepers.GetSubspace(taxmoduletypes.ModuleName),
+	// )
+	// appKeepers.TaxModule = tax.NewAppModule(appCodec, appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
-	appKeepers.VestingsKeeper = *vestingskeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[vestingstypes.StoreKey],
-		appKeepers.keys[vestingstypes.MemStoreKey],
-		appKeepers.AccountKeeper,
-		appKeepers.BankKeeper,
-		appKeepers.GetSubspace(vestingstypes.ModuleName),
-	)
-	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, appKeepers.VestingsKeeper)
+	// refactor: temporary comment until build succeeds
+	// appKeepers.VestingsKeeper = *vestingskeeper.NewKeeper(
+	// 	appCodec,
+	// 	appKeepers.keys[vestingstypes.StoreKey],
+	// 	appKeepers.keys[vestingstypes.MemStoreKey],
+	// 	appKeepers.AccountKeeper,
+	// 	appKeepers.BankKeeper,
+	// 	appKeepers.GetSubspace(vestingstypes.ModuleName),
+	// )
+	// appKeepers.VestingsModule = vestings.NewAppModule(appCodec, appKeepers.VestingsKeeper)
 
 	transferIBCModule := transferSudo.NewIBCModule(appKeepers.TransferKeeper)
 
@@ -493,11 +522,13 @@ func initParamsKeeper(
 ) paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
-	paramsKeeper.Subspace(taxmoduletypes.ModuleName)
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(taxmoduletypes.ModuleName)
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
-	paramsKeeper.Subspace(minttypes.ModuleName)
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
@@ -509,7 +540,8 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName)
-	paramsKeeper.Subspace(vestingstypes.ModuleName)
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(vestingstypes.ModuleName)
 
 	return paramsKeeper
 }
