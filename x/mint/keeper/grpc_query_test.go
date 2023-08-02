@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -45,5 +46,5 @@ func (s *KeeperTestSuite) TestMintState() {
 
 	resp, err := minterKeeper.MintState(s.sdkWrappedCtx, &types.QueryMintStateRequest{})
 	s.Require().NoError(err)
-	s.Require().Equal(sdk.ZeroUint(), resp.TotalMinted)
+	s.Require().Equal(sdkmath.ZeroUint(), resp.TotalMinted)
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gogo/protobuf/proto"
@@ -74,7 +75,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			&minttypes.QueryMintStateResponse{},
 			&minttypes.QueryMintStateResponse{
 				NormTimePassed: minttypes.NormOffset,
-				TotalMinted:    sdk.ZeroUint(),
+				TotalMinted:    sdkmath.ZeroUint(),
 			},
 		},
 	}

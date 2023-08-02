@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
@@ -65,7 +66,7 @@ func validateMaxMintableNanoseconds(i interface{}) error {
 		return fmt.Errorf("invalid parameter type: %T", i)
 	}
 
-	if v.LTE(sdk.ZeroUint()) {
+	if v.LTE(sdkmath.ZeroUint()) {
 		return fmt.Errorf("max mintable period must be positive: %d", v)
 	}
 

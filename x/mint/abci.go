@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -43,13 +44,13 @@ func calcTimeDifference(blockTime sdk.Uint, prevBlockTime sdk.Uint, maxMintableS
 
 func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk.Uint) sdk.Uint {
 	if minter.TotalMinted.GTE(types.MintingCap) {
-		return sdk.ZeroUint()
+		return sdkmath.ZeroUint()
 	}
 
 	if minter.PrevBlockTimestamp.IsZero() {
 		// we do not know how much time has passed since the previous block, thus nothing will be mined
 		minter.PrevBlockTimestamp = blockTime
-		return sdk.ZeroUint()
+		return sdkmath.ZeroUint()
 	}
 
 	nsecPassed := calcTimeDifference(blockTime, minter.PrevBlockTimestamp, maxMintableSeconds)
@@ -78,11 +79,11 @@ func calcTokens(blockTime sdk.Uint, minter *types.Minter, maxMintableSeconds sdk
 }
 
 func updateMinter(minter *types.Minter, blockTime sdk.Uint, newNormTime sdk.Dec, newlyMinted sdk.Uint) sdk.Uint {
-	if newlyMinted.LT(sdk.ZeroUint()) {
+	if newlyMinted.LT(sdkmath.ZeroUint()) {
 		// Sanity check, should not happen. However, if this were to happen,
 		// do not update the minter state (primary the previous block timestamp)
 		// and wait for a new block which should increase the minted amount
-		return sdk.ZeroUint()
+		return sdkmath.ZeroUint()
 	}
 	minter.NormTimePassed = newNormTime
 	minter.PrevBlockTimestamp = blockTime
@@ -96,11 +97,11 @@ func predictMintedByIntegral(totalMinted sdk.Uint, normTimePassed, timeAhead sdk
 	timeAheadNs := timeAhead.Mul(nanoSecondsInMonth).TruncateInt()
 	normTimeInFuture := normTimePassed.Add(calcFunctionIncrement(sdk.Uint(timeAheadNs)))
 	if normTimePassed.GT(normTimeInFuture) {
-		return sdk.ZeroUint(), errTimeInFutureBeforeTimePassed
+		return sdkmath.ZeroUint(), errTimeInFutureBeforeTimePassed
 	}
 
 	if normTimePassed.GTE(types.MonthsInFormula) {
-		return sdk.ZeroUint(), nil
+		return sdkmath.ZeroUint(), nil
 	}
 
 	// integral minting is caped to the 96th month
@@ -118,12 +119,12 @@ func predictMintedByFixedAmount(totalMinted sdk.Uint, normTimePassed, timeAhead 
 
 	normTimeInFuture := normTimePassed.Add(calcFunctionIncrement(sdk.Uint(timeAheadNs)))
 	if normTimePassed.GT(normTimeInFuture) {
-		return sdk.ZeroUint(), errTimeInFutureBeforeTimePassed
+		return sdkmath.ZeroUint(), errTimeInFutureBeforeTimePassed
 	}
 
 	normFixedPeriod := normTimeInFuture.Sub(calcFunctionIncrement(sdk.Uint(nanoSecondsInFormula.TruncateInt())))
 	if normFixedPeriod.LTE(sdk.ZeroDec()) {
-		return sdk.ZeroUint(), nil
+		return sdkmath.ZeroUint(), nil
 	}
 
 	// convert norm time to non norm time
@@ -144,12 +145,12 @@ func predictMintedByFixedAmount(totalMinted sdk.Uint, normTimePassed, timeAhead 
 func predictTotalMinted(totalMinted sdk.Uint, normTimePassed, timeAhead sdk.Dec) sdk.Uint {
 	integralAmount, err := predictMintedByIntegral(totalMinted, normTimePassed, timeAhead)
 	if err != nil {
-		return sdk.ZeroUint()
+		return sdkmath.ZeroUint()
 	}
 
 	fixedAmount, err := predictMintedByFixedAmount(totalMinted, normTimePassed, timeAhead)
 	if err != nil {
-		return sdk.ZeroUint()
+		return sdkmath.ZeroUint()
 	}
 
 	return fixedAmount.Add(integralAmount)
@@ -173,7 +174,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 
 	k.SetMinter(ctx, minter)
-	if coinAmount.GT(sdk.ZeroUint()) {
+	if coinAmount.GT(sdkmath.ZeroUint()) {
 		// mint coins, update supply
 		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, sdk.NewIntFromBigInt(coinAmount.BigInt())))
 

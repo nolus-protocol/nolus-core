@@ -3,7 +3,6 @@ package tax
 import (
 	"encoding/json"
 	"fmt"
-	"math/rand"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -123,18 +122,8 @@ func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
 
-// Route returns the capability module's message routing key.
-func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(am.keeper))
-}
-
 // QuerierRoute returns the capability module's query routing key.
 func (AppModule) QuerierRoute() string { return types.QuerierRoute }
-
-// LegacyQuerierHandler returns the capability module's Querier.
-func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sdk.Querier {
-	return nil
-}
 
 // RegisterServices registers a GRPC query service to respond to the
 // module-specific GRPC queries.
@@ -187,10 +176,11 @@ func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.We
 	return nil
 }
 
+// refactor: temporary comment until build succeeds, fix when working on simulations
 // RandomizedParams creates randomized tax param changes for the simulator.
-func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-	return simulation.ParamChanges(r)
-}
+// func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
+// 	return simulation.ParamChanges(r)
+// }
 
 // RegisterStoreDecoder registers a decoder for tax module's types.
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
