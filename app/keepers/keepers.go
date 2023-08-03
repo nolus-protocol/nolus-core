@@ -21,13 +21,13 @@ import (
 	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	"github.com/cosmos/cosmos-sdk/x/distribution"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -48,7 +48,7 @@ import (
 	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
 	// refactor: temporary comment until build succeeds
@@ -149,9 +149,9 @@ type AppKeepers struct {
 	UpgradeKeeper         upgradekeeper.Keeper
 	ParamsKeeper          paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ICAControllerKeeper   icacontrollerkeeper.Keeper
-	EvidenceKeeper        evidencekeeper.Keeper
-	TransferKeeper        wrapkeeper.KeeperTransferWrapper
+	ICAControllerKeeper   *icacontrollerkeeper.Keeper
+	EvidenceKeeper        *evidencekeeper.Keeper
+	TransferKeeper        *wrapkeeper.KeeperTransferWrapper
 	FeeRefunderKeeper     *feerefunderkeeper.Keeper
 	AuthzKeeper           authzkeeper.Keeper
 	ConsensusParamsKeeper *consensusparamskeeper.Keeper
@@ -230,7 +230,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 
 	// grant capabilities for the ibc and ibc-transfer modules
-	appKeepers.ScopedIBCKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	appKeepers.ScopedIBCKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedInterchainTxsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
@@ -250,7 +250,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	// Add normal keepers
 	// add keepers
-	appKeepers.AccountKeeper = authkeeper.NewAccountKeeper(
+	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
 		appKeepers.keys[authtypes.StoreKey],
 		authtypes.ProtoBaseAccount,
@@ -258,21 +258,23 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		bech32Prefix,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.AccountKeeper = &accountKeeper
 
-	appKeepers.BankKeeper = bankkeeper.NewBaseKeeper(
+	bankKeeper := bankkeeper.NewBaseKeeper(
 		appCodec,
 		appKeepers.keys[banktypes.StoreKey],
 		appKeepers.AccountKeeper,
-		appKeepers.GetSubspace(banktypes.ModuleName),
 		blockedAddress,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.BankKeeper = &bankKeeper
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[stakingtypes.StoreKey],
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
-		appKeepers.GetSubspace(stakingtypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// refactor: temporary comment until build succeeds
@@ -285,27 +287,28 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// 	authtypes.FeeCollectorName,
 	// )
 
-	appKeepers.DistrKeeper = distrkeeper.NewKeeper(
+	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[distrtypes.StoreKey],
-		appKeepers.GetSubspace(distrtypes.ModuleName),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
-		&stakingKeeper,
+		stakingKeeper,
 		authtypes.FeeCollectorName,
-		blockedAddress,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.DistrKeeper = &distrKeeper
 
-	appKeepers.SlashingKeeper = slashingkeeper.NewKeeper(
+	slashingKeeper := slashingkeeper.NewKeeper(
 		appCodec,
+		cdc,
 		appKeepers.keys[slashingtypes.StoreKey],
-		&stakingKeeper,
-		appKeepers.GetSubspace(slashingtypes.ModuleName),
+		stakingKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.SlashingKeeper = &slashingKeeper
 
 	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	appKeepers.StakingKeeper = *stakingKeeper.SetHooks(
+	appKeepers.StakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(
 			appKeepers.DistrKeeper.Hooks(),
 			appKeepers.SlashingKeeper.Hooks()),
@@ -318,13 +321,14 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appCodec,
 		homePath,
 		bApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// UpgradeKeeper must be created before IBCKeeper
 	appKeepers.IBCKeeper = ibckeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[ibchost.StoreKey],
-		appKeepers.GetSubspace(ibchost.ModuleName),
+		appKeepers.keys[ibcexported.StoreKey],
+		appKeepers.GetSubspace(ibcexported.ModuleName),
 		appKeepers.StakingKeeper,
 		appKeepers.UpgradeKeeper,
 		appKeepers.ScopedIBCKeeper,
@@ -365,22 +369,25 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.TransferModule = transferSudo.NewAppModule(appKeepers.TransferKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
-	evidenceKeeper := evidencekeeper.NewKeeper(
-		appCodec, appKeepers.keys[evidencetypes.StoreKey], &appKeepers.StakingKeeper, appKeepers.SlashingKeeper,
+	appKeepers.EvidenceKeeper = evidencekeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[evidencetypes.StoreKey],
+		appKeepers.StakingKeeper,
+		appKeepers.SlashingKeeper,
 	)
-	// If evidence needs to be handled for the app, set routes in router here and seal
-	appKeepers.EvidenceKeeper = *evidenceKeeper
 
 	// register the proposal types
-	govRouter := govtypes.NewRouter()
-	govRouter.AddRoute(govtypes.RouterKey, govtypes.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(appKeepers.ParamsKeeper)).
+	govRouter := govv1beta1.NewRouter()
+	govRouter.
+		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
+		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(*appKeepers.ParamsKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
-		AddRoute(ibchost.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
-		AddRoute(distrtypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(appKeepers.DistrKeeper))
+		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
+		// refactor: temporary comment until build succeeds
+		// AddRoute(distrtypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(appKeepers.DistrKeeper))
 
-	appKeepers.ICAControllerKeeper = icacontrollerkeeper.NewKeeper(
+	icaControllerKeeper := icacontrollerkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[icacontrollertypes.StoreKey],
 		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
@@ -390,7 +397,9 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.ScopedICAControllerKeeper,
 		bApp.MsgServiceRouter(),
 	)
-	appKeepers.IcaModule = ica.NewAppModule(&appKeepers.ICAControllerKeeper, nil)
+	appKeepers.ICAControllerKeeper = &icaControllerKeeper
+
+	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, nil)
 
 	appKeepers.InterchainQueriesKeeper = *interchainquerieskeeper.NewKeeper(
 		appCodec,
@@ -460,11 +469,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[govtypes.StoreKey],
-		appKeepers.GetSubspace(govtypes.ModuleName),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
-		govRouter,
+		bApp.MsgServiceRouter(),
+		govtypes.DefaultConfig(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// refactor: temporary comment until build succeeds
@@ -492,7 +502,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	var icaControllerStack ibcporttypes.IBCModule
 
 	icaControllerStack = interchaintxs.NewIBCModule(appKeepers.InterchainTxsKeeper)
-	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, appKeepers.ICAControllerKeeper)
+	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, *appKeepers.ICAControllerKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
@@ -518,8 +528,8 @@ func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspac
 
 // initParamsKeeper init params keeper and its subspaces.
 func initParamsKeeper(
-	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey sdk.StoreKey,
-) paramskeeper.Keeper {
+	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
+) *paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
 
 	// refactor: temporary comment until build succeeds
@@ -533,9 +543,13 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
+
+	// refactor: temporary comment until build succeeds
+	// paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamsKey)
+	paramsKeeper.Subspace(govtypes.ModuleName)
+
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
@@ -543,5 +557,5 @@ func initParamsKeeper(
 	// refactor: temporary comment until build succeeds
 	// paramsKeeper.Subspace(vestingstypes.ModuleName)
 
-	return paramsKeeper
+	return &paramsKeeper
 }
