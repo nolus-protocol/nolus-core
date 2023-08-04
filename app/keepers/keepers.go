@@ -51,16 +51,15 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
-	// refactor: temporary comment until build succeeds
-	// "github.com/Nolus-Protocol/nolus-core/wasmbinding"
-	// mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
-	// minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	// "github.com/Nolus-Protocol/nolus-core/x/tax"
-	// taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	// taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	// "github.com/Nolus-Protocol/nolus-core/x/vestings"
-	// vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
-	// vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
+	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
+	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	"github.com/Nolus-Protocol/nolus-core/x/tax"
+	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/vestings"
+	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
+	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -163,13 +162,13 @@ type AppKeepers struct {
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 
-	// refactor: temporary comment until build succeeds
-	// TaxKeeper      taxmodulekeeper.Keeper
-	// VestingsKeeper vestingskeeper.Keeper
+	MintKeeper     *mintkeeper.Keeper
+	TaxKeeper      *taxmodulekeeper.Keeper
+	VestingsKeeper *vestingskeeper.Keeper
 
-	InterchainTxsKeeper     interchaintxskeeper.Keeper
-	InterchainQueriesKeeper interchainquerieskeeper.Keeper
-	ContractManagerKeeper   contractmanagermodulekeeper.Keeper
+	InterchainTxsKeeper     *interchaintxskeeper.Keeper
+	InterchainQueriesKeeper *interchainquerieskeeper.Keeper
+	ContractManagerKeeper   *contractmanagermodulekeeper.Keeper
 
 	WasmKeeper wasm.Keeper
 	WasmConfig wasmtypes.WasmConfig
@@ -182,8 +181,13 @@ type AppKeepers struct {
 	FeeRefunderModule       feerefunder.AppModule
 	TaxModule               tax.AppModule
 	VestingsModule          vestings.AppModule
+<<<<<<< HEAD
 	IcaModule               ica.AppModule
 	AuthzModule             authzmodule.AppModule
+=======
+
+	IcaModule ica.AppModule
+>>>>>>> 2d0fc9d (chore(keepers): re-enable custom modules)
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
@@ -277,15 +281,15 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
-	// refactor: temporary comment until build succeeds
-	// appKeepers.MintKeeper = mintkeeper.NewKeeper(
-	// 	appCodec,
-	// 	appKeepers.keys[minttypes.StoreKey],
-	// 	appKeepers.GetSubspace(minttypes.ModuleName),
-	// 	appKeepers.AccountKeeper,
-	// 	appKeepers.BankKeeper,
-	// 	authtypes.FeeCollectorName,
-	// )
+	mintKeeper := mintkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[minttypes.StoreKey],
+		appKeepers.GetSubspace(minttypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		authtypes.FeeCollectorName,
+	)
+	appKeepers.MintKeeper = &mintKeeper
 
 	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
@@ -334,26 +338,25 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.ScopedIBCKeeper,
 	)
 
-	appKeepers.ContractManagerKeeper = *contractmanagermodulekeeper.NewKeeper(
+	appKeepers.ContractManagerKeeper = contractmanagermodulekeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[contractmanagermoduletypes.StoreKey],
 		appKeepers.keys[contractmanagermoduletypes.MemStoreKey],
-		appKeepers.GetSubspace(contractmanagermoduletypes.ModuleName),
-		&appKeepers.WasmKeeper,
+		appKeepers.WasmKeeper,
 	)
-	appKeepers.ContractManagerModule = contractmanager.NewAppModule(appCodec, appKeepers.ContractManagerKeeper)
+
+	appKeepers.ContractManagerModule = contractmanager.NewAppModule(appCodec, *appKeepers.ContractManagerKeeper)
 
 	appKeepers.FeeRefunderKeeper = feerefunderkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[feetypes.StoreKey],
 		appKeepers.memKeys[feetypes.MemStoreKey],
-		appKeepers.GetSubspace(feetypes.ModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.BankKeeper,
 	)
 	appKeepers.FeeRefunderModule = feerefunder.NewAppModule(appCodec, *appKeepers.FeeRefunderKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
-	appKeepers.TransferKeeper = wrapkeeper.NewKeeper(
+	transferKeeper := wrapkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
@@ -366,7 +369,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.FeeRefunderKeeper,
 		appKeepers.ContractManagerKeeper,
 	)
-	appKeepers.TransferModule = transferSudo.NewAppModule(appKeepers.TransferKeeper)
+	appKeepers.TransferKeeper = &transferKeeper
+	appKeepers.TransferModule = transferSudo.NewAppModule(transferKeeper)
 
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	appKeepers.EvidenceKeeper = evidencekeeper.NewKeeper(
@@ -390,31 +394,28 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, nil)
 
-	appKeepers.InterchainQueriesKeeper = *interchainquerieskeeper.NewKeeper(
+	appKeepers.InterchainQueriesKeeper = interchainquerieskeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[interchainqueriestypes.StoreKey],
 		appKeepers.keys[interchainqueriestypes.MemStoreKey],
-		appKeepers.GetSubspace(interchainqueriestypes.ModuleName),
 		appKeepers.IBCKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.ContractManagerKeeper,
 		interchainquerieskeeper.Verifier{},
 		interchainquerieskeeper.TransactionVerifier{},
 	)
-	appKeepers.InterchainQueriesModule = interchainqueries.NewAppModule(appCodec, appKeepers.InterchainQueriesKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	appKeepers.InterchainQueriesModule = interchainqueries.NewAppModule(appCodec, *appKeepers.InterchainQueriesKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
-	appKeepers.InterchainTxsKeeper = *interchaintxskeeper.NewKeeper(
+	appKeepers.InterchainTxsKeeper = interchaintxskeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[interchaintxstypes.StoreKey],
 		appKeepers.memKeys[interchaintxstypes.MemStoreKey],
-		appKeepers.GetSubspace(interchaintxstypes.ModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.ICAControllerKeeper,
-		appKeepers.ScopedInterchainTxsKeeper,
 		appKeepers.ContractManagerKeeper,
 		appKeepers.FeeRefunderKeeper,
 	)
-	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
@@ -423,20 +424,20 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	}
 	appKeepers.WasmConfig = wasmConfig
 
-	// refactor: temporary comment until build succeeds
-	// var wasmOpts []wasm.Option
+	var wasmOpts []wasm.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron,cosmwasm_1_1"
-	// wasmOpts = append(wasmbinding.RegisterCustomPlugins(&appKeepers.InterchainTxsKeeper, &appKeepers.InterchainQueriesKeeper, appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper), wasmOpts...)
+	wasmOpts = append(wasmbinding.RegisterCustomPlugins(appKeepers.InterchainTxsKeeper, appKeepers.InterchainQueriesKeeper, *appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper), wasmOpts...)
 	appKeepers.WasmKeeper = wasm.NewKeeper(
 		appCodec,
 		appKeepers.keys[wasm.StoreKey],
-		appKeepers.GetSubspace(wasm.ModuleName),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
-		appKeepers.DistrKeeper,
+		// appKeepers.DistrKeeper,
+		distrkeeper.NewQuerier(*appKeepers.DistrKeeper),
+		nil, // todo: ics 29 not enabled
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedWasmKeeper,
@@ -446,8 +447,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
-		// refactor: temporary comment until build succeeds
-		// wasmOpts...,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		wasmOpts...,
 	)
 
 	// register the proposal types
@@ -480,31 +481,29 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// Set legacy router for backwards compatibility with gov v1beta1
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
-	// refactor: temporary comment until build succeeds
-	// appKeepers.TaxKeeper = *taxmodulekeeper.NewKeeper(
-	// 	appCodec,
-	// 	appKeepers.keys[taxmoduletypes.StoreKey],
-	// 	appKeepers.keys[taxmoduletypes.MemStoreKey],
-	// 	appKeepers.GetSubspace(taxmoduletypes.ModuleName),
-	// )
-	// appKeepers.TaxModule = tax.NewAppModule(appCodec, appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	appKeepers.TaxKeeper = taxmodulekeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[taxmoduletypes.StoreKey],
+		appKeepers.keys[taxmoduletypes.MemStoreKey],
+		appKeepers.GetSubspace(taxmoduletypes.ModuleName),
+	)
+	appKeepers.TaxModule = tax.NewAppModule(appCodec, *appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
-	// refactor: temporary comment until build succeeds
-	// appKeepers.VestingsKeeper = *vestingskeeper.NewKeeper(
-	// 	appCodec,
-	// 	appKeepers.keys[vestingstypes.StoreKey],
-	// 	appKeepers.keys[vestingstypes.MemStoreKey],
-	// 	appKeepers.AccountKeeper,
-	// 	appKeepers.BankKeeper,
-	// 	appKeepers.GetSubspace(vestingstypes.ModuleName),
-	// )
-	// appKeepers.VestingsModule = vestings.NewAppModule(appCodec, appKeepers.VestingsKeeper)
+	appKeepers.VestingsKeeper = vestingskeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[vestingstypes.StoreKey],
+		appKeepers.keys[vestingstypes.MemStoreKey],
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.GetSubspace(vestingstypes.ModuleName),
+	)
+	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, *appKeepers.VestingsKeeper)
 
-	transferIBCModule := transferSudo.NewIBCModule(appKeepers.TransferKeeper)
+	transferIBCModule := transferSudo.NewIBCModule(*appKeepers.TransferKeeper)
 
 	var icaControllerStack ibcporttypes.IBCModule
 
-	icaControllerStack = interchaintxs.NewIBCModule(appKeepers.InterchainTxsKeeper)
+	icaControllerStack = interchaintxs.NewIBCModule(*appKeepers.InterchainTxsKeeper)
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, *appKeepers.ICAControllerKeeper)
 
 	// Create static IBC router, add transfer route, then set and seal it
@@ -534,14 +533,11 @@ func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
 ) *paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
-
-	// refactor: temporary comment until build succeeds
-	// paramsKeeper.Subspace(taxmoduletypes.ModuleName)
+	paramsKeeper.Subspace(taxmoduletypes.ModuleName)
 	paramsKeeper.Subspace(authtypes.ModuleName)
 	paramsKeeper.Subspace(banktypes.ModuleName)
 	paramsKeeper.Subspace(stakingtypes.ModuleName)
-	// refactor: temporary comment until build succeeds
-	// paramsKeeper.Subspace(minttypes.ModuleName)
+	paramsKeeper.Subspace(minttypes.ModuleName)
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
@@ -557,8 +553,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName)
-	// refactor: temporary comment until build succeeds
-	// paramsKeeper.Subspace(vestingstypes.ModuleName)
+	paramsKeeper.Subspace(vestingstypes.ModuleName)
 
 	return &paramsKeeper
 }
