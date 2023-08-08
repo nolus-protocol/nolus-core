@@ -176,12 +176,6 @@ func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.We
 	return nil
 }
 
-// refactor: temporary comment until build succeeds, fix when working on simulations
-// RandomizedParams creates randomized tax param changes for the simulator.
-// func (AppModule) RandomizedParams(r *rand.Rand) []simtypes.ParamChange {
-// 	return simulation.ParamChanges(r)
-// }
-
 // RegisterStoreDecoder registers a decoder for tax module's types.
 func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 

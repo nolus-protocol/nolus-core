@@ -66,6 +66,7 @@ type (
 		ExportAppStateAndValidators(
 			forZeroHeight bool,
 			jailAllowedAddrs []string,
+			modulesToExport []string,
 		) (servertypes.ExportedApp, error)
 		LoadHeight(height int64) error
 	}
@@ -386,6 +387,7 @@ func (a appCreator) appExport(
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
 	appOpts servertypes.AppOptions,
+	modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	var exportableApp ExportableApp
 
@@ -412,7 +414,7 @@ func (a appCreator) appExport(
 		}
 	}
 
-	return exportableApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs)
+	return exportableApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)
 }
 
 // initAppConfig helps to override default appConfig template and configs.
