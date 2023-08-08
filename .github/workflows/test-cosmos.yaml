@@ -110,7 +110,7 @@ jobs:
         run: |
           go test github.com/cosmos/cosmos-sdk/testutil/sims -run TestAppStateDeterminism -Enabled=true -NumBlocks=100 -BlockSize=200 -Commit=true -Period=0 -v -timeout 24h
 
-  # TODO: run integration tests when we upgrade cosmos-sdk to 0.46+
+  # refactor: run integration tests when we upgrade cosmos-sdk to 0.46+
   # test-integration:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -136,7 +136,7 @@ jobs:
   #       run: |
   #        	go test -mod=readonly github.com/cosmos/cosmos-sdk/integration/... -timeout 30m
 
-  # TODO: run e2e tests when we upgrade cosmos-sdk to 0.46+
+  # refactor: run e2e tests when we upgrade cosmos-sdk to 0.46+
   # test-e2e:
   #   runs-on: ubuntu-latest
   #   steps:
