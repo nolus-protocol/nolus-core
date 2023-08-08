@@ -10,14 +10,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 
+	"github.com/Nolus-Protocol/nolus-core/app"
 	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
+	tenderminttypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	tmtypes "github.com/cometbft/cometbft/types"
-	storetypes "github.com/cosmos/cosmos-sdk/store/types"
-
-	"github.com/Nolus-Protocol/nolus-core/app"
+	cometbfttypes "github.com/cometbft/cometbft/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 )
 
 // New creates application instance with in-memory database and disabled logging.
@@ -57,8 +57,8 @@ func NewDefaultGenesisState(cdc codec.JSONCodec) app.GenesisState {
 	return app.ModuleBasics.DefaultGenesis(cdc)
 }
 
-var defaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var defaultConsensusParams = &tenderminttypes.ConsensusParams{
+	Block: &tenderminttypes.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
@@ -69,7 +69,7 @@ var defaultConsensusParams = &abci.ConsensusParams{
 	},
 	Validator: &tmproto.ValidatorParams{
 		PubKeyTypes: []string{
-			tmtypes.ABCIPubKeyTypeEd25519,
+			cometbfttypes.ABCIPubKeyTypeEd25519,
 		},
 	},
 }
@@ -78,11 +78,11 @@ var defaultConsensusParams = &abci.ConsensusParams{
 func NewAppConstructor() network.AppConstructor {
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
-	return func(val network.Validator) servertypes.Application {
-		return app.New(val.Ctx.Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.Ctx.Config.RootDir, 0, encoding,
+	return func(val network.ValidatorI) servertypes.Application {
+		return app.New(val.GetCtx().Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0, encoding,
 			sims.EmptyAppOptions{},
-			baseapp.SetPruning(storetypes.NewPruningOptionsFromString(val.AppConfig.Pruning)),
-			baseapp.SetMinGasPrices(val.AppConfig.MinGasPrices),
+			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
+			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 		)
 	}
 }
