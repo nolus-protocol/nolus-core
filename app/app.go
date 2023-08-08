@@ -194,12 +194,13 @@ func New(
 		HandlerOptions{
 			AccountKeeper:     app.AccountKeeper,
 			BankKeeper:        app.BankKeeper,
-			TaxKeeper:         app.TaxKeeper,
+			TaxKeeper:         *app.TaxKeeper,
 			TxCounterStoreKey: app.GetKVStoreKey()[wasm.StoreKey],
 			WasmConfig:        &app.WasmConfig,
 			SignModeHandler:   encodingConfig.TxConfig.SignModeHandler(),
 			SigGasConsumer:    ante.DefaultSigVerificationGasConsumer,
 			IBCKeeper:         app.IBCKeeper,
+			TxFeeChecker:      nil, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 		},
 	)
 	if err != nil {
