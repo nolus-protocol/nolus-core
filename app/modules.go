@@ -41,8 +41,7 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	ibchost "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -52,6 +51,10 @@ import (
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+
+	// refactor: this pkg does not exist any more
+	//	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
 
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
@@ -64,23 +67,25 @@ import (
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
 )
 
-func getGovProposalHandlers() []govclient.ProposalHandler {
-	var govProposalHandlers []govclient.ProposalHandler
+// refactor: currently this func is unused because we init
+// the legacy handlers directly in NewBasicManager below
+// func getGovProposalHandlers() []govclient.ProposalHandler {
+// 	var govProposalHandlers []govclient.ProposalHandler
 
-	govProposalHandlers = append(
-		govProposalHandlers,
-		paramsclient.ProposalHandler,
-		// distrclient.ProposalHandler,
-		upgradeclient.ProposalHandler,
-		upgradeclient.CancelProposalHandler,
-		ibcclientclient.UpdateClientProposalHandler,
-		ibcclientclient.UpgradeProposalHandler,
-	)
+// 	govProposalHandlers = append(
+// 		govProposalHandlers,
+// 		paramsclient.ProposalHandler,
+// 		// distrclient.ProposalHandler,
+// 		upgradeclient.LegacyProposalHandler,
+// 		upgradeclient.LegacyCancelProposalHandler,
+// 		ibcclientclient.UpdateClientProposalHandler,
+// 		ibcclientclient.UpgradeProposalHandler,
+// 	)
 
-	govProposalHandlers = append(govProposalHandlers, wasmclient.ProposalHandlers...)
+// 	govProposalHandlers = append(govProposalHandlers, wasmclient.ProposalHandlers...)
 
-	return govProposalHandlers
-}
+// 	return govProposalHandlers
+// }
 
 // module account permissions.
 var maccPerms = map[string][]string{
@@ -109,7 +114,13 @@ var ModuleBasics = module.NewBasicManager(
 	staking.AppModuleBasic{},
 	mint.AppModuleBasic{},
 	distribution.AppModuleBasic{},
-	gov.AppModuleBasic{},
+	gov.NewAppModuleBasic(
+		[]govclient.ProposalHandler{
+			paramsclient.ProposalHandler,
+			upgradeclient.LegacyProposalHandler,
+			upgradeclient.LegacyCancelProposalHandler,
+		},
+	),
 	params.AppModuleBasic{},
 	crisis.AppModuleBasic{},
 	slashing.AppModuleBasic{},
@@ -144,24 +155,21 @@ func appModules(
 			encodingConfig.TxConfig,
 		),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, encodingConfig.InterfaceRegistry),
-		auth.NewAppModule(appCodec, app.AccountKeeper, nil),
-		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
-		capability.NewAppModule(appCodec, *app.CapabilityKeeper),
-		crisis.NewAppModule(&app.CrisisKeeper, skipGenesisInvariants),
-		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		distribution.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
+		auth.NewAppModule(appCodec, *app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+		vesting.NewAppModule(*app.AccountKeeper, app.BankKeeper),
+		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
+		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
+		mint.NewAppModule(appCodec, *app.MintKeeper, app.AccountKeeper),
+		slashing.NewAppModule(appCodec, *app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
+		distribution.NewAppModule(appCodec, *app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.UpgradeKeeper),
-		wasm.NewAppModule(
-			appCodec, &app.WasmKeeper,
-			app.AccountKeeper, app.BankKeeper,
-		),
-		evidence.NewAppModule(app.EvidenceKeeper),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+		evidence.NewAppModule(*app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		params.NewAppModule(app.ParamsKeeper),
+		params.NewAppModule(*app.ParamsKeeper),
 		app.AppKeepers.TransferModule,
 		app.AppKeepers.VestingsModule,
 		app.AppKeepers.TaxModule,
@@ -183,6 +191,7 @@ func simulationModules(
 	appCodec := encodingConfig.Marshaler
 
 	return []module.AppModuleSimulation{
+<<<<<<< HEAD
 		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, encodingConfig.InterfaceRegistry),
 		bank.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
@@ -199,6 +208,20 @@ func simulationModules(
 			appCodec, &app.WasmKeeper,
 			app.AccountKeeper, app.BankKeeper,
 		),
+=======
+		auth.NewAppModule(appCodec, *app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
+		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
+		mint.NewAppModule(appCodec, *app.MintKeeper, app.AccountKeeper),
+		tax.NewAppModule(appCodec, *app.TaxKeeper, app.AccountKeeper, app.BankKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		distribution.NewAppModule(appCodec, *app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
+		slashing.NewAppModule(appCodec, *app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
+		params.NewAppModule(*app.ParamsKeeper),
+		evidence.NewAppModule(*app.EvidenceKeeper),
+		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
+>>>>>>> 532593d (chore(app): fixing errors in app/)
 		ibc.NewAppModule(app.IBCKeeper),
 		app.AppKeepers.TransferModule,
 		app.AppKeepers.InterchainQueriesModule,
