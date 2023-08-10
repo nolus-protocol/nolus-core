@@ -56,10 +56,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-<<<<<<< HEAD
-=======
-	"github.com/Nolus-Protocol/nolus-core/x/tax"
->>>>>>> 2d0fc9d (chore(keepers): re-enable custom modules)
 	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
