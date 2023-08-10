@@ -352,10 +352,6 @@ func (app *App) SimulationManager() *module.SimulationManager {
 func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig) {
 	clientCtx := apiSvr.ClientCtx
 
-	// Register legacy tx routes.
-	// refactor DECIDE IF WE WANT TO KEEP THIS
-	// authrest.RegisterTxRoutes(clientCtx, apiSvr.Router)
-
 	// Register new tx routes from grpc-gateway.
 	authtx.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 

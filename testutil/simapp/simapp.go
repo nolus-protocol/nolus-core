@@ -14,7 +14,6 @@ import (
 	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
-	tenderminttypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cometbfttypes "github.com/cometbft/cometbft/types"
 	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
@@ -57,8 +56,8 @@ func NewDefaultGenesisState(cdc codec.JSONCodec) app.GenesisState {
 	return app.ModuleBasics.DefaultGenesis(cdc)
 }
 
-var defaultConsensusParams = &tenderminttypes.ConsensusParams{
-	Block: &tenderminttypes.BlockParams{
+var defaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},

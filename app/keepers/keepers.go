@@ -27,7 +27,9 @@ import (
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
 	govv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
+
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -451,7 +453,10 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		wasmOpts...,
 	)
 
-	// register the proposal types
+	// Register the proposal types
+	// Deprecated: Avoid adding new handlers, instead use the new proposal flow
+	// by granting the governance module the right to execute the message.
+	// See: https://docs.cosmos.network/main/modules/gov#proposal-messages
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
 		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
@@ -467,6 +472,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(appKeepers.WasmKeeper, GetWasmEnabledProposals()))
 	}
 
+	govConfig := govtypes.DefaultConfig()
+	/*
+		Example of setting gov params:
+		govConfig.MaxMetadataLen = 10000
+	*/
+
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[govtypes.StoreKey],
@@ -474,7 +485,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
 		bApp.MsgServiceRouter(),
-		govtypes.DefaultConfig(),
+		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
@@ -544,11 +555,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(wasm.ModuleName)
-
-	// refactor: temporary comment until build succeeds
-	// paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamsKey)
-	paramsKeeper.Subspace(govtypes.ModuleName)
-
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(feetypes.ModuleName)
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName)
