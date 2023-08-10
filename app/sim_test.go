@@ -183,7 +183,7 @@ func TestAppImportExport(t *testing.T) {
 		t,
 		os.Stdout,
 		nolusApp.BaseApp,
-		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), NewDefaultGenesisState(nolusApp.appCodec)),
+		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), NewDefaultGenesisState(encConf)),
 		simtypes.RandomAccounts,
 		simtestutil.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
 		nolusApp.ModuleAccountAddrs(),
