@@ -38,6 +38,7 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 type (
@@ -132,7 +133,7 @@ func NewRootCmd(
 	rootOptions := newRootOptions(options...)
 
 	// Set config for prefixes
-	SetPrefixes(accountAddressPrefix)
+	params.SetAddressPrefixes()
 
 	encodingConfig := app.MakeEncodingConfig(moduleBasics)
 	initClientCtx := client.Context{}.
