@@ -1,13 +1,13 @@
 package util
 
-import sdk "github.com/cosmos/cosmos-sdk/types"
+import "cosmossdk.io/math"
 
 const microNolusCoef = 1000000
 
-func ConvertToMicroNolusInt64(amount int64) sdk.Uint {
-	return ConvertToMicroNolusDec(sdk.NewDec(amount))
+func ConvertToMicroNolusInt64(amount int64) math.Uint {
+	return ConvertToMicroNolusDec(math.LegacyNewDec(amount))
 }
 
-func ConvertToMicroNolusDec(amount sdk.Dec) sdk.Uint {
-	return sdk.NewUint(amount.Mul(sdk.NewDec(microNolusCoef)).TruncateInt().Uint64())
+func ConvertToMicroNolusDec(amount math.LegacyDec) math.Uint {
+	return math.NewUint(amount.Mul(math.LegacyNewDec(microNolusCoef)).TruncateInt().Uint64())
 }
