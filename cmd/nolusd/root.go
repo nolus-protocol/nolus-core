@@ -124,7 +124,6 @@ func WithEnvPrefix(envPrefix string) Option {
 // NewRootCmd creates a new root command for a Cosmos SDK application.
 func NewRootCmd(
 	appName,
-	accountAddressPrefix,
 	defaultNodeHome,
 	defaultChainID string,
 	moduleBasics module.BasicManager,

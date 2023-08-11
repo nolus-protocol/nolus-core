@@ -5,7 +5,6 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/Nolus-Protocol/nolus-core/app"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )
 
@@ -14,11 +13,9 @@ func main() {
 	// and in our scripts, we use the cli command add-wasm-genesis-message before the chain is started in order to load the contracts
 	overrideWasmVariables()
 
-	params.SetAddressPrefixes()
 	cmdOptions := GetWasmCmdOptions()
 	rootCmd, _ := NewRootCmd(
 		app.Name,
-		params.Bech32PrefixAccAddr,
 		app.DefaultNodeHome,
 		app.Name,
 		app.ModuleBasics,
