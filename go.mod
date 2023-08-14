@@ -204,6 +204,9 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v0.0.0-20230705134325-b23404470a1d
 
+	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
+	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
+
 	// neutron dependency
 	github.com/cosmos/gaia/v11 => github.com/cosmos/gaia/v11 v11.0.0-20230724152830-861ba391c3b4
 
