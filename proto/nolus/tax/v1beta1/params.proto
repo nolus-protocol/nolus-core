@@ -1,5 +1,5 @@
 syntax = "proto3";
-package tax;
+package nolus.tax.v1beta1;
 
 import "gogoproto/gogo.proto";
 

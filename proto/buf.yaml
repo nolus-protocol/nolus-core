@@ -1,7 +1,12 @@
+# cosmos-sdk pinned to v0.47.0 required for cosmos/gogoproto - https://github.com/cosmos/cosmos-sdk/blob/main/proto/README.md
 version: v1
 name: buf.build/nomo/nolus-core
 deps:
-  - buf.build/cosmos/cosmos-sdk
+  - buf.build/cosmos/cosmos-proto
+  - buf.build/cosmos/gogo-proto
+  - buf.build/cosmos/cosmos-sdk:v0.47.0
+  - buf.build/googleapis/googleapis
+  - buf.build/cosmos/ibc
 breaking:
   use:
     - FILE
@@ -16,4 +21,6 @@ lint:
     - SERVICE_SUFFIX
     - PACKAGE_VERSION_SUFFIX
     - RPC_REQUEST_STANDARD_NAME
+  ignore:
+    - tendermint
 
