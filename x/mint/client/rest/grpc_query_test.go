@@ -10,7 +10,7 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/gogo/protobuf/proto"
+	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"

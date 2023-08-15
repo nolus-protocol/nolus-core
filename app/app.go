@@ -9,6 +9,11 @@ import (
 
 	"github.com/spf13/cast"
 
+	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
+	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+
+	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
@@ -170,6 +175,16 @@ func New(
 	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
+
+	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#app-wiring
+	// For app.go without dependency injection(valid for nolus), add the following lines to your app.go in order to provide newer gRPC services:
+	autocliv1.RegisterQueryServer(app.GRPCQueryRouter(), runtimeservices.NewAutoCLIQueryService(app.mm.Modules))
+
+	reflectionSvc, err := runtimeservices.NewReflectionService()
+	if err != nil {
+		panic(err)
+	}
+	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
 
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
