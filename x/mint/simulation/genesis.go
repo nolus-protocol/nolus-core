@@ -8,20 +8,21 @@ import (
 	"math/rand"
 	"time"
 
+	sdkmath "cosmossdk.io/math"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
 // GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60).
-func GenMaxMintableNanoseconds(r *rand.Rand) sdk.Uint {
+func GenMaxMintableNanoseconds(r *rand.Rand) sdkmath.Uint {
 	return sdk.NewUint(uint64(time.Second.Nanoseconds() * int64(r.Intn(59)+1)))
 }
 
 // RandomizedGenState generates a random GenesisState for mint.
 func RandomizedGenState(simState *module.SimulationState) {
 	// minter
-	var maxMintableNSecs sdk.Uint
+	var maxMintableNSecs sdkmath.Uint
 	simState.AppParams.GetOrGenerate(
 		simState.Cdc, string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
 		func(r *rand.Rand) { maxMintableNSecs = GenMaxMintableNanoseconds(r) },
