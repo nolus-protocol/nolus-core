@@ -1,6 +1,7 @@
 package types
 
 import (
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -31,30 +32,30 @@ func (msg MsgCreateVestingAccount) Type() string { return TypeMsgCreateVestingAc
 // ValidateBasic Implements Msg.
 func (msg MsgCreateVestingAccount) ValidateBasic() error {
 	if _, err := sdk.AccAddressFromBech32(msg.FromAddress); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("invalid 'from' address: %s", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid 'from' address: %s", err)
 	}
 	if _, err := sdk.AccAddressFromBech32(msg.ToAddress); err != nil {
-		return sdkerrors.ErrInvalidAddress.Wrapf("invalid 'to' address: %s", err)
+		return errorsmod.Wrapf(sdkerrors.ErrInvalidAddress, "invalid 'to' address: %s", err)
 	}
 
 	if !msg.Amount.IsValid() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
 	}
 
 	if !msg.Amount.IsAllPositive() {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
+		return errorsmod.Wrap(sdkerrors.ErrInvalidCoins, msg.Amount.String())
 	}
 
 	if msg.StartTime <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid start time")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid start time")
 	}
 
 	if msg.EndTime <= 0 {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid end time")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid end time")
 	}
 
 	if msg.StartTime >= msg.EndTime {
-		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid start time")
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "invalid start time")
 	}
 
 	return nil
