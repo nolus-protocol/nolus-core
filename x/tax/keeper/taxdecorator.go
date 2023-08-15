@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	errorsmod "cosmossdk.io/errors"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -32,7 +33,7 @@ func NewDeductTaxDecorator(ak types.AccountKeeper, bk types.BankKeeper, tk Keepe
 func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	feeTx, ok := tx.(sdk.FeeTx)
 	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
+		return ctx, errorsmod.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
 
 	// If fees are not specified we call the next AnteHandler
@@ -44,7 +45,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	// Ensures the module treasury address has been set
 	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.ContractAddress(ctx))
 	if err != nil {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
+		return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
 	}
 
 	// Ensure not more then one denom for paying tx costs
@@ -63,7 +64,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 
 	baseDenom := dtd.tk.BaseDenom(ctx)
 	if baseDenom != feeCoin.Denom {
-		return ctx, sdkerrors.Wrap(types.ErrInvalidFeeDenom, txFees[0].Denom)
+		return ctx, errorsmod.Wrap(types.ErrInvalidFeeDenom, txFees[0].Denom)
 	}
 
 	if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, treasuryAddr); err != nil {
@@ -103,7 +104,7 @@ func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, f
 	// Send tax from fee collector to the treasury smart contract address
 	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
 	if err != nil {
-		return sdkerrors.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
+		return errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error())
 	}
 
 	return nil
