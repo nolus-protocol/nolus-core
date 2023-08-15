@@ -49,7 +49,7 @@ import (
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
-// SimAppChainID hardcoded chainID for simulation
+// SimAppChainID hardcoded chainID for simulation.
 const SimAppChainID = "simulation-app"
 
 var (
