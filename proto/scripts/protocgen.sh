@@ -21,6 +21,7 @@ set -eo pipefail
 
 echo "Generating gogo proto code"
 cd proto
+#buf export buf.build/cosmos/cosmos-sdk:v0.47.0 --output .
 buf mod update
 cd ..
 buf generate

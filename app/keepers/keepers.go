@@ -473,10 +473,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	}
 
 	govConfig := govtypes.DefaultConfig()
-	/*
-		Example of setting gov params:
-		govConfig.MaxMetadataLen = 10000
-	*/
+	// MaxMetadataLen defines the maximum proposal metadata length.
+	govConfig.MaxMetadataLen = 20000
 
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
