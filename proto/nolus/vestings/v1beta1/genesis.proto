@@ -1,8 +1,8 @@
 syntax = "proto3";
-package vestings;
+package nolus.vestings.v1beta1;
 
 import "gogoproto/gogo.proto";
-import "vestings/params.proto";
+import "nolus/vestings/v1beta1/params.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/vestings/types";
 
