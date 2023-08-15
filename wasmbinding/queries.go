@@ -2,10 +2,11 @@ package wasmbinding
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	sdkquery "github.com/cosmos/cosmos-sdk/types/query"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
+
+	errorsmod "cosmossdk.io/errors"
 
 	"github.com/neutron-org/neutron/x/interchainqueries/types"
 	icatypes "github.com/neutron-org/neutron/x/interchaintxs/types"
@@ -78,7 +79,7 @@ func (qp *QueryPlugin) GetRegisteredInterchainQuery(ctx sdk.Context, req *bindin
 		return nil, err
 	}
 	if grpcResp == nil {
-		return nil, sdkerrors.Wrapf(types.ErrEmptyResult, "interchain query response empty for query id %d", req.QueryID)
+		return nil, errorsmod.Wrapf(types.ErrEmptyResult, "interchain query response empty for query id %d", req.QueryID)
 	}
 	query := mapGRPCRegisteredQueryToWasmBindings(*grpcResp)
 
