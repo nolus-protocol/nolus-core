@@ -26,7 +26,7 @@ var (
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
-func NewMinter(normTimePassed sdk.Dec, totalMinted, prevBlockTimestamp, inflation sdk.Uint) Minter {
+func NewMinter(normTimePassed sdk.Dec, totalMinted, prevBlockTimestamp, inflation sdkmath.Uint) Minter {
 	return Minter{
 		NormTimePassed:     normTimePassed,
 		TotalMinted:        totalMinted,
@@ -82,7 +82,7 @@ func ValidateMinter(minter Minter) error {
 	return nil
 }
 
-func calcMintedTokens(m Minter) sdk.Uint {
+func calcMintedTokens(m Minter) sdkmath.Uint {
 	if m.NormTimePassed.GTE(MonthsInFormula) {
 		fixedMonthsPeriod := sdk.NewUint(m.NormTimePassed.Sub(MonthsInFormula).TruncateInt().Uint64())
 		fixedMonthsTokens := fixedMonthsPeriod.Mul(FixedMintedAmount)
@@ -96,11 +96,11 @@ func calcMintedTokens(m Minter) sdk.Uint {
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
 // transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x.
-func CalcTokensByIntegral(x sdk.Dec) sdk.Uint {
+func CalcTokensByIntegral(x sdk.Dec) sdkmath.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }
 
-func GetAbsDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
+func GetAbsDiff(a, b sdkmath.Uint) sdkmath.Uint {
 	if a.GTE(b) {
 		return a.Sub(b)
 	}
@@ -108,6 +108,6 @@ func GetAbsDiff(a sdk.Uint, b sdk.Uint) sdk.Uint {
 	return b.Sub(a)
 }
 
-func DecFromUint(u sdk.Uint) sdk.Dec {
+func DecFromUint(u sdkmath.Uint) sdkmath.LegacyDec {
 	return sdk.NewDecFromBigInt(u.BigInt())
 }

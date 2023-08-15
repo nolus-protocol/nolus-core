@@ -143,7 +143,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	mintThreshold := sdk.NewUint(10_000_000) // 10 tokens
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 
-	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdk.Uint(minter.TotalMinted)).GT(mintThreshold) {
+	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdkmath.Uint(minter.TotalMinted)).GT(mintThreshold) {
 		t.Errorf("Minted unexpected amount of tokens, expected [%v +/- %v] returned and in store, actual minted %v, actual in store %v",
 			expectedCoins60Sec, mintThreshold, mintedCoins, minter.TotalMinted)
 	}
@@ -340,8 +340,8 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 		title             string
 		normTimePassed    sdk.Dec
 		timeAhead         sdk.Dec
-		totalMinted       sdk.Uint
-		expIntegralMinted sdk.Uint
+		totalMinted       sdkmath.Uint
+		expIntegralMinted sdkmath.Uint
 		expError          bool
 	}{
 		{
@@ -436,8 +436,8 @@ func Test_PredictMintedByFixedAmount_TwelveMonthsAhead(t *testing.T) {
 		title          string
 		normTimePassed sdk.Dec
 		timeAhead      sdk.Dec
-		totalMinted    sdk.Uint
-		expFixedMinted sdk.Uint
+		totalMinted    sdkmath.Uint
+		expFixedMinted sdkmath.Uint
 		expError       bool
 	}{
 		{
@@ -528,7 +528,7 @@ func randomTimeBetweenBlocks(min uint64, max uint64, r *rand.Rand) uint64 {
 	return uint64(time.Second.Nanoseconds()) * (uint64(r.Int63n(sdk.NewIntFromUint64(max-min).Int64())) + min)
 }
 
-func defaultParams() (types.Minter, sdk.Uint, sdk.Uint, sdk.Uint) {
+func defaultParams() (types.Minter, sdkmath.Uint, sdkmath.Uint, sdkmath.Uint) {
 	minter := types.InitialMinter()
 	mintedCoins := sdk.NewUint(0)
 	mintedMonth := sdk.NewUint(0)
@@ -536,6 +536,6 @@ func defaultParams() (types.Minter, sdk.Uint, sdk.Uint, sdk.Uint) {
 	return minter, mintedCoins, mintedMonth, timeOffset
 }
 
-func uintFromDec(d sdk.Dec) sdk.Uint {
+func uintFromDec(d sdk.Dec) sdkmath.Uint {
 	return sdk.NewUint(d.TruncateInt().Uint64())
 }

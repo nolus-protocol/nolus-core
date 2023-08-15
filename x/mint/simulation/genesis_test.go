@@ -80,7 +80,7 @@ func TestRandomizedGenState1(t *testing.T) {
 func TestGenMaxMintableNanoseconds(t *testing.T) {
 	tests := []struct {
 		r                   *rand.Rand
-		expectedMaxMintable sdk.Uint
+		expectedMaxMintable sdkmath.Uint
 	}{
 		{rand.New(rand.NewSource(1)), sdk.NewUint(uint64((4000000000)))},
 		{rand.New(rand.NewSource(0)), sdk.NewUint(uint64((50000000000)))},
