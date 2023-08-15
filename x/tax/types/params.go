@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"strings"
 
+	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
@@ -102,7 +102,7 @@ func validateContractAddress(v interface{}) error {
 
 	_, err := sdk.AccAddressFromBech32(contractAddress)
 	if err != nil {
-		return sdkerrors.Wrap(ErrInvalidAddress, err.Error())
+		return errorsmod.Wrap(ErrInvalidAddress, err.Error())
 	}
 
 	return nil
