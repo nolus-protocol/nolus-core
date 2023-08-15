@@ -12,8 +12,8 @@ func Test_calcMintedTokens(t *testing.T) {
 
 	for _, tc := range []struct {
 		title          string
-		normTimePassed sdk.Dec
-		expTotalMinted sdk.Uint
+		normTimePassed sdkmath.LegacyDec
+		expTotalMinted sdkmath.Uint
 	}{
 		{
 			title:          "starting at genesis",
@@ -61,7 +61,7 @@ func Test_ValidateMinter(t *testing.T) {
 	for _, tc := range []struct {
 		title          string
 		normTimePassed sdk.Dec
-		totalMinted    sdk.Uint
+		totalMinted    sdkmath.Uint
 		expErr         bool
 	}{
 		{
