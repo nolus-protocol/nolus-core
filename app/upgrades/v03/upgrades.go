@@ -5,8 +5,10 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
 	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
 )
 
@@ -23,7 +25,11 @@ func CreateUpgradeHandler(
 			QueryDeposit:        sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1000000))),
 			TxQueryRemovalLimit: uint64(10000),
 		}
-		keepers.InterchainQueriesKeeper.SetParams(ctx, interchainQueriesParams)
+		err := keepers.InterchainQueriesKeeper.SetParams(ctx, interchainQueriesParams)
+		if err != nil {
+			return nil, err
+		}
+
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }
