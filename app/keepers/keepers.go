@@ -224,12 +224,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper)
 
-	// refactor: temporary comment until build succeeds
-	// set the BaseApp's parameter store
-	// bApp.SetParamStore(
-	// 	appKeepers.ParamsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()),
-	// )
-
 	// add capability keeper and ScopeToModule for ibc module
 	appKeepers.CapabilityKeeper = capabilitykeeper.NewKeeper(
 		appCodec, appKeepers.keys[capabilitytypes.StoreKey], appKeepers.memKeys[capabilitytypes.MemStoreKey],
@@ -464,8 +458,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
-		// refactor: temporary comment until build succeeds
-		// AddRoute(distrtypes.RouterKey, distribution.NewCommunityPoolSpendProposalHandler(appKeepers.DistrKeeper))
 
 	// The gov proposal types can be individually enabled
 	if len(GetWasmEnabledProposals()) != 0 {
