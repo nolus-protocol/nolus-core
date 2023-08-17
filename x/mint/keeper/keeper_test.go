@@ -1,6 +1,5 @@
 package keeper_test
 
-// refactor: review when we uncomment mint and tax keepers from app
 // import (
 // 	"context"
 // 	"testing"
@@ -9,10 +8,10 @@ package keeper_test
 // 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
 // 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 // 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
-// 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 // 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
 // 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+// 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 // 	"github.com/stretchr/testify/suite"
 // )
 
@@ -104,7 +103,7 @@ package keeper_test
 
 // // fundAcc funds target address with specified amount.
 // func (s *KeeperTestSuite) fundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-// 	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+// 	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
 // 	s.Require().NoError(err)
 // }
 
