@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"go/build"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -38,6 +39,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -81,15 +83,14 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.AllInvariants = false
 	config.ChainID = SimAppChainID
 
-	// pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
-	// if err != nil {
-	// 	t.Fatalf("CosmWasm module path not found: %v", err)
-	// }
+	pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
+	if err != nil {
+		t.Fatalf("CosmWasm module path not found: %v", err)
+	}
 
-	// reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
+	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
 	appParams := simtypes.AppParams{
-		// refactor decide how to handle this, problem is importing wasmsim ( maybe upgrade wasmd version)
-		// wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
+		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
 	}
 	bz, err := json.Marshal(appParams)
 	if err != nil {
@@ -115,10 +116,11 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := tmdb.NewMemDB()
+			encConfig := MakeEncodingConfig(ModuleBasics)
 			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simcli.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
 
 			// params.SetAddressPrefixes()
-			ctx := newApp.NewUncachedContext(true, tmproto.Header{})
+			// ctx := newApp.NewUncachedContext(true, tmproto.Header{})
 			// newApp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
 			// newApp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 			// newApp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
@@ -133,7 +135,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				newApp.BaseApp,
-				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), newApp.mm.ExportGenesis(ctx, newApp.AppCodec())), // refactor: try to find a way to use .DefaultGenesis instead of ExportGenesis
+				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), ModuleBasics.DefaultGenesis(encConfig.Marshaler)),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
 				newApp.BlockedAddrs(),
