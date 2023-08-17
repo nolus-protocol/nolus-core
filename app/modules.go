@@ -56,9 +56,6 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	// refactor: this pkg does not exist any more
-	//	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
-
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
 	"github.com/neutron-org/neutron/x/feerefunder"
@@ -69,26 +66,6 @@ import (
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
 )
-
-// refactor: currently this func is unused because we init
-// the legacy handlers directly in NewBasicManager below
-// func getGovProposalHandlers() []govclient.ProposalHandler {
-// 	var govProposalHandlers []govclient.ProposalHandler
-
-// 	govProposalHandlers = append(
-// 		govProposalHandlers,
-// 		paramsclient.ProposalHandler,
-// 		// distrclient.ProposalHandler,
-// 		upgradeclient.LegacyProposalHandler,
-// 		upgradeclient.LegacyCancelProposalHandler,
-// 		ibcclientclient.UpdateClientProposalHandler,
-// 		ibcclientclient.UpgradeProposalHandler,
-// 	)
-
-// 	govProposalHandlers = append(govProposalHandlers, wasmclient.ProposalHandlers...)
-
-// 	return govProposalHandlers
-// }
 
 // module account permissions.
 var maccPerms = map[string][]string{

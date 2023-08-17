@@ -30,7 +30,6 @@ var (
 )
 
 func init() {
-	SetAddressPrefixes()
 	RegisterDenoms()
 }
 
