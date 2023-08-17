@@ -184,49 +184,29 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=v0.9
-protoImageName=osmolabs/osmo-proto-gen:$(protoVer)
-containerProtoGen=nolus-proto-gen-$(protoVer)
-PROTO_FORMATTER_IMAGE=tendermintdev/docker-build-proto@sha256:aabcfe2fc19c31c0f198d4cd26393f5e5ca9502d7ea3feafbfe972448fee7cae
+protoVer=0.13.5
+protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user root $(protoImageName)
 
-.PHONY: proto-gen
+proto-all: proto-format proto-lint proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
-		sh ./scripts/protocgen.sh; fi
+	@$(protoImage) sh ./proto/scripts/protocgen.sh
+
+proto-swagger-gen:
+	@echo "Generating Protobuf Swagger"
+	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
 
 proto-format:
-	@echo "Formatting Protobuf files"
-	docker run --rm -v $(CURDIR):/workspace \
-	--workdir /workspace $(PROTO_FORMATTER_IMAGE) \
-	find ./ -name *.proto -exec clang-format -i {} \;
+	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
 
-# refactor: regenerate proto files with this image cosmos/proto-buidler
+proto-lint:
+	@$(protoImage) buf lint --error-format=json
 
-# protoVer=0.13.0
-# protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
-# protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace $(protoImageName)
+proto-check-breaking:
+	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
 
-# proto-all: proto-format proto-lint proto-gen
-
-# proto-gen:
-# 	@echo "Generating Protobuf files"
-# 	@$(protoImage) sh ./proto/scripts/protocgen.sh
-
-# proto-swagger-gen:
-# 	@echo "Generating Protobuf Swagger"
-# 	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
-
-# proto-format:
-# 	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
-
-# proto-lint:
-# 	@$(protoImage) buf lint --error-format=json
-
-# proto-check-breaking:
-# 	@$(protoImage) buf breaking --against $(HTTPS_GIT)#branch=main
-
-# proto-update-deps:
-# 	@echo "Updating Protobuf dependencies"
-# 	docker run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
+proto-update-deps:
+	@echo "Updating Protobuf dependencies"
+	docker run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
