@@ -276,6 +276,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
+	appKeepers.StakingKeeper = stakingKeeper
 
 	mintKeeper := mintkeeper.NewKeeper(
 		appCodec,
