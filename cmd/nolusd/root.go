@@ -127,10 +127,8 @@ func NewRootCmd(
 	defaultNodeHome,
 	defaultChainID string,
 	moduleBasics module.BasicManager,
-	options ...Option,
 ) (*cobra.Command, app.EncodingConfig) {
-	rootOptions := newRootOptions(options...)
-
+	rootOptions := newRootOptions()
 	// Set config for prefixes
 	params.SetAddressPrefixes()
 
@@ -208,6 +206,7 @@ func initRootCmd(
 		),
 		genutilcli.ValidateGenesisCmd(moduleBasics),
 		AddGenesisAccountCmd(defaultNodeHome),
+		AddGenesisWasmMsgCmd(defaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		config.Cmd(),

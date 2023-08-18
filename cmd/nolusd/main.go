@@ -13,13 +13,11 @@ func main() {
 	// and in our scripts, we use the cli command add-wasm-genesis-message before the chain is started in order to load the contracts
 	overrideWasmVariables()
 
-	cmdOptions := GetWasmCmdOptions()
 	rootCmd, _ := NewRootCmd(
 		app.Name,
 		app.DefaultNodeHome,
 		app.Name,
 		app.ModuleBasics,
-		cmdOptions...,
 	)
 
 	if err := svrcmd.Execute(rootCmd, "", app.DefaultNodeHome); err != nil {
