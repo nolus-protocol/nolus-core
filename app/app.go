@@ -205,15 +205,17 @@ func New(
 
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
-			AccountKeeper:     app.AccountKeeper,
+			HandlerOptions: ante.HandlerOptions{
+				AccountKeeper:   app.AccountKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				TxFeeChecker:    nil, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
+			},
 			BankKeeper:        app.BankKeeper,
 			TaxKeeper:         *app.TaxKeeper,
 			TxCounterStoreKey: app.GetKVStoreKey()[wasm.StoreKey],
 			WasmConfig:        &app.WasmConfig,
-			SignModeHandler:   encodingConfig.TxConfig.SignModeHandler(),
-			SigGasConsumer:    ante.DefaultSigVerificationGasConsumer,
 			IBCKeeper:         app.IBCKeeper,
-			TxFeeChecker:      nil, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 		},
 	)
 	if err != nil {
@@ -374,6 +376,9 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	tmservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+
+	// Register nodeservice grpc-gateway routes.
+	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// register app's OpenAPI routes.
 	apiSvr.Router.Handle("/static/openapi.yml", http.FileServer(http.FS(docs.Docs)))
