@@ -52,7 +52,8 @@ import (
 )
 
 // SimAppChainID hardcoded chainID for simulation.
-const SimAppChainID = "simulation-app"
+// refactor: set SimAppChainID in the tests
+const SimAppChainID = "nolus-simapp"
 
 var (
 	NumSeeds             int
@@ -117,7 +118,7 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			db := tmdb.NewMemDB()
 			encConfig := MakeEncodingConfig(ModuleBasics)
-			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simcli.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simcli.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
 
 			// params.SetAddressPrefixes()
 			// ctx := newApp.NewUncachedContext(true, tmproto.Header{})
