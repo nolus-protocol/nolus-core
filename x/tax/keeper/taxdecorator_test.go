@@ -123,7 +123,6 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			suite.app.TaxKeeper.SetParams(suite.ctx, params)
 
 			// get chained ante handler
-			// refactor: do we need feegrantKeeper as 3rd argument or nil is fine?
 			dfd := ante.NewDeductFeeDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, nil, nil)
 			dtd := keeper.NewDeductTaxDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, *suite.app.TaxKeeper)
 			anteHandler := sdk.ChainAnteDecorators(dfd, dtd)

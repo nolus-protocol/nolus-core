@@ -249,7 +249,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 
 	// Add normal keepers
-	// add keepers
 	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
 		appKeepers.keys[authtypes.StoreKey],

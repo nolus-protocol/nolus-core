@@ -38,7 +38,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 type (
@@ -130,7 +129,7 @@ func NewRootCmd(
 ) (*cobra.Command, app.EncodingConfig) {
 	rootOptions := newRootOptions()
 	// Set config for prefixes
-	params.SetAddressPrefixes()
+	// params.SetAddressPrefixes()
 
 	encodingConfig := app.MakeEncodingConfig(moduleBasics)
 	initClientCtx := client.Context{}.

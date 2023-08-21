@@ -7,10 +7,7 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
-	authsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	ibcante "github.com/cosmos/ibc-go/v7/modules/core/ante"
 	"github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
@@ -20,16 +17,12 @@ import (
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
-	AccountKeeper     ante.AccountKeeper
+	ante.HandlerOptions
 	BankKeeper        taxtypes.BankKeeper
-	FeegrantKeeper    ante.FeegrantKeeper
 	TaxKeeper         taxkeeper.Keeper
 	TxCounterStoreKey storetypes.StoreKey
 	WasmConfig        *wasmTypes.WasmConfig
-	SignModeHandler   authsigning.SignModeHandler
-	SigGasConsumer    func(meter sdk.GasMeter, sig signing.SignatureV2, params types.Params) error
 	IBCKeeper         *keeper.Keeper
-	TxFeeChecker      ante.TxFeeChecker
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -63,7 +56,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
-		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
+		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, nil, options.TxFeeChecker),
 
 		// Tax calculation must be called after fees
 		taxkeeper.NewDeductTaxDecorator(options.AccountKeeper, options.BankKeeper, options.TaxKeeper),
