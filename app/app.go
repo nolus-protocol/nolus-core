@@ -216,7 +216,6 @@ func New(
 			TxCounterStoreKey: app.GetKVStoreKey()[wasm.StoreKey],
 			WasmConfig:        &app.WasmConfig,
 			IBCKeeper:         app.IBCKeeper,
-			TxFeeChecker:      nil, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 		},
 	)
 	if err != nil {

@@ -23,7 +23,6 @@ type HandlerOptions struct {
 	TxCounterStoreKey storetypes.StoreKey
 	WasmConfig        *wasmTypes.WasmConfig
 	IBCKeeper         *keeper.Keeper
-	TxFeeChecker      ante.TxFeeChecker
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
