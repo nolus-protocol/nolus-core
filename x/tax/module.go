@@ -10,6 +10,14 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+<<<<<<< HEAD
+=======
+	"github.com/Nolus-Protocol/nolus-core/x/tax/client/cli"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+>>>>>>> 6254fd9 (fix: x/params is deprecated, let each module manage its params)
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -142,7 +150,11 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	m := keeper.NewMigrator(am.keeper, am.legacySubspace)
 
+<<<<<<< HEAD
 	if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
+=======
+	if err := cfg.RegisterMigration(types.ModuleName, 1, m.Migrate2to3); err != nil {
+>>>>>>> 6254fd9 (fix: x/params is deprecated, let each module manage its params)
 		panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
 	}
 }

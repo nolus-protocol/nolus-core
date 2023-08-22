@@ -152,10 +152,14 @@ func (s *KeeperTestSuite) createTestAccounts(numAccs int) []TestAccount {
 // fundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) fundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
 =======
 	err := sims.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
 >>>>>>> d3cc522 (wip: continue with go mod tidy)
+=======
+	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+>>>>>>> 6254fd9 (fix: x/params is deprecated, let each module manage its params)
 	s.Require().NoError(err)
 }
 
