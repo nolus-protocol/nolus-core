@@ -56,7 +56,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
@@ -181,7 +180,6 @@ type AppKeepers struct {
 	InterchainQueriesModule interchainqueries.AppModule
 	TransferModule          transferSudo.AppModule
 	FeeRefunderModule       feerefunder.AppModule
-	TaxModule               tax.AppModule
 	VestingsModule          vestings.AppModule
 <<<<<<< HEAD
 	IcaModule               ica.AppModule
@@ -280,10 +278,10 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	mintKeeper := mintkeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[minttypes.StoreKey],
-		appKeepers.GetSubspace(minttypes.ModuleName),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.MintKeeper = &mintKeeper
 
@@ -482,13 +480,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// Set legacy router for backwards compatibility with gov v1beta1
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
-	appKeepers.TaxKeeper = taxmodulekeeper.NewKeeper(
+	taxKeeper := taxmodulekeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[taxmoduletypes.StoreKey],
 		appKeepers.keys[taxmoduletypes.MemStoreKey],
-		appKeepers.GetSubspace(taxmoduletypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
-	appKeepers.TaxModule = tax.NewAppModule(appCodec, *appKeepers.TaxKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
+	appKeepers.TaxKeeper = &taxKeeper
 
 	appKeepers.VestingsKeeper = vestingskeeper.NewKeeper(
 		appCodec,
