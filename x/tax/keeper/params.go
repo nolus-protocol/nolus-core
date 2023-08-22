@@ -6,33 +6,65 @@ import (
 )
 
 // GetParams get all parameters as types.Params.
-func (k Keeper) GetParams(ctx sdk.Context) types.Params {
-	return types.NewParams(
-		k.FeeRate(ctx),
-		k.ContractAddress(ctx),
-		k.BaseDenom(ctx),
-	)
+func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return p
+	}
+
+	k.cdc.MustUnmarshal(bz, &p)
+	return p
 }
 
 // SetParams set the params.
-func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
-	k.paramstore.SetParamSet(ctx, &params)
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	store := ctx.KVStore(k.storeKey)
+	bz := k.cdc.MustMarshal(&params)
+	store.Set(types.ParamsKey, bz)
+
+	return nil
 }
 
 // FeeRate returns the fee rate.
 func (k Keeper) FeeRate(ctx sdk.Context) (res int32) {
-	k.paramstore.Get(ctx, types.KeyFeeRate, &res)
-	return
+	var p types.Params
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return 0
+	}
+
+	k.cdc.MustUnmarshal(bz, &p)
+	return p.FeeRate
 }
 
 // ContractAddress returns the contract address.
 func (k Keeper) ContractAddress(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyContractAddress, &res)
-	return
+	var p types.Params
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return ""
+	}
+
+	k.cdc.MustUnmarshal(bz, &p)
+	return p.ContractAddress
 }
 
 // BseDenom returns the base denom.
 func (k Keeper) BaseDenom(ctx sdk.Context) (res string) {
-	k.paramstore.Get(ctx, types.KeyBaseDenom, &res)
-	return
+	var p types.Params
+	store := ctx.KVStore(k.storeKey)
+	bz := store.Get(types.ParamsKey)
+	if bz == nil {
+		return ""
+	}
+
+	k.cdc.MustUnmarshal(bz, &p)
+	return p.BaseDenom
 }

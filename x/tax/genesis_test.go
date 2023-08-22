@@ -3,7 +3,6 @@ package tax_test
 import (
 	"testing"
 
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
@@ -12,7 +11,6 @@ import (
 )
 
 func TestGenesis(t *testing.T) {
-	params.SetAddressPrefixes()
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 	}

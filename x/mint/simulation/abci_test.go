@@ -19,7 +19,7 @@ import (
 
 func Test_BeginBlock(t *testing.T) {
 	params.SetAddressPrefixes()
-	app, err := simapp.TestSetup()
+	app, err := simapp.TestSetup(t)
 	if err != nil {
 		t.Errorf("Error while creating simapp: %v\"", err)
 	}

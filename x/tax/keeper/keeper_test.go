@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
@@ -11,6 +12,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 
 	nolusapp "github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -18,6 +23,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 
+	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -38,14 +44,19 @@ type KeeperTestSuite struct {
 	clientCtx   client.Context
 	txBuilder   client.TxBuilder
 	anteHandler sdk.AnteHandler
+	msgServer   types.MsgServer
 }
 
-// refactor: fix when simulation refactoring is done
 // SetupTest setups a new test, with new app, context, and anteHandler.
 func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
-	tempDir := s.T().TempDir()
-	s.app, s.ctx = nolusapp.CreateTestApp(isCheckTx, tempDir)
-	s.ctx = s.ctx.WithBlockHeight(1)
+	var err error
+	_ = params.SetAddressPrefixes()
+	s.app, err = simulationapp.TestSetup(s.T())
+	s.Require().NoError(err)
+
+	blockTime := time.Now()
+	header := tmproto.Header{Height: s.app.LastBlockHeight() + 1}
+	s.ctx = s.app.BaseApp.NewContext(false, header).WithBlockTime(blockTime)
 
 	// set up TxConfig
 	encodingConfig := nolusapp.MakeEncodingConfig(nolusapp.ModuleBasics)
@@ -64,6 +75,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.Require().NoError(err)
 
 	s.anteHandler = anteHandler
+	s.msgServer = keeper.NewMsgServerImpl(*s.app.TaxKeeper)
 }
 
 // CreateTestAccounts creates accounts.

@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -10,6 +11,7 @@ import (
 )
 
 func TestParamsQuery(t *testing.T) {
+	params.SetAddressPrefixes()
 	keeper, ctx := testkeeper.TaxKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()

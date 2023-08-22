@@ -5,10 +5,13 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 )
 
 func main() {
+	config := params.SetAddressPrefixes()
+	config.Seal()
 	// we must override the wasm variables here because we want to upload contracts on genesis
 	// and in our scripts, we use the cli command add-wasm-genesis-message before the chain is started in order to load the contracts
 	overrideWasmVariables()

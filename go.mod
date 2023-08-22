@@ -27,7 +27,7 @@ require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.0.1
-	github.com/gogo/protobuf v1.3.3
+	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
 )
 
@@ -59,7 +59,6 @@ require (
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/admin-module v0.0.0-20220204080909-475a98e03f31 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
-	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
 	github.com/cosmos/gaia/v11 v11.0.0-00010101000000-000000000000 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
@@ -87,6 +86,7 @@ require (
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/godbus/dbus v0.0.0-20190726142602-4481cbc300e2 // indirect
 	github.com/gogo/googleapis v1.4.1 // indirect
+	github.com/gogo/protobuf v1.3.3 // indirect
 	github.com/golang/glog v1.1.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/mock v1.6.0 // indirect
@@ -211,7 +211,4 @@ replace (
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
-
-// https://github.com/cosmos/cosmos-sdk/blob/v0.47.0-rc2/UPGRADING.md#go-api-changes
-// google.golang.org/grpc => google.golang.org/grpc v1.33.2
 )
