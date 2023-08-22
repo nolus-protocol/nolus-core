@@ -17,6 +17,12 @@ const (
 	MemStoreKey = "mem_tax"
 )
 
+var (
+	// TaxKey is the key to use for the keeper store.
+	TaxKey    = []byte{0x00}
+	ParamsKey = []byte{0x01}
+)
+
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }

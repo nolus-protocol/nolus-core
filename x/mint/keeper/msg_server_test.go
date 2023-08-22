@@ -1,7 +1,8 @@
 package keeper_test
 
 import (
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (s *KeeperTestSuite) TestUpdateParams() {
@@ -20,11 +21,10 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 		{
 			name: "set invalid params",
 			request: &types.MsgUpdateParams{
-				Authority: s.app.TaxKeeper.GetAuthority(),
+				Authority: s.app.MintKeeper.GetAuthority(),
 				Params: types.Params{
-					FeeRate:         0,
-					ContractAddress: "",
-					BaseDenom:       "",
+					MintDenom:              sdk.DefaultBondDenom,
+					MaxMintableNanoseconds: sdk.NewUint(0), // invalid
 				},
 			},
 			expectErr: true,
@@ -32,11 +32,10 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 		{
 			name: "set full valid params",
 			request: &types.MsgUpdateParams{
-				Authority: s.app.TaxKeeper.GetAuthority(),
+				Authority: s.app.MintKeeper.GetAuthority(),
 				Params: types.Params{
-					FeeRate:         1,
-					ContractAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
-					BaseDenom:       "nolus",
+					MintDenom:              sdk.DefaultBondDenom,
+					MaxMintableNanoseconds: sdk.NewUint(60000000000), // 1 min default
 				},
 			},
 			expectErr: false,
@@ -44,7 +43,6 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 	}
 
 	for _, tc := range testCases {
-		s.SetupTest(false)
 		tc := tc
 		s.Run(tc.name, func() {
 			_, err := s.msgServer.UpdateParams(s.ctx, tc.request)

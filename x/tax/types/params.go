@@ -7,25 +7,14 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"gopkg.in/yaml.v2"
 )
 
 var (
-	KeyFeeRate           = []byte("FeeRate")
-	DefaultFeeRate int32 = 40
-
-	KeyContractAddress            = []byte("ContractAddress")
+	DefaultFeeRate         int32  = 40
 	DefaultContractAddress string = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-
-	KeyBaseDenom            = []byte("BaseDenom")
-	DefaultBaseDenom string = sdk.DefaultBondDenom
+	DefaultBaseDenom       string = sdk.DefaultBondDenom
 )
-
-// ParamKeyTable the param key table for launch module.
-func ParamKeyTable() paramtypes.KeyTable {
-	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
-}
 
 // NewParams creates a new Params instance.
 func NewParams(
@@ -40,21 +29,12 @@ func NewParams(
 	}
 }
 
-// DefaultParams returns a default set of parameters.
+// DefaultParams returns default x/tax module parameters.
 func DefaultParams() Params {
-	return NewParams(
-		DefaultFeeRate,
-		DefaultContractAddress,
-		DefaultBaseDenom,
-	)
-}
-
-// ParamSetPairs get the params.ParamSet.
-func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
-	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
-		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
-		paramtypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
+	return Params{
+		FeeRate:         DefaultFeeRate,
+		ContractAddress: DefaultContractAddress,
+		BaseDenom:       DefaultBaseDenom,
 	}
 }
 

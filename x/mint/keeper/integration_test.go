@@ -18,7 +18,7 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	maxMintableNanoseconds := uint64(2000)
 
 	params.SetAddressPrefixes()
-	app, err := simapp.TestSetup()
+	app, err := simapp.TestSetup(t)
 	require.NoError(t, err)
 
 	isCheckTx := false

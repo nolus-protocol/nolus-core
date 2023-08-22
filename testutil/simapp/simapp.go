@@ -1,12 +1,14 @@
 package simapp
 
 import (
+	"testing"
 	"time"
 
 	"github.com/cometbft/cometbft/libs/json"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 
@@ -15,15 +17,24 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtypes "github.com/cometbft/cometbft/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/stretchr/testify/require"
+
 	cometbfttypes "github.com/cometbft/cometbft/types"
 	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
 )
 
 // New creates application instance with in-memory database and disabled logging.
-func New(dir string, withDefaultGenesisState bool) *app.App {
+func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
+	// _ = params.SetAddressPrefixes()
 	db := tmdb.NewMemDB()
 	logger := log.NewNopLogger()
-
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	a := app.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
@@ -31,12 +42,30 @@ func New(dir string, withDefaultGenesisState bool) *app.App {
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
 	if withDefaultGenesisState {
-		genStateObj := NewDefaultGenesisState(encoding.Marshaler)
-		state, err := json.MarshalIndent(genStateObj, "", " ")
-		if err != nil {
-			panic(err)
+		privVal := mock.NewPV()
+		pubKey, err := privVal.GetPubKey()
+		require.NoError(t, err)
+
+		// create validator set with single validator
+		validator := tmtypes.NewValidator(pubKey, 1)
+		valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+
+		// generate genesis account
+		senderPrivKey := mock.NewPV()
+		senderPubKey := senderPrivKey.PrivKey.PubKey()
+
+		acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
+		balance := banktypes.Balance{
+			Address: acc.GetAddress().String(),
+			Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdk.NewInt(100000000000000))),
 		}
-		genState = state
+
+		genState := NewDefaultGenesisState(encoding.Marshaler)
+
+		genesisAccounts := []authtypes.GenesisAccount{acc}
+		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, genesisAccounts, balance)
+
+		return nolusApp
 	}
 	a.InitChain(abci.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,
@@ -45,9 +74,108 @@ func New(dir string, withDefaultGenesisState bool) *app.App {
 	return a
 }
 
+// SetupWithGenesisValSet initializes a new GaiaApp with a validator set and genesis accounts
+// that also act as delegators. For simplicity, each validator is bonded with a delegation
+// of one consensus engine unit in the default token of the GaiaApp from first genesis
+// account. A Nop logger is set in GaiaApp.
+func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.GenesisState, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *app.App {
+	t.Helper()
+
+	// gaiaApp, genesisState := setup()
+	genesisState = genesisStateWithValSet(t, nolusApp, genesisState, valSet, genAccs, balances...)
+
+	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
+	require.NoError(t, err)
+
+	// init chain will set the validator set and initialize the genesis accounts
+	nolusApp.InitChain(
+		abci.RequestInitChain{
+			Validators:      []abci.ValidatorUpdate{},
+			ConsensusParams: defaultConsensusParams,
+			AppStateBytes:   stateBytes,
+		},
+	)
+
+	// commit genesis changes
+	nolusApp.Commit()
+	nolusApp.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
+		Height:             nolusApp.LastBlockHeight() + 1,
+		AppHash:            nolusApp.LastCommitID().Hash,
+		ValidatorsHash:     valSet.Hash(),
+		NextValidatorsHash: valSet.Hash(),
+	}})
+
+	return nolusApp
+}
+
+func genesisStateWithValSet(t *testing.T,
+	nolusApp *app.App, genesisState app.GenesisState,
+	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
+	balances ...banktypes.Balance,
+) app.GenesisState {
+	t.Helper()
+	// set genesis accounts
+	authGenesis := authtypes.NewGenesisState(authtypes.DefaultParams(), genAccs)
+	genesisState[authtypes.ModuleName] = nolusApp.AppCodec().MustMarshalJSON(authGenesis)
+
+	validators := make([]stakingtypes.Validator, 0, len(valSet.Validators))
+	delegations := make([]stakingtypes.Delegation, 0, len(valSet.Validators))
+
+	bondAmt := sdk.DefaultPowerReduction
+
+	for _, val := range valSet.Validators {
+		pk, err := cryptocodec.FromTmPubKeyInterface(val.PubKey)
+		require.NoError(t, err)
+		pkAny, err := codectypes.NewAnyWithValue(pk)
+		require.NoError(t, err)
+		validator := stakingtypes.Validator{
+			OperatorAddress:   sdk.ValAddress(val.Address).String(),
+			ConsensusPubkey:   pkAny,
+			Jailed:            false,
+			Status:            stakingtypes.Bonded,
+			Tokens:            bondAmt,
+			DelegatorShares:   sdk.OneDec(),
+			Description:       stakingtypes.Description{},
+			UnbondingHeight:   int64(0),
+			UnbondingTime:     time.Unix(0, 0).UTC(),
+			Commission:        stakingtypes.NewCommission(sdk.ZeroDec(), sdk.ZeroDec(), sdk.ZeroDec()),
+			MinSelfDelegation: sdk.ZeroInt(),
+		}
+		validators = append(validators, validator)
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdk.OneDec()))
+
+	}
+	// set validators and delegations
+	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
+	genesisState[stakingtypes.ModuleName] = nolusApp.AppCodec().MustMarshalJSON(stakingGenesis)
+
+	totalSupply := sdk.NewCoins()
+	for _, b := range balances {
+		// add genesis acc tokens to total supply
+		totalSupply = totalSupply.Add(b.Coins...)
+	}
+
+	for range delegations {
+		// add delegated tokens to total supply
+		totalSupply = totalSupply.Add(sdk.NewCoin(sdk.DefaultBondDenom, bondAmt))
+	}
+
+	// add bonded amount to bonded pool module account
+	balances = append(balances, banktypes.Balance{
+		Address: authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String(),
+		Coins:   sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, bondAmt)},
+	})
+
+	// update total supply
+	bankGenesis := banktypes.NewGenesisState(banktypes.DefaultGenesisState().Params, balances, totalSupply, []banktypes.Metadata{}, []banktypes.SendEnabled{})
+	genesisState[banktypes.ModuleName] = nolusApp.AppCodec().MustMarshalJSON(bankGenesis)
+
+	return genesisState
+}
+
 // TODO: Improve tests that use this function in genesis_test.go files of modules and modify this function's return.
-func TestSetup() (*app.App, error) {
-	nolusApp := New(app.DefaultNodeHome, true)
+func TestSetup(t *testing.T) (*app.App, error) {
+	nolusApp := New(t, app.DefaultNodeHome, true)
 	return nolusApp, nil
 }
 
