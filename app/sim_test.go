@@ -29,6 +29,7 @@ import (
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
@@ -72,6 +73,34 @@ type StoreKeysPrefixes struct {
 	Prefixes [][]byte
 }
 
+func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
+	pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
+	if err != nil {
+		t.Fatalf("CosmWasm module path not found: %v", err)
+	}
+
+	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
+	minDepositBytes, err := json.Marshal(sdk.NewCoins((sdk.NewCoin("nolus", sdk.NewInt(500000)))))
+	if err != nil {
+		t.Fatal("Marshaling of sdk coins to be used for min deposit param in gov module failed")
+	}
+
+	appParams := simtypes.AppParams{
+		wasmsim.OpReflectContractPath:  []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
+		govsim.DepositParamsMinDeposit: minDepositBytes,
+	}
+	bz, err := json.Marshal(appParams)
+	if err != nil {
+		t.Fatal("Marshaling of simulation parameters failed")
+	}
+	config.ParamsFile = filepath.Join(t.TempDir(), "app-params.json")
+	err = os.WriteFile(config.ParamsFile, bz, 0o600)
+	if err != nil {
+		t.Fatal("Writing of simulation parameters failed")
+	}
+
+}
+
 func TestAppStateDeterminism(t *testing.T) {
 	if !simcli.FlagEnabledValue {
 		t.Skip("skipping application simulation")
@@ -83,25 +112,7 @@ func TestAppStateDeterminism(t *testing.T) {
 	config.OnOperation = false
 	config.AllInvariants = false
 	config.ChainID = SimAppChainID
-
-	pkg, err := build.Default.Import("github.com/CosmWasm/wasmd/x/wasm/keeper", "", build.FindOnly)
-	if err != nil {
-		t.Fatalf("CosmWasm module path not found: %v", err)
-	}
-
-	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
-	appParams := simtypes.AppParams{
-		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
-	}
-	bz, err := json.Marshal(appParams)
-	if err != nil {
-		t.Fatal("Marshaling of simulation parameters failed")
-	}
-	config.ParamsFile = filepath.Join(t.TempDir(), "app-params.json")
-	err = os.WriteFile(config.ParamsFile, bz, 0o600)
-	if err != nil {
-		t.Fatal("Writing of simulation parameters failed")
-	}
+	appParamsConfigurationSim(t, &config)
 
 	appHashList := make([]json.RawMessage, NumTimesToRunPerSeed)
 
@@ -118,14 +129,19 @@ func TestAppStateDeterminism(t *testing.T) {
 
 			db := tmdb.NewMemDB()
 			encConfig := MakeEncodingConfig(ModuleBasics)
-			newApp := New(logger, db, nil, true, map[int64]bool{}, DefaultNodeHome, simcli.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt, baseapp.SetChainID(SimAppChainID))
-
-			// params.SetAddressPrefixes()
-			// ctx := newApp.NewUncachedContext(true, tmproto.Header{})
-			// newApp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
-			// newApp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
-			// newApp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
-			// newApp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
+			newApp := New(
+				logger,
+				db,
+				nil,
+				true,
+				map[int64]bool{},
+				DefaultNodeHome,
+				simcli.FlagPeriodValue,
+				encConfig,
+				simtestutil.EmptyAppOptions{},
+				fauxMerkleModeOpt,
+				baseapp.SetChainID(SimAppChainID),
+			)
 
 			fmt.Printf(
 				"running non-determinism simulation; seed %d: %d/%d, attempt: %d/%d\n",
@@ -136,7 +152,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				newApp.BaseApp,
-				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), ModuleBasics.DefaultGenesis(encConfig.Marshaler)),
+				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
 				newApp.BlockedAddrs(),
@@ -165,6 +181,7 @@ func TestAppStateDeterminism(t *testing.T) {
 func TestAppImportExport(t *testing.T) {
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
+	appParamsConfigurationSim(t, &config)
 
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	if skip {
@@ -178,7 +195,19 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	encConf := MakeEncodingConfig(ModuleBasics)
-	nolusApp := New(logger, db, nil, true, map[int64]bool{}, dir, simcli.FlagPeriodValue, encConf, simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+	nolusApp := New(
+		logger,
+		db,
+		nil,
+		true,
+		map[int64]bool{},
+		dir,
+		simcli.FlagPeriodValue,
+		encConf,
+		simtestutil.EmptyAppOptions{},
+		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
+	)
 	require.Equal(t, Name, nolusApp.Name())
 
 	// Run randomized simulation
@@ -217,7 +246,19 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newNolusApp := New(log.NewNopLogger(), newDB, nil, true, map[int64]bool{}, DefaultNodeHome, simcli.FlagPeriodValue, MakeEncodingConfig(ModuleBasics), simtestutil.EmptyAppOptions{}, fauxMerkleModeOpt)
+	newNolusApp := New(
+		log.NewNopLogger(),
+		newDB,
+		nil,
+		true,
+		map[int64]bool{},
+		DefaultNodeHome,
+		simcli.FlagPeriodValue,
+		MakeEncodingConfig(ModuleBasics),
+		simtestutil.EmptyAppOptions{},
+		fauxMerkleModeOpt,
+		baseapp.SetChainID(SimAppChainID),
+	)
 	require.Equal(t, Name, newNolusApp.Name())
 
 	var genesisState GenesisState
@@ -239,8 +280,7 @@ func TestAppImportExport(t *testing.T) {
 			keys[stakingtypes.StoreKey], newKeys[stakingtypes.StoreKey],
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
-				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingDelegationKey, stakingtypes.UnbondingDelegationByValIndexKey, stakingtypes.ValidatorsKey,
-				stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey, stakingtypes.UnbondingIndexKey,
+				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingIDKey, stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey,
 			},
 		},
 		{keys[slashingtypes.StoreKey], newKeys[slashingtypes.StoreKey], [][]byte{}},
