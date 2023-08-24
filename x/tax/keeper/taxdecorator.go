@@ -71,11 +71,12 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, err
 	}
 
-	events := sdk.Events{sdk.NewEvent(sdk.EventTypeTx,
-		sdk.NewAttribute(sdk.AttributeKeyFee, feeTx.GetFee().String()),
-	)}
+	// refactor: make sure event is emitted from the baseapp - https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#all-2
+	// events := sdk.Events{sdk.NewEvent(sdk.EventTypeTx,
+	// 	sdk.NewAttribute(sdk.AttributeKeyFee, feeTx.GetFee().String()),
+	// )}
 
-	ctx.EventManager().EmitEvents(events)
+	// ctx.EventManager().EmitEvents(events)
 
 	return next(ctx, tx, simulate)
 }
