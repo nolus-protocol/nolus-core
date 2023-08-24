@@ -494,7 +494,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.keys[vestingstypes.MemStoreKey],
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
-		appKeepers.GetSubspace(vestingstypes.ModuleName),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, *appKeepers.VestingsKeeper)
 
