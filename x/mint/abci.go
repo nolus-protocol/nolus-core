@@ -192,12 +192,11 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
 	}
 
-	// refactor: make sure event is emitted from the baseapp - https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#all-2
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		types.EventTypeMint,
-	// 		sdk.NewAttribute(types.AttributeKeyDenom, params.MintDenom),
-	// 		sdk.NewAttribute(sdk.AttributeKeyAmount, coinAmount.String()),
-	// 	),
-	// )
+	ctx.EventManager().EmitEvent(
+		sdk.NewEvent(
+			types.EventTypeMint,
+			sdk.NewAttribute(types.AttributeKeyDenom, params.MintDenom),
+			sdk.NewAttribute(sdk.AttributeKeyAmount, coinAmount.String()),
+		),
+	)
 }
