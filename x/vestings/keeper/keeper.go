@@ -8,55 +8,56 @@ import (
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
 
-type (
-	Keeper struct {
-		cdc      codec.BinaryCodec
-		storeKey storetypes.StoreKey
-		memKey   storetypes.StoreKey
+type Keeper struct {
+	cdc      codec.BinaryCodec
+	storeKey storetypes.StoreKey
+	memKey   storetypes.StoreKey
 
-		accountKeeper types.AccountKeeper
-		bankKeeper    types.BankKeeper
+	accountKeeper types.AccountKeeper
+	bankKeeper    types.BankKeeper
 
-		paramstore paramtypes.Subspace
-	}
-)
+	// the address capable of executing a MsgUpdateParams message. Typically, this
+	// should be the x/gov module account.
+	authority string
+}
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey storetypes.StoreKey,
-
-	accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, ps paramtypes.Subspace,
+	accountKeeper types.AccountKeeper,
+	bankKeeper types.BankKeeper,
+	authority string,
 ) *Keeper {
-	// set KeyTable if it has not already been set
-	if !ps.HasKeyTable() {
-		ps = ps.WithKeyTable(types.ParamKeyTable())
-	}
-
 	return &Keeper{
-		cdc:      cdc,
-		storeKey: storeKey,
-		memKey:   memKey,
-
-		accountKeeper: accountKeeper, bankKeeper: bankKeeper, paramstore: ps,
+		cdc:           cdc,
+		storeKey:      storeKey,
+		memKey:        memKey,
+		accountKeeper: accountKeeper,
+		bankKeeper:    bankKeeper,
+		authority:     authority,
 	}
+}
+
+// GetAuthority returns the x/mint module's authority.
+func (k Keeper) GetAuthority() string {
+	return k.authority
 }
 
 func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
-// GetModuleAccountBalance gets the airdrop coin balance of module account.
+// GetModuleAccountAddress gets the module account address.
 func (k Keeper) GetModuleAccountAddress(_ sdk.Context) sdk.AccAddress {
 	return k.accountKeeper.GetModuleAddress(types.ModuleName)
 }
 
-// GetModuleAccountBalance gets the airdrop coin balance of module account.
+// GetModuleAccount gets the module account.
 func (k Keeper) GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.AccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, moduleName)
 }
