@@ -103,6 +103,7 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 		AppHash:            nolusApp.LastCommitID().Hash,
 		ValidatorsHash:     valSet.Hash(),
 		NextValidatorsHash: valSet.Hash(),
+		Time:               time.Now(),
 	}})
 
 	return nolusApp

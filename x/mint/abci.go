@@ -19,6 +19,7 @@ var (
 	twelveMonths         = sdk.MustNewDecFromStr("12.0")
 
 	errTimeInFutureBeforeTimePassed = errors.New("time in future can not be before passed time")
+	errNegativeBlockTime            = errors.New("block time can not be less then zero")
 )
 
 func calcFunctionIncrement(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
@@ -167,13 +168,15 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 
 	params := k.GetParams(ctx)
 	blockTime := ctx.BlockTime().UnixNano()
+	if blockTime < 0 {
+		panic(errNegativeBlockTime)
+	}
+
 	coinAmount := calcTokens(sdk.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
-
 	minter.AnnualInflation = predictTotalMinted(minter.TotalMinted, minter.NormTimePassed, twelveMonths)
-
 	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
-
 	k.SetMinter(ctx, minter)
+
 	if coinAmount.GT(sdkmath.ZeroUint()) {
 		// mint coins, update supply
 		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, sdk.NewIntFromBigInt(coinAmount.BigInt())))
