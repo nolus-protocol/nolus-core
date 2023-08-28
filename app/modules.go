@@ -87,7 +87,7 @@ var maccPerms = map[string][]string{
 // non-dependant module elements, such as codec registration
 // and genesis verification.
 var ModuleBasics = module.NewBasicManager(
-	genutil.AppModuleBasic{},
+	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
 	auth.AppModuleBasic{},
 	bank.AppModuleBasic{},
 	capability.AppModuleBasic{},
