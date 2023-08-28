@@ -14,5 +14,8 @@ type QueryPlugin struct {
 
 // NewQueryPlugin returns a reference to a new QueryPlugin.
 func NewQueryPlugin(icaControllerKeeper *icacontrollerkeeper.Keeper, icqKeeper *icqkeeper.Keeper, feeRefunderKeeper *feerefunderkeeper.Keeper) *QueryPlugin {
-	return &QueryPlugin{icaControllerKeeper: icaControllerKeeper, icqKeeper: icqKeeper, feeRefunderKeeper: feeRefunderKeeper}
+	return &QueryPlugin{
+		icaControllerKeeper: icaControllerKeeper,
+		icqKeeper:           icqKeeper,
+		feeRefunderKeeper:   feeRefunderKeeper}
 }
