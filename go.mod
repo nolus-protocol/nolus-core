@@ -201,6 +201,9 @@ replace (
 	// neutron dependency
 	github.com/cosmos/gaia/v11 => github.com/cosmos/gaia/v11 v11.0.0-20230724152830-861ba391c3b4
 
+	// fixes build problem due to unsupported braking changes: https://github.com/cosmos/ledger-cosmos-go/blob/v0.13.0/CHANGELOG.md#api-breaking-changes
+	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.2
+
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7

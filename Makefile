@@ -1,8 +1,7 @@
 BUILDDIR ?= $(CURDIR)/target/release
 PACKAGES=$(shell go list ./... | grep -v '/simulation')
 TMVERSION := $(shell go list -m github.com/cometbft/cometbft | sed 's:.* ::')
-// refactor: temporary disable ledger. LEDGER_ENABLED should be true
-LEDGER_ENABLED ?= false
+LEDGER_ENABLED ?= true
 VERSION := $(shell echo $(shell git describe --tags) | sed 's/^v//')
 COMMIT := $(shell git log -1 --format='%H')
 NOLUS_BINARY=nolusd
@@ -52,7 +51,7 @@ build_tags += $(BUILD_TAGS)
 build_tags := $(strip $(build_tags))
 
 whitespace :=
-whitespace += $(whitespace)
+whitespace := $(whitespace) $(whitespace)
 comma := ,
 build_tags_comma_sep := $(subst $(whitespace),$(comma),$(build_tags))
 
