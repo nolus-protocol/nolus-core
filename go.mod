@@ -29,6 +29,7 @@ require (
 	cosmossdk.io/math v1.0.1
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
+	gotest.tools/v3 v3.5.0
 )
 
 require (
