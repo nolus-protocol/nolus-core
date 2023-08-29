@@ -52,8 +52,6 @@ import (
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
-// SimAppChainID hardcoded chainID for simulation.
-// refactor: set SimAppChainID in the tests
 const SimAppChainID = "nolus-simapp"
 
 var (
