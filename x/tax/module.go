@@ -10,17 +10,18 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/client/cli"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+
+	"github.com/Nolus-Protocol/nolus-core/x/tax/client/cli"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 // ConsensusVersion defines the current x/tax module consensus version.
@@ -189,6 +190,11 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 // ProposalContents doesn't return any content functions for governance proposals.
 func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalMsg {
 	return nil
+}
+
+// ProposalMsgs returns msgs used for governance proposals for simulations.
+func (AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+	return simulation.ProposalMsgs()
 }
 
 // RegisterStoreDecoder registers a decoder for tax module's types.
