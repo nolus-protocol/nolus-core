@@ -3,6 +3,8 @@ package keeper_test
 import (
 	"fmt"
 
+	sdkmath "cosmossdk.io/math"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,14 +16,14 @@ import (
 func (suite *KeeperTestSuite) TestTaxDecorator() {
 	suite.SetupTest(true)
 
-	HUNDRED_DEC := sdk.NewDec(100)
+	HUNDRED_DEC := sdkmath.LegacyNewDec(100)
 	const rnDenom = "atom"
 	baseDenom := suite.app.TaxKeeper.GetParams(suite.ctx).BaseDenom
 
 	testCases := []struct {
 		title           string
 		feeDenoms       []string
-		feeAmount       sdk.Int
+		feeAmount       sdkmath.Int
 		feeRate         int32
 		baseDenom       string
 		contractAddress string
@@ -31,7 +33,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		{
 			title:           "successful tax deduction should increase the treasury balance",
 			feeDenoms:       []string{baseDenom},
-			feeAmount:       sdk.NewInt(100),
+			feeAmount:       sdkmath.NewInt(100),
 			feeRate:         40,
 			baseDenom:       baseDenom,
 			contractAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
@@ -147,7 +149,6 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 
 			// call the ante handler
 			_, err = anteHandler(suite.ctx, tx, false)
-			fmt.Println("11111111111111", params.ContractAddress)
 			if !tc.expPass {
 				suite.Require().Error(err, "test: %s", tc.title)
 				suite.ErrorIs(err, tc.expErr, tc.title)
@@ -159,10 +160,10 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 
 			expTreasuryBalance := sdk.Coins{} // empty treasury
 			treasuryBalance := suite.app.BankKeeper.GetAllBalances(suite.ctx, treasuryAddr)
-			feeRate := sdk.NewDec(int64(tc.feeRate))
+			feeRate := sdkmath.LegacyNewDec(int64(tc.feeRate))
 			tax := feeRate.MulInt(tc.feeAmount).Quo(HUNDRED_DEC).TruncateInt()
 
-			if txFees.Empty() || tc.feeRate == 0 || tax.LT(sdk.NewInt(1)) {
+			if txFees.Empty() || tc.feeRate == 0 || tax.LT(sdkmath.NewInt(1)) {
 				suite.Require().Equal(expTreasuryBalance, treasuryBalance, "Treasury should be empty")
 				return
 			}
