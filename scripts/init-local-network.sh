@@ -313,23 +313,21 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
 
 __config_client
 
-run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
+# run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.txt & disown;
 
-/bin/bash "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/remote/hermes-initial-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
-                                                "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
-                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR_RPC"  "$DEX_NETWORK_ADDR_GRPC" \
-                                                "$DEX_ACCOUNT_PREFIX" "$DEX_PRICE_DENOM" "$DEX_TRUSTING_PERIOD" "$HERMES_ACCOUNT_MNEMONIC"
+# /bin/bash "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/remote/hermes-initial-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
+#                                                 "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
+#                                                 "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR_RPC"  "$DEX_NETWORK_ADDR_GRPC" \
+#                                                 "$DEX_ACCOUNT_PREFIX" "$DEX_PRICE_DENOM" "$DEX_TRUSTING_PERIOD" "$HERMES_ACCOUNT_MNEMONIC"
 
-HERMES_BINARY_DIR="$HOME"/hermes
+# HERMES_BINARY_DIR="$HOME"/hermes
 
-wait_nolus_gets_ready "$USER_DIR"
-wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
+# wait_nolus_gets_ready "$USER_DIR"
+# wait_hermes_config_gets_healthy "$HERMES_BINARY_DIR"
 
-NOLUS_HERMES_ADDRESS=$(get_hermes_address "$HERMES_BINARY_DIR" "$CHAIN_ID")
+# NOLUS_HERMES_ADDRESS=$(__nolus_hermes_address "$HERMES_BINARY_DIR" "$CHAIN_ID")
 
-open_connection "$NOLUS_NET" "$USER_DIR" "$RESERVE_NAME" "$HERMES_BINARY_DIR" "$NOLUS_HERMES_ADDRESS" \
-                 "$CHAIN_ID" "$DEX_NETWORK_ID"
+# leaser_dex_setup "$NOLUS_NET" "$USER_DIR" "$RESERVE_NAME" "$HERMES_BINARY_DIR" "$NOLUS_HERMES_ADDRESS" \
+#                  "$CHAIN_ID" "$DEX_NETWORK_ID"
 
-"$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
-
-rm -r "$WASM_CODE_PATH_TEMP"
+# "$HERMES_BINARY_DIR"/hermes start &>"$HERMES_BINARY_DIR"/hermes_logs.txt & disown;
