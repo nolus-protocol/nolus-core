@@ -2,9 +2,8 @@ package keeper
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/x/mint/exported"
+	v2 "github.com/Nolus-Protocol/nolus-core/x/mint/migrations/v2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	v2 "github.com/cosmos/cosmos-sdk/x/mint/migrations/v2"
 )
 
 // Migrator is a struct for handling in-place state migrations.
