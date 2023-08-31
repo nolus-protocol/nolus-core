@@ -27,7 +27,7 @@ func NewParams(mintDenom string, maxMintableNanoseconds sdkmath.Uint) Params {
 func DefaultParams() Params {
 	return Params{
 		MintDenom:              sdk.DefaultBondDenom,
-		MaxMintableNanoseconds: sdk.NewUint(60000000000), // 1 minute default
+		MaxMintableNanoseconds: sdkmath.NewUint(60000000000), // 1 minute default
 	}
 }
 
