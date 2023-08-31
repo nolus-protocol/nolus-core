@@ -1,8 +1,11 @@
 package keeper_test
 
 import (
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 func (s *KeeperTestSuite) TestUpdateParams() {
@@ -24,7 +27,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 				Authority: s.app.MintKeeper.GetAuthority(),
 				Params: types.Params{
 					MintDenom:              sdk.DefaultBondDenom,
-					MaxMintableNanoseconds: sdk.NewUint(0), // invalid
+					MaxMintableNanoseconds: sdkmath.NewUint(0), // invalid
 				},
 			},
 			expectErr: true,
@@ -35,7 +38,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 				Authority: s.app.MintKeeper.GetAuthority(),
 				Params: types.Params{
 					MintDenom:              sdk.DefaultBondDenom,
-					MaxMintableNanoseconds: sdk.NewUint(60000000000), // 1 min default
+					MaxMintableNanoseconds: sdkmath.NewUint(60000000000), // 1 min default
 				},
 			},
 			expectErr: false,

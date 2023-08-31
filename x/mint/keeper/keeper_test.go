@@ -3,16 +3,19 @@ package keeper_test
 import (
 	"testing"
 
-	"github.com/Nolus-Protocol/nolus-core/app"
-	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	sdkmath "cosmossdk.io/math"
+	"github.com/stretchr/testify/suite"
+
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
-	"github.com/stretchr/testify/suite"
+
+	"github.com/Nolus-Protocol/nolus-core/app"
+	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 // TestAccount represents a client Account that can be used in unit tests.
@@ -40,7 +43,7 @@ func (s *KeeperTestSuite) TestParams() {
 			name: "set valid params",
 			input: types.Params{
 				MintDenom:              "nolus",
-				MaxMintableNanoseconds: sdk.NewUint(60000000000), // 1 min default
+				MaxMintableNanoseconds: sdkmath.NewUint(60000000000), // 1 min default
 			},
 			expectErr: false,
 		},
@@ -48,7 +51,7 @@ func (s *KeeperTestSuite) TestParams() {
 			name: "set invalid params",
 			input: types.Params{
 				MintDenom:              "error-denom",
-				MaxMintableNanoseconds: sdk.NewUint(0), // 0 invalid
+				MaxMintableNanoseconds: sdkmath.NewUint(0), // 0 invalid
 			},
 			expectErr: true,
 		},
@@ -97,7 +100,7 @@ func (s *KeeperTestSuite) TestMintCoins() {
 	s.SetupTest(false)
 	minterKeeper := s.app.MintKeeper
 
-	err := minterKeeper.MintCoins(s.ctx, sdk.Coins{sdk.Coin{Denom: "nolus", Amount: sdk.NewInt(200)}})
+	err := minterKeeper.MintCoins(s.ctx, sdk.Coins{sdk.Coin{Denom: "nolus", Amount: sdkmath.NewInt(200)}})
 	s.Require().Nil(err)
 }
 
@@ -122,10 +125,10 @@ func (s *KeeperTestSuite) TestAddCollectedFees() {
 	s.fundAcc(addr, coins)
 
 	// fund mint's account so it can execute AddCollectedFees successfully
-	err := s.app.BankKeeper.SendCoins(s.ctx, addr, s.app.AccountKeeper.GetModuleAddress(types.ModuleName), sdk.NewCoins(sdk.NewCoin(taxParams.BaseDenom, sdk.NewInt(int64(1000)))))
+	err := s.app.BankKeeper.SendCoins(s.ctx, addr, s.app.AccountKeeper.GetModuleAddress(types.ModuleName), sdk.NewCoins(sdk.NewCoin(taxParams.BaseDenom, sdkmath.NewInt(int64(1000)))))
 	s.Require().Nil(err)
 
-	err = minterKeeper.AddCollectedFees(s.ctx, sdk.Coins{sdk.NewCoin(taxParams.BaseDenom, sdk.NewInt(int64(200)))})
+	err = minterKeeper.AddCollectedFees(s.ctx, sdk.Coins{sdk.NewCoin(taxParams.BaseDenom, sdkmath.NewInt(int64(200)))})
 	s.Require().Nil(err)
 
 	feeCollectorBalance := s.app.BankKeeper.GetBalance(s.ctx, s.app.AccountKeeper.GetModuleAddress("fee_collector"), taxParams.BaseDenom)

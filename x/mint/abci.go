@@ -6,17 +6,19 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 var (
 	normInitialTotal     = types.CalcTokensByIntegral(types.NormOffset)
-	nanoSecondsInMonth   = sdk.NewDec(time.Hour.Nanoseconds() * 24 * 30)
+	nanoSecondsInMonth   = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
 	nanoSecondsInFormula = types.MonthsInFormula.Mul(nanoSecondsInMonth)
-	twelveMonths         = sdk.MustNewDecFromStr("12.0")
+	twelveMonths         = sdkmath.LegacyMustNewDecFromStr("12.0")
 
 	errTimeInFutureBeforeTimePassed = errors.New("time in future can not be before passed time")
 	errNegativeBlockTime            = errors.New("block time can not be less then zero")
@@ -68,7 +70,7 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 	} else {
 		// After reaching 96 normalized time, mint fixed amount of tokens per month until we reach the minting cap
 		normIncrement := calcFixedIncrement(nsecPassed)
-		delta := sdk.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
+		delta := sdkmath.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
 
 		if minter.TotalMinted.Add(delta).GT(types.MintingCap) {
 			// Trim off excess tokens if the cap is reached
@@ -124,7 +126,7 @@ func predictMintedByFixedAmount(totalMinted sdkmath.Uint, normTimePassed, timeAh
 	}
 
 	normFixedPeriod := normTimeInFuture.Sub(calcFunctionIncrement(sdkmath.Uint(nanoSecondsInFormula.TruncateInt())))
-	if normFixedPeriod.LTE(sdk.ZeroDec()) {
+	if normFixedPeriod.LTE(sdkmath.LegacyZeroDec()) {
 		return sdkmath.ZeroUint(), nil
 	}
 
@@ -172,14 +174,14 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		panic(errNegativeBlockTime)
 	}
 
-	coinAmount := calcTokens(sdk.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
+	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
 	minter.AnnualInflation = predictTotalMinted(minter.TotalMinted, minter.NormTimePassed, twelveMonths)
 	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 	k.SetMinter(ctx, minter)
 
 	if coinAmount.GT(sdkmath.ZeroUint()) {
 		// mint coins, update supply
-		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, sdk.NewIntFromBigInt(coinAmount.BigInt())))
+		mintedCoins := sdk.NewCoins(sdk.NewCoin(params.MintDenom, sdkmath.NewIntFromBigInt(coinAmount.BigInt())))
 
 		err := k.MintCoins(ctx, mintedCoins)
 		if err != nil {

@@ -4,6 +4,7 @@ import (
 	"math/rand"
 	"testing"
 
+	sdkmath "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"gotest.tools/v3/assert"
 
@@ -39,5 +40,5 @@ func TestProposalMsgs(t *testing.T) {
 
 	assert.Equal(t, sdk.AccAddress(address.Module("gov")).String(), msgUpdateParams.Authority)
 	assert.Equal(t, "UzXPFGkqEG", msgUpdateParams.Params.MintDenom)
-	assert.DeepEqual(t, sdk.NewUint(uint64(122877)), msgUpdateParams.Params.MaxMintableNanoseconds)
+	assert.DeepEqual(t, sdkmath.NewUint(uint64(122877)), msgUpdateParams.Params.MaxMintableNanoseconds)
 }

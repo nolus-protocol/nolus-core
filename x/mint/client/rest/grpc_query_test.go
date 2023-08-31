@@ -5,14 +5,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Nolus-Protocol/nolus-core/testutil/network"
-
 	sdkmath "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/testutil"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/gogoproto/proto"
 	"github.com/stretchr/testify/suite"
 
+	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
@@ -65,7 +63,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			map[string]string{},
 			&minttypes.QueryParamsResponse{},
 			&minttypes.QueryParamsResponse{
-				Params: minttypes.NewParams("stake", sdk.NewUint(uint64(time.Second.Nanoseconds()*60))),
+				Params: minttypes.NewParams("stake", sdkmath.NewUint(uint64(time.Second.Nanoseconds()*60))),
 			},
 		},
 		{

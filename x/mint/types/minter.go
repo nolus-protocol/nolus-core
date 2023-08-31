@@ -4,29 +4,29 @@ import (
 	"fmt"
 
 	sdkmath "cosmossdk.io/math"
+
 	"github.com/Nolus-Protocol/nolus-core/custom/util"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
 // afterwards minting 103125 tokens each month until reaching the minting cap of 150*10^6 tokens.
 var (
-	QuadCoef          = sdk.MustNewDecFromStr("-1.08319")
-	CubeCoef          = sdk.MustNewDecFromStr("314.871")
-	SquareCoef        = sdk.MustNewDecFromStr("-44283.6")
-	Coef              = sdk.MustNewDecFromStr("3863350")
+	QuadCoef          = sdkmath.LegacyMustNewDecFromStr("-1.08319")
+	CubeCoef          = sdkmath.LegacyMustNewDecFromStr("314.871")
+	SquareCoef        = sdkmath.LegacyMustNewDecFromStr("-44283.6")
+	Coef              = sdkmath.LegacyMustNewDecFromStr("3863350")
 	MintingCap        = util.ConvertToMicroNolusInt64(150000000)
 	FixedMintedAmount = util.ConvertToMicroNolusInt64(103125)
-	NormOffset        = sdk.MustNewDecFromStr("0.47")
-	MonthsInFormula   = sdk.MustNewDecFromStr("96")
-	TotalMonths       = sdk.MustNewDecFromStr("120")
+	NormOffset        = sdkmath.LegacyMustNewDecFromStr("0.47")
+	MonthsInFormula   = sdkmath.LegacyMustNewDecFromStr("96")
+	TotalMonths       = sdkmath.LegacyMustNewDecFromStr("120")
 	AbsMonthsRange    = MonthsInFormula.Sub(NormOffset)
 	NormMonthsRange   = AbsMonthsRange.Quo(MonthsInFormula)
 )
 
 // NewMinter returns a new Minter object with the given inflation and annual
 // provisions values.
-func NewMinter(normTimePassed sdk.Dec, totalMinted, prevBlockTimestamp, inflation sdkmath.Uint) Minter {
+func NewMinter(normTimePassed sdkmath.LegacyDec, totalMinted, prevBlockTimestamp, inflation sdkmath.Uint) Minter {
 	return Minter{
 		NormTimePassed:     normTimePassed,
 		TotalMinted:        totalMinted,
@@ -69,7 +69,7 @@ func ValidateMinter(minter Minter) error {
 
 	calculatedMintedTokens := calcMintedTokens(minter)
 
-	if minter.NormTimePassed.GT(TotalMonths.Sub(sdk.NewDec(1))) {
+	if minter.NormTimePassed.GT(TotalMonths.Sub(sdkmath.LegacyNewDec(1))) {
 		if calculatedMintedTokens.GT(MintingCap) || MintingCap.Sub(calculatedMintedTokens).GT(FixedMintedAmount) {
 			return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
 				minter.NormTimePassed, calculatedMintedTokens)
@@ -84,7 +84,7 @@ func ValidateMinter(minter Minter) error {
 
 func calcMintedTokens(m Minter) sdkmath.Uint {
 	if m.NormTimePassed.GTE(MonthsInFormula) {
-		fixedMonthsPeriod := sdk.NewUint(m.NormTimePassed.Sub(MonthsInFormula).TruncateInt().Uint64())
+		fixedMonthsPeriod := sdkmath.NewUint(m.NormTimePassed.Sub(MonthsInFormula).TruncateInt().Uint64())
 		fixedMonthsTokens := fixedMonthsPeriod.Mul(FixedMintedAmount)
 		calculatedTokensByIntegral := CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset))
 
@@ -96,7 +96,7 @@ func calcMintedTokens(m Minter) sdkmath.Uint {
 
 // Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
 // transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x.
-func CalcTokensByIntegral(x sdk.Dec) sdkmath.Uint {
+func CalcTokensByIntegral(x sdkmath.LegacyDec) sdkmath.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }
 
@@ -109,5 +109,5 @@ func GetAbsDiff(a, b sdkmath.Uint) sdkmath.Uint {
 }
 
 func DecFromUint(u sdkmath.Uint) sdkmath.LegacyDec {
-	return sdk.NewDecFromBigInt(u.BigInt())
+	return sdkmath.LegacyNewDecFromBigInt(u.BigInt())
 }

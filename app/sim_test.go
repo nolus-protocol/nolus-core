@@ -10,17 +10,19 @@ import (
 	"path/filepath"
 	"testing"
 
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
+	sdkmath "cosmossdk.io/math"
+
 	"github.com/stretchr/testify/require"
 
 	tmdb "github.com/cometbft/cometbft-db"
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/store"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -33,8 +35,10 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
@@ -78,7 +82,7 @@ func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
 	}
 
 	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
-	minDepositBytes, err := json.Marshal(sdk.NewCoins((sdk.NewCoin("nolus", sdk.NewInt(500000)))))
+	minDepositBytes, err := json.Marshal(sdk.NewCoins((sdk.NewCoin("nolus", sdkmath.NewInt(500000)))))
 	if err != nil {
 		t.Fatal("Marshaling of sdk coins to be used for min deposit param in gov module failed")
 	}
