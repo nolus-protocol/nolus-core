@@ -3,6 +3,8 @@ package simulation
 import (
 	"math/rand"
 
+	sdkmath "cosmossdk.io/math"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/address"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -35,7 +37,7 @@ func SimulateMsgUpdateParams(r *rand.Rand, _ sdk.Context, _ []simtypes.Account) 
 	var authority sdk.AccAddress = address.Module("gov")
 
 	params := types.DefaultParams()
-	params.MaxMintableNanoseconds = sdk.NewUint(uint64(simtypes.RandIntBetween(r, 1, 1000000)))
+	params.MaxMintableNanoseconds = sdkmath.NewUint(uint64(simtypes.RandIntBetween(r, 1, 1000000)))
 	params.MintDenom = simtypes.RandStringOfLength(r, 10)
 
 	return &types.MsgUpdateParams{

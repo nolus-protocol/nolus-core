@@ -4,11 +4,10 @@ import (
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func Test_calcMintedTokens(t *testing.T) {
-	expAcceptedDeviation := sdk.NewUint(500_000) // 0.5 token
+	expAcceptedDeviation := sdkmath.NewUint(500_000) // 0.5 token
 
 	for _, tc := range []struct {
 		title          string
@@ -22,22 +21,22 @@ func Test_calcMintedTokens(t *testing.T) {
 		},
 		{
 			title:          "starting at the end of 1st month",
-			normTimePassed: sdk.MustNewDecFromStr("1.46510417"),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("1.46510417"),
 			expTotalMinted: sdkmath.NewUintFromString("3_760_114_000_000"),
 		},
 		{
 			title:          "starting at the end of 2nd month",
-			normTimePassed: sdk.MustNewDecFromStr("2.46020833"),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
 			expTotalMinted: sdkmath.NewUintFromString("7_435_238_000_000"),
 		},
 		{
 			title:          "starting at the end of 96th month",
-			normTimePassed: sdk.MustNewDecFromStr("96.00000000"),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("96.00000000"),
 			expTotalMinted: sdkmath.NewUintFromString("147_535_257_000_000"),
 		},
 		{
 			title:          "starting at the end of 97th month",
-			normTimePassed: sdk.MustNewDecFromStr("97.00000000"),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("97.00000000"),
 			expTotalMinted: sdkmath.NewUintFromString("147_638_382_000_000"),
 		},
 	} {
@@ -60,7 +59,7 @@ func Test_calcMintedTokens(t *testing.T) {
 func Test_ValidateMinter(t *testing.T) {
 	for _, tc := range []struct {
 		title          string
-		normTimePassed sdk.Dec
+		normTimePassed sdkmath.LegacyDec
 		totalMinted    sdkmath.Uint
 		expErr         bool
 	}{
@@ -72,26 +71,26 @@ func Test_ValidateMinter(t *testing.T) {
 		},
 		{
 			title:          "negative norm time passed should return error",
-			normTimePassed: sdk.MustNewDecFromStr("-0.1"),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("-0.1"),
 			totalMinted:    DefaultInitialMinter().TotalMinted,
 			expErr:         true,
 		},
 		{
 			title:          "norm time passed bigger then the minting schedule cap should return error",
-			normTimePassed: TotalMonths.Add(sdk.MustNewDecFromStr("0.1")),
+			normTimePassed: TotalMonths.Add(sdkmath.LegacyMustNewDecFromStr("0.1")),
 			totalMinted:    DefaultInitialMinter().TotalMinted,
 			expErr:         true,
 		},
 		{
 			title:          "total minted bigger then minting cap should return error",
 			normTimePassed: DefaultInitialMinter().NormTimePassed,
-			totalMinted:    MintingCap.Add(sdk.NewUint(1)),
+			totalMinted:    MintingCap.Add(sdkmath.NewUint(1)),
 			expErr:         true,
 		},
 		{
 			title:          "total minted not fitting the minting schedule should return error",
-			normTimePassed: sdk.MustNewDecFromStr("2.46020833"),
-			totalMinted:    sdkmath.NewUintFromString("7_435_237_908_858").Add(sdk.NewUint(1)),
+			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
+			totalMinted:    sdkmath.NewUintFromString("7_435_237_908_858").Add(sdkmath.NewUint(1)),
 			expErr:         true,
 		},
 	} {

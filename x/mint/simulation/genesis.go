@@ -1,7 +1,5 @@
 package simulation
 
-// DONTCOVER
-
 import (
 	"encoding/json"
 	"fmt"
@@ -9,14 +7,16 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 // GenMaxMintableNanoseconds generates random MaxMintableNanoseconds in range [1-60).
 func GenMaxMintableNanoseconds(r *rand.Rand) sdkmath.Uint {
-	return sdk.NewUint(uint64(time.Second.Nanoseconds() * int64(r.Intn(59)+1)))
+	return sdkmath.NewUint(uint64(time.Second.Nanoseconds() * int64(r.Intn(59)+1)))
 }
 
 // RandomizedGenState generates a random GenesisState for mint.
