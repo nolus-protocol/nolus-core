@@ -46,7 +46,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	v041 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v041"
+	v05 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v05"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -61,7 +61,7 @@ const (
 var (
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v041.Upgrade}
+	Upgrades = []upgrades.Upgrade{v05.Upgrade}
 )
 
 var (
@@ -267,6 +267,7 @@ func (app *App) setupUpgradeHandlers() {
 				app.mm,
 				app.configurator,
 				&app.AppKeepers,
+				app.appCodec,
 			),
 		)
 	}
