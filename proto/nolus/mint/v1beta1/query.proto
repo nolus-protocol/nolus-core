@@ -43,11 +43,11 @@ message QueryMintStateRequest {}
 // method.
 message QueryMintStateResponse {
   bytes norm_time_passed = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable) = false
   ];
   bytes total_minted = 2 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+    (gogoproto.customtype) = "cosmossdk.io/math.Uint",
     (gogoproto.nullable) = false
   ];
 }
@@ -61,7 +61,7 @@ message QueryAnnualInflationRequest {}
 message QueryAnnualInflationResponse {
   // inflation is the current minting inflation value.
   bytes annual_inflation = 1 [
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Uint",
+    (gogoproto.customtype) = "cosmossdk.io/math.Uint",
     (gogoproto.nullable) = false
   ];
 }
