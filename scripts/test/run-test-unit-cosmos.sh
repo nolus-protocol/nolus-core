@@ -32,19 +32,24 @@ for PACKAGE in $PKG_LIST; do
 		continue
 	fi
 
-	# failed to initialize database: open /tmp/Test_runMigrateCmd3518174278/001/keys/keys.db/LOCK: permission denied
-	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/client/keys" ]; then
-		skip_test "Test_runMigrateCmd" $PACKAGE
+	# skip entire package due to build error - missing go.sum entry for module providing package github.com/cosmos/cosmos-sdk/db
+	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/testutil/mock/db" ]; then
+		continue
 	fi
 
-	# failed to initialize database: open /tmp/TestLegacyKeybase2255353028/001/keys/keys.db/LOCK: permission denied
-	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/crypto/keyring" ]; then
-		skip_test "TestLegacyKeybase" $PACKAGE
+	# skip entire package due to build error - undefined: rapid.Run
+	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/x/group/internal/orm" ]; then
+		continue
 	fi
 
-	# Expected nil, but got: &fs.PathError{Op:"open", Path:".touch", Err:0xd}
-	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/store/streaming" ]; then
-		skip_test "TestStreamingServiceConstructor" $PACKAGE
+	# failed to catch permissions error, got: [*errors.errorString] Cancelled in prerun
+	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/server" ]; then
+		skip_test "TestInterceptConfigsWithBadPermissions" $PACKAGE
+	fi
+
+	# # # ../../../tests/fixtures/adr-024-coin-metadata_genesis.json does not exist, run `init` first
+	if [ "$PACKAGE" == "github.com/cosmos/cosmos-sdk/x/genutil/types" ]; then
+		skip_test "TestGenesisStateFromGenFile" $PACKAGE
 	fi
 
 	if [ "$TEST_LIST" == "skip all" ]; then
