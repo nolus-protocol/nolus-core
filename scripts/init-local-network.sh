@@ -40,9 +40,8 @@ NOLUS_NETWORK_ADDR="127.0.0.1"
 NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_NETWORK_GRPC_PORT="26615"
 DEX_NETWORK_ID="osmo-test-5"
-DEX_NETWORK_ADDR="osmo-test-cl.nolus.network"
-DEX_NETWORK_RPC_PORT="26657"
-DEX_NETWORK_GRPC_PORT="9090"
+DEX_NETWORK_ADDR_RPC="r-osmosis-testnet--tptlam769gr03qkn5h03dui4gpkc51pg.gw.notionalapi.com"
+DEX_NETWORK_ADDR_GRPC="g-osmosis-testnet--tptlam769gr03qkn5h03dui4gpkc51pg.gw.notionalapi.com"
 HERMES_ACCOUNT_MNEMONIC=""
 
 GOV_VOTING_PERIOD="300s"
@@ -74,9 +73,8 @@ while [[ $# -gt 0 ]]; do
     [--gov-voting-period <voting_period>]
     [--user-dir <client_user_dir>]
     [--dex-network-id <dex_network_id]
-    [--dex-network-addr <dex_network_addr>]
-    [--dex-network-rpc-port <dex_network_rpc_port>]
-    [--dex-network-grpc-port <dex_network_grpc_port>]
+    [--dex-network-addr-rpc <dex_network_addr_rpc>]
+    [--dex-network-addr-grpc <dex_network_addr_grpc>]
     [--hermes-mnemonic <hermes_account_mnemonic]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
@@ -179,20 +177,14 @@ while [[ $# -gt 0 ]]; do
     ;;
 
 
-  --dex-network-addr)
-    DEX_NETWORK_ADDR="$2"
+  --dex-network-addr-rpc)
+    DEX_NETWORK_ADDR_RPC="$2"
     shift
     shift
     ;;
 
-  --dex-network-rpc-port)
-    DEX_NETWORK_RPC_PORT="$2"
-    shift
-    shift
-    ;;
-
-  --dex-network-grpc-port)
-    DEX_NETWORK_GRPC_PORT="$2"
+  --dex-network-addr-grpc)
+    DEX_NETWORK_ADDR_GRPC="$2"
     shift
     shift
     ;;
@@ -269,8 +261,7 @@ run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.
 
 /bin/bash "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/remote/hermes-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
                                                 "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
-                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR" "$DEX_NETWORK_RPC_PORT" \
-                                                "$DEX_NETWORK_GRPC_PORT" "$HERMES_ACCOUNT_MNEMONIC"
+                                                "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR_RPC"  "$DEX_NETWORK_ADDR_GRPC" "$HERMES_ACCOUNT_MNEMONIC"
 
 HERMES_BINARY_DIR="$HOME"/hermes
 

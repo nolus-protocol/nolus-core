@@ -7,9 +7,8 @@
 # arg: chain1 RPC port, mandatory
 # arg: chain1 GRPC port, mandatory
 # arg: chain2 id, mandatory
-# arg: chain2 IP address, mandatory
-# arg: chain2 RPC port, mandatory
-# arg: chain2 GRPC port, mandatory
+# arg: chain2 IP address - rpc , mandatory
+# arg: chain2 IP address - grpc, mandatory
 # arg: hermes account seed, mandatory
 
 set -euox pipefail
@@ -25,15 +24,14 @@ declare -r chain1IpAddr="$3"
 declare -r chain1rpcPort="$4"
 declare -r chain1grpcPort="$5"
 declare -r chain2id="$6"
-declare -r chain2IpAddr="$7"
-declare -r chain2rpcPort="$8"
-declare -r chain2grpcPort="$9"
-declare -r hermes_mnemonic="${10}"
+declare -r chain2IpAddr_RPC="$7"
+declare -r chain2IpAddr_gRPC="$8"
+declare -r hermes_mnemonic="$9"
 
 # Install
 
 declare -r archive_name="hermes-binary.tar.gz"
-wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.5.0/hermes-v1.5.0-x86_64-unknown-linux-gnu.tar.gz
+wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.6.0/hermes-v1.6.0-x86_64-unknown-linux-gnu.tar.gz
 
 declare -r hermes_binary_dir="$hermes_root"/hermes
 mkdir -p  "$hermes_binary_dir"
@@ -61,7 +59,6 @@ update_config "$hermes_config_dir" '.mode.packets."enabled"' "true"
 update_config "$hermes_config_dir" '.chains[0]."id"' '"'"$chain1id"'"'
 update_config "$hermes_config_dir" '.chains[0]."rpc_addr"' '"http://'"$chain1IpAddr"':'"$chain1rpcPort"'"'
 update_config "$hermes_config_dir" '.chains[0]."grpc_addr"' '"http://'"$chain1IpAddr"':'"$chain1grpcPort"'"'
-update_config "$hermes_config_dir" '.chains[0]."websocket_addr"' '"ws://127.0.0.1:'"$chain1rpcPort"'/websocket"'
 update_config "$hermes_config_dir" '.chains[0]."rpc_timeout"' '"10s"'
 update_config "$hermes_config_dir" '.chains[0]."account_prefix"' '"nolus"'
 update_config "$hermes_config_dir" '.chains[0]."key_name"' '"'"$chain1keyName"'"'
@@ -78,11 +75,11 @@ update_config "$hermes_config_dir" '.chains[0]."max_block_time"' '"30s"'
 update_config "$hermes_config_dir" '.chains[0]."trusting_period"' '"14days"'
 update_config "$hermes_config_dir" '.chains[0]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 update_config "$hermes_config_dir" '.chains[0]."memo_prefix"' '"''"'
+update_config "$hermes_config_dir" '.chains[0]."event_source"' '{ mode : "push", url : "ws://127.0.0.1:'"$chain1rpcPort"'/websocket", batch_delay : "500ms" }'
 
 update_config "$hermes_config_dir" '.chains[1]."id"' '"'"$chain2id"'"'
-update_config "$hermes_config_dir" '.chains[1]."rpc_addr"' '"https://'"$chain2IpAddr"':'"$chain2rpcPort"'"'
-update_config "$hermes_config_dir" '.chains[1]."grpc_addr"' '"https://'"$chain2IpAddr"':'"$chain2grpcPort"'"'
-update_config "$hermes_config_dir" '.chains[1]."websocket_addr"' '"wss://'"$chain2IpAddr"':'"$chain2rpcPort"'/websocket"'
+update_config "$hermes_config_dir" '.chains[1]."rpc_addr"' '"https://'"$chain2IpAddr_RPC"'"'
+update_config "$hermes_config_dir" '.chains[1]."grpc_addr"' '"https://'"$chain2IpAddr_gRPC"'"'
 update_config "$hermes_config_dir" '.chains[1]."rpc_timeout"' '"10s"'
 update_config "$hermes_config_dir" '.chains[1]."account_prefix"' '"osmo"'
 update_config "$hermes_config_dir" '.chains[1]."key_name"' '"'"$chain2keyName"'"'
@@ -96,8 +93,9 @@ update_config "$hermes_config_dir" '.chains[1]."max_msg_num"' 20
 update_config "$hermes_config_dir" '.chains[1]."max_tx_size"' 209715
 update_config "$hermes_config_dir" '.chains[1]."clock_drift"' '"20s"'
 update_config "$hermes_config_dir" '.chains[1]."max_block_time"' '"10s"'
-update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"21600s"'
+update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"288000s"'
 update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
+update_config "$hermes_config_dir" '.chains[1]."event_source"' '{ mode : "push", url : "wss://'"$chain2IpAddr_RPC"'/websocket", batch_delay : "500ms" }'
 
 # Accounts setup
 declare -r hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
