@@ -40,8 +40,8 @@ NOLUS_NETWORK_ADDR="127.0.0.1"
 NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_NETWORK_GRPC_PORT="26615"
 DEX_NETWORK_ID="osmo-test-5"
-DEX_NETWORK_ADDR_RPC="r-osmosis-testnet--tptlam769gr03qkn5h03dui4gpkc51pg.gw.notionalapi.com"
-DEX_NETWORK_ADDR_GRPC="g-osmosis-testnet--tptlam769gr03qkn5h03dui4gpkc51pg.gw.notionalapi.com"
+DEX_NETWORK_ADDR_RPC=""
+DEX_NETWORK_ADDR_GRPC=""
 HERMES_ACCOUNT_MNEMONIC=""
 
 GOV_VOTING_PERIOD="300s"
@@ -236,6 +236,8 @@ __nolus_hermes_address() {
 
 verify_dir_exist "$WASM_SCRIPT_PATH" "wasm sripts path"
 verify_dir_exist "$WASM_CODE_PATH" "wasm code path"
+verify_mandatory "$DEX_NETWORK_ADDR_RPC" "dex network RPC"
+verify_mandatory "$DEX_NETWORK_ADDR_GRPC" "dex network GRPC"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "hermes account mnemonic"
 
 rm_dir "$VALIDATORS_ROOT_DIR"
