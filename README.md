@@ -44,7 +44,7 @@ osmosisd keys add hermes_key --recover
 Init and start:
 
 ```sh
-./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps>
+./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps> --dex-network-addr-rpc <dex_network_addr_host_part_rpc> --dex-network-addr-grpc <dex_network_addr_host_part_grpc>
 ```
 
 Set up the DEX parameter: [Set up the DEX parameters manually](#set-up-the-dex-parameters-manually)
