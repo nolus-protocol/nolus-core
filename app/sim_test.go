@@ -19,8 +19,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/store"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -302,43 +300,8 @@ func TestAppImportExport(t *testing.T) {
 		{keys[contractmanagermoduletypes.StoreKey], newKeys[contractmanagermoduletypes.StoreKey], [][]byte{}},
 		{keys[interchainqueriestypes.StoreKey], newKeys[interchainqueriestypes.StoreKey], [][]byte{}},
 		{keys[icacontrollertypes.StoreKey], newKeys[icacontrollertypes.StoreKey], [][]byte{}},
-		{keys[wasm.StoreKey], newKeys[wasm.StoreKey], [][]byte{}},
+		{keys[wasm.StoreKey], newKeys[wasm.StoreKey], [][]byte{wasmtypes.TXCounterPrefix}},
 	}
-
-	// delete persistent tx counter value
-	ctxA.KVStore(keys[wasm.StoreKey]).Delete(wasmtypes.TXCounterPrefix)
-
-	// reset contract code index in source DB for comparison with dest DB
-	dropContractHistory := func(s store.KVStore, keys ...[]byte) {
-		for _, key := range keys {
-			prefixStore := prefix.NewStore(s, key)
-			iter := prefixStore.Iterator(nil, nil)
-			for ; iter.Valid(); iter.Next() {
-				prefixStore.Delete(iter.Key())
-			}
-			iter.Close()
-		}
-	}
-	prefixes := [][]byte{wasmtypes.ContractCodeHistoryElementPrefix, wasmtypes.ContractByCodeIDAndCreatedSecondaryIndexPrefix}
-	dropContractHistory(ctxA.KVStore(keys[wasm.StoreKey]), prefixes...)
-	dropContractHistory(ctxB.KVStore(newKeys[wasm.StoreKey]), prefixes...)
-
-	normalizeContractInfo := func(ctx sdk.Context, nApp *App) {
-		var index uint64
-		nApp.WasmKeeper.IterateContractInfo(ctx, func(address sdk.AccAddress, info wasmtypes.ContractInfo) bool {
-			created := &wasmtypes.AbsoluteTxPosition{
-				BlockHeight: uint64(0),
-				TxIndex:     index,
-			}
-			info.Created = created
-			store := ctx.KVStore(nApp.AppKeepers.GetKVStoreKey()[wasm.StoreKey])
-			store.Set(wasmtypes.GetContractAddressKey(address), nApp.appCodec.MustMarshal(&info))
-			index++
-			return false
-		})
-	}
-	normalizeContractInfo(ctxA, nolusApp)
-	normalizeContractInfo(ctxB, newNolusApp)
 
 	// diff both stores
 	for _, skp := range storeKeysPrefixes {
