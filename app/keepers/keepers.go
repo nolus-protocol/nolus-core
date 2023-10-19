@@ -337,6 +337,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.keys[contractmanagermoduletypes.StoreKey],
 		appKeepers.keys[contractmanagermoduletypes.MemStoreKey],
 		appKeepers.WasmKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	appKeepers.ContractManagerModule = contractmanager.NewAppModule(appCodec, *appKeepers.ContractManagerKeeper)
@@ -347,6 +348,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.memKeys[feetypes.MemStoreKey],
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.BankKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.FeeRefunderModule = feerefunder.NewAppModule(appCodec, *appKeepers.FeeRefunderKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
@@ -361,7 +363,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 		appKeepers.FeeRefunderKeeper,
-		appKeepers.ContractManagerKeeper,
+		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 	)
 	appKeepers.TransferKeeper = &transferKeeper
 	appKeepers.TransferModule = transferSudo.NewAppModule(transferKeeper)
@@ -397,6 +399,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.ContractManagerKeeper,
 		interchainquerieskeeper.Verifier{},
 		interchainquerieskeeper.TransactionVerifier{},
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.InterchainQueriesModule = interchainqueries.NewAppModule(appCodec, *appKeepers.InterchainQueriesKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
@@ -406,8 +409,11 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.memKeys[interchaintxstypes.MemStoreKey],
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.ICAControllerKeeper,
-		appKeepers.ContractManagerKeeper,
+		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 		appKeepers.FeeRefunderKeeper,
+		appKeepers.BankKeeper,
+		NewFeeBurnerExpectedKeeper(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
@@ -498,7 +504,10 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, *appKeepers.VestingsKeeper)
 
-	transferIBCModule := transferSudo.NewIBCModule(*appKeepers.TransferKeeper)
+	transferIBCModule := transferSudo.NewIBCModule(
+		*appKeepers.TransferKeeper,
+		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
+	)
 
 	var icaControllerStack ibcporttypes.IBCModule
 
