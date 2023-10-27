@@ -31,7 +31,7 @@ jobs:
 
   test-unit-coverage:
     name: Code coverage reports
-      needs: test-unit
+    needs: test-unit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v4
