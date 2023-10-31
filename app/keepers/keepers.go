@@ -485,6 +485,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appCodec,
 		appKeepers.keys[taxmoduletypes.StoreKey],
 		appKeepers.keys[taxmoduletypes.MemStoreKey],
+		appKeepers.WasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.TaxKeeper = &taxKeeper
