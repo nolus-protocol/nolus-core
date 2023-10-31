@@ -58,10 +58,10 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 			// Base asset is always the first value defined in min-gas-prices config (should be unls)
 			// TODO: what do we do if a malicious validator changes his base asset to something different than unls?
-			baseFeeRequired := sdk.NewCoin(minGasPrices[0].Denom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
+			minimumFeeRequired := sdk.NewCoin(minGasPrices[0].Denom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
 			// if there are no fees paid in the base asset
-			if ok, _ := feeCoins.Find(baseFeeRequired.Denom); !ok {
+			if ok, _ := feeCoins.Find(minimumFeeRequired.Denom); !ok {
 
 				// Get FeeParams from tax keeper
 				feeParams := k.GetParams(ctx).FeeParams
@@ -103,21 +103,26 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 					return nil, 0, errors.Wrapf(sdkerrors.ErrJSONUnmarshal, "failed to unmarshal oracle data: %s", err.Error())
 				}
 
-				// Calculate required fee in usdc
-				requiredFeeAmountInUsdc, err := calculateuDenomInUSDC(baseFeeRequired.Denom, baseFeeRequired.Amount.ToLegacyDec().MustFloat64(), prices)
-				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate base denom(%s) price in usdc: %s", baseFeeRequired.Denom, err.Error())
-				}
-
 				// go through every fee provided
 				for _, fee := range feeCoins {
-					currentFeeAmountInUsdc, err := calculateuDenomInUSDC(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices)
+					isDenomAccepted := false
+					for _, denom := range correctFeeParam.AcceptedDenoms {
+						if denom == fee.Denom {
+							isDenomAccepted = true
+						}
+					}
+
+					if !isDenomAccepted {
+						return nil, 0, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not accepted", fee.Denom)
+					}
+
+					currentFeeAmountInNLS, err := calculateuDenomInNLS(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices)
 					if err != nil {
 						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in usdc: %s", fee.Denom, err.Error())
 					}
 
-					// if the fee calculated in usdc is greater than the required fee in usdc, then fee is valid
-					if currentFeeAmountInUsdc > requiredFeeAmountInUsdc {
+					// if the fee calculated in nls is greater than the required fee in nls, then fee is valid
+					if currentFeeAmountInNLS > minimumFeeRequired.Amount.ToLegacyDec().MustFloat64() {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
 					}
@@ -133,39 +138,45 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 	return feeCoins, priority, nil
 }
 
-func calculateuDenomInUSDC(denom string, amount float64, prices OracleData) (float64, error) {
-	// divisonZeroes := 1_000_000
-
+func calculateuDenomInNLS(denom string, amount float64, prices OracleData) (float64, error) {
+	var err error
+	denomAmountAsInt := 0
+	denomQuoteAmountAsInt := 0
+	nolusAmountAsInt := 0
+	nolusQuoteAmountAsInt := 0
 	for _, price := range prices.Prices {
+		if price.Amount.Ticker == "unls" {
+			nolusAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
+			if err != nil {
+				return 0, err
+			}
+
+			nolusQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
+			if err != nil {
+				return 0, err
+			}
+		}
 		if price.Amount.Ticker == denom {
-			amountAsInt, err := strconv.Atoi(price.Amount.Amount)
+			denomAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
 			if err != nil {
 				return 0, err
 			}
 
-			quoteAmountAsInt, err := strconv.Atoi(price.AmountQuote.Amount)
+			denomQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
 			if err != nil {
 				return 0, err
 			}
-
-			// For these denoms, the price of the oracle can be calculated for the smallest unit of the token
-			// // TODO:  || denom == "WBTC"
-			// if denom == "WETH" || denom == "EVMOS" || denom == "INJ" {
-			// 	fullFeeAmountInUsdc := amount * (float64(quoteAmountAsInt) / float64(amountAsInt))
-			// 	return fullFeeAmountInUsdc, nil
-			// }
-
-			// get the price of 1 token in usdc
-			// TODO: check float max zeroes ?
-			fullFeeAmountInUsdc := amount * (float64(quoteAmountAsInt) / float64(amountAsInt))
-
-			// // Get the price of 1 uDenom in usdc. We divide based on what asset we are working with.
-			// uTokenPriceInUSDC := TokenInUSDC / float64(divisonZeroes)
-			return fullFeeAmountInUsdc, nil
 		}
 	}
 
-	return 0, errors.Wrapf(types.ErrInvalidFeeDenom, "unsupported denom for paying fees: %s", denom)
+	if denomAmountAsInt == 0 || denomQuoteAmountAsInt == 0 || nolusAmountAsInt == 0 || nolusQuoteAmountAsInt == 0 {
+		return 0, errors.Wrapf(types.ErrInvalidFeeDenom, "no prices found for nls or %s", denom)
+	}
+
+	// TODO: check float max decimals ?
+	fullFeeAmountInNls := amount * (float64(denomQuoteAmountAsInt) / float64(denomAmountAsInt)) * (float64(nolusAmountAsInt) / float64(nolusQuoteAmountAsInt))
+
+	return fullFeeAmountInNls, nil
 }
 
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the gas price
