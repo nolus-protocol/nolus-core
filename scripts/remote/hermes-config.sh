@@ -26,7 +26,10 @@ declare -r chain1grpcPort="$5"
 declare -r chain2id="$6"
 declare -r chain2IpAddr_RPC="$7"
 declare -r chain2IpAddr_gRPC="$8"
-declare -r hermes_mnemonic="$9"
+declare -r chain2accountPrefix="$9"
+declare -r chain2priceDenom=${10}
+declare -r chain2trustingPeriod=${11}
+declare -r hermes_mnemonic=${12}
 
 # Install
 
@@ -41,7 +44,7 @@ rm "$archive_name"
 # Configure
 
 declare -r chain1keyName="hermes-nolus"
-declare -r chain2keyName="hermes-osmosis"
+declare -r chain2keyName="hermes-$chain2id"
 
 declare -r hermes_config_dir="$HOME"/.hermes
 rm_dir "$hermes_config_dir"
@@ -81,19 +84,19 @@ update_config "$hermes_config_dir" '.chains[1]."id"' '"'"$chain2id"'"'
 update_config "$hermes_config_dir" '.chains[1]."rpc_addr"' '"https://'"$chain2IpAddr_RPC"'"'
 update_config "$hermes_config_dir" '.chains[1]."grpc_addr"' '"https://'"$chain2IpAddr_gRPC"'"'
 update_config "$hermes_config_dir" '.chains[1]."rpc_timeout"' '"10s"'
-update_config "$hermes_config_dir" '.chains[1]."account_prefix"' '"osmo"'
+update_config "$hermes_config_dir" '.chains[1]."account_prefix"' '"'"$chain2accountPrefix"'"'
 update_config "$hermes_config_dir" '.chains[1]."key_name"' '"'"$chain2keyName"'"'
 update_config "$hermes_config_dir" '.chains[1]."address_type"' '{ derivation : "cosmos" }'
 update_config "$hermes_config_dir" '.chains[1]."store_prefix"' '"ibc"'
 update_config "$hermes_config_dir" '.chains[1]."default_gas"' 5000000
 update_config "$hermes_config_dir" '.chains[1]."max_gas"' 15000000
-update_config "$hermes_config_dir" '.chains[1]."gas_price"' '{ price : 0.0026, denom : "uosmo" }'
+update_config "$hermes_config_dir" '.chains[1]."gas_price"' '{ price : 0.0026, denom : "'"$chain2priceDenom"'" }'
 update_config "$hermes_config_dir" '.chains[1]."gas_multiplier"' 1.1
 update_config "$hermes_config_dir" '.chains[1]."max_msg_num"' 20
 update_config "$hermes_config_dir" '.chains[1]."max_tx_size"' 209715
 update_config "$hermes_config_dir" '.chains[1]."clock_drift"' '"20s"'
 update_config "$hermes_config_dir" '.chains[1]."max_block_time"' '"10s"'
-update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"288000s"'
+update_config "$hermes_config_dir" '.chains[1]."trusting_period"' '"'"$chain2trustingPeriod"'s"'
 update_config "$hermes_config_dir" '.chains[1]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 update_config "$hermes_config_dir" '.chains[1]."event_source"' '{ mode : "push", url : "wss://'"$chain2IpAddr_RPC"'/websocket", batch_delay : "500ms" }'
 
