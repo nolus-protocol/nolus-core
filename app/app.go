@@ -209,7 +209,7 @@ func New(
 				AccountKeeper:   app.AccountKeeper,
 				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-				TxFeeChecker:    nil, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
+				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 			},
 			BankKeeper:        app.BankKeeper,
 			TaxKeeper:         *app.TaxKeeper,

@@ -5,7 +5,6 @@ import (
 
 	"github.com/cometbft/cometbft/libs/log"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdktypes "github.com/cosmos/cosmos-sdk/store/types"
@@ -17,7 +16,7 @@ type Keeper struct {
 	storeKey sdktypes.StoreKey
 	memKey   sdktypes.StoreKey
 
-	wasmKeeper wasm.Keeper
+	wasmKeeper types.WasmKeeper
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
 	authority string
@@ -27,7 +26,7 @@ func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeKey,
 	memKey sdktypes.StoreKey,
-	wasmKeeper wasm.Keeper,
+	wasmKeeper types.WasmKeeper,
 	authority string,
 ) Keeper {
 	return Keeper{

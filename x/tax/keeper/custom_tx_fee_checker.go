@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"strconv"
 
@@ -44,6 +45,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 	// if this is a CheckTx. This is only for local mempool purposes, and thus
 	// is only ran on check tx.
 	if ctx.IsCheckTx() {
+
 		minGasPrices := ctx.MinGasPrices()
 		if !minGasPrices.IsZero() {
 			requiredFees := make(sdk.Coins, len(minGasPrices))
@@ -65,23 +67,21 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 				// Get FeeParams from tax keeper
 				feeParams := k.GetParams(ctx).FeeParams
+				fmt.Println("1111111111113222222222222222222211111111111111feeCoins: ", feeCoins)
+				fmt.Println("1111111111113222222222222222222211111111111111feeParams: ", feeParams)
 
-				var correctFeeParam types.FeeParam
-			outerLoop:
+				var err error
+				var correctFeeParam *types.FeeParam
 				// check if there is a accepted_denom in feeParams matching any of the paid feeCoins
 				for _, feeParam := range feeParams {
-					for _, denom := range feeParam.AcceptedDenoms {
-						if ok, _ := feeCoins.Find(denom); ok {
-							// fees should be sorted, so on the first match, we conclude that this is the current dex's fee param
-							// We need this check since denoms for the same token but from different dexes are different (because the channel differs)
-							//
-							// * Examples:
-							// Osmo from dex1 would have denom ibc/72...
-							// Osmo from dex2 would have denom ibc/2a...
-							correctFeeParam = *feeParam
-							break outerLoop
-						}
+					correctFeeParam = findDenom(*feeParam, feeCoins)
+					if correctFeeParam != nil {
+						break
 					}
+				}
+
+				if !isFeeParamValid(*correctFeeParam) {
+					return nil, 0, errors.Wrapf(types.ErrInvalidFeeParam, "oracle address or profit address is not set")
 				}
 
 				// get the oracle address
@@ -96,6 +96,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to query oracle: %s", err.Error())
 				}
 
+				fmt.Println("22222222222222222222222222222222222", pricesBytes)
 				// unmarshal pricesBytes in an appropriate struct
 				var prices OracleData
 				err = json.Unmarshal(pricesBytes, &prices)
@@ -116,9 +117,9 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 						return nil, 0, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not accepted", fee.Denom)
 					}
 
-					currentFeeAmountInNLS, err := calculateuDenomInNLS(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices)
+					currentFeeAmountInNLS, err := calculateValueInNLS(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices)
 					if err != nil {
-						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in usdc: %s", fee.Denom, err.Error())
+						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in nls: %s", fee.Denom, err.Error())
 					}
 
 					// if the fee calculated in nls is greater than the required fee in nls, then fee is valid
@@ -138,7 +139,29 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 	return feeCoins, priority, nil
 }
 
-func calculateuDenomInNLS(denom string, amount float64, prices OracleData) (float64, error) {
+func isFeeParamValid(feeParam types.FeeParam) bool {
+	if feeParam.OracleAddress == "" || feeParam.ProfitAddress == "" {
+		return false
+	}
+	return true
+}
+
+func findDenom(feeParam types.FeeParam, feeCoins sdk.Coins) *types.FeeParam {
+	for _, denom := range feeParam.AcceptedDenoms {
+		if ok, _ := feeCoins.Find(denom); ok {
+			// fees should be sorted, so on the first match, we conclude that this is the current dex's fee param
+			// We need this check since denoms for the same token but from different dexes are different (because the channel differs)
+			//
+			// * Examples:
+			// Osmo from dex1 would have denom ibc/72...
+			// Osmo from dex2 would have denom ibc/2a...
+			return &feeParam
+		}
+	}
+	return nil
+}
+
+func calculateValueInNLS(denom string, amount float64, prices OracleData) (float64, error) {
 	var err error
 	denomAmountAsInt := 0
 	denomQuoteAmountAsInt := 0

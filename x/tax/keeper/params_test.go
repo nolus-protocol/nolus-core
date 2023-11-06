@@ -6,6 +6,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,7 +58,7 @@ func (s *KeeperTestSuite) TestParams() {
 
 func TestGetParams(t *testing.T) {
 	params.SetAddressPrefixes()
-	k, ctx := testkeeper.TaxKeeper(t)
+	k, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	params := types.DefaultParams()
 
 	require.EqualValues(t, params, k.GetParams(ctx))
