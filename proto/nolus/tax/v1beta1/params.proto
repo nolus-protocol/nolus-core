@@ -19,5 +19,10 @@ message Params {
 message FeeParam {
   string oracle_address = 1;
   string profit_address = 2;
-  repeated string accepted_denoms = 3;
+  repeated DenomTicker accepted_denoms = 3;
+}
+
+message DenomTicker {
+  string denom = 1;
+  string ticker = 2;
 }

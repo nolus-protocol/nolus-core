@@ -11,12 +11,21 @@ import (
 )
 
 var (
-	DefaultFeeRate         int32    = 40
-	DefaultContractAddress string   = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-	DefaultBaseDenom       string   = sdk.DefaultBondDenom
-	DefaultOracleAddress   string   = "nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4"
-	DefaultProfitAddress   string   = "nolus1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqkxgywu"
-	DefaultAcceptedDenoms  []string = []string{"ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", "ibc/ECFDE61B64BB920E087E7448C4C3FE356B7BD13A1C2153119E98816C964FE196", "unls"}
+	DefaultFeeRate         int32          = 40
+	DefaultContractAddress string         = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
+	DefaultBaseDenom       string         = sdk.DefaultBondDenom
+	DefaultOracleAddress   string         = "nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4"
+	DefaultProfitAddress   string         = "nolus1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqkxgywu"
+	DefaultAcceptedDenoms  []*DenomTicker = []*DenomTicker{
+		{
+			Denom:  "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y",
+			Ticker: "OSMO",
+		},
+		{
+			Denom:  "ibc/ECFDE61B64BB920E087E7448C4C3FE356B7BD13A1C2153119E98816C964FE196",
+			Ticker: "NLS",
+		},
+	}
 )
 
 // NewParams creates a new Params instance.
