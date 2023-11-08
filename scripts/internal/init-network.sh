@@ -24,6 +24,9 @@ init_network() {
   local -r gov_voting_period="${13}"
   local -r feerefunder_ack_fee_min="${14}"
   local -r feerefunder_timeout_fee_min="${15}"
+  local -r dex_admin_mnemonic="${16}"
+  local -r dex_admin_tokens="${17}"
+  local -r dex_name="${18}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
@@ -34,6 +37,7 @@ init_network() {
                                           "$treasury_init_tokens_u128" \
                                           "$node_id_and_val_pubkeys" \
                                           "$lpp_native" "$contracts_info_file" \
-                                          "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
+                                          "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" \
+                                          "$dex_admin_mnemonic" "$dex_admin_tokens" "$dex_name")
   propagate_genesis "$final_genesis_file" "$validators"
 }
