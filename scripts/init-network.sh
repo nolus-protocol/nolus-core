@@ -47,7 +47,8 @@ FEEREFUNDER_ACK_FEE_MIN="1"
 FEEREFUNDER_TIMEOUT_FEE_MIN="1"
 DEX_NAME="osmosis"
 DEX_ADMIN_MNEMONIC=""
-DEX_ADMIN_TOKENS="10000000""$NATIVE_CURRENCY"
+ADMINS_TOKENS="10000000""$NATIVE_CURRENCY"
+STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC=""
 
 
 while [[ $# -gt 0 ]]; do
@@ -80,7 +81,8 @@ while [[ $# -gt 0 ]]; do
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
     [--moniker <string - node moniker (default: $MONIKER_BASE>]
     [--dex-name <dex_name>]
-    [--dex-admin-mnemonic <dex_admin_mnemonic>]" \
+    [--dex-admin-mnemonic <dex_admin_mnemonic>]
+    [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]" \
       "$0"
     exit 0
     ;;
@@ -227,6 +229,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --store-code-privileged-account-mnemonic)
+    STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -246,6 +254,7 @@ verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
 verify_mandatory "$SSH_KEY" "SSH pvt key file path"
 verify_mandatory "$DEX_ADMIN_MNEMONIC" "DEX-Admin account mnemonic"
+verify_mandatory "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "WASM store-code privileged account mnemonic"
 
 rm_dir "$VAL_ACCOUNTS_DIR"
 
@@ -264,6 +273,6 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$
   "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
   "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
   "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
-  "$DEX_ADMIN_MNEMONIC" "$DEX_ADMIN_TOKENS" "$DEX_NAME"
+  "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME"
 
 start_validators "$VALIDATORS"

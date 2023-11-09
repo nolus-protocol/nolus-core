@@ -18,14 +18,14 @@ cleanup_genesis_sh() {
   rm_dir "$genesis_home_dir"
 }
 
-determine_dex_admin_addr() {
+determine_addr() {
   local -r mnemonic="$1"
-  local -r dex_admin_dir="$(mktemp -d)"
-  local -r key_name="dexadmin"
+  local -r key_dir="$(mktemp -d)"
+  local -r key_name="admin"
 
-  recover_account "$dex_admin_dir" "$mnemonic" "$key_name"
+  recover_account "$key_dir" "$mnemonic" "$key_name"
 
-  rm_dir "$dex_admin_dir"
+  rm_dir "$key_dir"
 }
 
 generate_genesis() {
@@ -46,16 +46,19 @@ generate_genesis() {
   local -r feerefunder_ack_fee_min="${14}"
   local -r feerefunder_timeout_fee_min="${15}"
   local -r dex_admin_mnemonic="${16}"
-  local -r dex_admin_tokens="${17}"
-  local -r dex_name="${18}"
+  local -r store_code_privileged_account_mnemonic="${17}"
+  local -r admins_tokens="${18}"
+  local -r dex_name="${19}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
   val_addrs="$(__gen_val_accounts "$node_id_and_val_pubkeys" "$val_accounts_dir")"
 
   local accounts_spec="$accounts_spec_in"
-  dex_admin_address=$(determine_dex_admin_addr "$dex_admin_mnemonic")
-  accounts_spec=$(echo "$accounts_spec" | add_account "$dex_admin_address" "$dex_admin_tokens")
+  dex_admin_address=$(determine_addr "$dex_admin_mnemonic")
+  accounts_spec=$(echo "$accounts_spec" | add_account "$dex_admin_address" "$admins_tokens")
+  store_code_privileged_addr=$(determine_addr "$store_code_privileged_account_mnemonic")
+  accounts_spec=$(echo "$accounts_spec" | add_account "$store_code_privileged_addr" "$admins_tokens")
 
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
 
@@ -69,7 +72,7 @@ generate_genesis() {
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
     "$accounts_spec" "$treasury_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
-    "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min")
+    "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file" \
                           "$dex_admin_address" "$dex_name")
@@ -132,7 +135,9 @@ __generate_proto_genesis_no_wasm() {
   local -r gov_voting_period="$7"
   local -r feerefunder_ack_fee_min="$8"
   local -r feerefunder_timeout_fee_min="$9"
+  local -r store_code_privileged_addr="${10}"
 
+  local -a wasm_allowed_addresses=("$admin_contract_addr" "$store_code_privileged_addr")
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config keyring-backend test
@@ -140,7 +145,7 @@ __generate_proto_genesis_no_wasm() {
 
   __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
-  __set_wasm_permission_params "$genesis_file" "$admin_contract_addr"
+  __set_wasm_permission_params "$genesis_file" "${wasm_allowed_addresses[@]}"
   __set_gov_parameters "$genesis_file" "$gov_voting_period"
   __modify_slashing_and_staking_params "$genesis_file"
   __modify_neutron_modules_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
@@ -196,14 +201,22 @@ __set_tax_recipient() {
 
 __set_wasm_permission_params() {
   local -r genesis_file="$1"
-  local -r allowed_addr="$2"
+  local -a allowed_addresses=("${@:2}")
 
   local genesis_tmp_file="$genesis_file".tmp
 
+  local addresses_to_string="["
+  for address in "${allowed_addresses[@]}"; do
+      addresses_to_string+="\"$address\","
+  done
+  addresses_to_string="${addresses_to_string%,}"
+  addresses_to_string+="]"
+
   < "$genesis_file" \
-    jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="OnlyAddress"' \
-    | jq '.app_state["wasm"]["params"]["code_upload_access"]["address"]="'"$allowed_addr"'"' \
+    jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="AnyOfAddresses"' \
+    | jq '.app_state["wasm"]["params"]["code_upload_access"]["addresses"]='$addresses_to_string'' \
     | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="Everybody"' > "$genesis_tmp_file"
+
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
@@ -221,7 +234,6 @@ __set_gov_parameters() {
 
 __modify_slashing_and_staking_params() {
   local genesis_file="$1"
-
   local genesis_tmp_file="$genesis_file".tmp
 
   < "$genesis_file" \

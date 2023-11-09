@@ -52,12 +52,13 @@ DEX_ADMIN_MNEMONIC=""
 DEX_NETWORK_ADDR_RPC=""
 DEX_NETWORK_ADDR_GRPC=""
 HERMES_ACCOUNT_MNEMONIC=""
+STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC=""
 
 WASM_SCRIPT_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/scripts"
 WASM_CODE_PATH_PROTOCOL="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/$DEX_NAME"
 WASM_CODE_PATH_PLATFORM="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/platform"
 CONTRACTS_INFO_FILE="contracts-info.json"
-DEX_ADMIN_TOKENS="10000000""$NATIVE_CURRENCY"
+ADMINS_TOKENS="10000000""$NATIVE_CURRENCY"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -90,6 +91,7 @@ while [[ $# -gt 0 ]]; do
     [--dex-price-denom <dex_price_denom>]
     [--dex-trusting-period <dex_trusting_period_sec>]
     [--dex-admin-mnemonic <dex_admin_mnemonic>]
+    [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]
     [--hermes-mnemonic <hermes_account_mnemonic>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
@@ -239,6 +241,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --store-code-privileged-account-mnemonic)
+    STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC="$2"
+    shift
+    shift
+    ;;
+
   --hermes-mnemonic)
     HERMES_ACCOUNT_MNEMONIC="$2"
     shift
@@ -278,6 +286,7 @@ verify_mandatory "$DEX_NETWORK_ADDR_RPC" "DEX network RPC - fully host part"
 verify_mandatory "$DEX_NETWORK_ADDR_GRPC" "DEX network GRPC - fully host part"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "Hermes account mnemonic"
 verify_mandatory "$DEX_ADMIN_MNEMONIC" "DEX-Admin account mnemonic"
+verify_mandatory "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "WASM store-code privileged account mnemonic"
 
 rm_dir "$VALIDATORS_ROOT_DIR"
 rm_dir "$VAL_ACCOUNTS_DIR"
@@ -300,7 +309,7 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$TREASURY_NLS_U128" \
               "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE" \
               "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
-              "$DEX_ADMIN_MNEMONIC" "$DEX_ADMIN_TOKENS" "$DEX_NAME"
+              "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME"
 
 __config_client
 
