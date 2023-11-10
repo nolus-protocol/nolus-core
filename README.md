@@ -50,7 +50,7 @@ osmosisd keys add hermes_key --recover
 Initialize and start (run `./scripts/init-local-network.sh --help` for additional configuration options):
 
 ```sh
-./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps> --dex-network-addr-rpc <dex_network_addr_host_part_rpc> --dex-network-addr-grpc <dex_network_addr_host_part_grpc>
+./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps> --dex-network-addr-rpc-host <dex_network_addr_rpc_host_part> --dex-network-addr-grpc-host <dex_network_addr_grpc_host_part> --dex-admin-mnemonic <mnemonic_phrase> --store-code-privileged-account-mnemonic <mnemonic_phrase>
 ```
 
 Set up the DEX parameters: [Set up the DEX parameters manually](#set-up-the-dex-parameters-manually)
@@ -97,6 +97,20 @@ nolusd q wasm contract-state smart nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vr
 ```sh
 nolusd q ibc channel connections <connection> --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"'
 ```
+
+## Set up a new DEX
+
+On a live network, a new DEX can be deployed using the following script. It takes care of setting up Hermes to work with the new DEX. (TO DO: It will also deploy DEX-specific contracts using `./deploy-contracts-live.sh`)
+
+```sh
+./scripts/add-new-dex.sh --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>
+```
+
+(Execute `./scripts/add-new-dex.sh --help` for additional configuration options)
+
+The script will locate the Hermes account from the Hermes configuration directory and link it to the new DEX.
+
+!!! Prerequisites: Before running, the address should have a certain amount on the DEX network in order to be used by Hermes. This can be accomplished by using the DEX network binary and a public faucet, as demonstrated for Osmosis [here](#initialize-set-up-the-DEX-parameters-and-run).
 
 ## Build a statically linked binary
 
