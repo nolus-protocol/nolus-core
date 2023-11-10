@@ -50,16 +50,16 @@ dex_account_setup() {
 open_connection() {
   declare -r nolus_net_address="$1"
   declare -r nolus_home_dir="$2"
-  declare -r wallet_with_funds_key="$3"
+  declare -r account_key_to_feed_hermes_address="$3"
   declare -r hermes_binary_dir_path="$4"
   declare -r hermes_address="$5"
   declare -r nolus_chain="$6"
   declare -r b_chain="$7"
 
-  declare -r wallet_with_funds_addr=$(run_cmd "$nolus_home_dir" keys show "$wallet_with_funds_key" -a)
+  declare -r account_addr_to_feed_hermes_address=$(run_cmd "$nolus_home_dir" keys show "$account_key_to_feed_hermes_address" -a)
   declare -r flags="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $nolus_net_address"
 
-  echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$wallet_with_funds_addr" "$hermes_address" 2000000unls $flags --broadcast-mode block
+  echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$account_addr_to_feed_hermes_address" "$hermes_address" 2000000unls $flags --broadcast-mode block
 
   connection_data_file=$(mktemp)
   "$hermes_binary_dir_path"/hermes create connection --a-chain "$nolus_chain" --b-chain "$b_chain" &>"$connection_data_file"

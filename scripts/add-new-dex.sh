@@ -10,7 +10,7 @@ source "$SCRIPTS_DIR"/internal/add-dex-support.sh
 
 NOLUS_NET="http://localhost:26612/"
 NOLUS_HOME_DIR="$HOME/.nolus"
-WALLET_WITH_FUNDS_KEY="reserve"
+ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="reserve"
 NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
 
 HERMES_CONFIG_DIR_PATH="$HOME/.hermes"
@@ -32,7 +32,7 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--nolus-home-dir <nolus_home_dir>]
-    [--wallet-with-funds-key <nolus_wallet_with_funds_key>]
+    [--account-key-to-feed-hermes-address <account_key_to_feed_hermes_address>]
     [--hermes-config-dir-path <config.toml_and_hermes.seed_dir_path>]
     [--hermes-binary-dir-path <hermes_binary_dir_path>]
     [--dex-chain-id <new_dex_chain_id>]
@@ -51,8 +51,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --wallet-with-funds-key)
-    WALLET_WITH_FUNDS_KEY="$2"
+  --account-key-to-feed-hermes-address)
+    ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="$2"
     shift
     shift
     ;;
@@ -130,5 +130,5 @@ dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH
 NOLUS_HERMES_ADDRESS=$(get_hermes_address "$HERMES_BINARY_DIR_PATH" "$NOLUS_CHAIN_ID")
 
 # Open a connection
-open_connection "$NOLUS_NET" "$NOLUS_HOME_DIR" "$WALLET_WITH_FUNDS_KEY" "$HERMES_BINARY_DIR_PATH" \
+open_connection "$NOLUS_NET" "$NOLUS_HOME_DIR" "$ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS" "$HERMES_BINARY_DIR_PATH" \
     "$NOLUS_HERMES_ADDRESS" "$NOLUS_CHAIN_ID" "$CHAIN_ID"
