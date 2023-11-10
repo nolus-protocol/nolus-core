@@ -89,7 +89,7 @@ while [[ $# -gt 0 ]]; do
     [--dex-network-addr-grpc-host <dex_network_addr_grpc_fully_host_part>]
     [--dex-account-prefix <dex_account_prefix>]
     [--dex-price-denom <dex_price_denom>]
-    [--dex-trusting-period <dex_trusting_period_sec>]
+    [--dex-trusting-period-secs <dex_trusting_period_in_seconds>]
     [--dex-admin-mnemonic <dex_admin_mnemonic>]
     [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]
     [--hermes-mnemonic <hermes_account_mnemonic>]
@@ -229,7 +229,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --dex-trusting-period)
+  --dex-trusting-period-secs)
     DEX_TRUSTING_PERIOD="$2"
     shift
     shift

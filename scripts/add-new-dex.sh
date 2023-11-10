@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
     [--dex-ip-addr-grpc-host <new_dex_chain_ip_addr_grpc_fully_host>]
     [--dex-account-prefix <new_dex_account_prefix>]
     [--dex-price-denom <new_dex_price_denom>]
-    [--dex-trusting-period <new_dex_trusting_period>]" \
+    [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]" \
     "$0"
     exit 0
     ;;
@@ -99,7 +99,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --dex-trusting-period)
+  --dex-trusting-period-secs)
     CHAIN_TRUSTING_PERIOD="$2"
     shift
     shift
