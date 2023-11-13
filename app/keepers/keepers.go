@@ -10,6 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
@@ -149,6 +151,7 @@ type AppKeepers struct {
 	EvidenceKeeper      evidencekeeper.Keeper
 	TransferKeeper      wrapkeeper.KeeperTransferWrapper
 	FeeRefunderKeeper   *feerefunderkeeper.Keeper
+	AuthzKeeper         authzkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -176,6 +179,7 @@ type AppKeepers struct {
 	TaxModule               tax.AppModule
 	VestingsModule          vestings.AppModule
 	IcaModule               ica.AppModule
+	AuthzModule             authzmodule.AppModule
 }
 
 func NewAppKeeper(
@@ -470,6 +474,13 @@ func NewAppKeeper(
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
 		AddRoute(wasm.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
+
+	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(
+		appKeepers.keys[authzkeeper.StoreKey],
+		appCodec,
+		bApp.MsgServiceRouter(),
+	)
+	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, appKeepers.AuthzKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper, encodingConfig.InterfaceRegistry)
 
 	return appKeepers
 }
