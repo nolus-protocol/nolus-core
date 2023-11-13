@@ -152,6 +152,7 @@ func (m *FeeParam) GetAcceptedDenoms() []*DenomTicker {
 	return nil
 }
 
+// DenomTicker will be used to define accepted denoms and their ticker
 type DenomTicker struct {
 	Denom  string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 	Ticker string `protobuf:"bytes,2,opt,name=ticker,proto3" json:"ticker,omitempty"`

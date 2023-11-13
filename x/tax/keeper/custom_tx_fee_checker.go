@@ -14,7 +14,10 @@ import (
 
 const baseAssetTicker = "NLS"
 
-// TODO: test && check all calculations and make sure they are correct
+// OracleData is the struct we use to unmarshal the oracle's response for prices
+type OracleData struct {
+	Prices []Price `json:"prices"`
+}
 type Price struct {
 	Amount struct {
 		Amount string `json:"amount"`
@@ -24,10 +27,6 @@ type Price struct {
 		Amount string `json:"amount"`
 		Ticker string `json:"ticker"`
 	} `json:"amount_quote"`
-}
-
-type OracleData struct {
-	Prices []Price `json:"prices"`
 }
 
 // CustomTxFeeChecker reuses the default fee logic, but we will add the ability to pay fees in other denoms
@@ -61,34 +60,21 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 			// Base asset is always the first value defined in min-gas-prices config (should be unls)
 			// TODO: what do we do if a malicious validator changes his base asset to something different than unls?
+			// Maybe we can use the baseDenom instead of the minGasPrices setting?
 			minimumFeeRequired := sdk.NewCoin(minGasPrices[0].Denom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
 			// if there are no fees paid in the base asset
 			if ok, _ := feeCoins.Find(minimumFeeRequired.Denom); !ok {
-
-				// Get FeeParams from tax keeper
-				feeParams := k.GetParams(ctx).FeeParams
-
-				var err error
-				var correctFeeParam *types.FeeParam
-				// check if there is an accepted_denom in feeParams matching any of the paid feeCoins
-				for _, feeParam := range feeParams {
-					correctFeeParam = findDenom(*feeParam, feeCoins)
-					// if there is a match then we ensure the feeParam with correct oracle and profit
-					// smart contrat addresses will be used. This is in case of multiple supported DEXes.
-					if correctFeeParam != nil {
-						break
-					}
-				}
-
-				if !isFeeParamValid(correctFeeParam) {
-					return nil, 0, errors.Wrapf(types.ErrInvalidFeeParam, "oracle address or profit address is not set")
+				// Get Fee Param for select dex based on the feeCoins provided
+				feeParam, err := getFeeParamBasedOnDenom(k.GetParams(ctx).FeeParams, feeCoins)
+				if err != nil {
+					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to get fee param based on denom: %s", err.Error())
 				}
 
 				// get the oracle address
-				oracleAddress, err := sdk.AccAddressFromBech32(correctFeeParam.OracleAddress)
+				oracleAddress, err := sdk.AccAddressFromBech32(feeParam.OracleAddress)
 				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidAddress, "failed to convert treasury, bech32 to AccAddress: %s: %s", correctFeeParam.OracleAddress, err.Error())
+					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidAddress, "failed to convert treasury, bech32 to AccAddress: %s: %s", feeParam.OracleAddress, err.Error())
 				}
 
 				// query the oracle for all available prices from this dex
@@ -105,7 +91,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				}
 				// go through every fee provided
 				for _, fee := range feeCoins {
-					currentFeeAmountInNLS, err := calculateValueInBaseAsset(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices, *correctFeeParam)
+					currentFeeAmountInNLS, err := calculateValueInBaseAsset(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices, *feeParam)
 					if err != nil {
 						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in base asset: %s", fee.Denom, err.Error())
 					}
@@ -125,6 +111,21 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 	priority := getTxPriority(feeCoins, int64(gas))
 	return feeCoins, priority, nil
+}
+
+func getFeeParamBasedOnDenom(feeParams []*types.FeeParam, feeCoins sdk.Coins) (*types.FeeParam, error) {
+	var correctFeeParam *types.FeeParam
+	// check if there is an accepted_denom in feeParams matching any of the feeCoins' denom
+	for _, feeParam := range feeParams {
+		correctFeeParam = findDenom(*feeParam, feeCoins)
+		// if there is a match then we ensure this feeParam with correct oracle and profit
+		// smart contrat addresses will be used. This is in case of multiple supported DEXes.
+		if correctFeeParam != nil && isFeeParamValid(correctFeeParam) {
+			return correctFeeParam, nil
+		}
+	}
+
+	return nil, errors.Wrapf(types.ErrInvalidFeeDenom, "no fee param found for denoms: %s", feeCoins)
 }
 
 func isFeeParamValid(feeParam *types.FeeParam) bool {

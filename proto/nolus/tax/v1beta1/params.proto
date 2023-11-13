@@ -22,6 +22,7 @@ message FeeParam {
   repeated DenomTicker accepted_denoms = 3;
 }
 
+// DenomTicker will be used to define accepted denoms and their ticker
 message DenomTicker {
   string denom = 1;
   string ticker = 2;

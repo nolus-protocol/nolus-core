@@ -43,6 +43,7 @@ import (
 	ibc "github.com/cosmos/ibc-go/v7/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -107,8 +108,9 @@ var ModuleBasics = module.NewBasicManager(
 	ibc.AppModuleBasic{},
 	upgrade.AppModuleBasic{},
 	evidence.AppModuleBasic{},
-	transferSudo.AppModuleBasic{},
+	consensus.AppModuleBasic{},
 	vesting.AppModuleBasic{},
+	transferSudo.AppModuleBasic{},
 	wasm.AppModuleBasic{},
 	vestings.AppModuleBasic{},
 	tax.AppModuleBasic{},
@@ -119,6 +121,7 @@ var ModuleBasics = module.NewBasicManager(
 	contractmanager.AppModuleBasic{},
 	authzmodule.AppModuleBasic{},
 	consensus.AppModuleBasic{},
+	ibctm.AppModuleBasic{},
 )
 
 func appModules(
