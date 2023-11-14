@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"errors"
 	"testing"
 
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
@@ -24,7 +25,7 @@ func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
 	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
-	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return([]byte(queryPricesResponseBytes), nil)
+	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseBytes, nil)
 
 	feeCoins, priority, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.NoError(t, err)
@@ -59,6 +60,84 @@ func TestCustomTxFeeCheckerSuccessfulInUnsupportedDenom(t *testing.T) {
 	}
 
 	_, _, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
+	require.Error(t, err)
+}
+
+// Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
+func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	// create a new CustomTxFeeChecker
+	feeTx := MockFeeTx{
+		Msgs: []sdk.Msg{},
+		Gas:  100000,
+		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
+	}
+
+	wrongParams := taxKeeper.GetParams(ctx)
+	wrongParams.FeeParams[0].OracleAddress = "wrong"
+	taxKeeper.SetParams(ctx, wrongParams)
+
+	_, priority, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
+	require.Error(t, err)
+	require.Equal(t, priority, int64(0))
+}
+
+// Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
+func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	// create a new CustomTxFeeChecker
+	feeTx := MockFeeTx{
+		Msgs: []sdk.Msg{},
+		Gas:  100000,
+		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
+	}
+
+	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	require.NoError(t, err)
+
+	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return([]byte{}, errors.New("badQuery"))
+
+	_, _, err = taxKeeper.CustomTxFeeChecker(ctx, feeTx)
+	require.Error(t, err)
+}
+
+// Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
+func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	// create a new CustomTxFeeChecker
+	feeTx := MockFeeTx{
+		Msgs: []sdk.Msg{},
+		Gas:  100000,
+		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
+	}
+
+	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	require.NoError(t, err)
+
+	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return([]byte{}, nil)
+
+	_, _, err = taxKeeper.CustomTxFeeChecker(ctx, feeTx)
+	require.Error(t, err)
+}
+
+// Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
+func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	// create a new CustomTxFeeChecker
+	feeTx := MockFeeTx{
+		Msgs: []sdk.Msg{},
+		Gas:  100000,
+		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
+	}
+
+	byteOsmoPrices := []byte(`{"prices":[{"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"4248067","ticker":"USDC"}}]}`)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	require.NoError(t, err)
+
+	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(byteOsmoPrices, nil)
+
+	_, _, err = taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
 }
 

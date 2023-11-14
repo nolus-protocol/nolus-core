@@ -70,6 +70,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 			BankKeeper:      s.app.BankKeeper,
 			SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
 			SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+			TxFeeChecker:    s.app.TaxKeeper.CustomTxFeeChecker,
 		},
 	)
 	s.Require().NoError(err)

@@ -30,7 +30,7 @@ type Price struct {
 }
 
 // CustomTxFeeChecker reuses the default fee logic, but we will add the ability to pay fees in other denoms
-// defined as a module parameter. The exact price will be calculated in usd representing the minimum value of base asset(defined
+// defined as a module parameter. The exact price will be calculated in base asset(defined
 // in the min-gas-prices of the validators' config).
 func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64, error) {
 	feeTx, ok := tx.(sdk.FeeTx)
@@ -45,7 +45,6 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 	// if this is a CheckTx. This is only for local mempool purposes, and thus
 	// is only ran on check tx.
 	if ctx.IsCheckTx() {
-
 		minGasPrices := ctx.MinGasPrices()
 		if !minGasPrices.IsZero() {
 			requiredFees := make(sdk.Coins, len(minGasPrices))
@@ -89,6 +88,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				if err != nil {
 					return nil, 0, errors.Wrapf(sdkerrors.ErrJSONUnmarshal, "failed to unmarshal oracle data: %s", err.Error())
 				}
+
 				// go through every fee provided
 				for _, fee := range feeCoins {
 					currentFeeAmountInNLS, err := calculateValueInBaseAsset(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices, *feeParam)
@@ -120,7 +120,7 @@ func getFeeParamBasedOnDenom(feeParams []*types.FeeParam, feeCoins sdk.Coins) (*
 		correctFeeParam = findDenom(*feeParam, feeCoins)
 		// if there is a match then we ensure this feeParam with correct oracle and profit
 		// smart contrat addresses will be used. This is in case of multiple supported DEXes.
-		if correctFeeParam != nil && isFeeParamValid(correctFeeParam) {
+		if isFeeParamValid(correctFeeParam) {
 			return correctFeeParam, nil
 		}
 	}
@@ -141,7 +141,7 @@ func isFeeParamValid(feeParam *types.FeeParam) bool {
 func findDenom(feeParam types.FeeParam, feeCoins sdk.Coins) *types.FeeParam {
 	for _, denomReadable := range feeParam.AcceptedDenoms {
 		if ok, _ := feeCoins.Find(denomReadable.Denom); ok {
-			// fees should be sorted, so on the first match, we conclude that this is the current dex's fee param
+			// fees should be sorted(biggest to smallest), so on the first match, we conclude that this is the current dex's fee param
 			// We need this check since denoms for the same token but from different dexes are different (because the channel differs)
 			//
 			// * Examples:
@@ -201,7 +201,6 @@ func calculateValueInBaseAsset(denom string, amount float64, prices OracleData, 
 		return 0, errors.Wrapf(types.ErrInvalidFeeDenom, "no prices found for nls or %s", denom)
 	}
 
-	// TODO: check float max decimals ?
 	fullFeeAmountInBaseAsset := amount * (float64(denomQuoteAmountAsInt) / float64(denomAmountAsInt)) * (float64(baseAssetAmountAsInt) / float64(baseAssetQuoteAmountAsInt))
 
 	return fullFeeAmountInBaseAsset, nil
