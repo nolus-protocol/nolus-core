@@ -153,7 +153,7 @@ type AppKeepers struct {
 	TransferKeeper        *wrapkeeper.KeeperTransferWrapper
 	FeeRefunderKeeper     *feerefunderkeeper.Keeper
 	ConsensusParamsKeeper *consensusparamskeeper.Keeper
-	AuthzKeeper           authzkeeper.Keeper
+	AuthzKeeper           *authzkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -180,9 +180,8 @@ type AppKeepers struct {
 	TransferModule          transferSudo.AppModule
 	FeeRefunderModule       feerefunder.AppModule
 	VestingsModule          vestings.AppModule
-
-	IcaModule   ica.AppModule
-	AuthzModule authzmodule.AppModule
+	IcaModule               ica.AppModule
+	AuthzModule             authzmodule.AppModule
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
@@ -517,13 +516,14 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(wasm.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
-	appKeepers.AuthzKeeper = authzkeeper.NewKeeper(
+	authzKeepper := authzkeeper.NewKeeper(
 		appKeepers.keys[authzkeeper.StoreKey],
 		appCodec,
 		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,
 	)
-	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, appKeepers.AuthzKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper, interfaceRegistry)
+	appKeepers.AuthzKeeper = &authzKeepper
+	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, authzKeepper, appKeepers.AccountKeeper, appKeepers.BankKeeper, interfaceRegistry)
 }
 
 // GetSubspace returns a param subspace for a given module name.
