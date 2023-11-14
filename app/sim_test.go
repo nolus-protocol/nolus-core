@@ -42,6 +42,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
