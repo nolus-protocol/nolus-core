@@ -1,8 +1,6 @@
 package app
 
 import (
-	"github.com/tendermint/spm/cosmoscmd"
-
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	authsims "github.com/cosmos/cosmos-sdk/x/auth/simulation"
