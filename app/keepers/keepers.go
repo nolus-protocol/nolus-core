@@ -137,24 +137,23 @@ type AppKeepers struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper         authkeeper.AccountKeeper
-	BankKeeper            bankkeeper.Keeper
+	AccountKeeper         *authkeeper.AccountKeeper
+	BankKeeper            *bankkeeper.BaseKeeper
 	CapabilityKeeper      *capabilitykeeper.Keeper
-	StakingKeeper         stakingkeeper.Keeper
-	SlashingKeeper        slashingkeeper.Keeper
-	MintKeeper            mintkeeper.Keeper
-	DistrKeeper           distrkeeper.Keeper
-	GovKeeper             govkeeper.Keeper
-	CrisisKeeper          crisiskeeper.Keeper
-	UpgradeKeeper         upgradekeeper.Keeper
-	ParamsKeeper          paramskeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
+	SlashingKeeper        *slashingkeeper.Keeper
+	DistrKeeper           *distrkeeper.Keeper
+	GovKeeper             *govkeeper.Keeper
+	CrisisKeeper          *crisiskeeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
+	ParamsKeeper          *paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAControllerKeeper   *icacontrollerkeeper.Keeper
 	EvidenceKeeper        *evidencekeeper.Keeper
 	TransferKeeper        *wrapkeeper.KeeperTransferWrapper
 	FeeRefunderKeeper     *feerefunderkeeper.Keeper
-	AuthzKeeper           authzkeeper.Keeper
 	ConsensusParamsKeeper *consensusparamskeeper.Keeper
+	AuthzKeeper           authzkeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -181,13 +180,9 @@ type AppKeepers struct {
 	TransferModule          transferSudo.AppModule
 	FeeRefunderModule       feerefunder.AppModule
 	VestingsModule          vestings.AppModule
-<<<<<<< HEAD
-	IcaModule               ica.AppModule
-	AuthzModule             authzmodule.AppModule
-=======
 
-	IcaModule ica.AppModule
->>>>>>> 2d0fc9d (chore(keepers): re-enable custom modules)
+	IcaModule   ica.AppModule
+	AuthzModule authzmodule.AppModule
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
@@ -526,6 +521,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.keys[authzkeeper.StoreKey],
 		appCodec,
 		bApp.MsgServiceRouter(),
+		appKeepers.AccountKeeper,
 	)
 	appKeepers.AuthzModule = authzmodule.NewAppModule(appCodec, appKeepers.AuthzKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper, interfaceRegistry)
 }
