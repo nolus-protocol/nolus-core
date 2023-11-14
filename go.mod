@@ -165,6 +165,7 @@ require (
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
+	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/zondax/hid v0.9.2 // indirect
 	github.com/zondax/ledger-go v0.14.3 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
@@ -195,23 +196,18 @@ replace (
 
 	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
+
 	github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.40.0-rc.0.0.20230705143547-22c391d461d5
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v0.0.0-20230705134325-b23404470a1d
 
-	// update ledger-go and hid packages
-	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
-	
-	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
-	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
-
 	// neutron dependency
 	github.com/cosmos/gaia/v11 => github.com/cosmos/gaia/v11 v11.0.0-20230724152830-861ba391c3b4
 
-	// fixes build problem due to unsupported braking changes: https://github.com/cosmos/ledger-cosmos-go/blob/v0.13.0/CHANGELOG.md#api-breaking-changes
-	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.2
+	// update ledger-go and hid packages
+	github.com/cosmos/ledger-cosmos-go => github.com/cosmos/ledger-cosmos-go v0.12.4
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
