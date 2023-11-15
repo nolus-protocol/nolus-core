@@ -12,4 +12,18 @@ message Params {
   int32 fee_rate = 1;
   string contract_address = 2;
   string base_denom = 3;
+  repeated FeeParam fee_params = 4;
+}
+
+// Defines the accepted fees with corresponding oracle and profit addresses
+message FeeParam {
+  string oracle_address = 1;
+  string profit_address = 2;
+  repeated DenomTicker accepted_denoms = 3;
+}
+
+// DenomTicker will be used to define accepted denoms and their ticker
+message DenomTicker {
+  string denom = 1;
+  string ticker = 2;
 }

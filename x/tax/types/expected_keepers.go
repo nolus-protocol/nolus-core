@@ -21,3 +21,8 @@ type BankKeeper interface {
 	SendCoinsFromModuleToAccount(ctx sdk.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error
 	// Methods imported from bank should be defined here
 }
+
+// WasmKeeper defines the expected interface needed to retrieve price from oracle instance of smart contract.
+type WasmKeeper interface {
+	QuerySmart(ctx sdk.Context, contractAddr sdk.AccAddress, req []byte) ([]byte, error)
+}

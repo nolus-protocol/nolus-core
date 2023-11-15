@@ -14,4 +14,5 @@ var (
 	ErrInvalidFeeDenom = errorsmod.Register(ModuleName, 4, "denom is not allowed")
 	ErrAmountNilOrZero = errorsmod.Register(ModuleName, 5, "amount can not be nil or zero")
 	ErrInvalidTax      = errorsmod.Register(ModuleName, 6, "tax can not be negative, zero or nil")
+	ErrInvalidFeeParam = errorsmod.Register(ModuleName, 7, "current fee param is not valid")
 )
