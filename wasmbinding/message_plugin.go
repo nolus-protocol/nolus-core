@@ -3,11 +3,11 @@ package wasmbinding
 import (
 	"encoding/json"
 
+	"cosmossdk.io/errors"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 
@@ -50,7 +50,7 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 				"message", string(msg.Custom),
 				"error", err,
 			)
-			return nil, nil, sdkerrors.Wrap(err, "failed to decode incoming custom cosmos message")
+			return nil, nil, errors.Wrap(err, "failed to decode incoming custom cosmos message")
 		}
 
 		if contractMsg.SubmitTx != nil {
@@ -80,7 +80,7 @@ func (m *CustomMessenger) ibcTransfer(ctx sdk.Context, contractAddr sdk.AccAddre
 	ibcTransferMsg.Sender = contractAddr.String()
 
 	if err := ibcTransferMsg.ValidateBasic(); err != nil {
-		return nil, nil, sdkerrors.Wrap(err, "failed to validate ibcTransferMsg")
+		return nil, nil, errors.Wrap(err, "failed to validate ibcTransferMsg")
 	}
 
 	response, err := m.transferKeeper.Transfer(sdk.WrapSDKContext(ctx), &ibcTransferMsg)
@@ -90,7 +90,7 @@ func (m *CustomMessenger) ibcTransfer(ctx sdk.Context, contractAddr sdk.AccAddre
 			"msg", ibcTransferMsg,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to execute IBCTransfer")
+		return nil, nil, errors.Wrap(err, "failed to execute IBCTransfer")
 	}
 
 	data, err := json.Marshal(response)
@@ -100,7 +100,7 @@ func (m *CustomMessenger) ibcTransfer(ctx sdk.Context, contractAddr sdk.AccAddre
 			"msg", response,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("ibcTransferMsg completed",
@@ -118,7 +118,7 @@ func (m *CustomMessenger) updateInterchainQuery(ctx sdk.Context, contractAddr sd
 			"msg", updateQuery,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to update interchain query")
+		return nil, nil, errors.Wrap(err, "failed to update interchain query")
 	}
 
 	data, err := json.Marshal(response)
@@ -128,7 +128,7 @@ func (m *CustomMessenger) updateInterchainQuery(ctx sdk.Context, contractAddr sd
 			"msg", updateQuery,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("interchain query updated",
@@ -148,12 +148,12 @@ func (m *CustomMessenger) performUpdateInterchainQuery(ctx sdk.Context, contract
 	}
 
 	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to validate incoming UpdateInterchainQuery message")
+		return nil, errors.Wrap(err, "failed to validate incoming UpdateInterchainQuery message")
 	}
 
 	response, err := m.Icqmsgserver.UpdateInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to update interchain query")
+		return nil, errors.Wrap(err, "failed to update interchain query")
 	}
 
 	return (*bindings.UpdateInterchainQueryResponse)(response), nil
@@ -167,7 +167,7 @@ func (m *CustomMessenger) removeInterchainQuery(ctx sdk.Context, contractAddr sd
 			"msg", removeQuery,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to remove interchain query")
+		return nil, nil, errors.Wrap(err, "failed to remove interchain query")
 	}
 
 	data, err := json.Marshal(response)
@@ -177,7 +177,7 @@ func (m *CustomMessenger) removeInterchainQuery(ctx sdk.Context, contractAddr sd
 			"msg", removeQuery,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("interchain query removed",
@@ -194,12 +194,12 @@ func (m *CustomMessenger) performRemoveInterchainQuery(ctx sdk.Context, contract
 	}
 
 	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to validate incoming RemoveInterchainQuery message")
+		return nil, errors.Wrap(err, "failed to validate incoming RemoveInterchainQuery message")
 	}
 
 	response, err := m.Icqmsgserver.RemoveInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to remove interchain query")
+		return nil, errors.Wrap(err, "failed to remove interchain query")
 	}
 
 	return (*bindings.RemoveInterchainQueryResponse)(response), nil
@@ -214,7 +214,7 @@ func (m *CustomMessenger) submitTx(ctx sdk.Context, contractAddr sdk.AccAddress,
 			"interchain_account_id", submitTx.InterchainAccountId,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to submit interchain transaction")
+		return nil, nil, errors.Wrap(err, "failed to submit interchain transaction")
 	}
 
 	data, err := json.Marshal(response)
@@ -225,7 +225,7 @@ func (m *CustomMessenger) submitTx(ctx sdk.Context, contractAddr sdk.AccAddress,
 			"interchain_account_id", submitTx.InterchainAccountId,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("interchain transaction submitted",
@@ -253,12 +253,12 @@ func (m *CustomMessenger) performSubmitTx(ctx sdk.Context, contractAddr sdk.AccA
 	}
 
 	if err := tx.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to validate incoming SubmitTx message")
+		return nil, errors.Wrap(err, "failed to validate incoming SubmitTx message")
 	}
 
 	response, err := m.Ictxmsgserver.SubmitTx(sdk.WrapSDKContext(ctx), &tx)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to submit interchain transaction")
+		return nil, errors.Wrap(err, "failed to submit interchain transaction")
 	}
 
 	return (*bindings.SubmitTxResponse)(response), nil
@@ -273,7 +273,7 @@ func (m *CustomMessenger) registerInterchainAccount(ctx sdk.Context, contractAdd
 			"interchain_account_id", reg.InterchainAccountId,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to register interchain account")
+		return nil, nil, errors.Wrap(err, "failed to register interchain account")
 	}
 
 	data, err := json.Marshal(response)
@@ -284,7 +284,7 @@ func (m *CustomMessenger) registerInterchainAccount(ctx sdk.Context, contractAdd
 			"interchain_account_id", reg.InterchainAccountId,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("registered interchain account",
@@ -302,12 +302,12 @@ func (m *CustomMessenger) performRegisterInterchainAccount(ctx sdk.Context, cont
 		InterchainAccountId: reg.InterchainAccountId,
 	}
 	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to validate incoming RegisterInterchainAccount message")
+		return nil, errors.Wrap(err, "failed to validate incoming RegisterInterchainAccount message")
 	}
 
 	response, err := m.Ictxmsgserver.RegisterInterchainAccount(sdk.WrapSDKContext(ctx), &msg)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to register interchain account")
+		return nil, errors.Wrap(err, "failed to register interchain account")
 	}
 
 	return (*bindings.RegisterInterchainAccountResponse)(response), nil
@@ -325,7 +325,7 @@ func (m *CustomMessenger) registerInterchainQuery(ctx sdk.Context, contractAddr 
 			"update_period", reg.UpdatePeriod,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "failed to register interchain query")
+		return nil, nil, errors.Wrap(err, "failed to register interchain query")
 	}
 
 	data, err := json.Marshal(response)
@@ -338,7 +338,7 @@ func (m *CustomMessenger) registerInterchainQuery(ctx sdk.Context, contractAddr 
 			"update_period", reg.UpdatePeriod,
 			"error", err,
 		)
-		return nil, nil, sdkerrors.Wrap(err, "marshal json failed")
+		return nil, nil, errors.Wrap(err, "marshal json failed")
 	}
 
 	ctx.Logger().Debug("registered interchain query",
@@ -363,12 +363,12 @@ func (m *CustomMessenger) performRegisterInterchainQuery(ctx sdk.Context, contra
 		Sender:             contractAddr.String(),
 	}
 	if err := msg.ValidateBasic(); err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to validate incoming RegisterInterchainQuery message")
+		return nil, errors.Wrap(err, "failed to validate incoming RegisterInterchainQuery message")
 	}
 
 	response, err := m.Icqmsgserver.RegisterInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
 	if err != nil {
-		return nil, sdkerrors.Wrap(err, "failed to register interchain query")
+		return nil, errors.Wrap(err, "failed to register interchain query")
 	}
 
 	return (*bindings.RegisterInterchainQueryResponse)(response), nil
