@@ -9,8 +9,77 @@ on:
 permissions:
   contents: read
 
+env:
+  AWS_REGISTRY_ID: "013603813222"
+  AWS_REGION: "us-east-1"
+  ERC_REGISTRY: "public.ecr.aws"
+  ERC_REGISTRY_ALIAS: "nolus"
+  ERC_REPOSITORY: "protogen"
+  IMAGE_TAG: "0.1"
+  DOCKERFILE: ".github/images/protogen.Dockerfile"
+
 jobs:
+  protogen-exists:
+      name: Check protogen exists
+      runs-on: ubuntu-latest
+      container: amazon/aws-cli
+      outputs:
+        # 'failure' -  when no image with such tag exists 
+        # 'success' - image exists
+        status: ${{ steps.check.outcome }}
+
+      steps:
+        - name: Configure AWS Credentials
+          uses: aws-actions/configure-aws-credentials@v1-node16
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ env.AWS_REGION }}
+
+        - name: Run check exist image
+          id: check
+          continue-on-error: true
+          run: |
+            aws ecr-public describe-images \
+                --registry-id $AWS_REGISTRY_ID \
+                --repository-name $ERC_REPOSITORY \
+                --region $AWS_REGION \
+                --image-ids=imageTag=$IMAGE_TAG
+
+  protogen-build:
+    name: Create protogen image
+    needs: protogen-exists
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+
+      - name: Create new image
+        shell: bash
+        run: |
+          if [[ ${{ needs.protogen-exists.outputs.status }} == 'failure' ]]
+          then
+            docker build -t $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG -f $DOCKERFILE .
+            docker push $ERC_REGISTRY/$ERC_REGISTRY_ALIAS/$ERC_REPOSITORY:$IMAGE_TAG
+          else
+            echo "Image version $IMAGE_TAG exists. Skipping step..."
+          fi
+
   lint:
+    name: Lint
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -21,6 +90,7 @@ jobs:
           input: "proto"
 
   break-check:
+    name: Detect breaking changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

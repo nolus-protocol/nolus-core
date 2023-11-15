@@ -183,8 +183,8 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=v0.9
-protoImageName=osmolabs/osmo-proto-gen:$(protoVer)
+protoVer=0.1
+protoImageName=public.ecr.aws/nolus/protogen:$(protoVer)
 containerProtoGen=nolus-proto-gen-$(protoVer)
 PROTO_FORMATTER_IMAGE=tendermintdev/docker-build-proto@sha256:aabcfe2fc19c31c0f198d4cd26393f5e5ca9502d7ea3feafbfe972448fee7cae
 
