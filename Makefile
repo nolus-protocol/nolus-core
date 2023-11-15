@@ -209,3 +209,7 @@ proto-check-breaking:
 proto-update-deps:
 	@echo "Updating Protobuf dependencies"
 	docker run --rm -v $(CURDIR)/proto:/workspace --workdir /workspace $(protoImageName) buf mod update
+
+mocks:
+	@echo "Regenerate mocks..."
+	@go generate ./...
