@@ -12,7 +12,7 @@ import (
 
 func TestParamsQuery(t *testing.T) {
 	params.SetAddressPrefixes()
-	keeper, ctx := testkeeper.TaxKeeper(t)
+	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	keeper.SetParams(ctx, params)
@@ -23,7 +23,7 @@ func TestParamsQuery(t *testing.T) {
 }
 
 func TestParamsQueryNilRequest(t *testing.T) {
-	keeper, ctx := testkeeper.TaxKeeper(t)
+	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	keeper.SetParams(ctx, params)
