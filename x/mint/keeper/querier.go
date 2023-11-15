@@ -6,7 +6,7 @@ package keeper
 
 // 	"github.com/cosmos/cosmos-sdk/codec"
 // 	sdk "github.com/cosmos/cosmos-sdk/types"
-// 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+// 	"cosmossdk.io/errors"
 // )
 
 // refactor: querier is deprecated - https://github.com/cosmos/cosmos-sdk/blob/release/v0.47.x/UPGRADING.md#appmodule-interface
@@ -21,7 +21,7 @@ package keeper
 // 			return queryMintState(ctx, k, legacyQuerierCdc)
 
 // 		default:
-// 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
+// 			return nil, errors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown query path: %s", path[0])
 // 		}
 // 	}
 // }
@@ -31,7 +31,7 @@ package keeper
 
 // 	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, params)
 // 	if err != nil {
-// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+// 		return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 // 	}
 
 // 	return res, nil
@@ -43,7 +43,7 @@ package keeper
 // 	minterState := types.QueryMintStateResponse{NormTimePassed: minter.NormTimePassed, TotalMinted: minter.TotalMinted}
 // 	res, err := codec.MarshalJSONIndent(legacyQuerierCdc, minterState)
 // 	if err != nil {
-// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+// 		return nil, errors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
 // 	}
 
 // 	return res, nil
