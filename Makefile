@@ -183,7 +183,7 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=0.13.5
+protoVer=0.14.0
 protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
 protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user root $(protoImageName)
 
