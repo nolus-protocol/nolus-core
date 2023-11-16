@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// The bytes below represent this string: {"prices":[{"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"4248067","ticker":"USDC"}},{"amount":{"amount":"2000000000","ticker":"NLS"},"amount_quote":{"amount":"10452150388158391","ticker":"USDC"}}]}
+// The bytes below represent this string: {"prices":[{"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"4248067","ticker":"USDC"}},{"amount":{"amount":"2000000000","ticker":"NLS"},"amount_quote":{"amount":"10452150388158391","ticker":"USDC"}}]}.
 var queryPricesResponseBytes = []byte{123, 34, 112, 114, 105, 99, 101, 115, 34, 58, 91, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 50, 48, 48, 48, 48, 48, 48, 48, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 79, 83, 77, 79, 34, 125, 44, 34, 97, 109, 111, 117, 110, 116, 95, 113, 117, 111, 116, 101, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 52, 50, 52, 56, 48, 54, 55, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 85, 83, 68, 67, 34, 125, 125, 44, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 50, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 78, 76, 83, 34, 125, 44, 34, 97, 109, 111, 117, 110, 116, 95, 113, 117, 111, 116, 101, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 49, 48, 52, 53, 50, 49, 53, 48, 51, 56, 56, 49, 53, 56, 51, 57, 49, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 85, 83, 68, 67, 34, 125, 125, 93, 125}
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
@@ -75,7 +75,7 @@ func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
 
 	wrongParams := taxKeeper.GetParams(ctx)
 	wrongParams.FeeParams[0].OracleAddress = "wrong"
-	taxKeeper.SetParams(ctx, wrongParams)
+	_ = taxKeeper.SetParams(ctx, wrongParams)
 
 	_, priority, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)

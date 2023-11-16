@@ -76,7 +76,6 @@ func (AppModuleBasic) RegisterRESTRoutes(_ client.Context, _ *mux.Router) {
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the module.
 func (AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	return
 }
 
 // GetTxCmd returns the vestings module's root tx command.
@@ -155,7 +154,6 @@ func (am AppModule) EndBlock(_ sdk.Context, _ abci.RequestEndBlock) []abci.Valid
 
 // GenerateGenesisState creates a randomized GenState of the tax module.
 func (AppModule) GenerateGenesisState(_ *module.SimulationState) {
-	return
 }
 
 // ProposalContents doesn't return any content functions for governance proposals.
