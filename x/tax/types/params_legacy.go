@@ -9,7 +9,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// Parameter store keys
+// Parameter store keys.
 var (
 	KeyFeeRate         = []byte("FeeRate")
 	KeyBaseDenom       = []byte("BaseDenom")

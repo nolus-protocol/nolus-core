@@ -48,7 +48,7 @@ func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Ke
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, isCheckTx, log.NewNopLogger()).WithMinGasPrices(gasPrices)
 
 	// Initialize params
-	k.SetParams(ctx, types.DefaultParams())
+	_ = k.SetParams(ctx, types.DefaultParams())
 
 	return &k, ctx, mockWasmKeeper
 }

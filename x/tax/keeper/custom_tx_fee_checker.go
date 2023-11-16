@@ -14,7 +14,7 @@ import (
 
 const baseAssetTicker = "NLS"
 
-// OracleData is the struct we use to unmarshal the oracle's response for prices
+// OracleData is the struct we use to unmarshal the oracle's response for prices.
 type OracleData struct {
 	Prices []Price `json:"prices"`
 }
@@ -59,7 +59,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 			// Base asset is always the first value defined in min-gas-prices config (should be unls)
 			// TODO: what do we do if a malicious validator changes his base asset to something different than unls?
-			// Maybe we can use the baseDenom instead of the minGasPrices setting?
+			// Maybe we can use the baseDenom instead of the minGasPrices denom?
 			minimumFeeRequired := sdk.NewCoin(minGasPrices[0].Denom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
 			// if there are no fees paid in the base asset

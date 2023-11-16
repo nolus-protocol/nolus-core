@@ -98,7 +98,6 @@ func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
 	if err != nil {
 		t.Fatal("Writing of simulation parameters failed")
 	}
-
 }
 
 func TestAppStateDeterminism(t *testing.T) {

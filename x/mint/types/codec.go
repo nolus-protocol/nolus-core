@@ -24,7 +24,7 @@ func init() {
 	sdk.RegisterLegacyAminoCodec(amino)
 }
 
-// RegisterLegacyAminoCodec registers concrete types on the LegacyAmino codec
+// RegisterLegacyAminoCodec registers concrete types on the LegacyAmino codec.
 func RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(Params{}, "nolus-core/x/mint/Params", nil)
 	legacy.RegisterAminoMsg(cdc, &MsgUpdateParams{}, "nolus-core/x/mint/MsgUpdateParams")

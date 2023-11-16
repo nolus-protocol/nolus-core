@@ -35,8 +35,8 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 
 	testapp := app
 	ctx := testapp.BaseApp.NewContext(isCheckTx, tmproto.Header{})
-	testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
-	testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
+	_ = testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
+	_ = testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 
 	err := testapp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
 	if err != nil {

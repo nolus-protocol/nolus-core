@@ -9,7 +9,7 @@ import (
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
-// Parameter store keys
+// Parameter store keys.
 var (
 	KeyMintDenom              = []byte("MintDenom")
 	KeyMaxMintableNanoseconds = []byte("MaxMintableNanoseconds")
@@ -30,5 +30,4 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 		paramtypes.NewParamSetPair(KeyMaxMintableNanoseconds, &p.MaxMintableNanoseconds, validateMaxMintableNanoseconds),
 		paramtypes.NewParamSetPair(KeyMintDenom, &p.MintDenom, validateMintDenom),
 	}
-
 }
