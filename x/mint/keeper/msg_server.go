@@ -3,9 +3,11 @@ package keeper
 import (
 	"context"
 
+	"cosmossdk.io/errors"
+
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 

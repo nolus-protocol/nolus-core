@@ -139,7 +139,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			// set default params + test case fee rate
 			params := types.DefaultParams()
 			params.FeeRate = tc.feeRate
-			suite.app.TaxKeeper.SetParams(suite.ctx, params)
+			_ = suite.app.TaxKeeper.SetParams(suite.ctx, params)
 
 			// get chained ante handler
 			dfd := ante.NewDeductFeeDecorator(suite.app.AccountKeeper, suite.app.BankKeeper, nil, nil)

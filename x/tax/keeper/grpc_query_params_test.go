@@ -15,7 +15,7 @@ func TestParamsQuery(t *testing.T) {
 	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
-	keeper.SetParams(ctx, params)
+	_ = keeper.SetParams(ctx, params)
 
 	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
@@ -26,7 +26,7 @@ func TestParamsQueryNilRequest(t *testing.T) {
 	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
-	keeper.SetParams(ctx, params)
+	_ = keeper.SetParams(ctx, params)
 
 	response, err := keeper.Params(wctx, nil)
 	require.Error(t, err)

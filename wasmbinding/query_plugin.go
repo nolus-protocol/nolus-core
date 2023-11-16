@@ -17,5 +17,6 @@ func NewQueryPlugin(icaControllerKeeper *icacontrollerkeeper.Keeper, icqKeeper *
 	return &QueryPlugin{
 		icaControllerKeeper: icaControllerKeeper,
 		icqKeeper:           icqKeeper,
-		feeRefunderKeeper:   feeRefunderKeeper}
+		feeRefunderKeeper:   feeRefunderKeeper,
+	}
 }

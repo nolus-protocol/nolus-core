@@ -116,7 +116,7 @@ func (s *KeeperTestSuite) TestAddCollectedFees() {
 	s.SetupTest(false)
 	minterKeeper := s.app.MintKeeper
 
-	s.app.TaxKeeper.SetParams(s.ctx, taxtypes.DefaultParams())
+	_ = s.app.TaxKeeper.SetParams(s.ctx, taxtypes.DefaultParams())
 	taxParams := s.app.TaxKeeper.GetParams(s.ctx)
 	// create account and fund it with 5000 of base denom
 	accs := s.createTestAccounts(1)
