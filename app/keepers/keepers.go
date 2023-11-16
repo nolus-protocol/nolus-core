@@ -9,6 +9,7 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -406,7 +407,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 		appKeepers.FeeRefunderKeeper,
 		appKeepers.BankKeeper,
-		NewFeeBurnerExpectedKeeper(),
+		func(ctx sdk.Context) string { return appKeepers.TaxKeeper.ContractAddress(ctx) },
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
