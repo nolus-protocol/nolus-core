@@ -116,11 +116,12 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 
 		prevI := timeOffset.Sub(prevOffset)
 		nanoSecondsInMonthUint := sdkmath.NewUint(uint64(nanoSecondsInMonth.TruncateInt64()))
-		// TODO: understand what is a and b and name accordingly
-		a := prevI.Quo(nanoSecondsInMonthUint)
-		b := prevI.Add(i).Quo(nanoSecondsInMonthUint)
+		// divide (nanoseconds of time passed) by (nanoseconds in a month) to get how many months have passed.
+		prevIMonths := prevI.Quo(nanoSecondsInMonthUint)
+		// divide (nanoseconds of time passed + random time between blocks) by (nanoseconds in a month) to get how many months have passed.
+		prevIPlusRandomTime := prevI.Add(i).Quo(nanoSecondsInMonthUint)
 
-		if !a.Equal(b) {
+		if !prevIMonths.Equal(prevIPlusRandomTime) {
 			month++
 
 			fmt.Printf("%v Month, %v Minted, %v Total Minted(in store), %v Returned Total, %v Norm Time, %v Received in this block \n",
@@ -239,11 +240,12 @@ func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.
 
 		prevI := timeOffset.Sub(prevOffset)
 		nanoSecondsInMonthUint := sdkmath.NewUint(uint64(nanoSecondsInMonth.TruncateInt64()))
-		// TODO: understand what is a and b and name accordingly
-		a := prevI.Quo(nanoSecondsInMonthUint)
-		b := prevI.Add(i).Quo(nanoSecondsInMonthUint)
+		// divide (nanoseconds of time passed) by (nanoseconds in a month) to get how many months have passed.
+		prevIMonths := prevI.Quo(nanoSecondsInMonthUint)
+		// divide (nanoseconds of time passed + random time between blocks) by (nanoseconds in a month) to get how many months have passed.
+		prevIPlusRandomTime := prevI.Add(i).Quo(nanoSecondsInMonthUint)
 
-		if !a.Equal(b) {
+		if !prevIMonths.Equal(prevIPlusRandomTime) {
 			month++
 
 			r = rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))

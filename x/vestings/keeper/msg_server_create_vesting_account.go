@@ -76,13 +76,5 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
-	// refactorTODO: make sure event is committed from the baseapp - https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#all-2
-	// ctx.EventManager().EmitEvent(
-	// 	sdk.NewEvent(
-	// 		sdk.EventTypeMessage,
-	// 		sdk.NewAttribute(sdk.AttributeKeyModule, vestingtypes.ModuleName),
-	// 	),
-	// )
-
 	return &types.MsgCreateVestingAccountResponse{}, nil
 }

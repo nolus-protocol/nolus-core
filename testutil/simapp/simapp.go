@@ -176,7 +176,6 @@ func genesisStateWithValSet(t *testing.T,
 	return genesisState
 }
 
-// TODO: Improve tests that use this function in genesis_test.go files of modules and modify this function's return.
 func TestSetup(t *testing.T) (*app.App, error) {
 	nolusApp := New(t, app.DefaultNodeHome, true)
 	return nolusApp, nil
