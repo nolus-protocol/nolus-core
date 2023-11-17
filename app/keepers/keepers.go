@@ -430,9 +430,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
-		// appKeepers.DistrKeeper,
 		distrkeeper.NewQuerier(*appKeepers.DistrKeeper),
-		nil, // todo: ics 29 not enabled
+		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
 		appKeepers.IBCKeeper.ChannelKeeper,
 		&appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedWasmKeeper,

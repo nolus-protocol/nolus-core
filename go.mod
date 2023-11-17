@@ -27,6 +27,7 @@ require (
 	cosmossdk.io/api v0.3.1
 	cosmossdk.io/errors v1.0.0
 	cosmossdk.io/math v1.1.2
+	cosmossdk.io/simapp v0.0.0-20230602123434-616841b9704d
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2
 	github.com/cosmos/gaia/v11 v11.0.0-00010101000000-000000000000
 	github.com/golang/mock v1.6.0
