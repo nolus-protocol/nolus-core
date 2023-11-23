@@ -34,6 +34,7 @@ declare -r chain2_account_prefix="$9"
 declare -r chain2_price_denom=${10}
 declare -r chain2_trusting_period=${11}
 declare -r hermes_mnemonic=${12}
+declare if_interchain_security=${13}
 
 # Install
 
@@ -86,7 +87,7 @@ update_config "$hermes_config_dir" '.chains[0]."event_source"' '{ mode : "push",
 
 # Add DEX chain configuration
 add_new_chain_hermes "$hermes_config_dir" "$chain2_id" "$chain2_ip_addr_RPC" "$chain2_ip_addr_gRPC" \
-  "$chain2_account_prefix" "$chain2_price_denom" "$chain2_trusting_period"
+  "$chain2_account_prefix" "$chain2_price_denom" "$chain2_trusting_period" "$if_interchain_security"
 
 # Account setup
 declare hermes_mnemonic_file="$hermes_config_dir"/hermes.seed

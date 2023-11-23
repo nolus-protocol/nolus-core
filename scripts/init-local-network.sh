@@ -39,7 +39,6 @@ FEEREFUNDER_TIMEOUT_FEE_MIN="1"
 NOLUS_NETWORK_ADDR="127.0.0.1"
 NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_NETWORK_GRPC_PORT="26615"
-NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
 
 LPP_NATIVE_TICKER="USDC"
 DEX_NAME="osmosis"
@@ -55,10 +54,10 @@ HERMES_ACCOUNT_MNEMONIC=""
 STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC=""
 
 WASM_SCRIPT_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/scripts"
-WASM_CODE_PATH_PROTOCOL="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/$DEX_NAME"
 WASM_CODE_PATH_PLATFORM="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/platform"
 CONTRACTS_INFO_FILE="contracts-info.json"
 ADMINS_TOKENS="10000000""$NATIVE_CURRENCY"
+IF_INTERCHAIN_SECURITY="false"
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -69,7 +68,6 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--chain-id <chain_id>]
-    [--currency <native_currency>]
     [-v|--validators <count>]
     [--validators-root-dir <validators_root_dir>]
     [--validator-accounts-dir <validator_accounts_dir>]
@@ -80,7 +78,7 @@ while [[ $# -gt 0 ]]; do
     [--wasm-code-path-platform <wasm_code_path_platform>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
-    [--lpp-native <lpp_native>]
+    [--lpp-native <lpp_native_ticker>]
     [--gov-voting-period <voting_period>]
     [--user-dir <client_user_dir>]
     [--dex-name <dex_name>]
@@ -91,6 +89,8 @@ while [[ $# -gt 0 ]]; do
     [--dex-price-denom <dex_price_denom>]
     [--dex-trusting-period-secs <dex_trusting_period_in_seconds>]
     [--dex-admin-mnemonic <dex_admin_mnemonic>]
+    [--dex-swap-tree <dex_specific_swap_tree]
+    [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
     [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]
     [--hermes-mnemonic <hermes_account_mnemonic>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
@@ -101,12 +101,6 @@ while [[ $# -gt 0 ]]; do
 
   --chain-id)
     CHAIN_ID="$2"
-    shift
-    shift
-    ;;
-
-  --currency)
-    NATIVE_CURRENCY="$2"
     shift
     shift
     ;;
@@ -241,6 +235,18 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --dex-swap_tree)
+    DEX_SWAP_TREE="$2"
+    shift
+    shift
+    ;;
+
+  --dex-if-interchain-security)
+    IF_INTERCHAIN_SECURITY="$2"
+    shift
+    shift
+    ;;
+
   --store-code-privileged-account-mnemonic)
     STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC="$2"
     shift
@@ -273,6 +279,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
+WASM_CODE_PATH_PROTOCOL="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/$DEX_NAME"
+DEX_SWAP_TREE='{"value":[0,"'"$LPP_NATIVE_TICKER"'"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'
+
 __config_client() {
   run_cmd "$USER_DIR" config chain-id "$CHAIN_ID"
   run_cmd "$USER_DIR" config keyring-backend "test"
@@ -287,6 +297,11 @@ verify_mandatory "$DEX_NETWORK_ADDR_GRPC" "DEX network GRPC - fully host part"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "Hermes account mnemonic"
 verify_mandatory "$DEX_ADMIN_MNEMONIC" "DEX-Admin account mnemonic"
 verify_mandatory "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "WASM store-code privileged account mnemonic"
+
+ if [[ $IF_INTERCHAIN_SECURITY != "true" && $IF_INTERCHAIN_SECURITY != "false" ]]; then
+    echo >&2 "the dex-if-interchain-security value must be true or false"
+    exit 1
+  fi
 
 rm_dir "$VALIDATORS_ROOT_DIR"
 rm_dir "$VAL_ACCOUNTS_DIR"
@@ -309,7 +324,7 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$TREASURY_NLS_U128" \
               "$LPP_NATIVE_TICKER" "$CONTRACTS_INFO_FILE" \
               "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
-              "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME"
+              "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME" "$DEX_SWAP_TREE"
 
 __config_client
 
@@ -318,7 +333,8 @@ run_cmd "$VALIDATORS_ROOT_DIR/local-validator-1" start &>"$USER_DIR"/nolus_logs.
 /bin/bash "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/remote/hermes-initial-config.sh "$HOME" "$CHAIN_ID" "$NOLUS_NETWORK_ADDR" \
                                                 "$NOLUS_NETWORK_RPC_PORT" "$NOLUS_NETWORK_GRPC_PORT" \
                                                 "$DEX_NETWORK_ID" "$DEX_NETWORK_ADDR_RPC"  "$DEX_NETWORK_ADDR_GRPC" \
-                                                "$DEX_ACCOUNT_PREFIX" "$DEX_PRICE_DENOM" "$DEX_TRUSTING_PERIOD" "$HERMES_ACCOUNT_MNEMONIC"
+                                                "$DEX_ACCOUNT_PREFIX" "$DEX_PRICE_DENOM" "$DEX_TRUSTING_PERIOD" "$HERMES_ACCOUNT_MNEMONIC" \
+                                                "$IF_INTERCHAIN_SECURITY"
 
 HERMES_BINARY_DIR="$HOME"/hermes
 

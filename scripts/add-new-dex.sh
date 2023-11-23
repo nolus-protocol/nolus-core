@@ -11,7 +11,6 @@ source "$SCRIPTS_DIR"/internal/add-dex-support.sh
 NOLUS_NET="http://localhost:26612/"
 NOLUS_HOME_DIR="$HOME/.nolus"
 ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="reserve"
-NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
 
 HERMES_CONFIG_DIR_PATH="$HOME/.hermes"
 HERMES_BINARY_DIR_PATH="$HOME/hermes"
@@ -21,6 +20,7 @@ CHAIN_IP_ADDR_GRPC=""
 CHAIN_ACCOUNT_PREFIX=""
 CHAIN_PRICE_DENOM=""
 CHAIN_TRUSTING_PERIOD=""
+IF_INTERCHAIN_SECURITY="true"
 
 
 while [[ $# -gt 0 ]]; do
@@ -40,7 +40,8 @@ while [[ $# -gt 0 ]]; do
     [--dex-ip-addr-grpc-host <new_dex_chain_ip_addr_grpc_fully_host>]
     [--dex-account-prefix <new_dex_account_prefix>]
     [--dex-price-denom <new_dex_price_denom>]
-    [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]" \
+    [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
+    [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]" \
     "$0"
     exit 0
     ;;
@@ -105,6 +106,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --dex-if-interchain-security)
+    IF_INTERCHAIN_SECURITY="$2"
+    shift
+    shift
+    ;;
+
   *)
     echo >&2 "The provided option '$key' is not recognized"
     exit 1
@@ -113,6 +120,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
+
 verify_mandatory "$CHAIN_ID" "new DEX chain_id"
 verify_mandatory "$CHAIN_IP_ADDR_RPC" "new DEX RPC addr - fully host part"
 verify_mandatory "$CHAIN_IP_ADDR_GRPC" "new DEX gRPC addr - fully host part"
@@ -120,9 +129,14 @@ verify_mandatory "$CHAIN_ACCOUNT_PREFIX" "new DEX account prefix"
 verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price  denom"
 verify_mandatory "$CHAIN_TRUSTING_PERIOD" "new DEX trusting period"
 
+ if [[ $IF_INTERCHAIN_SECURITY != "true" && $IF_INTERCHAIN_SECURITY != "false" ]]; then
+    echo >&2 "the dex-if-interchain-security value must be true or false"
+    exit 1
+  fi
+
 # Extend the existing Hermes configuration
 add_new_chain_hermes "$HERMES_CONFIG_DIR_PATH" "$CHAIN_ID" "$CHAIN_IP_ADDR_RPC" "$CHAIN_IP_ADDR_GRPC" \
-    "$CHAIN_ACCOUNT_PREFIX" "$CHAIN_PRICE_DENOM" "$CHAIN_TRUSTING_PERIOD"
+    "$CHAIN_ACCOUNT_PREFIX" "$CHAIN_PRICE_DENOM" "$CHAIN_TRUSTING_PERIOD" "$IF_INTERCHAIN_SECURITY"
 
 # Link the Hermes account to the DEX
 dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH"/hermes.seed

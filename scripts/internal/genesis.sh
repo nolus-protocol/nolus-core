@@ -49,6 +49,7 @@ generate_genesis() {
   local -r store_code_privileged_account_mnemonic="${17}"
   local -r admins_tokens="${18}"
   local -r dex_name="${19}"
+  local -r swap_tree=${20}
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -75,7 +76,7 @@ generate_genesis() {
     "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" \
                           "$treasury_init_tokens" "$lpp_native" "$contracts_info_file" \
-                          "$dex_admin_address" "$dex_name")
+                          "$dex_admin_address" "$dex_name" "$swap_tree")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   _=$(__integrate_genesis_txs "$create_validator_txs")

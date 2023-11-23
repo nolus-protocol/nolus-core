@@ -28,6 +28,7 @@ init_network() {
   local -r store_code_privileged_account_mnemonic="${17}"
   local -r admins_tokens="${18}"
   local -r dex_name="${19}"
+  local -r swap_tree="${20}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators")"
   local final_genesis_file;
@@ -39,6 +40,6 @@ init_network() {
                                           "$node_id_and_val_pubkeys" \
                                           "$lpp_native" "$contracts_info_file" \
                                           "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" \
-                                          "$dex_admin_mnemonic" "$store_code_privileged_account_mnemonic" "$admins_tokens" "$dex_name")
+                                          "$dex_admin_mnemonic" "$store_code_privileged_account_mnemonic" "$admins_tokens" "$dex_name" "$swap_tree")
   propagate_genesis "$final_genesis_file" "$validators"
 }

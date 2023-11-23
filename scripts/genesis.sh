@@ -32,6 +32,7 @@ __print_usage() {
     [--dex-admin-mnemonic <dex_admin_account_mnemonic>]
     [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]
     [--dex-name <dex_name>]
+    [--dex-swap-tree <dex_specific_swap_tree]
     [-o|--output <genesis_file_path>]" \
      "$1"
 }
@@ -48,7 +49,7 @@ VAL_ACCOUNTS_DIR="val-accounts"
 VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 OUTPUT_FILE=""
-LPP_NATIVE=""
+LPP_NATIVE="USDC"
 CONTRACTS_INFO_FILE="contracts-info.json"
 GOV_VOTING_PERIOD="43200s"
 FEEREFUNDER_ACK_FEE_MIN="1"
@@ -178,6 +179,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --dex-swap-tree)
+    DEX_SWAP_TREE="$2"
+    shift
+    shift
+    ;;
+
   -o | --output)
     OUTPUT_FILE="$2"
     shift
@@ -191,6 +198,8 @@ while [[ $# -gt 0 ]]; do
 
   esac
 done
+
+DEX_SWAP_TREE='{"value":[0,"'"$LPP_NATIVE"'"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'
 
 if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
@@ -210,7 +219,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$LPP_NATIVE" \
                                   "$CONTRACTS_INFO_FILE" "$GOV_VOTING_PERIOD" \
                                   "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"  \
-                                  "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME")
+                                  "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME" "$DEX_SWAP_TREE")
   mv "$genesis_file" "$OUTPUT_FILE"
 # elif [[ "$COMMAND" == "$COMMAND_SETUP" ]]; then
 #

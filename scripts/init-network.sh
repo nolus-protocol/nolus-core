@@ -81,6 +81,7 @@ while [[ $# -gt 0 ]]; do
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
     [--moniker <string - node moniker (default: $MONIKER_BASE>]
     [--dex-name <dex_name>]
+    [--dex-swap-tree <dex_specific_swap_tree]
     [--dex-admin-mnemonic <dex_admin_mnemonic>]
     [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]" \
       "$0"
@@ -229,6 +230,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --dex-swap-tree)
+    DEX_SWAP_TREE="$2"
+    shift
+    shift
+    ;;
+
   --store-code-privileged-account-mnemonic)
     STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC="$2"
     shift
@@ -242,6 +249,8 @@ while [[ $# -gt 0 ]]; do
 
   esac
 done
+
+DEX_SWAP_TREE='{"value":[0,"'"$LPP_NATIVE"'"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'
 
 verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
@@ -273,6 +282,6 @@ init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$
   "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
   "$TREASURY_NLS_U128" "$LPP_NATIVE" "$CONTRACTS_INFO_FILE" \
   "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
-  "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME"
+  "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS" "$DEX_NAME" "$DEX_SWAP_TREE"
 
 start_validators "$VALIDATORS"
