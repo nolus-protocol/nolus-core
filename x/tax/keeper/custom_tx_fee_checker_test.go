@@ -11,15 +11,17 @@ import (
 
 // The bytes below represent this string: {"prices":[{"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"4248067","ticker":"USDC"}},{"amount":{"amount":"2000000000","ticker":"NLS"},"amount_quote":{"amount":"10452150388158391","ticker":"USDC"}}]}.
 var queryPricesResponseBytes = []byte{123, 34, 112, 114, 105, 99, 101, 115, 34, 58, 91, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 50, 48, 48, 48, 48, 48, 48, 48, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 79, 83, 77, 79, 34, 125, 44, 34, 97, 109, 111, 117, 110, 116, 95, 113, 117, 111, 116, 101, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 52, 50, 52, 56, 48, 54, 55, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 85, 83, 68, 67, 34, 125, 125, 44, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 50, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 48, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 78, 76, 83, 34, 125, 44, 34, 97, 109, 111, 117, 110, 116, 95, 113, 117, 111, 116, 101, 34, 58, 123, 34, 97, 109, 111, 117, 110, 116, 34, 58, 34, 49, 48, 52, 53, 50, 49, 53, 48, 51, 56, 56, 49, 53, 56, 51, 57, 49, 34, 44, 34, 116, 105, 99, 107, 101, 114, 34, 58, 34, 85, 83, 68, 67, 34, 125, 125, 93, 125}
+var osmoDenom = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y"
+var osmoFeeAmount = int64(1_000_000_000)
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
-		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
+		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, osmoFeeAmount)},
 	}
 
 	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
@@ -37,7 +39,7 @@ func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
 func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
 	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("unls", 1000000000)},
@@ -53,7 +55,7 @@ func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
 func TestCustomTxFeeCheckerSuccessfulInUnsupportedDenom(t *testing.T) {
 	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("unsupported", 1000000000)},
@@ -67,7 +69,7 @@ func TestCustomTxFeeCheckerSuccessfulInUnsupportedDenom(t *testing.T) {
 func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
 	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
@@ -86,7 +88,7 @@ func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
 func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
@@ -105,7 +107,7 @@ func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
 func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
@@ -124,7 +126,7 @@ func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
 func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
-	feeTx := MockFeeTx{
+	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
 		Gas:  100000,
 		Fee:  sdk.Coins{sdk.NewInt64Coin("ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y", 1000000000)},
@@ -139,35 +141,4 @@ func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
 
 	_, _, err = taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
-}
-
-type MockFeeTx struct {
-	Msgs []sdk.Msg
-	Gas  uint64
-	Fee  sdk.Coins
-}
-
-func (m MockFeeTx) GetMsgs() []sdk.Msg {
-	return m.Msgs
-}
-
-func (m MockFeeTx) ValidateBasic() error {
-	// Implement your basic validation logic here or return nil if not needed for the test.
-	return nil
-}
-
-func (m MockFeeTx) GetGas() uint64 {
-	return m.Gas
-}
-
-func (m MockFeeTx) GetFee() sdk.Coins {
-	return m.Fee
-}
-
-func (m MockFeeTx) FeePayer() sdk.AccAddress {
-	return sdk.AccAddress{}
-}
-
-func (m MockFeeTx) FeeGranter() sdk.AccAddress {
-	return sdk.AccAddress{}
 }

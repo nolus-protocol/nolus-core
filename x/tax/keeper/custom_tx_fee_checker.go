@@ -3,7 +3,6 @@ package keeper
 import (
 	"encoding/json"
 	"math"
-	"strconv"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
@@ -11,23 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
-
-const baseAssetTicker = "NLS"
-
-// OracleData is the struct we use to unmarshal the oracle's response for prices.
-type OracleData struct {
-	Prices []Price `json:"prices"`
-}
-type Price struct {
-	Amount struct {
-		Amount string `json:"amount"`
-		Ticker string `json:"ticker"`
-	} `json:"amount"`
-	AmountQuote struct {
-		Amount string `json:"amount"`
-		Ticker string `json:"ticker"`
-	} `json:"amount_quote"`
-}
 
 // CustomTxFeeChecker reuses the default fee logic, but we will add the ability to pay fees in other denoms
 // defined as a module parameter. The exact price will be calculated in base asset(defined
@@ -57,17 +39,16 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
-			// Base asset is always the first value defined in min-gas-prices config (should be unls)
-			// TODO: what do we do if a malicious validator changes his base asset to something different than unls?
-			// Maybe we can use the baseDenom instead of the minGasPrices denom?
-			minimumFeeRequired := sdk.NewCoin(minGasPrices[0].Denom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
+			// Base denom is module param, should be "unls"
+			baseDenom := k.GetParams(ctx).BaseDenom
+			minimumFeeRequired := sdk.NewCoin(baseDenom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
 			// if there are no fees paid in the base asset
-			if ok, _ := feeCoins.Find(minimumFeeRequired.Denom); !ok {
+			if ok, _ := feeCoins.Find(baseDenom); !ok {
 				// Get Fee Param for select dex based on the feeCoins provided
 				feeParam, err := getFeeParamBasedOnDenom(k.GetParams(ctx).FeeParams, feeCoins)
 				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to get fee param based on denom: %s", err.Error())
+					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, err.Error())
 				}
 
 				// get the oracle address
@@ -83,7 +64,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				}
 
 				// unmarshal pricesBytes in an appropriate struct
-				var prices OracleData
+				var prices types.OracleData
 				err = json.Unmarshal(pricesBytes, &prices)
 				if err != nil {
 					return nil, 0, errors.Wrapf(sdkerrors.ErrJSONUnmarshal, "failed to unmarshal oracle data: %s", err.Error())
@@ -91,13 +72,17 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 				// go through every fee provided
 				for _, fee := range feeCoins {
-					currentFeeAmountInNLS, err := calculateValueInBaseAsset(fee.Denom, fee.Amount.ToLegacyDec().MustFloat64(), prices, *feeParam)
+					denomTicker, err := isValidFeeDenom(fee.Denom, *feeParam)
+					if err != nil {
+						return nil, 0, err
+					}
+					providedFeeAmountInBaseAsset, err := prices.CalculateValueInBaseAsset(denomTicker, fee.Amount.ToLegacyDec().MustFloat64())
 					if err != nil {
 						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in base asset: %s", fee.Denom, err.Error())
 					}
 
 					// if the fee calculated in nls is greater than the required fee in nls, then fee is valid
-					if currentFeeAmountInNLS > minimumFeeRequired.Amount.ToLegacyDec().MustFloat64() {
+					if providedFeeAmountInBaseAsset > minimumFeeRequired.Amount.ToLegacyDec().MustFloat64() {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
 					}
@@ -153,57 +138,20 @@ func findDenom(feeParam types.FeeParam, feeCoins sdk.Coins) *types.FeeParam {
 	return nil
 }
 
-func calculateValueInBaseAsset(denom string, amount float64, prices OracleData, feeParam types.FeeParam) (float64, error) {
+func isValidFeeDenom(denom string, feeParam types.FeeParam) (string, error) {
 	ticker := ""
 	for _, acceptedDenoms := range feeParam.AcceptedDenoms {
 		if acceptedDenoms.Denom == denom {
 			ticker = acceptedDenoms.Ticker
-			break
+			return ticker, nil
 		}
 	}
 
 	if ticker == "" {
-		return 0, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
+		return "", errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
 	}
 
-	var err error
-	denomAmountAsInt := 0
-	denomQuoteAmountAsInt := 0
-	baseAssetAmountAsInt := 0
-	baseAssetQuoteAmountAsInt := 0
-	for _, price := range prices.Prices {
-		if price.Amount.Ticker == baseAssetTicker {
-			baseAssetAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
-			if err != nil {
-				return 0, err
-			}
-
-			baseAssetQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
-			if err != nil {
-				return 0, err
-			}
-		}
-
-		if price.Amount.Ticker == ticker {
-			denomAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
-			if err != nil {
-				return 0, err
-			}
-
-			denomQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
-			if err != nil {
-				return 0, err
-			}
-		}
-	}
-
-	if denomAmountAsInt == 0 || denomQuoteAmountAsInt == 0 || baseAssetAmountAsInt == 0 || baseAssetQuoteAmountAsInt == 0 {
-		return 0, errors.Wrapf(types.ErrInvalidFeeDenom, "no prices found for nls or %s", denom)
-	}
-
-	fullFeeAmountInBaseAsset := amount * (float64(denomQuoteAmountAsInt) / float64(denomAmountAsInt)) * (float64(baseAssetAmountAsInt) / float64(baseAssetQuoteAmountAsInt))
-
-	return fullFeeAmountInBaseAsset, nil
+	return ticker, nil
 }
 
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the gas price
