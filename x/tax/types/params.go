@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	errorsmod "cosmossdk.io/errors"
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"gopkg.in/yaml.v2"
 )
@@ -13,7 +14,7 @@ import (
 var (
 	DefaultFeeRate         int32          = 40
 	DefaultContractAddress string         = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-	DefaultBaseDenom       string         = sdk.DefaultBondDenom
+	DefaultBaseDenom       string         = params.BaseCoinUnit
 	DefaultOracleAddress   string         = "nolus1436kxs0w2es6xlqpp9rd35e3d0cjnw4sv8j3a7483sgks29jqwgsv3wzl4"
 	DefaultProfitAddress   string         = "nolus1mf6ptkssddfmxvhdx0ech0k03ktp6kf9yk59renau2gvht3nq2gqkxgywu"
 	DefaultAcceptedDenoms  []*DenomTicker = []*DenomTicker{

@@ -93,8 +93,16 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			expErr:    types.ErrInvalidFeeDenom,
 		},
 		{
-			title:     "pay fees with multiple denoms should fail",
+			title:     "pay fees with multiple not allowed denoms should fail",
 			feeDenoms: []string{baseDenom, rnDenom},
+			feeAmount: sdkmath.NewInt(100),
+			feeRate:   40,
+			expPass:   false,
+			expErr:    types.ErrTooManyFeeCoins,
+		},
+		{
+			title:     "pay fees with multiple denoms where both base and allowed denoms are allowed and sufficient should fail",
+			feeDenoms: []string{baseDenom, osmoDenom},
 			feeAmount: sdkmath.NewInt(100),
 			feeRate:   40,
 			expPass:   false,
@@ -180,22 +188,22 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 				addressToReceiveTax = treasuryAddr
 			}
 
-			expaddressToReceiveTaxBalance := sdk.Coins{} // empty treasury
-			addressToReceiveTaxBalance := suite.app.BankKeeper.GetAllBalances(suite.ctx, addressToReceiveTax)
+			expaCoins := sdk.Coins{} // empty treasury
+			coinsInAddressToReceiveTax := suite.app.BankKeeper.GetAllBalances(suite.ctx, addressToReceiveTax)
 			feeRate := sdkmath.LegacyNewDec(int64(tc.feeRate))
 			tax := feeRate.MulInt(tc.feeAmount).Quo(HUNDRED_DEC).TruncateInt()
 
 			if txFees.Empty() || tc.feeRate == 0 || tax.LT(sdkmath.NewInt(1)) {
-				suite.Require().Equal(expaddressToReceiveTaxBalance, addressToReceiveTaxBalance, "Treasury should be empty")
+				suite.Require().Equal(expaCoins, coinsInAddressToReceiveTax, "Treasury should be empty")
 				return
 			}
 
 			feeDenom := tc.feeDenoms[0]
-			expaddressToReceiveTaxBalance = expaddressToReceiveTaxBalance.Add(
+			expaCoins = expaCoins.Add(
 				sdk.NewCoin(feeDenom, tax),
 			)
 
-			suite.Require().Equal(expaddressToReceiveTaxBalance, addressToReceiveTaxBalance, "Treasury/Profit should have collected correct tax amount")
+			suite.Require().Equal(expaCoins, coinsInAddressToReceiveTax, "Treasury/Profit should have collected correct tax amount")
 		})
 	}
 }

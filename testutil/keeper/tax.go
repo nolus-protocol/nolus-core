@@ -52,3 +52,34 @@ func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Ke
 
 	return &k, ctx, mockWasmKeeper
 }
+
+type MockFeeTx struct {
+	Msgs []sdk.Msg
+	Gas  uint64
+	Fee  sdk.Coins
+}
+
+func (m MockFeeTx) GetMsgs() []sdk.Msg {
+	return m.Msgs
+}
+
+func (m MockFeeTx) ValidateBasic() error {
+	// Implement your basic validation logic here or return nil if not needed for the test.
+	return nil
+}
+
+func (m MockFeeTx) GetGas() uint64 {
+	return m.Gas
+}
+
+func (m MockFeeTx) GetFee() sdk.Coins {
+	return m.Fee
+}
+
+func (m MockFeeTx) FeePayer() sdk.AccAddress {
+	return sdk.AccAddress{}
+}
+
+func (m MockFeeTx) FeeGranter() sdk.AccAddress {
+	return sdk.AccAddress{}
+}
