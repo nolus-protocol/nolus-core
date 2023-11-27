@@ -188,22 +188,22 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 				addressToReceiveTax = treasuryAddr
 			}
 
-			expaCoins := sdk.Coins{} // empty treasury
+			expCoins := sdk.Coins{} // empty treasury
 			coinsInAddressToReceiveTax := suite.app.BankKeeper.GetAllBalances(suite.ctx, addressToReceiveTax)
 			feeRate := sdkmath.LegacyNewDec(int64(tc.feeRate))
 			tax := feeRate.MulInt(tc.feeAmount).Quo(HUNDRED_DEC).TruncateInt()
 
 			if txFees.Empty() || tc.feeRate == 0 || tax.LT(sdkmath.NewInt(1)) {
-				suite.Require().Equal(expaCoins, coinsInAddressToReceiveTax, "Treasury should be empty")
+				suite.Require().Equal(expCoins, coinsInAddressToReceiveTax, "Treasury should be empty")
 				return
 			}
 
 			feeDenom := tc.feeDenoms[0]
-			expaCoins = expaCoins.Add(
+			expCoins = expCoins.Add(
 				sdk.NewCoin(feeDenom, tax),
 			)
 
-			suite.Require().Equal(expaCoins, coinsInAddressToReceiveTax, "Treasury/Profit should have collected correct tax amount")
+			suite.Require().Equal(expCoins, coinsInAddressToReceiveTax, "Treasury/Profit should have collected correct tax amount")
 		})
 	}
 }
