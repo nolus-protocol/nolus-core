@@ -48,7 +48,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
 	}
 
-	// Ensure not more then one denom for paying tx costs
+	// Ensure not more than one denom for paying tx costs
 	if len(txFees) > 1 {
 		return ctx, types.ErrTooManyFeeCoins
 	}
@@ -75,7 +75,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		// Ensure the profit address has been set
 		profitAddr, err := sdk.AccAddressFromBech32(feeParam.ProfitAddress)
 		if err != nil {
-			return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
+			return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid profit smart contract address: %s", err.Error()))
 		}
 
 		// since it's not baseDenom, send it to the profit
@@ -117,7 +117,7 @@ func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, f
 		return types.ErrInvalidTax
 	}
 
-	ctx.Logger().Info(fmt.Sprintf("Deducted tax: %s, final fee: %s", tax, feeCoin.Sub(tax)))
+	ctx.Logger().Info(fmt.Sprintf("Deducted tax to treasury - %s : %s, final fee: %s", treasuryAddr, tax, feeCoin.Sub(tax)))
 
 	// Send tax from fee collector to the treasury smart contract address
 	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
