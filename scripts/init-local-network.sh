@@ -52,9 +52,10 @@ DEX_NETWORK_ADDR_RPC=""
 DEX_NETWORK_ADDR_GRPC=""
 HERMES_ACCOUNT_MNEMONIC=""
 STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC=""
+DEX_SWAP_TREE='{"value":[0,"USDC"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'
 
 WASM_SCRIPT_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/scripts"
-WASM_CODE_PATH_PLATFORM="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/platform"
+WASM_CODE_ARTIFACTS_PATH="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/"
 CONTRACTS_INFO_FILE="contracts-info.json"
 ADMINS_TOKENS="10000000""$NATIVE_CURRENCY"
 IF_INTERCHAIN_SECURITY="false"
@@ -74,8 +75,7 @@ while [[ $# -gt 0 ]]; do
     [--validator-tokens <validators_initial_tokens>]
     [--validator-stake <tokens_validator_stakes>]
     [--wasm-script-path <wasm_script_path>]
-    [--wasm-code-path-protocol <wasm_code_path_protocol>]
-    [--wasm-code-path-platform <wasm_code_path_platform>]
+    [--wasm-code-artifacts-path <wasm_code_artifacts_path>]
     [--treasury-nls-u128 <treasury_initial_Nolus_tokens>]
     [--reserve-tokens <initial_reserve_tokens>]
     [--lpp-native <lpp_native_ticker>]
@@ -145,14 +145,8 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --wasm-code-path-protocol)
-    WASM_CODE_PATH_PROTOCOL="$2"
-    shift
-    shift
-    ;;
-
-  --wasm-code-path-platform)
-    WASM_CODE_PATH_PLATFORM="$2"
+  --wasm-code-artifacts-path)
+    WASM_CODE_ARTIFACTS_PATH="$2"
     shift
     shift
     ;;
@@ -235,7 +229,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --dex-swap_tree)
+  --dex-swap-tree)
     DEX_SWAP_TREE="$2"
     shift
     shift
@@ -280,8 +274,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 NOLUS_NET="http://localhost:$NOLUS_NETWORK_RPC_PORT/"
-WASM_CODE_PATH_PROTOCOL="$INIT_LOCAL_NETWORK_SCRIPT_DIR/../../nolus-money-market/artifacts/$DEX_NAME"
-DEX_SWAP_TREE='{"value":[0,"'"$LPP_NATIVE_TICKER"'"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'
+WASM_CODE_PATH_PROTOCOL="$WASM_CODE_ARTIFACTS_PATH/$DEX_NAME"
+WASM_CODE_PATH_PLATFORM="$WASM_CODE_ARTIFACTS_PATH/platform"
 
 __config_client() {
   run_cmd "$USER_DIR" config chain-id "$CHAIN_ID"
