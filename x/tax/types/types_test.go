@@ -6,41 +6,15 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 
-	"github.com/Nolus-Protocol/nolus-core/testutil/network"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 type TypesTestSuite struct {
 	suite.Suite
-	cfg     network.Config
-	network *network.Network
 }
 
-// func (s *TypesTestSuite) SetupSuite() {
-// 	s.T().Log("setting up integration test suite")
-
-// 	cfg := network.DefaultConfig()
-
-// 	genesisState := cfg.GenesisState
-// 	cfg.NumValidators = 1
-
-// 	var mintData minttypes.GenesisState
-// 	s.Require().NoError(cfg.Codec.UnmarshalJSON(genesisState[minttypes.ModuleName], &mintData))
-
-// 	mintDataBz, err := cfg.Codec.MarshalJSON(&mintData)
-// 	s.Require().NoError(err)
-// 	genesisState[minttypes.ModuleName] = mintDataBz
-// 	cfg.GenesisState = genesisState
-
-// 	s.cfg = cfg
-// 	s.network = network.New(s.T(), cfg)
-
-// 	_, err = s.network.WaitForHeight(1)
-// 	s.Require().NoError(err)
-// }
-
 func (s *TypesTestSuite) TearDownSuite() {
-	s.T().Log("tearing down integration test suite")
+	s.T().Log("tearing down types test suite")
 }
 
 func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
