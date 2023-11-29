@@ -100,17 +100,37 @@ nolusd q ibc channel connections <connection> --output json | jq '.channels[0].c
 
 ## Set up a new DEX
 
-On a live network, a new DEX can be deployed using the following script. It takes care of setting up Hermes to work with the new DEX. (TO DO: It will also deploy DEX-specific contracts using `./deploy-contracts-live.sh`)
+On a live network, a new DEX can be deployed using the following steps.
+
+### Аutomated step
 
 ```sh
-./scripts/add-new-dex.sh --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>
+./scripts/add-new-dex.sh --dex-admin-key <dex_admin_key> --store-code-privileged-user-key <store_code_privileged_user_key> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds> --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree>
 ```
 
-(Execute `./scripts/add-new-dex.sh --help` for additional configuration options)
+The script takes care of setting up Hermes to work with the new DEX and deploying DEX-specific contracts (More about deploying contracts on a live network can be found [here](https://github.com/nolus-protocol/nolus-money-market)).
 
-The script will locate the Hermes account from the Hermes configuration directory and link it to the new DEX.
+*Notes:
 
-!!! Prerequisites: Before running, the address should have a certain amount on the DEX network in order to be used by Hermes. This can be accomplished by using the DEX network binary and a public faucet, as demonstrated for Osmosis [here](#initialize-set-up-the-DEX-parameters-and-run).
+* Execute `./scripts/add-new-dex.sh --help` for additional configuration options)
+
+* The `protocol-swap-tree` must be passed in single quotes (for example: **--protocol-swap-tree '{"value":[0,"USDC"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'**)
+
+* The script will locate the Hermes account from the Hermes configuration directory and link it to the new DEX
+
+* !!! Prerequisites: Before running, the address should have a certain amount on the DEX network in order to be used by Hermes. This can be accomplished by using the DEX network binary and a public faucet, as demonstrated for Osmosis [here](#initialize-set-up-the-dex-parameters-and-run)
+
+### Manual step
+
+Get the new DEX-specific Leaser address: (TO DO: update)
+
+```sh
+nolusd q wasm cs all <admin_contract_address>
+```
+
+Configure it with the new DEX-specific connection:
+
+Follow the instructions [here](#set-up-the-dex-parameters-manually) bearing in mind the `Notes`.
 
 ## Build a statically linked binary
 
