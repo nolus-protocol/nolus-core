@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--nolus-home-dir <nolus_home_dir>]
-    [--nolusd-money-market-dir <nolus_money_market_dir>]
+    [--nolus-money-market-dir <nolus_money_market_dir>]
     [--account-key-to-feed-hermes-address <account_key_to_feed_hermes_address>]
     [--dex-admin-key <dex_admin_key>]
     [--store-code-privileged-user-key <store_code_privileged_user_key>]
