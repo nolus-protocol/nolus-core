@@ -1,4 +1,4 @@
-FROM golang:1.20-alpine
+FROM golang:1.21-alpine
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
