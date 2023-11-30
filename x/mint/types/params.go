@@ -7,13 +7,12 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Parameter store keys.
 var (
-	DefaultBondDenom              = params.DefaultBondDenom
+	DefaultBondDenom              = sdk.DefaultBondDenom
 	DefaultMaxMintablenanoseconds = int64(time.Minute) // 1 minute default
 )
 
@@ -27,7 +26,7 @@ func NewParams(mintDenom string, maxMintableNanoseconds sdkmath.Uint) Params {
 // DefaultParams returns default x/mint module parameters.
 func DefaultParams() Params {
 	return Params{
-		MintDenom:              params.DefaultBondDenom,
+		MintDenom:              sdk.DefaultBondDenom,
 		MaxMintableNanoseconds: sdkmath.NewUint(60000000000), // 1 minute default
 	}
 }
