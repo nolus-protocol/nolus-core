@@ -8,9 +8,9 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
@@ -27,7 +27,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		simState.Cdc, string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
 		func(r *rand.Rand) { maxMintableNSecs = GenMaxMintableNanoseconds(r) },
 	)
-	mintDenom := params.DefaultBondDenom
+	mintDenom := sdk.DefaultBondDenom
 	params := types.NewParams(mintDenom, maxMintableNSecs)
 
 	mintGenesis := types.NewGenesisState(types.InitialMinter(), params)

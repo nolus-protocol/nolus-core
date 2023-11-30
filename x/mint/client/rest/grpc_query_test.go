@@ -63,7 +63,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			map[string]string{},
 			&minttypes.QueryParamsResponse{},
 			&minttypes.QueryParamsResponse{
-				Params: minttypes.NewParams("stake", sdkmath.NewUint(uint64(time.Second.Nanoseconds()*60))),
+				Params: minttypes.NewParams("unls", sdkmath.NewUint(uint64(time.Second.Nanoseconds()*60))),
 			},
 		},
 		{

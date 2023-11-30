@@ -31,7 +31,6 @@ import (
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // New creates application instance with in-memory database and disabled logging.
@@ -61,7 +60,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
 		balance := banktypes.Balance{
 			Address: acc.GetAddress().String(),
-			Coins:   sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
+			Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
 		}
 
 		genState := NewDefaultGenesisState(encoding.Marshaler)
@@ -161,13 +160,13 @@ func genesisStateWithValSet(t *testing.T,
 
 	for range delegations {
 		// add delegated tokens to total supply
-		totalSupply = totalSupply.Add(sdk.NewCoin(params.DefaultBondDenom, bondAmt))
+		totalSupply = totalSupply.Add(sdk.NewCoin(sdk.DefaultBondDenom, bondAmt))
 	}
 
 	// add bonded amount to bonded pool module account
 	balances = append(balances, banktypes.Balance{
 		Address: authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String(),
-		Coins:   sdk.Coins{sdk.NewCoin(params.DefaultBondDenom, bondAmt)},
+		Coins:   sdk.Coins{sdk.NewCoin(sdk.DefaultBondDenom, bondAmt)},
 	})
 
 	// update total supply
