@@ -5,7 +5,6 @@ import (
 
 	"cosmossdk.io/simapp"
 
-	abcitypes "github.com/cometbft/cometbft/abci/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 
@@ -14,15 +13,9 @@ import (
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {
+	// simapp.Setup initializes the app
 	app := simapp.Setup(t, false)
 	ctx := app.BaseApp.NewContext(false, tmproto.Header{})
-
-	app.InitChain(
-		abcitypes.RequestInitChain{
-			AppStateBytes: []byte("{}"),
-			ChainId:       "test-chain-id",
-		},
-	)
 
 	acc := app.AccountKeeper.GetAccount(ctx, authtypes.NewModuleAddress(types.ModuleName))
 	require.NotNil(t, acc)

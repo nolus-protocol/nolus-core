@@ -45,6 +45,7 @@ import (
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 
@@ -101,6 +102,7 @@ func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
 }
 
 func TestAppStateDeterminism(t *testing.T) {
+	sdk.DefaultBondDenom = params.DefaultBondDenom
 	if !simcli.FlagEnabledValue {
 		t.Skip("skipping application simulation")
 	}
@@ -178,6 +180,7 @@ func TestAppStateDeterminism(t *testing.T) {
 }
 
 func TestAppImportExport(t *testing.T) {
+	sdk.DefaultBondDenom = params.DefaultBondDenom
 	config := simcli.NewConfigFromFlags()
 	config.ChainID = SimAppChainID
 	appParamsConfigurationSim(t, &config)

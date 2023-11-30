@@ -41,7 +41,7 @@ func TestRandomizedGenState(t *testing.T) {
 	var taxGenesis types.GenesisState
 	simState.Cdc.MustUnmarshalJSON(simState.GenState[types.ModuleName], &taxGenesis)
 
-	require.Equal(t, "stake", taxGenesis.Params.BaseDenom)
+	require.Equal(t, "unls", taxGenesis.Params.BaseDenom)
 	require.GreaterOrEqual(t, taxGenesis.Params.FeeRate, int32(1))
 	require.GreaterOrEqual(t, int32(100), taxGenesis.Params.FeeRate)
 	require.Equal(t, "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz", taxGenesis.Params.ContractAddress)

@@ -5,7 +5,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
@@ -14,7 +13,7 @@ import (
 )
 
 var (
-	defaultMintDenom              = sdk.DefaultBondDenom
+	defaultMintDenom              = params.DefaultBondDenom
 	defaultMaxMintableNanoseconds = uint64(60000000000)
 )
 

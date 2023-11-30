@@ -14,7 +14,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/neutron-org/neutron v1.0.5-0.20231125170253-5c4b844e3272
+	github.com/neutron-org/neutron v1.0.5-0.20231128122544-e605ed3db438
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -69,7 +69,7 @@ require (
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogogateway v1.2.0 // indirect
 	github.com/cosmos/iavl v0.20.1 // indirect
-	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.1 // indirect
+	github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2 // indirect
 	github.com/cosmos/ics23/go v0.10.0 // indirect
 	github.com/cosmos/interchain-security/v3 v3.1.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v0.13.0 // indirect

@@ -402,8 +402,8 @@ github.com/cosmos/gogoproto v1.4.10 h1:QH/yT8X+c0F4ZDacDv3z+xE3WU1P1Z3wQoLMBRJoK
 github.com/cosmos/gogoproto v1.4.10/go.mod h1:3aAZzeRWpAwr+SS/LLkICX2/kDFyaYVzckBDzygIxek=
 github.com/cosmos/iavl v0.20.1 h1:rM1kqeG3/HBT85vsZdoSNsehciqUQPWrR4BYmqE2+zg=
 github.com/cosmos/iavl v0.20.1/go.mod h1:WO7FyvaZJoH65+HFOsDir7xU9FWk2w9cHXNW1XHcl7A=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.1 h1:PqIK9vTr6zxCdQmrDZwxwL4KMAqg/GRGsiMEiaMP4wA=
-github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.1/go.mod h1:UvDmcGIWJPIytq+Q78/ff5NTOsuX/7IrNgEugTW5i0s=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2 h1:6zjj+yIpMbCTRI2eJ2fXuflElENs3mrUSLH/TSWL8fk=
+github.com/cosmos/ibc-apps/middleware/packet-forward-middleware/v7 v7.1.2/go.mod h1:UvDmcGIWJPIytq+Q78/ff5NTOsuX/7IrNgEugTW5i0s=
 github.com/cosmos/ibc-go/v7 v7.3.1 h1:bil1IjnHdyWDASFYKfwdRiNtFP6WK3osW7QFEAgU4I8=
 github.com/cosmos/ibc-go/v7 v7.3.1/go.mod h1:wvx4pPBofe5ZdMNV3OFRxSI4auEP5Qfqf8JXLLNV04g=
 github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZDM=
@@ -955,8 +955,8 @@ github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OS
 github.com/neilotoole/errgroup v0.1.6/go.mod h1:Q2nLGf+594h0CLBs/Mbg6qOr7GtqDK7C2S41udRnToE=
 github.com/neutron-org/admin-module v0.0.0-20230705134325-b23404470a1d h1:oexw79znoA0TEo7CGdWHrolbvZqCDD3aI+031CbOq9Y=
 github.com/neutron-org/admin-module v0.0.0-20230705134325-b23404470a1d/go.mod h1:QuxQ7FJlEAFMRssyEYOrR9ORnYQvBFMTlO8BXny6ntw=
-github.com/neutron-org/neutron v1.0.5-0.20231125170253-5c4b844e3272 h1:Yqn8J0lAhVmJIoDeCLBBAr0ntqvv4OSIjdBZkvJ8yYs=
-github.com/neutron-org/neutron v1.0.5-0.20231125170253-5c4b844e3272/go.mod h1:ytEsPiuwBHcdXcHf2FiKtrkpxqebgj26PpRaaWBaRnU=
+github.com/neutron-org/neutron v1.0.5-0.20231128122544-e605ed3db438 h1:/wGpk7i/+42JsoTQTbGBD058VXV56fI/BIrGDzCEFEs=
+github.com/neutron-org/neutron v1.0.5-0.20231128122544-e605ed3db438/go.mod h1:/7wnWxAbDz0XPPnYcQGiq09qeVk8VfbOPLxa1SZH254=
 github.com/neutron-org/wasmd v0.40.0-rc.0.0.20230705143547-22c391d461d5 h1:2YQaqP5W3F+5VH0IAA7m8OHjkwONxQDqXUwo5tzKdDU=
 github.com/neutron-org/wasmd v0.40.0-rc.0.0.20230705143547-22c391d461d5/go.mod h1:l699csQZeRKYqF8R9JoYoQ6E0j4PfDM3Ln7EawtUwJE=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=

@@ -18,13 +18,13 @@ import (
 	"github.com/neutron-org/neutron/app"
 	"github.com/neutron-org/neutron/app/params"
 	"github.com/neutron-org/neutron/testutil"
-	"github.com/neutron-org/neutron/wasmbinding"
 	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
 	icqkeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
 	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
 	ictxkeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
 	ictxtypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 
+	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 )
 
