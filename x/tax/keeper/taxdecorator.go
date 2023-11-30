@@ -117,7 +117,7 @@ func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, f
 		return types.ErrInvalidTax
 	}
 
-	ctx.Logger().Info(fmt.Sprintf("Deducted tax to treasury - %s : %s, final fee: %s", treasuryAddr, tax, feeCoin.Sub(tax)))
+	ctx.Logger().Info(fmt.Sprintf("Deducted %s tax to treasury %s, final fee: %s", tax, treasuryAddr, feeCoin.Sub(tax)))
 
 	// Send tax from fee collector to the treasury smart contract address
 	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
