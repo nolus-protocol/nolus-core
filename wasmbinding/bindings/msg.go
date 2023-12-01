@@ -2,6 +2,8 @@
 package bindings
 
 import (
+	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
@@ -25,6 +27,10 @@ type NeutronMsg struct {
 	UpdateInterchainQuery     *UpdateInterchainQuery            `json:"update_interchain_query,omitempty"`
 	RemoveInterchainQuery     *RemoveInterchainQuery            `json:"remove_interchain_query,omitempty"`
 	IBCTransfer               *transferwrappertypes.MsgTransfer `json:"ibc_transfer,omitempty"`
+
+	// Contractmanager types
+	/// A contract that has failed acknowledgement can resubmit it
+	ResubmitFailure *ResubmitFailure `json:"resubmit_failure,omitempty"`
 }
 
 // SubmitTx submits interchain transaction on a remote chain.
@@ -47,8 +53,9 @@ type SubmitTxResponse struct {
 
 // RegisterInterchainAccount creates account on remote chain.
 type RegisterInterchainAccount struct {
-	ConnectionId        string `json:"connection_id"`
-	InterchainAccountId string `json:"interchain_account_id"`
+	ConnectionId        string    `json:"connection_id"`
+	InterchainAccountId string    `json:"interchain_account_id"`
+	RegisterFee         sdk.Coins `json:"register_fee,omitempty"`
 }
 
 // RegisterInterchainAccountResponse holds response for RegisterInterchainAccount.
@@ -106,10 +113,36 @@ type UpdateInterchainQuery struct {
 
 type UpdateInterchainQueryResponse struct{}
 
+type UpgradeProposal struct {
+	Title               string           `json:"title,omitempty"`
+	Description         string           `json:"description,omitempty"`
+	Plan                Plan             `json:"plan"`
+	UpgradedClientState *cosmostypes.Any `json:"upgraded_client_state,omitempty"`
+}
+
+type ClientUpdateProposal struct {
+	Title              string `json:"title,omitempty"`
+	Description        string `json:"description,omitempty"`
+	SubjectClientId    string `json:"subject_client_id,omitempty"`
+	SubstituteClientId string `json:"substitute_client_id,omitempty"`
+}
+
+type ProposalExecuteMessage struct {
+	Message string `json:"message,omitempty"`
+}
+
 // MsgExecuteContract defined separate from wasmtypes since we can get away with just passing the string into bindings.
 type MsgExecuteContract struct {
 	// Contract is the address of the smart contract
 	Contract string `json:"contract,omitempty"`
 	// Msg json encoded message to be passed to the contract
 	Msg string `json:"msg,omitempty"`
+}
+
+type ResubmitFailure struct {
+	FailureId uint64 `json:"failure_id"`
+}
+
+type ResubmitFailureResponse struct {
+	FailureId uint64 `json:"failure_id"`
 }

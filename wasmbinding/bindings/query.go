@@ -3,6 +3,7 @@ package bindings
 import (
 	"encoding/json"
 
+	contractmanagertypes "github.com/neutron-org/neutron/x/contractmanager/types"
 	feerefundertypes "github.com/neutron-org/neutron/x/feerefunder/types"
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
@@ -25,6 +26,9 @@ type NeutronQuery struct {
 	RegisteredInterchainQuery *QueryRegisteredQueryRequest `json:"registered_interchain_query,omitempty"`
 	// MinIbcFee
 	MinIbcFee *QueryMinIbcFeeRequest `json:"min_ibc_fee,omitempty"`
+	// Contractmanager queries
+	// Query all failures for address
+	Failures *Failures `json:"failures,omitempty"`
 }
 
 /* Requests */
@@ -154,4 +158,13 @@ func (sv StorageValue) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(a)
+}
+
+type Failures struct {
+	Address    string             `json:"address"`
+	Pagination *query.PageRequest `json:"pagination,omitempty"`
+}
+
+type FailuresResponse struct {
+	Failures []contractmanagertypes.Failure `json:"failures"`
 }
