@@ -8,9 +8,11 @@ import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 
+	contractmanagerkeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
 	icqkeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
 	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
 	ictxkeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
@@ -19,24 +21,31 @@ import (
 	transferwrappertypes "github.com/neutron-org/neutron/x/transfer/types"
 )
 
-func CustomMessageDecorator(ictx *ictxkeeper.Keeper, icq *icqkeeper.Keeper, transferKeeper transferwrapperkeeper.KeeperTransferWrapper) func(messenger wasmkeeper.Messenger) wasmkeeper.Messenger {
+func CustomMessageDecorator(
+	ictx *ictxkeeper.Keeper,
+	icq *icqkeeper.Keeper,
+	transferKeeper transferwrapperkeeper.KeeperTransferWrapper,
+	contractmanagerKeeper *contractmanagerkeeper.Keeper,
+) func(messenger wasmkeeper.Messenger) wasmkeeper.Messenger {
 	return func(old wasmkeeper.Messenger) wasmkeeper.Messenger {
 		return &CustomMessenger{
-			Keeper:         *ictx,
-			Wrapped:        old,
-			Ictxmsgserver:  ictxkeeper.NewMsgServerImpl(*ictx),
-			Icqmsgserver:   icqkeeper.NewMsgServerImpl(*icq),
-			transferKeeper: transferKeeper,
+			Keeper:                *ictx,
+			Wrapped:               old,
+			Ictxmsgserver:         ictxkeeper.NewMsgServerImpl(*ictx),
+			Icqmsgserver:          icqkeeper.NewMsgServerImpl(*icq),
+			transferKeeper:        transferKeeper,
+			ContractmanagerKeeper: contractmanagerKeeper,
 		}
 	}
 }
 
 type CustomMessenger struct {
-	Keeper         ictxkeeper.Keeper
-	Wrapped        wasmkeeper.Messenger
-	Ictxmsgserver  ictxtypes.MsgServer
-	Icqmsgserver   icqtypes.MsgServer
-	transferKeeper transferwrapperkeeper.KeeperTransferWrapper
+	Keeper                ictxkeeper.Keeper
+	Wrapped               wasmkeeper.Messenger
+	Ictxmsgserver         ictxtypes.MsgServer
+	Icqmsgserver          icqtypes.MsgServer
+	transferKeeper        transferwrapperkeeper.KeeperTransferWrapper
+	ContractmanagerKeeper *contractmanagerkeeper.Keeper
 }
 
 var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
@@ -70,6 +79,9 @@ func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddre
 		}
 		if contractMsg.IBCTransfer != nil {
 			return m.ibcTransfer(ctx, contractAddr, *contractMsg.IBCTransfer)
+		}
+		if contractMsg.ResubmitFailure != nil {
+			return m.resubmitFailure(ctx, contractAddr, contractMsg.ResubmitFailure)
 		}
 	}
 
@@ -372,4 +384,33 @@ func (m *CustomMessenger) performRegisterInterchainQuery(ctx sdk.Context, contra
 	}
 
 	return (*bindings.RegisterInterchainQueryResponse)(response), nil
+}
+
+func (m *CustomMessenger) resubmitFailure(ctx sdk.Context, contractAddr sdk.AccAddress, resubmitFailure *bindings.ResubmitFailure) ([]sdk.Event, [][]byte, error) {
+	failure, err := m.ContractmanagerKeeper.GetFailure(ctx, contractAddr, resubmitFailure.FailureId)
+	if err != nil {
+		return nil, nil, errors.Wrap(sdkerrors.ErrNotFound, "no failure found to resubmit")
+	}
+
+	err = m.ContractmanagerKeeper.ResubmitFailure(ctx, contractAddr, failure)
+
+	if err != nil {
+		ctx.Logger().Error("failed to resubmitFailure",
+			"from_address", contractAddr.String(),
+			"error", err,
+		)
+		return nil, nil, errors.Wrap(err, "failed to resubmitFailure")
+	}
+
+	resp := bindings.ResubmitFailureResponse{FailureId: failure.Id}
+	data, err := json.Marshal(&resp)
+	if err != nil {
+		ctx.Logger().Error("json.Marshal: failed to marshal remove resubmitFailure response to JSON",
+			"from_address", contractAddr.String(),
+			"error", err,
+		)
+		return nil, nil, errors.Wrap(err, "marshal json failed")
+	}
+
+	return nil, [][]byte{data}, nil
 }

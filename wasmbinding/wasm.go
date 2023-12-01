@@ -4,6 +4,7 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
+	contractmanagerkeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
 	feerefunderkeeper "github.com/neutron-org/neutron/x/feerefunder/keeper"
 	interchainqueriesmodulekeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
 	interchaintransactionsmodulekeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
@@ -16,14 +17,15 @@ func RegisterCustomPlugins(
 	icqKeeper *interchainqueriesmodulekeeper.Keeper,
 	transfer transfer.KeeperTransferWrapper,
 	feeRefunderKeeper *feerefunderkeeper.Keeper,
+	contractmanagerKeeper *contractmanagerkeeper.Keeper,
 ) []wasmkeeper.Option {
-	wasmQueryPlugin := NewQueryPlugin(ictxKeeper, icqKeeper, feeRefunderKeeper)
+	wasmQueryPlugin := NewQueryPlugin(ictxKeeper, icqKeeper, feeRefunderKeeper, contractmanagerKeeper)
 
 	queryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(wasmQueryPlugin),
 	})
 	messageHandlerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(ictxKeeper, icqKeeper, transfer),
+		CustomMessageDecorator(ictxKeeper, icqKeeper, transfer, contractmanagerKeeper),
 	)
 
 	return []wasm.Option{
