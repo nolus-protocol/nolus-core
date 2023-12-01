@@ -2,7 +2,6 @@
 package bindings
 
 import (
-	cosmostypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
@@ -112,24 +111,6 @@ type UpdateInterchainQuery struct {
 }
 
 type UpdateInterchainQueryResponse struct{}
-
-type UpgradeProposal struct {
-	Title               string           `json:"title,omitempty"`
-	Description         string           `json:"description,omitempty"`
-	Plan                Plan             `json:"plan"`
-	UpgradedClientState *cosmostypes.Any `json:"upgraded_client_state,omitempty"`
-}
-
-type ClientUpdateProposal struct {
-	Title              string `json:"title,omitempty"`
-	Description        string `json:"description,omitempty"`
-	SubjectClientId    string `json:"subject_client_id,omitempty"`
-	SubstituteClientId string `json:"substitute_client_id,omitempty"`
-}
-
-type ProposalExecuteMessage struct {
-	Message string `json:"message,omitempty"`
-}
 
 // MsgExecuteContract defined separate from wasmtypes since we can get away with just passing the string into bindings.
 type MsgExecuteContract struct {
