@@ -184,7 +184,6 @@ __set_token_denominations() {
     jq '.app_state["staking"]["params"]["bond_denom"]="'"$currency"'"' \
     | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
-    | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["tax"]["params"]["base_denom"]="'"$currency"'"' \
     | jq '.app_state["mint"]["params"]["mint_denom"]="'"$currency"'"' > "$genesis_tmp_file"
@@ -230,6 +229,7 @@ __set_gov_parameters() {
 
   < "$genesis_file" \
     jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
+    | jq '.app_state["gov"]["params"]["voting_period"]="'"$gov_voting_period"'"' \
     | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$gov_voting_period"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
@@ -259,7 +259,10 @@ __modify_neutron_modules_params() {
     |  jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["denom"]="'"$native_currency"'"' \
     | jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["amount"]="'"$timeout_fee_amount"'"' \
     |  jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["denom"]="'"$native_currency"'"' \
-    | jq '.app_state["interchainqueries"]["params"]["query_deposit"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
+    | jq '.app_state["interchainqueries"]["params"]["query_deposit"][0]["denom"]="'"$native_currency"'"' \
+    | jq '.app_state["interchaintxs"]["params"]["msg_submit_tx_max_messages"]="16"' \
+    | jq '.app_state["interchaintxs"]["params"]["register_fee"][0]["amount"]="1"' \
+    | jq '.app_state["interchaintxs"]["params"]["register_fee"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
