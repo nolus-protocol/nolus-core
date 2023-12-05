@@ -2,7 +2,6 @@ package keepers
 
 import (
 	"path/filepath"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -64,6 +63,7 @@ import (
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	"github.com/neutron-org/neutron/x/contractmanager"
@@ -81,55 +81,6 @@ import (
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
 	wrapkeeper "github.com/neutron-org/neutron/x/transfer/keeper"
 )
-
-var (
-	// WasmProposalsEnabled enables all x/wasm proposals when it's value is "true"
-	// and EnableSpecificWasmProposals is empty. Otherwise, all x/wasm proposals
-	// are disabled.
-	WasmProposalsEnabled = "true"
-
-	// EnableSpecificWasmProposals, if set, must be comma-separated list of values
-	// that are all a subset of "EnableAllProposals", which takes precedence over
-	// WasmProposalsEnabled.
-	//
-	// See: https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
-	EnableSpecificWasmProposals = ""
-
-	// EmptyWasmOpts defines a type alias for a list of wasm options.
-	EmptyWasmOpts []wasm.Option
-)
-
-var (
-	// If EnabledSpecificProposals is "", and this is "true", then enable all x/wasm proposals.
-	// If EnabledSpecificProposals is "", and this is not "true", then disable all x/wasm proposals.
-	ProposalsEnabled = "true"
-	// If set to non-empty string it must be comma-separated list of values that are all a subset
-	// of "EnableAllProposals" (takes precedence over ProposalsEnabled)
-	// https://github.com/CosmWasm/wasmd/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
-	EnableSpecificProposals = ""
-)
-
-// GetWasmEnabledProposals parses the WasmProposalsEnabled and
-// EnableSpecificWasmProposals values to produce a list of enabled proposals to
-// pass into the application.
-func GetWasmEnabledProposals() []wasm.ProposalType {
-	if EnableSpecificWasmProposals == "" {
-		if WasmProposalsEnabled == "true" {
-			return wasm.EnableAllProposals
-		}
-
-		return wasm.DisableAllProposals
-	}
-
-	chunks := strings.Split(EnableSpecificWasmProposals, ",")
-
-	proposals, err := wasm.ConvertToProposals(chunks)
-	if err != nil {
-		panic(err)
-	}
-
-	return proposals
-}
 
 type AppKeepers struct {
 	// keys to access the substores
@@ -171,7 +122,7 @@ type AppKeepers struct {
 	InterchainQueriesKeeper *interchainquerieskeeper.Keeper
 	ContractManagerKeeper   *contractmanagermodulekeeper.Keeper
 
-	WasmKeeper wasm.Keeper
+	WasmKeeper wasmkeeper.Keeper
 	WasmConfig wasmtypes.WasmConfig
 
 	// Modules
@@ -227,7 +178,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedInterchainTxsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
-	appKeepers.ScopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
+	appKeepers.ScopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 
 	// seal capabilities after scoping modules
 	appKeepers.CapabilityKeeper.Seal()
@@ -419,14 +370,14 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	}
 	appKeepers.WasmConfig = wasmConfig
 
-	var wasmOpts []wasm.Option
+	var wasmOpts []wasmkeeper.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
 	supportedFeatures := "iterator,staking,stargate,migrate,upgrade,neutron,cosmwasm_1_1,cosmwasm_1_2"
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(appKeepers.InterchainTxsKeeper, appKeepers.InterchainQueriesKeeper, *appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper, appKeepers.ContractManagerKeeper), wasmOpts...)
-	appKeepers.WasmKeeper = wasm.NewKeeper(
+	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[wasm.StoreKey],
+		appKeepers.keys[wasmtypes.StoreKey],
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
@@ -458,9 +409,9 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
 
 	// The gov proposal types can be individually enabled
-	if len(GetWasmEnabledProposals()) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(appKeepers.WasmKeeper, GetWasmEnabledProposals()))
-	}
+	// if len(GetWasmEnabledProposals()) != 0 {
+	// 	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(appKeepers.WasmKeeper, GetWasmEnabledProposals()))
+	// }
 
 	govConfig := govtypes.DefaultConfig()
 	// MaxMetadataLen defines the maximum proposal metadata length.
@@ -514,7 +465,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
-		AddRoute(wasm.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
 	authzKeepper := authzkeeper.NewKeeper(
@@ -548,7 +499,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibcexported.ModuleName)
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasmtypes.ModuleName)
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable()) //nolint:staticcheck
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(feetypes.ModuleName)

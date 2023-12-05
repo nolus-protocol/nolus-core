@@ -25,7 +25,7 @@ import (
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
 	feerefundertypes "github.com/neutron-org/neutron/x/feerefunder/types"
@@ -58,7 +58,8 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		interchainqueriestypes.StoreKey,
 		contractmanagermoduletypes.StoreKey,
 		interchaintxstypes.StoreKey,
-		wasm.StoreKey, feerefundertypes.StoreKey,
+		wasmtypes.StoreKey,
+		feerefundertypes.StoreKey,
 		consensusparamtypes.StoreKey,
 	)
 

@@ -49,8 +49,8 @@ import (
 	v05 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v05"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
 
 const (
@@ -213,7 +213,7 @@ func New(
 			},
 			BankKeeper:        app.BankKeeper,
 			TaxKeeper:         *app.TaxKeeper,
-			TxCounterStoreKey: app.GetKVStoreKey()[wasm.StoreKey],
+			TxCounterStoreKey: app.GetKVStoreKey()[wasmtypes.StoreKey],
 			WasmConfig:        &app.WasmConfig,
 			IBCKeeper:         app.IBCKeeper,
 		},
