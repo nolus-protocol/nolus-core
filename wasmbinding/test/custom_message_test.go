@@ -77,6 +77,11 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
 	})
 	suite.NoError(err)
 
+	bankKeeper := suite.neutron.BankKeeper
+	senderAddress := suite.ChainA.SenderAccounts[0].SenderAccount.GetAddress()
+	err = bankKeeper.SendCoins(suite.ctx, senderAddress, suite.contractAddress, sdk.NewCoins(sdk.NewCoin(params.DefaultDenom, sdk.NewInt(1_000_000))))
+	suite.NoError(err)
+
 	// Dispatch RegisterInterchainAccount message
 	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,

@@ -75,7 +75,7 @@ var maccPerms = map[string][]string{
 	stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
 	govtypes.ModuleName:               {authtypes.Burner},
 	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-	wasm.ModuleName:                   {authtypes.Burner},
+	wasmtypes.ModuleName:              {authtypes.Burner},
 	vestingstypes.ModuleName:          nil,
 	icatypes.ModuleName:               nil,
 	interchainqueriestypes.ModuleName: nil,
@@ -232,7 +232,7 @@ func orderBeginBlockers() []string {
 		interchaintxstypes.ModuleName,
 		interchainqueriestypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		feetypes.ModuleName,
 	}
 }
@@ -262,7 +262,7 @@ func orderEndBlockers() []string {
 		interchaintxstypes.ModuleName,
 		interchainqueriestypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		feetypes.ModuleName,
 	}
 }
@@ -301,7 +301,7 @@ func orderInitBlockers() []string {
 		interchaintxstypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
 		// wasm after ibc transfer
-		wasm.ModuleName,
+		wasmtypes.ModuleName,
 		feetypes.ModuleName,
 		consensusparamtypes.ModuleName,
 	}

@@ -199,11 +199,11 @@ replace (
 	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
 	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
 
-	github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.40.0-rc.0.0.20230705143547-22c391d461d5
+	github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.45.0
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
-	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v0.0.0-20230705134325-b23404470a1d
+	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.0
 
 	// neutron dependency
 	github.com/cosmos/gaia/v11 => github.com/cosmos/gaia/v11 v11.0.0-20230724152830-861ba391c3b4
@@ -217,7 +217,7 @@ replace (
 
 	// For more info https://github.com/CosmWasm/wasmd/blob/d63bea442bedf5b3055f3821472c7e6cafc3d813/go.mod#L131
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
+	github.com/neutron-org/neutron => github.com/nolus-protocol/neutron v1.0.5-0.20231205124747-52e7b36b5527
 	// TODO: REMOVE THIS, its used for testing
 	// github.com/neutron-org/neutron => /home/denislavivanov/go/github/neutron
 

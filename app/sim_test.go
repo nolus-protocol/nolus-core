@@ -41,7 +41,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
@@ -302,7 +301,7 @@ func TestAppImportExport(t *testing.T) {
 		{keys[contractmanagermoduletypes.StoreKey], newKeys[contractmanagermoduletypes.StoreKey], [][]byte{}},
 		{keys[interchainqueriestypes.StoreKey], newKeys[interchainqueriestypes.StoreKey], [][]byte{}},
 		{keys[icacontrollertypes.StoreKey], newKeys[icacontrollertypes.StoreKey], [][]byte{}},
-		{keys[wasm.StoreKey], newKeys[wasm.StoreKey], [][]byte{wasmtypes.TXCounterPrefix}},
+		{keys[wasmtypes.StoreKey], newKeys[wasmtypes.StoreKey], [][]byte{wasmtypes.TXCounterPrefix}},
 	}
 
 	// diff both stores

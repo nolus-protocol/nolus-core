@@ -1,7 +1,6 @@
 package wasmbinding
 
 import (
-	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 
 	contractmanagerkeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
@@ -28,7 +27,7 @@ func RegisterCustomPlugins(
 		CustomMessageDecorator(ictxKeeper, icqKeeper, transfer, contractmanagerKeeper),
 	)
 
-	return []wasm.Option{
+	return []wasmkeeper.Option{
 		queryPluginOpt,
 		messageHandlerDecoratorOpt,
 	}

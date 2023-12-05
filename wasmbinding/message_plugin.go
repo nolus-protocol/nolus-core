@@ -312,6 +312,7 @@ func (m *CustomMessenger) performRegisterInterchainAccount(ctx sdk.Context, cont
 		FromAddress:         contractAddr.String(),
 		ConnectionId:        reg.ConnectionId,
 		InterchainAccountId: reg.InterchainAccountId,
+		RegisterFee:         getRegisterFee(reg.RegisterFee),
 	}
 	if err := msg.ValidateBasic(); err != nil {
 		return nil, errors.Wrap(err, "failed to validate incoming RegisterInterchainAccount message")
@@ -413,4 +414,11 @@ func (m *CustomMessenger) resubmitFailure(ctx sdk.Context, contractAddr sdk.AccA
 	}
 
 	return nil, [][]byte{data}, nil
+}
+
+func getRegisterFee(fee sdk.Coins) sdk.Coins {
+	if fee == nil {
+		return make(sdk.Coins, 0)
+	}
+	return fee
 }
