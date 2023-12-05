@@ -408,11 +408,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
 
-	// The gov proposal types can be individually enabled
-	// if len(GetWasmEnabledProposals()) != 0 {
-	// 	govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(appKeepers.WasmKeeper, GetWasmEnabledProposals()))
-	// }
-
 	govConfig := govtypes.DefaultConfig()
 	// MaxMetadataLen defines the maximum proposal metadata length.
 	govConfig.MaxMetadataLen = 20000
