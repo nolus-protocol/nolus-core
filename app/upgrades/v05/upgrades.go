@@ -12,9 +12,9 @@ import (
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icaMigrations "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/migrations/v6"
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint/migrations"
+	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
 func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) error {
@@ -77,7 +77,7 @@ func CreateUpgradeHandler(
 			codec,
 			keepers.GetKey(capabilitytypes.StoreKey),
 			keepers.CapabilityKeeper,
-			icacontrollertypes.SubModuleName,
+			interchaintxstypes.ModuleName,
 		)
 		if err != nil {
 			return nil, err
