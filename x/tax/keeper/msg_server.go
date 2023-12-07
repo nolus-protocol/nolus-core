@@ -25,6 +25,10 @@ func NewMsgServerImpl(k Keeper) types.MsgServer {
 }
 
 func (ms msgServer) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
+	if err := req.ValidateBasic(); err != nil {
+		return nil, err
+	}
+
 	if ms.authority != req.Authority {
 		return nil, errors.Wrapf(govtypes.ErrInvalidSigner, "invalid authority; expected %s, got %s", ms.authority, req.Authority)
 	}
