@@ -19,10 +19,6 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
-	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
-	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
-
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
@@ -56,14 +52,11 @@ func getLegacySubspaces(paramsKeeper *paramskeeper.Keeper) paramstypes.Subspace 
 		// wasm
 		case wasmtypes.ModuleName:
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
-
-		// these modules have not migrated away from x/params
+		case icacontrollertypes.SubModuleName:
+			keyTable = icacontrollertypes.ParamKeyTable() //nolint:staticcheck
+		// these modules have not migrated away from x/params or have no params to migrate
 		case ibcexported.ModuleName,
-			icacontrollertypes.SubModuleName,
 			ibctransfertypes.ModuleName,
-			interchaintxstypes.ModuleName,
-			interchainqueriestypes.ModuleName,
-			feetypes.ModuleName,
 			vestingstypes.ModuleName:
 			continue
 		default:
