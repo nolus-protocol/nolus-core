@@ -37,3 +37,7 @@ type Upgrade struct {
 // 	// Function that runs some custom state transition code at the beginning of a fork.
 // 	BeginForkLogic func(ctx sdk.Context, keepers *keepers.AppKeepers)
 // }
+
+type StoreKeys interface {
+	GetKey(string) *store.KVStoreKey
+}
