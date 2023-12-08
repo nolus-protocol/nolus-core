@@ -1,8 +1,6 @@
 package v05
 
 import (
-	"fmt"
-
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -16,12 +14,9 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
 
 func getLegacySubspaces(paramsKeeper *paramskeeper.Keeper) paramstypes.Subspace {
@@ -54,13 +49,9 @@ func getLegacySubspaces(paramsKeeper *paramskeeper.Keeper) paramstypes.Subspace 
 			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case icacontrollertypes.SubModuleName:
 			keyTable = icacontrollertypes.ParamKeyTable() //nolint:staticcheck
-		// these modules have not migrated away from x/params or have no params to migrate
-		case ibcexported.ModuleName,
-			ibctransfertypes.ModuleName,
-			vestingstypes.ModuleName:
-			continue
+		// default modules have not migrated away from x/params or have no params to migrate: ibcexported.ModuleName, ibctransfertypes.ModuleName,vestingstypes.ModuleName
 		default:
-			panic(fmt.Sprintf("param key table not set for subspace: %s", subspace.Name()))
+			continue
 		}
 
 		if !subspace.HasKeyTable() {
