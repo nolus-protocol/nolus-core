@@ -72,10 +72,27 @@ nolusd start --home "networks/nolus/local-validator-1"
 ## Set up the DEX parameters manually
 
 The goal is to let smart contracts know the details of the connectivity to the selected DEX. Herebelow is a sample request for setting up the DEX.
-This should be done via sudo gov proposal:
+This should be done via sudo gov proposal. You can generate the proposal file with `nolusd tx gov submit-proposal draft-proposal`.
+Here's an example .json file for sudo-contract proposal:
+
+```json
+{
+ "messages": [
+  {
+   "@type": "/cosmwasm.wasm.v1.MsgSudoContract",
+   "authority": "nolus10d07y265gmmuvt4z0w9aw880jnsr700jvjr65k",
+   "contract": "nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f",
+   "msg": {"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}
+  }
+ ],
+ "deposit": "10000000unls",
+ "title": "Set up the DEX parameter",
+ "summary": "Thе proposal aims to set the DEX parameters in the Leaser contract"
+}
+```
 
 ```sh
-nolusd tx gov submit-proposal sudo-contract nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}' --title "Set up the DEX parameter" --description "Thе proposal aims to set the DEX parameters in the Leaser contract" --deposit 10000000unls --fees 900unls --gas auto --gas-adjustment 1.1 --from wallet
+nolusd tx gov submit-proposal filename.json --fees 900unls --gas auto --gas-adjustment 1.1 --from wallet
 ```
 
 Check if the transaction has passed:
