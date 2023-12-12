@@ -15,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 	icaMigrations "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/migrations/v6"
 	exported "github.com/cosmos/ibc-go/v7/modules/core/exported"
@@ -209,52 +210,28 @@ func setInterchainTxsParams(ctx sdk.Context, paramsKeepers paramskeeper.Keeper, 
 	bz := codec.MustMarshal(&currParams)
 	store.Set(interchaintxstypes.ParamsKey, bz)
 
-	wasmStore := ctx.KVStore(wasmStoreKey)
-	bzWasm := wasmStore.Get(wasmtypes.KeySequenceCodeID)
-	if bzWasm == nil {
-		return fmt.Errorf("KeySequenceCodeID not found during the upgrade")
-	}
-	store.Set(interchaintxstypes.ICARegistrationFeeFirstCodeID, bzWasm)
+	// set an extremely high number for the first code id that will be taxed with fee for opening an ICA
+	// these bytes are equal to 1684300900 when parsed with sdk.BigEndianToUint64. It's a number that is unlikely to be reached as a code id
+	// if we decide to charge a fee for opening an ICA, we can set this to a lower number in the future
+	bytesIcaRegistrationFirstCode := []byte{0, 0, 0, 0, 100, 100, 100, 100}
+	store.Set(interchaintxstypes.ICARegistrationFeeFirstCodeID, bytesIcaRegistrationFirstCode)
 	return nil
 }
 
 func setContractManagerParams(ctx sdk.Context, keeper contractmanagerkeeper.Keeper) error {
+	sudoGasLimit := uint64(3_000_000)
 	cmParams := contractmanagertypes.Params{
-		SudoCallGasLimit: contractmanagertypes.DefaultSudoCallGasLimit,
+		SudoCallGasLimit: sudoGasLimit,
 	}
 	return keeper.SetParams(ctx, cmParams)
 }
 
 func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) error {
-	minRate := sdk.NewDecWithPrec(5, 2)
-	minMaxRate := sdk.NewDecWithPrec(1, 1)
-
 	stakingParams := keepers.StakingKeeper.GetParams(ctx)
-	stakingParams.MinCommissionRate = minRate
+	// DefaultMinComission rate is 0%
+	stakingParams.MinCommissionRate = stakingtypes.DefaultMinCommissionRate
 	if err := keepers.StakingKeeper.SetParams(ctx, stakingParams); err != nil {
 		return fmt.Errorf("failed to set MinCommissionRate to 5%%: %w", err)
-	}
-
-	// Force update validator commission & max rate if it is lower than the minRate & minMaxRate respectively
-	validators := keepers.StakingKeeper.GetAllValidators(ctx)
-	for _, v := range validators {
-		valUpdated := false
-		if v.Commission.Rate.LT(minRate) {
-			v.Commission.Rate = minRate
-			valUpdated = true
-		}
-		if v.Commission.MaxRate.LT(minMaxRate) {
-			v.Commission.MaxRate = minMaxRate
-			valUpdated = true
-		}
-		if valUpdated {
-			v.Commission.UpdateTime = ctx.BlockHeader().Time
-			// call the before-modification hook since we're about to update the commission
-			if err := keepers.StakingKeeper.Hooks().BeforeValidatorModified(ctx, v.GetOperator()); err != nil {
-				return fmt.Errorf("BeforeValidatorModified failed with: %w", err)
-			}
-			keepers.StakingKeeper.SetValidator(ctx, v)
-		}
 	}
 
 	return nil
