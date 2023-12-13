@@ -69,6 +69,16 @@ func TestMsgCreateVestingAccount_ValidateBasic(t *testing.T) {
 				FromAddress: AccAddress().String(),
 				ToAddress:   AccAddress().String(),
 				Amount:      sdk.NewCoins(sdk.NewInt64Coin("unls", 10)),
+				StartTime:   time.Now().Unix() - 1,
+				EndTime:     time.Now().Unix(),
+			},
+			err: nil,
+		}, {
+			name: "star time == end time",
+			msg: MsgCreateVestingAccount{
+				FromAddress: AccAddress().String(),
+				ToAddress:   AccAddress().String(),
+				Amount:      sdk.NewCoins(sdk.NewInt64Coin("unls", 10)),
 				StartTime:   time.Now().Unix(),
 				EndTime:     time.Now().Unix(),
 			},
