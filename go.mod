@@ -221,8 +221,6 @@ replace (
 	// For more info https://github.com/CosmWasm/wasmd/blob/d63bea442bedf5b3055f3821472c7e6cafc3d813/go.mod#L131
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	github.com/neutron-org/neutron => github.com/nolus-protocol/neutron v1.0.5-0.20231205124747-52e7b36b5527
-	// TODO: REMOVE THIS, its used for testing
-	// github.com/neutron-org/neutron => /home/denislavivanov/go/github/neutron
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
