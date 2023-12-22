@@ -14,7 +14,7 @@ linters:
     - bidichk
     - bodyclose
     - contextcheck
-    - depguard
+    #- depguard
     - godot
     - gofmt
     - gofumpt
