@@ -205,6 +205,9 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.0
 
+	// adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
+	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
+
 	// neutron dependency
 	github.com/cosmos/gaia/v11 => github.com/cosmos/gaia/v11 v11.0.0-20230724152830-861ba391c3b4
 
