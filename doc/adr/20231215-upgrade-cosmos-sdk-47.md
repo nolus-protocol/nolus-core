@@ -20,7 +20,6 @@ IBC-Go v7, addressing a critical fix for ICS27 channels, preventing unexpected c
 Multiple fixes from the cosmos-sdk, contributing to overall stability and reliability.
 CometBFT - a fork of Tendermint.
 
-
 ## Decision Drivers
 
 Old versions of cosmos-sdk become stale after time and we don't want to use libraries without up to date support. 
