@@ -25,6 +25,7 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencekeeper "github.com/cosmos/cosmos-sdk/x/evidence/keeper"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govkeeper "github.com/cosmos/cosmos-sdk/x/gov/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	govv1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1"
@@ -66,6 +67,7 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	feegrantkeeper "github.com/cosmos/cosmos-sdk/x/feegrant/keeper"
 	"github.com/neutron-org/neutron/x/contractmanager"
 	contractmanagermodulekeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
@@ -92,6 +94,7 @@ type AppKeepers struct {
 	AccountKeeper         *authkeeper.AccountKeeper
 	BankKeeper            *bankkeeper.BaseKeeper
 	CapabilityKeeper      *capabilitykeeper.Keeper
+	FeegrantKeeper        *feegrantkeeper.Keeper
 	StakingKeeper         *stakingkeeper.Keeper
 	SlashingKeeper        *slashingkeeper.Keeper
 	DistrKeeper           *distrkeeper.Keeper
@@ -202,6 +205,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.AccountKeeper = &accountKeeper
+
+	feegrantKeeper := feegrantkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[feegrant.StoreKey],
+		appKeepers.AccountKeeper,
+	)
+	appKeepers.FeegrantKeeper = &feegrantKeeper
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		appCodec,
