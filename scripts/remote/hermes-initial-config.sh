@@ -2,16 +2,10 @@
 # Install and Configure Hermes
 #
 # arg: Hermes working directory path, mandatory
-# arg: chain1 id, mandatory
-# arg: chain1 IP address, mandatory
-# arg: chain1 RPC port, mandatory
-# arg: chain1 GRPC port, mandatory
-# arg: chain2 id, mandatory
-# arg: chain2 IP address - rpc , mandatory
-# arg: chain2 IP address - grpc, mandatory
-# arg: chain2 account prefix, mandatory
-# arg: chain2 price denom - grpc, mandatory
-# arg: chain2 trusting period - grpc, mandatory
+# arg: nolus chain id, mandatory
+# arg: nolus chain IP address, mandatory
+# arg: nolus chain RPC port, mandatory
+# arg: nolus chain GRPC port, mandatory
 # arg: Hermes account seed, mandatory
 
 set -euox pipefail
@@ -27,14 +21,7 @@ declare -r chain1_id="$2"
 declare -r chain1_ip_addr="$3"
 declare -r chain1_rpc_port="$4"
 declare -r chain1_grpc_port="$5"
-declare -r chain2_id="$6"
-declare -r chain2_ip_addr_RPC="$7"
-declare -r chain2_ip_addr_gRPC="$8"
-declare -r chain2_account_prefix="$9"
-declare -r chain2_price_denom=${10}
-declare -r chain2_trusting_period=${11}
-declare -r hermes_mnemonic=${12}
-declare if_interchain_security=${13}
+declare -r hermes_mnemonic=$6
 
 # Install
 
@@ -85,13 +72,8 @@ update_config "$hermes_config_dir" '.chains[0]."trust_threshold"' '{ numerator :
 update_config "$hermes_config_dir" '.chains[0]."memo_prefix"' '"''"'
 update_config "$hermes_config_dir" '.chains[0]."event_source"' '{ mode : "push", url : "ws://127.0.0.1:'"$chain1_rpc_port"'/websocket", batch_delay : "500ms" }'
 
-# Add DEX chain configuration
-add_new_chain_hermes "$hermes_config_dir" "$chain2_id" "$chain2_ip_addr_RPC" "$chain2_ip_addr_gRPC" \
-  "$chain2_account_prefix" "$chain2_price_denom" "$chain2_trusting_period" "$if_interchain_security"
-
 # Account setup
 declare hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
 echo "$hermes_mnemonic" > "$hermes_mnemonic_file"
 
 dex_account_setup "$hermes_binary_dir" "$chain1_id" "$hermes_config_dir"/hermes.seed
-dex_account_setup "$hermes_binary_dir" "$chain2_id" "$hermes_config_dir"/hermes.seed

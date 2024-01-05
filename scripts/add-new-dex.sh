@@ -18,6 +18,7 @@ WASM_ARTIFACTS_PATH=""
 
 HERMES_CONFIG_DIR_PATH="$HOME/.hermes"
 HERMES_BINARY_DIR_PATH="$HOME/hermes"
+DEX_NETWORK=""
 DEX_NAME=""
 CHAIN_ID=""
 CHAIN_IP_ADDR_RPC=""
@@ -28,9 +29,9 @@ CHAIN_TRUSTING_PERIOD=""
 IF_INTERCHAIN_SECURITY="true"
 
 PROTOCOL_CURRENCY=""
-ADMIN_CONTRACT_ADDRESS="nolus1gurgpv8savnfw66lckwzn4zk7fp394lpe667dhu7aw48u40lj6jsqxf8nd"
-TRASURY_CONTRACT_ADDRESS="nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-TIMEALARMS_CONTRACT_ADDRESS="nolus1zwv6feuzhy6a9wekh96cd57lsarmqlwxdypdsplw6zhfncqw6ftqmx7chl"
+ADMIN_CONTRACT_ADDRESS="nolus1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrq8welhp"
+TREASURY_CONTRACT_ADDRESS="nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
+TIMEALARMS_CONTRACT_ADDRESS="nolus1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqrr2r7y"
 SWAP_TREE=""
 
 while [[ $# -gt 0 ]]; do
@@ -49,6 +50,7 @@ while [[ $# -gt 0 ]]; do
     [--wasm-artifacts-path <wasm_artifacts_path>]
     [--hermes-config-dir-path <config.toml_and_hermes.seed_dir_path>]
     [--hermes-binary-dir-path <hermes_binary_dir_path>]
+    [--dex-network <dex_network>]
     [--dex-name <dex_name>]
     [--dex-chain-id <new_dex_chain_id>]
     [--dex-ip-addr-rpc-host <new_dex_chain_ip_addr_rpc_fully_host>]
@@ -114,6 +116,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --dex-network)
+    DEX_NETWORK="$2"
+    shift
+    shift
+    ;;
+
   --dex-name)
     DEX_NAME="$2"
     shift
@@ -175,7 +183,7 @@ while [[ $# -gt 0 ]]; do
     ;;
 
   --treasury-contract-address)
-    TRASURY_CONTRACT_ADDRESS="$2"
+    TREASURY_CONTRACT_ADDRESS="$2"
     shift
     shift
     ;;
@@ -202,18 +210,19 @@ done
 
 NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
 
-verify_dir_exist "$NOLUS_MONEY_MARKET_DIR" "The NOLUS_MONEY_MARKET_DIR dir does not exist"
+verify_dir_exist "$NOLUS_MONEY_MARKET_DIR" "The NOLUS_MONEY_MARKET dir does not exist"
 DEPLOY_CONTRACTS_SCRIPT="$NOLUS_MONEY_MARKET_DIR/scripts/deploy-contracts-live.sh"
 
 verify_dir_exist "$WASM_ARTIFACTS_PATH" "The WASM_ARTIFACTS_PATH dir does not exist"
 verify_mandatory "$DEX_NAME" "new DEX name"
 verify_mandatory "$DEX_ADMIN_KEY" "dex-admin key name"
 verify_mandatory "$STORE_CODE_PRIVILEGED_USER_KEY" "sotre-code privileged user key"
+verify_mandatory "$DEX_NETWORK" "new DEX network"
 verify_mandatory "$CHAIN_ID" "new DEX chain_id"
 verify_mandatory "$CHAIN_IP_ADDR_RPC" "new DEX RPC addr - fully host part"
 verify_mandatory "$CHAIN_IP_ADDR_GRPC" "new DEX gRPC addr - fully host part"
 verify_mandatory "$CHAIN_ACCOUNT_PREFIX" "new DEX account prefix"
-verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price  denom"
+verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price denom"
 verify_mandatory "$CHAIN_TRUSTING_PERIOD" "new DEX trusting period"
 verify_mandatory "$PROTOCOL_CURRENCY" "new protocol currency"
 verify_mandatory "$SWAP_TREE" "new protocol swap_tree"
@@ -235,11 +244,18 @@ dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH
 
 NOLUS_HERMES_ADDRESS=$(get_hermes_address "$HERMES_BINARY_DIR_PATH" "$NOLUS_CHAIN_ID")
 
-# Open a connection
+# Open a connection (exports CONNECTION_ID)
 open_connection "$NOLUS_NET" "$NOLUS_HOME_DIR" "$ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS" "$HERMES_BINARY_DIR_PATH" \
     "$NOLUS_HERMES_ADDRESS" "$NOLUS_CHAIN_ID" "$CHAIN_ID"
 
+DEX_CONNECTION_ID="$CONNECTION_ID"
+
+CONNECTION_INFO=$(get_connection_info "$NOLUS_HOME_DIR" "$DEX_CONNECTION_ID")
+DEX_CHANNEL_LOCAL=$(echo "$CONNECTION_INFO" |  jq -r '.channels[0].channel_id')
+DEX_CHANNEL_REMOTE=$(echo "$CONNECTION_INFO" | jq -r '.channels[0].counterparty.channel_id')
+
+# TO DO - Remove and run manually
 # Deploy contracts
 _=$(deploy_contracts "$NOLUS_NET" "$NOLUS_CHAIN_ID" "$NOLUS_HOME_DIR" "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" \
-"$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NAME" "$PROTOCOL_CURRENCY" \
-"$TRASURY_CONTRACT_ADDRESS" "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE")
+"$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" "$DEX_NAME" "$DEX_CONNECTION_ID"  "$DEX_CHANNEL_LOCAL"  "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
+"$TREASURY_CONTRACT_ADDRESS" "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE")

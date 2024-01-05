@@ -40,16 +40,13 @@ generate_genesis() {
   local -r wasm_code_path="$8"
   local -r treasury_init_tokens_u128="$9"
   local -r node_id_and_val_pubkeys="${10}"
-  local -r lpp_native="${11}"
-  local -r contracts_info_file="${12}"
-  local -r gov_voting_period="${13}"
-  local -r feerefunder_ack_fee_min="${14}"
-  local -r feerefunder_timeout_fee_min="${15}"
-  local -r dex_admin_mnemonic="${16}"
-  local -r store_code_privileged_account_mnemonic="${17}"
-  local -r admins_tokens="${18}"
-  local -r dex_name="${19}"
-  local -r swap_tree=${20}
+  local -r gov_voting_period="${11}"
+  local -r feerefunder_ack_fee_min="${12}"
+  local -r feerefunder_timeout_fee_min="${13}"
+  local -r dex_admin_mnemonic="${14}"
+  local -r store_code_privileged_account_mnemonic="${15}"
+  local -r admins_tokens="${16}"
+
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -67,16 +64,14 @@ generate_genesis() {
   verify_file_exist "$wasm_script" "wasm script file"
   source "$wasm_script"
   local treasury_addr
-  treasury_addr="$(treasury_instance_addr)"
-  admin_contract_addr=$(admin_contract_instance_addr)
+  treasury_contract_addr="$(treasury_instance_addr)"
+  admin_contract_addr="$(admin_contract_instance_addr)"
 
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
-    "$accounts_spec" "$treasury_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
+    "$accounts_spec" "$treasury_contract_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
     "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" \
-                          "$treasury_init_tokens" "$lpp_native" "$contracts_info_file" \
-                          "$dex_admin_address" "$dex_name" "$swap_tree")
+  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$treasury_init_tokens" "$dex_admin_address")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   _=$(__integrate_genesis_txs "$create_validator_txs")
@@ -117,7 +112,7 @@ add_genesis_account() {
     vesting_amount=$(echo "$specification" | jq -r '.vesting.amount')
     run_cmd "$home_dir" add-genesis-account "$address" "$amount" \
                 --vesting-amount "$vesting_amount$currency" \
-                --vesting-end-time "$vesting_end_time" $vesting_start_time
+                --vesting-end-time "$vesting_end_time" "$vesting_start_time"
   else
     run_cmd "$home_dir" add-genesis-account "$address" "$amount"
   fi
