@@ -21,6 +21,8 @@ import (
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	feegrantmodule "github.com/cosmos/cosmos-sdk/x/feegrant/module"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
@@ -105,6 +107,7 @@ var ModuleBasics = module.NewBasicManager(
 	sdkparams.AppModuleBasic{},
 	crisis.AppModuleBasic{},
 	slashing.AppModuleBasic{},
+	feegrantmodule.AppModuleBasic{},
 	ibc.AppModuleBasic{},
 	upgrade.AppModuleBasic{},
 	evidence.AppModuleBasic{},
@@ -143,6 +146,7 @@ func appModules(
 		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
 		crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, *app.FeegrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, *app.MintKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
 		slashing.NewAppModule(appCodec, *app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName)),
@@ -178,6 +182,7 @@ func simulationModules(
 		auth.NewAppModule(appCodec, *app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		capability.NewAppModule(appCodec, *app.CapabilityKeeper, false),
+		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, *app.FeegrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, *app.MintKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
 		tax.NewAppModule(appCodec, *app.TaxKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(taxmoduletypes.ModuleName)),
@@ -225,6 +230,7 @@ func orderBeginBlockers() []string {
 		authz.ModuleName,
 		ibctransfertypes.ModuleName,
 		crisistypes.ModuleName,
+		feegrant.ModuleName,
 		taxmoduletypes.ModuleName,
 		vestingstypes.ModuleName,
 		govtypes.ModuleName,
@@ -251,6 +257,7 @@ func orderEndBlockers() []string {
 		vestingtypes.ModuleName,
 		minttypes.ModuleName,
 		evidencetypes.ModuleName,
+		feegrant.ModuleName,
 		authz.ModuleName,
 		ibctransfertypes.ModuleName,
 		genutiltypes.ModuleName,
@@ -292,6 +299,7 @@ func orderInitBlockers() []string {
 		ibcexported.ModuleName,
 		genutiltypes.ModuleName,
 		evidencetypes.ModuleName,
+		feegrant.ModuleName,
 		authz.ModuleName,
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,

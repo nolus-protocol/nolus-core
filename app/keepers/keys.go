@@ -11,6 +11,7 @@ import (
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -50,6 +51,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		ibcexported.StoreKey,
 		upgradetypes.StoreKey,
 		evidencetypes.StoreKey,
+		feegrant.StoreKey,
 		ibctransfertypes.StoreKey,
 		taxmoduletypes.StoreKey,
 		vestingstypes.StoreKey,
