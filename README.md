@@ -29,9 +29,9 @@ Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/l
 
 The command will compile and install nolusd locally on your machine.
 
-#### Initialize, set up the DEX parameters and run
+#### Initialize, set up and run
 
-`init-local-network.sh` generates a network setup, including setting up the initial DEX. The Hermes relayer is used to connect to the DEXes, and its configuration is also handled by the script.
+`init-local-network.sh` generates a network setup, including the deployment of platform contracts (only) and initial Hermes setup (Nolus chain configuration).
 
 First, generate the mnemonic you will use for Hermes:
 
@@ -39,21 +39,11 @@ First, generate the mnemonic you will use for Hermes:
 nolusd keys mnemonic
 ```
 
-Then recover it on the DEX (the network binary is required) and use a faucet to obtain some amount:
-
-Example for the Osmosis DEX ([Osmo-test-5 faucet](https://faucet.osmotest5.osmosis.zone/)):
-
-```sh
-osmosisd keys add hermes_key --recover
-```
-
 Initialize and start (run `./scripts/init-local-network.sh --help` for additional configuration options):
 
 ```sh
-./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps> --dex-network-addr-rpc-host <dex_network_addr_rpc_host_part> --dex-network-addr-grpc-host <dex_network_addr_grpc_host_part> --dex-admin-mnemonic <mnemonic_phrase> --store-code-privileged-account-mnemonic <mnemonic_phrase>
+./scripts/init-local-network.sh --reserve-tokens <reserve_account_init_tokens> --hermes-mnemonic <the_mnemonic_generated_by_the_previous_steps> --dex-admin-mnemonic <mnemonic_phrase> --store-code-privileged-account-mnemonic <mnemonic_phrase>
 ```
-
-Set up the DEX parameters: [Set up the DEX parameters manually](#set-up-the-dex-parameters-manually)
 
 *Notes:
 
@@ -61,7 +51,7 @@ Set up the DEX parameters: [Set up the DEX parameters manually](#set-up-the-dex-
 
 * !!! Before running the `./scripts/init-local-network.sh` again, make sure the `nolusd` and `hermes` processes are killed.
 
-* The `hermes` and `nolusd` logs are stored in `~/hermes` and `~/.nolus` respectively.
+* The nolusd logs are stored in `~/.nolus`.
 
 ### Run an already configured single-node
 
@@ -69,85 +59,39 @@ Set up the DEX parameters: [Set up the DEX parameters manually](#set-up-the-dex-
 nolusd start --home "networks/nolus/local-validator-1"
 ```
 
-## Set up the DEX parameters manually
-
-The goal is to let smart contracts know the details of the connectivity to the selected DEX. Herebelow is a sample request for setting up the DEX.
-This should be done via sudo gov proposal. You can generate the proposal file with `nolusd tx gov submit-proposal draft-proposal`.
-Here's an example .json file for sudo-contract proposal:
-
-```json
-{
- "messages": [
-  {
-   "@type": "/cosmwasm.wasm.v1.MsgSudoContract",
-   "authority": "nolus10d07y265gmmuvt4z0w9aw880jnsr700jvjr65k",
-   "contract": "nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f",
-   "msg": {"setup_dex": {"connection_id": "connection-0", "transfer_channel": {"local_endpoint": "channel-0", "remote_endpoint": "channel-1499"}}}
-  }
- ],
- "deposit": "10000000unls",
- "title": "Set up the DEX parameter",
- "summary": "Thе proposal aims to set the DEX parameters in the Leaser contract"
-}
-```
-
-```sh
-nolusd tx gov submit-proposal filename.json --fees 900unls --gas auto --gas-adjustment 1.1 --from wallet
-```
-
-Check if the transaction has passed:
-
-```sh
-nolusd q wasm contract-state smart nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f '{"config":{}}'
-```
-
-*Notes:
-
-* `*nolus1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8s5gg42f*` is the Leaser contract instance associated with the first DEX already configured on the network at genesis time /by default this is Osmosis/. Each DEX is associated with a separate instance.
-
-* `*connection-0*` is the connection to the first DEX already configured on the network /by default this is Osmosis/. Should be replaced with the connection to the selected DEX.
-
-* `*channel-0*` refers to the first DEX already configured on the network /by default this is Osmosis/. Should be replaced with the channel to the selected DEX.
-
-* `*channel-1499*` should be replaced, so you can get the actual channel ID of the remote endpoint with:
-
-```sh
-nolusd q ibc channel connections <connection> --output json | jq '.channels[0].counterparty.channel_id' | tr -d '"'
-```
-
 ## Set up a new DEX
 
 On a live network, a new DEX can be deployed using the following steps.
 
+### Manual step - Prerequisites
+
+* provide a certain amount for the Hermes account (DEX side)
+
+    Recover your Hermes wallet on the DEX network and use a faucet to obtain some amount.
+
+    Example for the Osmosis DEX ([Osmo-test-5 faucet](https://faucet.osmotest5.osmosis.zone/)):
+
+    ```sh
+    osmosisd keys add hermes_key --recover
+    ```
+
+* start hermes
+
 ### Аutomated step
 
 ```sh
-./scripts/add-new-dex.sh --dex-admin-key <dex_admin_key> --store-code-privileged-user-key <store_code_privileged_user_key> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds> --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree>
+./scripts/add-new-dex.sh --dex-admin-key <dex_admin_key> --store-code-privileged-user-key <store_code_privileged_user_key> --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>  --dex-if-interchain-security <if_interchain_security_true/false> --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree>
 ```
 
-The script takes care of setting up Hermes to work with the new DEX and deploying DEX-specific contracts (More about deploying contracts on a live network can be found [here](https://github.com/nolus-protocol/nolus-money-market)).
+The script takes care of setting up Hermes to work with the new DEX and, for now, deploying DEX-specific contracts (More about deploying contracts on a live network can be found [here](https://github.com/nolus-protocol/nolus-money-market)).
 
 *Notes:
 
-* Execute `./scripts/add-new-dex.sh --help` for additional configuration options)
+* Execute `./scripts/add-new-dex.sh --help` for additional configuration options
 
 * The `protocol-swap-tree` must be passed in single quotes (for example: **--protocol-swap-tree '{"value":[0,"USDC"],"children":[{"value":[5,"OSMO"],"children":[{"value":[12,"ATOM"]}]}]}'**)
 
 * The script will locate the Hermes account from the Hermes configuration directory and link it to the new DEX
-
-* !!! Prerequisites: Before running, the address should have a certain amount on the DEX network in order to be used by Hermes. This can be accomplished by using the DEX network binary and a public faucet, as demonstrated for Osmosis [here](#initialize-set-up-the-dex-parameters-and-run)
-
-### Manual step
-
-Get the new DEX-specific Leaser address: (TO DO: update)
-
-```sh
-nolusd q wasm cs all <admin_contract_address>
-```
-
-Configure it with the new DEX-specific connection:
-
-Follow the instructions [here](#set-up-the-dex-parameters-manually) bearing in mind the `Notes`.
 
 ## Build a statically linked binary
 

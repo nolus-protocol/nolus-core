@@ -32,3 +32,17 @@ wait_hermes_config_gets_healthy() {
 
   rm -rf "$tmp_file"
 }
+
+wait_tx_included_in_block() {
+  local -r nolus_home_dir="$1"
+  local -r nolus_net="$2"
+  local -r tx_hash="$3"
+
+  local tx_check="NOT_INCLUDED"
+
+  while [ "$tx_check" == "NOT_INCLUDED"  ]
+  do
+    sleep 1
+    tx_check=$(run_cmd "$nolus_home_dir" q tx "$tx_hash" --node "$nolus_net") || tx_check="NOT_INCLUDED"
+  done
+}

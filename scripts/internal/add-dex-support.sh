@@ -3,6 +3,7 @@
 SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd .. && pwd)"
 source "$SCRIPTS_DIR"/remote/lib/lib.sh
 source "$SCRIPTS_DIR"/common/cmd.sh
+source "$SCRIPTS_DIR"/internal/wait_services.sh
 
 add_new_chain_hermes() {
   declare -r hermes_config_file_path="$1"
@@ -28,14 +29,14 @@ add_new_chain_hermes() {
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."store_prefix"' '"ibc"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."default_gas"' 5000000
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_gas"' 15000000
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_price"' '{ price : 0.0026, denom : "'"$chain_price_denom"'" }'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_price"' '{ price : 0.056, denom : "'"$chain_price_denom"'" }'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_multiplier"' 1.1
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_msg_num"' 20
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_tx_size"' 209715
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."clock_drift"' '"20s"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_block_time"' '"10s"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trusting_period"' '"'"$chain_trusting_period"'s"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trust_threshold"' '{ numerator : "1", denominator : "3" }'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trust_threshold"' '{ numerator : "2", denominator : "3" }'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."event_source"' '{ mode : "push", url : "wss://'"$chain_ip_addr_RPC"'/websocket", batch_delay : "500ms" }'
 
   if [ "$if_interchain_security" == "true" ]
@@ -65,19 +66,42 @@ open_connection() {
   declare -r account_addr_to_feed_hermes_address=$(run_cmd "$nolus_home_dir" keys show "$account_key_to_feed_hermes_address" -a)
   declare -r flags="--fees 1000unls --gas auto --gas-adjustment 1.3 --node $nolus_net_address"
 
-  echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$account_addr_to_feed_hermes_address" "$hermes_address" 2000000unls $flags --broadcast-mode sync
+  declare tx_result
+  tx_result=$(echo 'y' | run_cmd "$nolus_home_dir" tx bank send "$account_addr_to_feed_hermes_address" "$hermes_address" 2000000unls $flags --output json)
+  tx_result=$(echo "$tx_result" | awk 'NR > 1')
+  tx_result=$(echo "$tx_result" | jq -c '.')
+  local tx_hash
+  tx_hash=$(echo "$tx_result" | jq -r '.txhash')
+  tx_hash=$(echo "$tx_hash" | sed '/^null$/d')
+
+  wait_tx_included_in_block "$nolus_home_dir" "$nolus_net_address" "$tx_hash"
 
   connection_data_file=$(mktemp)
-  "$hermes_binary_dir_path"/hermes create connection --a-chain "$nolus_chain" --b-chain "$b_chain" &>"$connection_data_file"
+  "$hermes_binary_dir_path"/hermes create connection --a-chain "$nolus_chain" --b-chain "$b_chain" > "$connection_data_file"
 
-  declare connection_id
-  connection_id=$(grep 'SUCCESS Connection' -A 15000 "$connection_data_file" | grep "$nolus_chain" -A 10 | grep 'ConnectionId' -A 2 | grep 'connection-')
-  connection_id=${connection_id//[, ]/}
-  connection_id=${connection_id//\"/}
+  export CONNECTION_ID
+  CONNECTION_ID=$(grep 'SUCCESS Connection' -A 15000 "$connection_data_file" | grep "$nolus_chain" -A 10 | grep 'ConnectionId' -A 2 | grep 'connection-')
+  CONNECTION_ID=${CONNECTION_ID//[, ]/}
+  CONNECTION_ID=${CONNECTION_ID//\"/}
+  rm "$connection_data_file"
+
+  open_channel "$nolus_chain" "$CONNECTION_ID"
+}
+
+open_channel() {
+  local -r nolus_chain="$1"
+  local -r connection_id="$2"
 
   "$hermes_binary_dir_path"/hermes create channel --a-chain "$nolus_chain" --a-connection "$connection_id" --a-port transfer --b-port transfer --order unordered
+}
 
-  rm "$connection_data_file"
+get_connection_info() {
+  local -r nolus_home_dir="$1"
+  local -r connection_id="$2"
+
+  local -r connection_info=$(run_cmd "$nolus_home_dir" q ibc channel connections "$connection_id" --output json)
+
+  echo "$connection_info"
 }
 
 get_hermes_address() {
