@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine
+FROM golang:1.21-alpine3.18
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
@@ -14,7 +14,7 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
-ARG WASMVM_VERSION="v1.5.0"
+ARG WASMVM_VERSION="v1.5.2"
 ARG WASMVM_LIB="libwasmvm_muslc.x86_64.a"
 ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
 ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"
