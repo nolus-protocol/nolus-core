@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/CosmWasm/wasmd v0.31.0
-	github.com/CosmWasm/wasmvm v1.2.5
+	github.com/CosmWasm/wasmvm v1.2.6
 	github.com/armon/go-metrics v0.4.1
 	github.com/cosmos/cosmos-sdk v0.45.15
 	github.com/cosmos/gogoproto v1.4.6
