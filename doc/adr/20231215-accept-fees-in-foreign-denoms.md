@@ -1,4 +1,4 @@
-# Upgrade cosmos-sdk Library to v0.47+
+# Upgrade to accept fees in foreign denoms
 
 - Status: Accepted
 - Deciders: Product Owner, Development Team
