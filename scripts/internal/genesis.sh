@@ -60,7 +60,7 @@ generate_genesis() {
 
   accounts_spec="$(__add_val_accounts "$accounts_spec" "$val_addrs" "$val_tokens")"
 
-  local -r wasm_script="$wasm_script_path/deploy-contracts-genesis.sh"
+  local -r wasm_script="$wasm_script_path/deploy-platform.sh"
   verify_file_exist "$wasm_script" "wasm script file"
   source "$wasm_script"
   local treasury_addr
