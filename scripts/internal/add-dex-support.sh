@@ -30,7 +30,7 @@ add_new_chain_hermes() {
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."default_gas"' 5000000
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_gas"' 15000000
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_price"' '{ price : 0.056, denom : "'"$chain_price_denom"'" }'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_multiplier"' 1.1
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_multiplier"' 1.3
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_msg_num"' 20
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_tx_size"' 209715
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."clock_drift"' '"20s"'
