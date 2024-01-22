@@ -51,6 +51,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 )
 
 const (
@@ -257,7 +258,24 @@ func New(
 		}
 	}
 
+	// set storage param for the interchain txs module - IcaRegistrationFeeFirstCodeID
+	app.SetInterchainTxs()
+
 	return app
+}
+
+func (app *App) SetInterchainTxs() {
+	// Only set ICARegistrationFeeFirstCodeID if the chain is just started, at block 0
+	if app.LastBlockHeight() != 0 {
+		return
+	}
+	store := app.CommitMultiStore()
+	storeInterchaintxs := store.GetKVStore(app.AppKeepers.GetKey(interchaintxstypes.StoreKey))
+	// set an extremely high number for the first code id that will be taxed with fee for opening an ICA
+	// these bytes are equal to 1684300900 when parsed with sdk.BigEndianToUint64. It's a number that is unlikely to be reached as a code id
+	// if we decide to charge a fee for opening an ICA, we can set this to a lower number in the future
+	bytesIcaRegistrationFirstCode := []byte{0, 0, 0, 0, 100, 100, 100, 100}
+	storeInterchaintxs.Set(interchaintxstypes.ICARegistrationFeeFirstCodeID, bytesIcaRegistrationFirstCode)
 }
 
 func (app *App) setupUpgradeHandlers() {
