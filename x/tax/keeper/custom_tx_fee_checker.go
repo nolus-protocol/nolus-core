@@ -76,7 +76,11 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 					if err != nil {
 						return nil, 0, err
 					}
-					providedFeeAmountInBaseAsset, err := prices.CalculateValueInBaseAsset(denomTicker, fee.Amount.ToLegacyDec().MustFloat64())
+
+					// AmountQuote.Ticker should be the same for every price in the prices array fetched from an oracle so we just get the first price and use the stableTicker.
+					// Each oracle could have different stableTicker.
+					stableTicker := prices.Prices[0].AmountQuote.Ticker
+					providedFeeAmountInBaseAsset, requiredFeesInPaidDenom, err := prices.CalculateValueInBaseAsset(denomTicker, stableTicker, fee.Amount.ToLegacyDec().MustFloat64(), requiredFees[0].Amount)
 					if err != nil {
 						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in base asset: %s", fee.Denom, err.Error())
 					}
@@ -85,6 +89,8 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 					if providedFeeAmountInBaseAsset > minimumFeeRequired.Amount.ToLegacyDec().MustFloat64() {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
+					} else {
+						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().MustFloat64(), fee.Denom, requiredFeesInPaidDenom, fee.Denom)
 					}
 				}
 			}
