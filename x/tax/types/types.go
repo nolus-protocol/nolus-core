@@ -18,16 +18,11 @@ type OracleData struct {
 
 // Price is inner the struct we use to unmarshal the oracle's response for prices.
 type Price struct {
-	Amount      `json:"amount"`
-	AmountQuote `json:"amount_quote"`
+	Amount      PriceFeed `json:"amount"`
+	AmountQuote PriceFeed `json:"amount_quote"`
 }
 
-type Amount struct {
-	Amount string `json:"amount"`
-	Ticker string `json:"ticker"`
-}
-
-type AmountQuote struct {
+type PriceFeed struct {
 	Amount string `json:"amount"`
 	Ticker string `json:"ticker"`
 }
@@ -97,7 +92,7 @@ func calculateForVolatileToken(baseAssetAmountAsInt, baseAssetQuoteAmountAsInt i
 	}
 
 	if denomAmountAsInt == 0 || denomQuoteAmountAsInt == 0 {
-		return 0, 0, errors.Wrapf(ErrInvalidFeeDenom, "no prices found for %s", ticker)
+		return 0, 0, errors.Wrapf(ErrNoPrices, "no prices found for %s", ticker)
 	}
 
 	// fee amount * (price of 1 unit of denom in usdc) * (price of 1 uusdc in unit of base asset)

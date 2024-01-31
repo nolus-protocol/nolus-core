@@ -37,12 +37,12 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"1000", "OSMO"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"1000", "OSMO"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 					{
-						types.Amount{"2000", "NLS"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"2000", "NLS"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 				},
 			},
@@ -58,12 +58,12 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"500000000000000000", "OSMO"},
-						types.AmountQuote{"324553303629419159", "USDC"},
+						types.PriceFeed{"500000000000000000", "OSMO"},
+						types.PriceFeed{"324553303629419159", "USDC"},
 					},
 					{
-						types.Amount{"100000000", "NLS"},
-						types.AmountQuote{"4661737", "USDC"},
+						types.PriceFeed{"100000000", "NLS"},
+						types.PriceFeed{"4661737", "USDC"},
 					},
 				},
 			},
@@ -79,8 +79,8 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"100000000", "NLS"},
-						types.AmountQuote{"4661737", "USDC"},
+						types.PriceFeed{"100000000", "NLS"},
+						types.PriceFeed{"4661737", "USDC"},
 					},
 				},
 			},
@@ -96,12 +96,12 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"500000000000000000", "OSMO"},
-						types.AmountQuote{"324553303629419159", "USDC"},
+						types.PriceFeed{"500000000000000000", "OSMO"},
+						types.PriceFeed{"324553303629419159", "USDC"},
 					},
 					{
-						types.Amount{"100000000", "NLS"},
-						types.AmountQuote{"4661737", "USDC"},
+						types.PriceFeed{"100000000", "NLS"},
+						types.PriceFeed{"4661737", "USDC"},
 					},
 				},
 			},
@@ -117,12 +117,12 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"1000", "OSMO"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"1000", "OSMO"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 					{
-						types.Amount{"2000", "missing"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"2000", "missing"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 				},
 			},
@@ -138,12 +138,12 @@ func (s *TypesTestSuite) TestSuccessfulPriceCalculation() {
 			types.OracleData{
 				[]types.Price{
 					{
-						types.Amount{"1000", "OSMO"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"1000", "OSMO"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 					{
-						types.Amount{"20malformed00", "NLS"},
-						types.AmountQuote{"4000", "USDC"},
+						types.PriceFeed{"20malformed00", "NLS"},
+						types.PriceFeed{"4000", "USDC"},
 					},
 				},
 			},
