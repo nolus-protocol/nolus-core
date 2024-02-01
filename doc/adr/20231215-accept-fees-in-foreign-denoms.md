@@ -36,10 +36,6 @@ message DenomTicker {
 
 For each DEX that we work with, there will be a separate oracle and profit addresses. The denoms that we want to accept as fees will be defined for each DEX. For example, ATOM transferred from dex1 to nolus will have one denom, and ATOM transferred from dex2 to nolus will have another denom. The custom txFeeChecker will compare the denom that the user paid with the accepted denoms. When there is a match, we will know which oracle to query for the price. The deducted tax, not paid in the base asset, will be sent to the corresponding profit address from the parameters configuration.
 
-For each dex that we work with, there will be a separate oracle and profit addresses.The denoms that we want to accept as fees will be defined for each dex.
-For example, ATOM transferred from dex1 to nolus will have one denom, and ATOM transferred from dex2 to nolus will have another denom. The custom txFeeChecker will compare the denom that the user paid with the accepted denoms. When there is a match, we will know which oracle to query for the price. The deducted tax, not paid in the base asset, will be sent to the corresponding profit address from the parameters configuration.
-
-
 ### Positive Consequences
 
 - Easier Onboarding for New Users: New users can participate in the nolus network without the necessity to acquire NLS initially. This reduces the barrier to entry and encourages experimentation with the protocol using existing funds.

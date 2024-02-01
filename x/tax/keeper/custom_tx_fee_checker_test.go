@@ -59,7 +59,7 @@ func TestCustomTxFeeCheckerSuccessfulInUsdc(t *testing.T) {
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin(osmoAxlUSDCDenom, feeAmount)), feeCoins)
 }
 
-// Fail to pay fees in ibc/5DE... which represents axlUSDC from osmosis. Minimum gas prices set to unls. High gas -> fee amount not enough
+// Fail to pay fees in ibc/5DE... which represents axlUSDC from osmosis. Minimum gas prices set to unls. High gas -> fee amount not enough.
 func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
@@ -79,7 +79,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 	require.Equal(t, "insufficient fees; got: 1.000000ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11 required: 5226075.194079ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11: insufficient fee", err.Error())
 }
 
-// Fail to pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls. High gas -> fee amount not enough
+// Fail to pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls. High gas -> fee amount not enough.
 func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
 	// create a new CustomTxFeeChecker
