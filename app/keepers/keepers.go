@@ -47,6 +47,9 @@ import (
 	icacontroller "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/keeper"
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahost "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host"
+	icahostkeeper "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/keeper"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcclient "github.com/cosmos/ibc-go/v7/modules/core/02-client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
@@ -104,6 +107,7 @@ type AppKeepers struct {
 	ParamsKeeper          *paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAControllerKeeper   *icacontrollerkeeper.Keeper
+	ICAHostKeeper         *icahostkeeper.Keeper
 	EvidenceKeeper        *evidencekeeper.Keeper
 	TransferKeeper        *wrapkeeper.KeeperTransferWrapper
 	FeeRefunderKeeper     *feerefunderkeeper.Keeper
@@ -116,6 +120,7 @@ type AppKeepers struct {
 	ScopedInterchainTxsKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
+	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 
 	MintKeeper     *mintkeeper.Keeper
 	TaxKeeper      *taxmodulekeeper.Keeper
@@ -181,6 +186,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedInterchainTxsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(interchaintxstypes.ModuleName)
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
+	appKeepers.ScopedICAHostKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 	appKeepers.ScopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
 
 	// seal capabilities after scoping modules
@@ -344,7 +350,17 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 	appKeepers.ICAControllerKeeper = &icaControllerKeeper
 
-	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, nil)
+	icaHostKeeper := icahostkeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[icahosttypes.StoreKey],
+		appKeepers.GetSubspace(icahosttypes.SubModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
+		appKeepers.IBCKeeper.ChannelKeeper, &appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.AccountKeeper, appKeepers.ScopedICAHostKeeper, bApp.MsgServiceRouter(),
+	)
+	appKeepers.ICAHostKeeper = &icaHostKeeper
+
+	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, appKeepers.ICAHostKeeper)
 
 	appKeepers.InterchainQueriesKeeper = interchainquerieskeeper.NewKeeper(
 		appCodec,
@@ -465,9 +481,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	icaControllerStack = interchaintxs.NewIBCModule(*appKeepers.InterchainTxsKeeper)
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, *appKeepers.ICAControllerKeeper)
 
+	icaHostIBCModule := icahost.NewIBCModule(*appKeepers.ICAHostKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
+		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
 		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
@@ -509,6 +528,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(wasmtypes.ModuleName).WithKeyTable(wasmtypes.ParamKeyTable()) //nolint:staticcheck
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())      //nolint:staticcheck
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName).WithKeyTable(icacontrollertypes.ParamKeyTable())
+	paramsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
 	paramsKeeper.Subspace(feetypes.ModuleName).WithKeyTable(feetypes.ParamKeyTable())
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName).WithKeyTable(interchaintxstypes.ParamKeyTable())
 	paramsKeeper.Subspace(interchainqueriestypes.ModuleName).WithKeyTable(interchainqueriestypes.ParamKeyTable())

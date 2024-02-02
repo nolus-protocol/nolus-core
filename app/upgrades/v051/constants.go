@@ -4,6 +4,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/x/feegrant"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 )
 
 const (
@@ -17,6 +18,7 @@ var Upgrade = upgrades.Upgrade{
 	StoreUpgrades: store.StoreUpgrades{
 		Added: []string{
 			feegrant.ModuleName,
+			icahosttypes.StoreKey,
 		},
 	},
 }

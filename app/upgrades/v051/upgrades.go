@@ -7,6 +7,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+
+	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
+	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
+	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
 )
 
 func CreateUpgradeHandler(
@@ -16,6 +21,23 @@ func CreateUpgradeHandler(
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		// create ICS27 Host submodule params
+		hostParams := icahosttypes.Params{
+			HostEnabled:   true,
+			AllowMessages: []string{},
+		}
+
+		// initialize ICS27 module
+		icamodule, correctTypecast := mm.Modules[icatypes.ModuleName].(ica.AppModule)
+		if !correctTypecast {
+			panic("mm.Modules[icatypes.ModuleName] is not of type ica.AppModule")
+		}
+
+		// Default icacontroller parameters keep our icacontroller enabled
+		// The reason to call InitModule here is because we want to enable host functionality on nolus, which was disabled before
+		// InitModule sets the params for host, binds the hostKeeper to port `icahost` and claims port capability
+		icamodule.InitModule(ctx, icacontrollertypes.DefaultParams(), hostParams)
+
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }

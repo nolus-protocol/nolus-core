@@ -19,6 +19,7 @@ import (
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
+	icahosttypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 
@@ -56,6 +57,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		taxmoduletypes.StoreKey,
 		vestingstypes.StoreKey,
 		icacontrollertypes.StoreKey,
+		icahosttypes.StoreKey,
 		capabilitytypes.StoreKey,
 		interchainqueriestypes.StoreKey,
 		contractmanagermoduletypes.StoreKey,
