@@ -32,6 +32,6 @@ func main() {
 //   - allow for larger wasm files
 func overrideWasmVariables() {
 	// Override Wasm size limitation from WASMD.
-	wasmtypes.MaxWasmSize = 3 * 1024 * 1024
+	wasmtypes.MaxWasmSize = 5 * 1024 * 1024
 	wasmtypes.MaxProposalWasmSize = wasmtypes.MaxWasmSize
 }
