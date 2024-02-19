@@ -77,6 +77,10 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 						return nil, 0, err
 					}
 
+					if len(prices.Prices) == 0 {
+						return nil, 0, errors.Wrapf(types.ErrNoPrices, "no prices found for oracle: %s", feeParam.OracleAddress)
+					}
+
 					// AmountQuote.Ticker should be the same for every price in the prices array fetched from an oracle so we just get the first price and use the stableTicker.
 					// Each oracle could have different stableTicker.
 					stableTicker := prices.Prices[0].AmountQuote.Ticker
