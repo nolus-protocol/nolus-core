@@ -12,7 +12,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
+	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
 )
 
 func CreateUpgradeHandler(

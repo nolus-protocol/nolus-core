@@ -12,7 +12,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/capability"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -36,16 +35,15 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
-	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	ica "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts"
-	icatypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibc "github.com/cosmos/ibc-go/v7/modules/core"
-	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
-	ibctm "github.com/cosmos/ibc-go/v7/modules/light-clients/07-tendermint"
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
+	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibc "github.com/cosmos/ibc-go/v8/modules/core"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -57,15 +55,15 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/neutron-org/neutron/x/contractmanager"
-	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
-	"github.com/neutron-org/neutron/x/feerefunder"
-	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
-	"github.com/neutron-org/neutron/x/interchainqueries"
-	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
-	"github.com/neutron-org/neutron/x/interchaintxs"
-	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
-	transferSudo "github.com/neutron-org/neutron/x/transfer"
+	"github.com/neutron-org/neutron/v2/x/contractmanager"
+	contractmanagermoduletypes "github.com/neutron-org/neutron/v2/x/contractmanager/types"
+	"github.com/neutron-org/neutron/v2/x/feerefunder"
+	feetypes "github.com/neutron-org/neutron/v2/x/feerefunder/types"
+	"github.com/neutron-org/neutron/v2/x/interchainqueries"
+	interchainqueriestypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
+	"github.com/neutron-org/neutron/v2/x/interchaintxs"
+	interchaintxstypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
+	transferSudo "github.com/neutron-org/neutron/v2/x/transfer"
 )
 
 // module account permissions.
@@ -98,10 +96,6 @@ var ModuleBasics = module.NewBasicManager(
 	gov.NewAppModuleBasic(
 		[]govclient.ProposalHandler{
 			paramsclient.ProposalHandler,
-			upgradeclient.LegacyProposalHandler,
-			upgradeclient.LegacyCancelProposalHandler,
-			ibcclientclient.UpdateClientProposalHandler,
-			ibcclientclient.UpgradeProposalHandler,
 		},
 	),
 	sdkparams.AppModuleBasic{},

@@ -26,7 +26,6 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
@@ -36,10 +35,11 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v7/modules/apps/27-interchain-accounts/controller/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -48,10 +48,10 @@ import (
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 
-	contractmanagermoduletypes "github.com/neutron-org/neutron/x/contractmanager/types"
-	feetypes "github.com/neutron-org/neutron/x/feerefunder/types"
-	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
+	contractmanagermoduletypes "github.com/neutron-org/neutron/v2/x/contractmanager/types"
+	feetypes "github.com/neutron-org/neutron/v2/x/feerefunder/types"
+	interchainqueriestypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
+	interchaintxstypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
 )
 
 const SimAppChainID = "nolus-simapp"
