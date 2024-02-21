@@ -9,17 +9,17 @@ import (
 	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/exported"
+	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
+	ibchost "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	"github.com/stretchr/testify/suite"
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 
-	"github.com/neutron-org/neutron/app"
-	"github.com/neutron-org/neutron/testutil"
-	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
-	ictxtypes "github.com/neutron-org/neutron/x/interchaintxs/types"
+	"github.com/neutron-org/neutron/v2/app"
+	"github.com/neutron-org/neutron/v2/testutil"
+	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
+	ictxtypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
 )
 
 type CustomQuerierTestSuite struct {
