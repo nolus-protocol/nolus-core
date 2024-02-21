@@ -12,13 +12,13 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 
-	contractmanagerkeeper "github.com/neutron-org/neutron/x/contractmanager/keeper"
-	icqkeeper "github.com/neutron-org/neutron/x/interchainqueries/keeper"
-	icqtypes "github.com/neutron-org/neutron/x/interchainqueries/types"
-	ictxkeeper "github.com/neutron-org/neutron/x/interchaintxs/keeper"
-	ictxtypes "github.com/neutron-org/neutron/x/interchaintxs/types"
-	transferwrapperkeeper "github.com/neutron-org/neutron/x/transfer/keeper"
-	transferwrappertypes "github.com/neutron-org/neutron/x/transfer/types"
+	contractmanagerkeeper "github.com/neutron-org/neutron/v2/x/contractmanager/keeper"
+	icqkeeper "github.com/neutron-org/neutron/v2/x/interchainqueries/keeper"
+	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
+	ictxkeeper "github.com/neutron-org/neutron/v2/x/interchaintxs/keeper"
+	ictxtypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
+	transferwrapperkeeper "github.com/neutron-org/neutron/v2/x/transfer/keeper"
+	transferwrappertypes "github.com/neutron-org/neutron/v2/x/transfer/types"
 )
 
 func CustomMessageDecorator(
