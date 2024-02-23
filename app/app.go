@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"reflect"
+	"strings"
 
 	"github.com/spf13/cast"
 
@@ -258,15 +260,18 @@ func New(
 		}
 	}
 
-	// set storage param for the interchain txs module - IcaRegistrationFeeFirstCodeID
-	app.SetInterchainTxs()
+	// for local instances - set storage param for the interchain txs module - IcaRegistrationFeeFirstCodeID
+	app.SetInterchainTxsLocalChain()
 
 	return app
 }
 
-func (app *App) SetInterchainTxs() {
-	// Only set ICARegistrationFeeFirstCodeID if the chain is just started, at block 0
-	if app.LastBlockHeight() != 0 {
+func (app *App) SetInterchainTxsLocalChain() {
+	// ChainID gets chainID from private fields of BaseApp
+	chainID := reflect.ValueOf(app.BaseApp).Elem().FieldByName("chainID").String()
+
+	// If chain is not at block 0 or it's not a local chain, we don't set the storage param
+	if app.LastBlockHeight() != 0 || !strings.Contains(chainID, "local") {
 		return
 	}
 	store := app.CommitMultiStore()
