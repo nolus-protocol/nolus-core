@@ -18,35 +18,37 @@ env:
   # make sure to update build-binary container tag as well
   IMAGE_TAG: "1.21.6"
   DOCKERFILE: ".github/images/builder.Dockerfile"
+  CHECKSUM_FILE: "sha256sum.txt"
+  METADATA_FILE: "${{ github.ref_name }}_binaries.json"
 
 jobs:
   # Checks if builder image exists in docker registry
   builder-exists:
-      name: Builder exists
-      runs-on: ubuntu-latest
-      container: amazon/aws-cli
-      outputs:
-        # 'failure' -  when no image with such tag exists 
-        # 'success' - image exists
-        status: ${{ steps.check.outcome }}
+    name: Builder exists
+    runs-on: ubuntu-latest
+    container: amazon/aws-cli
+    outputs:
+      # 'failure' -  when no image with such tag exists
+      # 'success' - image exists
+      status: ${{ steps.check.outcome }}
 
-      steps:
-        - name: Configure AWS Credentials
-          uses: aws-actions/configure-aws-credentials@v1-node16
-          with:
-            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            aws-region: ${{ env.AWS_REGION }}
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-        - name: Run check exist image
-          id: check
-          continue-on-error: true
-          run: |
-            aws ecr-public describe-images \
-                --registry-id $AWS_REGISTRY_ID \
-                --repository-name $ERC_REPOSITORY \
-                --region $AWS_REGION \
-                --image-ids=imageTag=$IMAGE_TAG
+      - name: Run check exist image
+        id: check
+        continue-on-error: true
+        run: |
+          aws ecr-public describe-images \
+              --registry-id $AWS_REGISTRY_ID \
+              --repository-name $ERC_REPOSITORY \
+              --region $AWS_REGION \
+              --image-ids=imageTag=$IMAGE_TAG
 
   # Builds and pushed builder image if it does not exist
   builder-create:
@@ -91,40 +93,71 @@ jobs:
       image: "public.ecr.aws/nolus/builder:1.21.6"
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    # This is to fix GIT not liking owner of the checkout dir
-    # Happens when executing not into the default container
-    - name: Set ownership
-      run: |
-        chown -R $(id -u):$(id -g) $PWD
+      # This is to fix GIT not liking owner of the checkout dir
+      # Happens when executing not into the default container
+      - name: Set ownership
+        run: |
+          chown -R $(id -u):$(id -g) $PWD
 
-    - name: Run build binary
-      run: |
-        make build
-        echo "Ensuring binary is statically linked ..."
-        file target/release/nolusd | grep "statically linked"
-        
-    - name: Prepare binary tar
-      run: |
-        tar -C target/release/ -czvf $ARTIFACT_BIN .
+      - name: Run build binary
+        run: |
+          make build
+          echo "Ensuring binary is statically linked ..."
+          file target/release/nolusd | grep "statically linked"
 
-    - name: Archive binary
-      uses: actions/upload-artifact@v3
-      with:
-        name: nolusd-${{ env.VERSION_TAG }}
-        path: ${{ env.ARTIFACT_BIN }}
+      - name: Prepare binary tar
+        run: |
+          tar -C target/release/ -czvf $ARTIFACT_BIN .
+
+      - name: Upload binary tar
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolusd-tar-${{ env.VERSION_TAG }}
+          path: ${{ env.ARTIFACT_BIN }}
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: nolusd-${{ env.VERSION_TAG }}
+          path: target/release/nolusd
+
+  # Add metadata for cosmovisor
+  add-meta:
+    name: Add metadata
+    needs: build-binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Get binary checksum
+        run: |
+          CHECKSUM=$(shasum -a 256 nolusd-"${VERSION_TAG}"/nolusd)
+          echo "$CHECKSUM" > $CHECKSUM_FILE
+          HASH=$(echo "$CHECKSUM" | cut -d' ' -f1)
+          JSON="{\"binaries\": {\"linux/amd64\": \"https://github.com/nolus-protocol/nolus-core/releases/download/${VERSION_TAG}/nolusd?checksum=$HASH\"}}"
+          echo $JSON > $METADATA_FILE
+
+      - name: Upload metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: metadata
+          path: |
+            ${{ env.METADATA_FILE }}
+            ${{ env.CHECKSUM_FILE }}
 
   # Drafts a release
   release:
     name: Draft release
     runs-on: ubuntu-latest
-    needs: build-binary
+    needs: [build-binary, add-meta]
     permissions: write-all
 
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -136,4 +169,6 @@ jobs:
           prerelease: false
           draft: true
           files: |
+            nolusd-tar-${{ env.VERSION_TAG }}
             nolusd-${{ env.VERSION_TAG }}
+            metadata
