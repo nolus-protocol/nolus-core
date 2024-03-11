@@ -2,11 +2,11 @@ package keeper_test
 
 import (
 	sdkmath "cosmossdk.io/math"
+	"cosmossdk.io/x/auth/ante"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"

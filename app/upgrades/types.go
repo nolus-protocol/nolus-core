@@ -1,11 +1,11 @@
 package upgrades
 
 import (
+	store "cosmossdk.io/store/types"
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	"github.com/cosmos/cosmos-sdk/codec"
-	store "github.com/cosmos/cosmos-sdk/store/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 // Upgrade defines a struct containing necessary fields that a SoftwareUpgradeProposal

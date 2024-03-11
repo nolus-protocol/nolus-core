@@ -1,9 +1,9 @@
 package v042
 
 import (
+	store "cosmossdk.io/store/types"
+	"cosmossdk.io/x/authz"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	store "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/x/authz"
 )
 
 const (
