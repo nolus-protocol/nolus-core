@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	authtypes "cosmossdk.io/x/auth/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 var HUNDRED_DEC = sdk.NewDec(100)
