@@ -3,7 +3,7 @@ package v05
 import (
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 
-	store "github.com/cosmos/cosmos-sdk/store/types"
+	store "cosmossdk.io/store/types"
 	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 )

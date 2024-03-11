@@ -6,9 +6,9 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 
+	authtypes "cosmossdk.io/x/auth/types"
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 func TestItCreatesModuleAccountOnInitBlock(t *testing.T) {

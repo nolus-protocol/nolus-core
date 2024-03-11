@@ -1,9 +1,9 @@
 package v04
 
 import (
+	store "cosmossdk.io/store/types"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
-	store "github.com/cosmos/cosmos-sdk/store/types"
 )
 
 const (
