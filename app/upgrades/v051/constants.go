@@ -1,9 +1,9 @@
 package v051
 
 import (
+	store "cosmossdk.io/store/types"
+	"cosmossdk.io/x/feegrant"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	store "github.com/cosmos/cosmos-sdk/store/types"
-	"github.com/cosmos/cosmos-sdk/x/feegrant"
 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
 )
 

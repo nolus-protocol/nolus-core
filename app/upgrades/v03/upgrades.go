@@ -8,9 +8,9 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/codec"
 
+	upgradetypes "cosmossdk.io/x/upgrade/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
 	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
 )

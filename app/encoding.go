@@ -1,12 +1,12 @@
 package app
 
 import (
+	"cosmossdk.io/x/auth/tx"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
