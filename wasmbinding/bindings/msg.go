@@ -5,9 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	feetypes "github.com/neutron-org/neutron/v2/x/feerefunder/types"
-	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
-	transferwrappertypes "github.com/neutron-org/neutron/v2/x/transfer/types"
+	feetypes "github.com/neutron-org/neutron/v3/x/feerefunder/types"
+	icqtypes "github.com/neutron-org/neutron/v3/x/interchainqueries/types"
+	transferwrappertypes "github.com/neutron-org/neutron/v3/x/transfer/types"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object.
@@ -17,7 +17,7 @@ type ProtobufAny struct {
 }
 
 // NeutronMsg is used like a sum type to hold one of custom Neutron messages.
-// Follow https://github.com/neutron-org/neutron/v2-contracts/tree/main/packages/bindings/src/msg.rs
+// Follow https://github.com/neutron-org/neutron/v3-contracts/tree/main/packages/bindings/src/msg.rs
 // for more information.
 type NeutronMsg struct {
 	SubmitTx                  *SubmitTx                         `json:"submit_tx,omitempty"`

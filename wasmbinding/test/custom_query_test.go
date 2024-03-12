@@ -16,10 +16,10 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
 
-	"github.com/neutron-org/neutron/v2/app"
-	"github.com/neutron-org/neutron/v2/testutil"
-	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
-	ictxtypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
+	"github.com/neutron-org/neutron/v3/app"
+	"github.com/neutron-org/neutron/v3/testutil"
+	icqtypes "github.com/neutron-org/neutron/v3/x/interchainqueries/types"
+	ictxtypes "github.com/neutron-org/neutron/v3/x/interchaintxs/types"
 )
 
 type CustomQuerierTestSuite struct {
