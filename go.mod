@@ -16,7 +16,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/neutron-org/neutron/v2 v2.0.3-0.20240311120257-e3eb4bd1ee65
+	github.com/neutron-org/neutron/v3 v3.0.1-0.20240311161509-9df75a20798d
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -30,7 +30,6 @@ require (
 	cosmossdk.io/errors v1.0.1
 	cosmossdk.io/math v1.3.0
 	github.com/cosmos/cosmos-proto v1.0.0-beta.4
-	github.com/cosmos/gaia/v11 v11.0.0-00010101000000-000000000000
 	github.com/golang/mock v1.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
 	gotest.tools/v3 v3.5.1

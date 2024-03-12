@@ -53,7 +53,7 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	interchaintxstypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
+	interchaintxstypes "github.com/neutron-org/neutron/v3/x/interchaintxs/types"
 )
 
 const (
