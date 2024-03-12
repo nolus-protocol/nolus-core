@@ -21,11 +21,11 @@ import (
 	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibctmmigrations "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint/migrations"
 
-	contractmanagerkeeper "github.com/neutron-org/neutron/v2/x/contractmanager/keeper"
-	contractmanagertypes "github.com/neutron-org/neutron/v2/x/contractmanager/types"
-	feerefundertypes "github.com/neutron-org/neutron/v2/x/feerefunder/types"
-	icqtypes "github.com/neutron-org/neutron/v2/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/v2/x/interchaintxs/types"
+	contractmanagerkeeper "github.com/neutron-org/neutron/v3/x/contractmanager/keeper"
+	contractmanagertypes "github.com/neutron-org/neutron/v3/x/contractmanager/types"
+	feerefundertypes "github.com/neutron-org/neutron/v3/x/feerefunder/types"
+	icqtypes "github.com/neutron-org/neutron/v3/x/interchainqueries/types"
+	interchaintxstypes "github.com/neutron-org/neutron/v3/x/interchaintxs/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 )
