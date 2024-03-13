@@ -5,6 +5,14 @@ go 1.22
 toolchain go1.22.1
 
 require (
+	// cosmossdk.io/core v0.11.0
+	// cosmossdk.io/errors v1.0.1
+	// cosmossdk.io/log v1.3.1
+	// cosmossdk.io/math v1.3.0
+	// cosmossdk.io/store v1.0.2
+	// cosmossdk.io/x/evidence v0.1.0
+	// cosmossdk.io/x/feegrant v0.1.0
+	// cosmossdk.io/x/upgrade v0.1.1
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/CosmWasm/wasmvm v1.5.2
 	github.com/armon/go-metrics v0.4.1
@@ -224,4 +232,7 @@ replace (
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+
+	// WIP
+	github.com/cosmos/interchain-security/v4 => /home/denislavivanov/go/github/interchain-security
 )
