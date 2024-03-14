@@ -8,10 +8,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"cosmossdk.io/log"
 	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/json"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cometbfttypes "github.com/cometbft/cometbft/types"
 	tmtypes "github.com/cometbft/cometbft/types"

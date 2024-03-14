@@ -14,8 +14,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"cosmossdk.io/log"
 	tmdb "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	storetypes "cosmossdk.io/store/types"

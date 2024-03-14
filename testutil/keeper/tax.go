@@ -3,6 +3,7 @@ package keeper
 import (
 	"testing"
 
+	"cosmossdk.io/log"
 	"cosmossdk.io/store"
 	sdktypes "cosmossdk.io/store/types"
 	storetypes "cosmossdk.io/store/types"
@@ -11,7 +12,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	tmdb "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
