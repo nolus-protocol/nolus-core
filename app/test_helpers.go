@@ -1,8 +1,8 @@
 package app
 
 import (
+	"cosmossdk.io/log"
 	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	authtypes "cosmossdk.io/x/auth/types"
