@@ -155,6 +155,10 @@ func New(
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
+	app.ModuleManager.SetOrderPreBlockers(
+		upgradetypes.ModuleName,
+	)
+
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
@@ -162,6 +166,8 @@ func New(
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	// Tell the app's module manager how to set the order of BeginBlockers, which are run at the beginning of every block.
 	app.mm.SetOrderBeginBlockers(orderBeginBlockers()...)
+
+	app.SetPreBlocker(app.PreBlocker)
 
 	app.mm.SetOrderEndBlockers(orderEndBlockers()...)
 
@@ -262,6 +268,10 @@ func New(
 	app.SetInterchainTxs()
 
 	return app
+}
+
+func (app *App) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	return app.ModuleManager.PreBlock(ctx, req)
 }
 
 func (app *App) SetInterchainTxs() {
