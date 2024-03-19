@@ -24,7 +24,7 @@ require (
 	github.com/golang/protobuf v1.5.3
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/neutron-org/neutron/v3 v3.0.1-0.20240318102536-3ece47c1e8c6
+	github.com/neutron-org/neutron/v3 v3.0.1-0.20240319120756-ccad95c37746
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
