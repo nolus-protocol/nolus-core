@@ -26,7 +26,7 @@ declare -r hermes_mnemonic=$6
 # Install
 
 declare -r archive_name="hermes-binary.tar.gz"
-wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.7.0/hermes-v1.7.0-x86_64-unknown-linux-gnu.tar.gz
+wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v1.8.0/hermes-v1.8.0-x86_64-unknown-linux-gnu.tar.gz
 
 declare -r hermes_binary_dir="$hermes_root"/hermes
 mkdir -p  "$hermes_binary_dir"
