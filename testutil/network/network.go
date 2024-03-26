@@ -6,7 +6,6 @@ import (
 	"time"
 
 	pruningtypes "cosmossdk.io/store/pruning/types"
-	authtypes "cosmossdk.io/x/auth/types"
 	tmdb "github.com/cometbft/cometbft-db"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -16,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
