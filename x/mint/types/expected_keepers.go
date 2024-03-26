@@ -1,8 +1,8 @@
 package types // noalias
 
 import (
-	"cosmossdk.io/x/auth/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // AccountKeeper defines the contract required for account APIs.
