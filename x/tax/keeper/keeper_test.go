@@ -23,10 +23,10 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 
-	"cosmossdk.io/x/auth/ante"
-	xauthsigning "cosmossdk.io/x/auth/signing"
-	authtypes "cosmossdk.io/x/auth/types"
 	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // TestAccount represents a client Account that can be used in unit tests.
