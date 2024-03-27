@@ -59,7 +59,7 @@ func (s *KeeperTestSuite) TestParams() {
 }
 
 func TestGetParams(t *testing.T) {
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	k, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	params := types.DefaultParams()
 

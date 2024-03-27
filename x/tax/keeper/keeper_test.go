@@ -50,7 +50,7 @@ type KeeperTestSuite struct {
 // SetupTest setups a new test, with new app, context, and anteHandler.
 func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	var err error
-	_ = params.SetAddressPrefixes()
+	_ = params.GetDefaultConfig()
 	s.app, err = simulationapp.TestSetup(s.T())
 	s.Require().NoError(err)
 

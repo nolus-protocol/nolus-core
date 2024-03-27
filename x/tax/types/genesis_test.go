@@ -9,7 +9,7 @@ import (
 )
 
 func TestGenesisState_Validate(t *testing.T) {
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	for _, tc := range []struct {
 		desc     string
 		genState *types.GenesisState

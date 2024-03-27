@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	config := params.SetAddressPrefixes()
+	config := params.GetDefaultConfig()
 	config.Seal()
 	// we must override the wasm variables here because we want to upload contracts on genesis
 	// and in our scripts, we use the cli command add-wasm-genesis-message before the chain is started in order to load the contracts

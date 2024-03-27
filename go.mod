@@ -37,6 +37,7 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.4
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
 	github.com/golang/mock v1.6.0
+	github.com/hashicorp/go-metrics v0.5.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
 	gotest.tools/v3 v3.5.1
 )
@@ -125,7 +126,6 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.7.5 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
-	github.com/hashicorp/go-metrics v0.5.2 // indirect
 	github.com/hashicorp/go-plugin v1.5.2 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.6.0 // indirect

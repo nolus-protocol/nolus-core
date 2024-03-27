@@ -31,7 +31,7 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 		sims.EmptyAppOptions{},
 	)
 
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 
 	testapp := app
 	ctx := testapp.BaseApp.NewContext(isCheckTx, tmproto.Header{})

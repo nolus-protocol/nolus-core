@@ -66,12 +66,3 @@ func (msg MsgCreateVestingAccount) ValidateBasic() error {
 func (msg MsgCreateVestingAccount) GetSignBytes() []byte {
 	return sdk.MustSortJSON(amino.MustMarshalJSON(&msg))
 }
-
-// GetSigners returns the expected signers for a MsgCreateVestingAccount.
-func (msg MsgCreateVestingAccount) GetSigners() []sdk.AccAddress {
-	addr, err := sdk.AccAddressFromBech32(msg.FromAddress)
-	if err != nil {
-		panic(err)
-	}
-	return []sdk.AccAddress{addr}
-}

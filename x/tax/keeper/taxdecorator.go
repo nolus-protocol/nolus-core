@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	errorsmod "cosmossdk.io/errors"
+	sdkmath "cosmossdk.io/math"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
-var HUNDRED_DEC = sdk.NewDec(100)
+var HUNDRED_DEC = sdkmath.LegacyNewDec(100)
 
 // DeductTaxDecorator deducts tax by a given fee rate from the standard collected fee.
 // The tax is sent to a treasury account
@@ -99,7 +100,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 }
 
 func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, feeCoin sdk.Coin, treasuryAddr sdk.AccAddress) error {
-	feeRate := sdk.NewDec(int64(taxKeeper.FeeRate(ctx)))
+	feeRate := sdkmath.LegacyNewDec(int64(taxKeeper.FeeRate(ctx)))
 	// if feeRate is 0 - we won't deduct any tax
 	if feeRate.IsZero() {
 		return nil
