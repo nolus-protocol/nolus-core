@@ -1,6 +1,7 @@
 package v3
 
 import (
+	storetypes "cosmossdk.io/store/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -19,7 +20,7 @@ var ParamsKey = []byte{0x01}
 // module state.
 func Migrate(
 	ctx sdk.Context,
-	store sdk.KVStore,
+	store storetypes.KVStore,
 	legacySubspace exported.Subspace,
 	cdc codec.BinaryCodec,
 ) error {

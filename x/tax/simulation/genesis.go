@@ -19,7 +19,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	var feeRate int32
 
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, string(types.KeyFeeRate), &feeRate, simState.Rand,
+		string(types.KeyFeeRate), &feeRate, simState.Rand,
 		func(r *rand.Rand) { feeRate = GenRandomFeeRate(r) },
 	)
 	params := types.NewParams(feeRate, types.DefaultContractAddress, types.DefaultBaseDenom)

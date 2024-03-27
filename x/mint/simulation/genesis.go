@@ -24,7 +24,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// minter
 	var maxMintableNSecs sdkmath.Uint
 	simState.AppParams.GetOrGenerate(
-		simState.Cdc, string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
+		string(types.KeyMaxMintableNanoseconds), &maxMintableNSecs, simState.Rand,
 		func(r *rand.Rand) { maxMintableNSecs = GenMaxMintableNanoseconds(r) },
 	)
 	mintDenom := sdk.DefaultBondDenom

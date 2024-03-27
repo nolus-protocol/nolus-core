@@ -4,12 +4,12 @@ import (
 	"context"
 
 	errorsmod "cosmossdk.io/errors"
-	"github.com/armon/go-metrics"
 	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	vestingtypes "github.com/cosmos/cosmos-sdk/x/auth/vesting/types"
+	"github.com/hashicorp/go-metrics"
 
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
@@ -45,7 +45,10 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 		return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "invalid account type; expected: BaseAccount, got: %T", baseAccount)
 	}
 
-	baseVestingAccount := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), msg.Amount.Sort(), msg.EndTime)
+	baseVestingAccount, err := vestingtypes.NewBaseVestingAccount(baseAccount.(*authtypes.BaseAccount), msg.Amount.Sort(), msg.EndTime)
+	if err != nil {
+		return nil, err
+	}
 
 	var acc authtypes.AccountI
 
@@ -62,10 +65,12 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 
 		for _, a := range msg.Amount {
 			if a.Amount.IsInt64() {
+				var ls []metrics.Label
+				ls = append(ls, telemetry.NewLabel("denom", a.Denom))
 				telemetry.SetGaugeWithLabels(
 					[]string{"tx", "msg", "create_vesting_account"},
 					float32(a.Amount.Int64()),
-					[]metrics.Label{telemetry.NewLabel("denom", a.Denom)},
+					ls,
 				)
 			}
 		}

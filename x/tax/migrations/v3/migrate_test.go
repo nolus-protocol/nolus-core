@@ -28,7 +28,7 @@ func (ms mockSubspace) GetParamSet(ctx sdk.Context, ps exported.ParamSet) {
 }
 
 func TestMigrate(t *testing.T) {
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	encCfg := moduletestutil.MakeTestEncodingConfig(tax.AppModuleBasic{})
 	cdc := encCfg.Codec
 
