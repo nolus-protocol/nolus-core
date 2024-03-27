@@ -18,7 +18,7 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	denom := "unls"
 	maxMintableNanoseconds := uint64(2000)
 
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	app, err := simapp.TestSetup(t)
 	require.NoError(t, err)
 

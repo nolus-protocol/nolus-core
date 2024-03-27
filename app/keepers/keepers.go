@@ -9,7 +9,9 @@ import (
 	"cosmossdk.io/x/feegrant"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/codec/address"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
@@ -57,6 +59,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
+	nolusparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -169,12 +172,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	consensusKeeper := consensusparamskeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[consensusparamstypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[consensusparamstypes.StoreKey]),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		runtime.EventService{},
 	)
 	appKeepers.ConsensusParamsKeeper = &consensusKeeper
 
-	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper)
+	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper.ParamsStore)
 
 	// add capability keeper and ScopeToModule for ibc module
 	appKeepers.CapabilityKeeper = capabilitykeeper.NewKeeper(
@@ -194,20 +198,22 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[crisistypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
 		invCheckPeriod,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
 	)
 
 	// Add normal keepers
 	accountKeeper := authkeeper.NewAccountKeeper(
 		appCodec,
-		appKeepers.keys[authtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		bech32Prefix,
+		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
+		nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.AccountKeeper = &accountKeeper
@@ -221,7 +227,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	bankKeeper := bankkeeper.NewBaseKeeper(
 		appCodec,
-		appKeepers.keys[banktypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[banktypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		blockedAddress,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -249,7 +255,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	distrKeeper := distrkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[distrtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[distrtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		stakingKeeper,
@@ -261,7 +267,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	slashingKeeper := slashingkeeper.NewKeeper(
 		appCodec,
 		cdc,
-		appKeepers.keys[slashingtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[slashingtypes.StoreKey]),
 		stakingKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -277,7 +283,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// UpgradeKeeper must be created before IBCKeeper
 	appKeepers.UpgradeKeeper = upgradekeeper.NewKeeper(
 		skipUpgradeHeights,
-		appKeepers.keys[upgradetypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[upgradetypes.StoreKey]),
 		appCodec,
 		homePath,
 		bApp,
@@ -333,9 +339,11 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// Create evidence Keeper for to register the IBC light client misbehaviour evidence route
 	appKeepers.EvidenceKeeper = evidencekeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[evidencetypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[evidencetypes.StoreKey]),
 		appKeepers.StakingKeeper,
 		appKeepers.SlashingKeeper,
+		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
+		runtime.ProvideCometInfoService(),
 	)
 
 	icaControllerKeeper := icacontrollerkeeper.NewKeeper(
@@ -443,7 +451,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.GovKeeper = govkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[govtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[govtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
@@ -496,7 +504,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
 	authzKeepper := authzkeeper.NewKeeper(
-		appKeepers.keys[authzkeeper.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[authzkeeper.StoreKey]),
 		appCodec,
 		bApp.MsgServiceRouter(),
 		appKeepers.AccountKeeper,

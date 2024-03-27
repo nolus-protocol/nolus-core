@@ -29,7 +29,7 @@ func NewIntegrationTestSuite(cfg network.Config) *IntegrationTestSuite {
 
 func (s *IntegrationTestSuite) SetupSuite() {
 	s.T().Log("setting up integration test suite")
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	genesisState := s.cfg.GenesisState
 
 	var mintData minttypes.GenesisState

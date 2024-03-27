@@ -39,7 +39,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	} else {
 		cfg = configs[0]
 	}
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	net, err := network.New(t, t.TempDir(), cfg)
 	require.NoError(t, err)
 	t.Cleanup(net.Cleanup)
