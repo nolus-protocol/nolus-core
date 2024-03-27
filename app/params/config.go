@@ -1,6 +1,7 @@
 package params
 
 import (
+	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -30,23 +31,23 @@ var (
 )
 
 func init() {
-	SetAddressPrefixes()
+	GetDefaultConfig()
 	RegisterDenoms()
 }
 
 func RegisterDenoms() {
-	err := sdk.RegisterDenom(HumanCoinUnit, sdk.OneDec())
+	err := sdk.RegisterDenom(HumanCoinUnit, sdkmath.LegacyOneDec())
 	if err != nil {
 		panic(err)
 	}
 
-	err = sdk.RegisterDenom(BaseCoinUnit, sdk.NewDecWithPrec(1, NolusExponent))
+	err = sdk.RegisterDenom(BaseCoinUnit, sdkmath.LegacyNewDecWithPrec(1, NolusExponent))
 	if err != nil {
 		panic(err)
 	}
 }
 
-func SetAddressPrefixes() *sdk.Config {
+func GetDefaultConfig() *sdk.Config {
 	config := sdk.GetConfig()
 	config.SetBech32PrefixForAccount(Bech32PrefixAccAddr, Bech32PrefixAccPub)
 	config.SetBech32PrefixForValidator(Bech32PrefixValAddr, Bech32PrefixValPub)

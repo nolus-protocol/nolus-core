@@ -147,6 +147,21 @@ func New(
 		params.Bech32PrefixAccAddr,
 	)
 
+	// TODO: decide if we want textual sign mode (https://github.com/cosmos/cosmos-sdk/blob/release/v0.50.x/UPGRADING.md#textual-sign-mode)
+	// enabledSignModes := append(tx.DefaultSignModes, sigtypes.SignMode_SIGN_MODE_TEXTUAL)
+	// txConfigOpts := tx.ConfigOptions{
+	// 	EnabledSignModes:           enabledSignModes,
+	// 	TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
+	// }
+	// txConfig, err := tx.NewTxConfigWithOptions(
+	// 	appCodec,
+	// 	txConfigOpts,
+	// )
+	// if err != nil {
+	// 	log.Fatalf("Failed to create new TxConfig with options: %v", err)
+	// }
+	// app.txConfig = txConfig
+
 	/****  Module Options ****/
 
 	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
@@ -157,7 +172,10 @@ func New(
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
-	app.ModuleManager.SetOrderPreBlockers(
+	//TODO: decide if we need this
+	// app.mm.NewBasicManagerFromManager
+
+	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
 	)
 
@@ -331,22 +349,24 @@ func (app *App) Name() string { return app.BaseApp.Name() }
 func (app *App) GetBaseApp() *baseapp.BaseApp { return app.BaseApp }
 
 // BeginBlocker application updates every begin block.
-func (app *App) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
-	return app.mm.BeginBlock(ctx, req)
+func (app *App) BeginBlocker(ctx sdk.Context) (sdk.BeginBlock, error) {
+	return app.mm.BeginBlock(ctx)
 }
 
 // EndBlocker application updates every end block.
-func (app *App) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+func (app *App) EndBlocker(ctx sdk.Context) (sdk.EndBlock, error) {
+	return app.mm.EndBlock(ctx)
 }
 
 // InitChainer application update at chain initialization.
-func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) (*abci.ResponseInitChain, error) {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
-		panic(err)
+		return nil, err
 	}
-	app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
+	if err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap()); err != nil {
+		return nil, err
+	}
 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
 }
 
@@ -372,6 +392,28 @@ func (app *App) ModuleAccountAddrs() map[string]bool {
 func (app *App) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
+
+//TODO: autocli
+// AutoCliOpts returns the autocli options for the app.
+// func (app *App) AutoCliOpts() autocli.AppOptions {
+// 	modules := make(map[string]appmodule.AppModule, 0)
+// 	for _, m := range app.mm.Modules {
+// 		if moduleWithName, ok := m.(module.HasName); ok {
+// 			moduleName := moduleWithName.Name()
+// 			if appModule, ok := moduleWithName.(appmodule.AppModule); ok {
+// 				modules[moduleName] = appModule
+// 			}
+// 		}
+// 	}
+
+// 	return autocli.AppOptions{
+// 		Modules:               modules,
+// 		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(app.ModuleManager.Modules),
+// 		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+// 		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+// 		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+// 	}
+// }
 
 // AppCodec returns Gaia's app codec.
 //
@@ -439,6 +481,6 @@ func GetMaccPerms() map[string][]string {
 	return dupMaccPerms
 }
 
-func (app *App) RegisterNodeService(clientCtx client.Context) {
-	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
+func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
 }

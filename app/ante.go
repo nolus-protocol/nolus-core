@@ -19,11 +19,11 @@ import (
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
 type HandlerOptions struct {
 	ante.HandlerOptions
-	BankKeeper        taxtypes.BankKeeper
-	TaxKeeper         taxkeeper.Keeper
-	TxCounterStoreKey storetypes.StoreKey
-	WasmConfig        *wasmTypes.WasmConfig
-	IBCKeeper         *keeper.Keeper
+	BankKeeper            taxtypes.BankKeeper
+	TaxKeeper             taxkeeper.Keeper
+	TxCounterStoreService storetypes.KVStoreService
+	WasmConfig            *wasmTypes.WasmConfig
+	IBCKeeper             *keeper.Keeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -51,7 +51,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	anteDecorators := []sdk.AnteDecorator{
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
-		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
+		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreService),
 		ante.NewExtensionOptionsDecorator(nil),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),

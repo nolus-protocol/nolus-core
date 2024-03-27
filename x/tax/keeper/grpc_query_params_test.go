@@ -11,7 +11,7 @@ import (
 )
 
 func TestParamsQuery(t *testing.T) {
-	params.SetAddressPrefixes()
+	params.GetDefaultConfig()
 	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
