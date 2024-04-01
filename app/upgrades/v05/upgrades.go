@@ -1,6 +1,7 @@
 package v05
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
@@ -36,7 +37,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("running upgrade handler")
 
 		// ibc v4-to-v5

@@ -5,13 +5,14 @@ import (
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/store"
+	metrics "cosmossdk.io/store/metrics"
 	sdktypes "cosmossdk.io/store/types"
 	storetypes "cosmossdk.io/store/types"
 	mock_types "github.com/Nolus-Protocol/nolus-core/testutil/mocks/tax/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	tmdb "github.com/cometbft/cometbft-db"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -22,11 +23,11 @@ import (
 )
 
 func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Keeper, sdk.Context, *mock_types.MockWasmKeeper) {
-	storeKey := sdk.NewKVStoreKey(types.StoreKey)
+	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 	memStoreKey := storetypes.NewMemoryStoreKey(types.MemStoreKey)
 
-	db := tmdb.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db)
+	db := dbm.NewMemDB()
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
 	stateStore.MountStoreWithDB(storeKey, sdktypes.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(memStoreKey, sdktypes.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())

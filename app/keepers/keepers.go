@@ -3,6 +3,7 @@ package keepers
 import (
 	"path/filepath"
 
+	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -14,6 +15,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -33,7 +35,6 @@ import (
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
-	"cosmossdk.io/x/upgrade"
 	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/x/params"
@@ -148,6 +149,7 @@ type AppKeepers struct {
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
+	logger log.Logger,
 	appCodec codec.Codec,
 	bApp *baseapp.BaseApp,
 	cdc *codec.LegacyAmino,
@@ -220,7 +222,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	feegrantKeeper := feegrantkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[feegrant.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[feegrant.StoreKey]),
 		appKeepers.AccountKeeper,
 	)
 	appKeepers.FeegrantKeeper = &feegrantKeeper
@@ -231,15 +233,18 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.AccountKeeper,
 		blockedAddress,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		logger,
 	)
 	appKeepers.BankKeeper = &bankKeeper
 
 	stakingKeeper := stakingkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[stakingtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[stakingtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		authcodec.NewBech32Codec(sdk.Bech32PrefixValAddr),
+		authcodec.NewBech32Codec(sdk.Bech32PrefixConsAddr),
 	)
 	appKeepers.StakingKeeper = stakingKeeper
 
@@ -298,6 +303,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.StakingKeeper,
 		appKeepers.UpgradeKeeper,
 		appKeepers.ScopedIBCKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	appKeepers.ContractManagerKeeper = contractmanagermodulekeeper.NewKeeper(
@@ -326,12 +332,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.ScopedTransferKeeper,
 		appKeepers.FeeRefunderKeeper,
 		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.TransferKeeper = &transferKeeper
 	appKeepers.TransferModule = transferSudo.NewAppModule(transferKeeper)
@@ -352,9 +359,10 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.GetSubspace(icacontrollertypes.SubModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.ChannelKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedICAControllerKeeper,
 		bApp.MsgServiceRouter(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAControllerKeeper = &icaControllerKeeper
 
@@ -364,10 +372,11 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.GetSubspace(icahosttypes.SubModuleName),
 		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
 		appKeepers.IBCKeeper.ChannelKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.ScopedICAHostKeeper,
 		bApp.MsgServiceRouter(),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAHostKeeper = &icaHostKeeper
 
@@ -414,14 +423,14 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(appKeepers.InterchainTxsKeeper, appKeepers.InterchainQueriesKeeper, *appKeepers.TransferKeeper, appKeepers.FeeRefunderKeeper, appKeepers.ContractManagerKeeper), wasmOpts...)
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[wasmtypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[wasmtypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
 		distrkeeper.NewQuerier(*appKeepers.DistrKeeper),
 		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
 		appKeepers.IBCKeeper.ChannelKeeper,
-		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedWasmKeeper,
 		appKeepers.TransferKeeper,
 		bApp.MsgServiceRouter(),
@@ -442,7 +451,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(*appKeepers.ParamsKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
-		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
+		// TODO: test software upgrades and remove this legacy handler
+		// AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
 
 	govConfig := govtypes.DefaultConfig()
@@ -455,6 +465,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
+		appKeepers.DistrKeeper,
 		bApp.MsgServiceRouter(),
 		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -536,8 +547,7 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(ibcexported.ModuleName)
 
 	// MOTE: legacy subspaces for migration sdk47 only
-	paramsKeeper.Subspace(wasmtypes.ModuleName).WithKeyTable(wasmtypes.ParamKeyTable()) //nolint:staticcheck
-	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable())      //nolint:staticcheck
+	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable()) //nolint:staticcheck
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName).WithKeyTable(icacontrollertypes.ParamKeyTable())
 	paramsKeeper.Subspace(icahosttypes.SubModuleName).WithKeyTable(icahosttypes.ParamKeyTable())
 	paramsKeeper.Subspace(feetypes.ModuleName).WithKeyTable(feetypes.ParamKeyTable())
