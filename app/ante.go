@@ -1,8 +1,8 @@
 package app
 
 import (
+	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
-	storetypes "cosmossdk.io/store/types"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -21,7 +21,7 @@ type HandlerOptions struct {
 	ante.HandlerOptions
 	BankKeeper            taxtypes.BankKeeper
 	TaxKeeper             taxkeeper.Keeper
-	TxCounterStoreService storetypes.KVStoreService
+	TxCounterStoreService corestoretypes.KVStoreService
 	WasmConfig            *wasmTypes.WasmConfig
 	IBCKeeper             *keeper.Keeper
 }

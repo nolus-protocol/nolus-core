@@ -32,8 +32,8 @@ var (
 	_ module.AppModuleSimulation = (*AppModule)(nil)
 	_ module.HasABCIGenesis      = (*AppModule)(nil)
 
-	_ appmodule.AppModule       = (*AppModule)(nil)
-	_ appmodule.HasABCIEndBlock = (*AppModule)(nil)
+	_ appmodule.AppModule    = (*AppModule)(nil)
+	_ module.HasABCIEndBlock = (*AppModule)(nil)
 )
 
 // AppModuleBasic defines the basic application module used by the mint module.
@@ -172,7 +172,7 @@ func (am AppModule) BeginBlock(ctx context.Context) {
 
 // EndBlock returns the end blocker for the mint module. It returns no validator
 // updates.
-func (AppModule) EndBlock(_ sdk.Context) ([]abci.ValidatorUpdate, error) {
+func (AppModule) EndBlock(_ context.Context) ([]abci.ValidatorUpdate, error) {
 	return []abci.ValidatorUpdate{}, nil
 }
 

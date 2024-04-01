@@ -17,6 +17,7 @@ import (
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
@@ -37,7 +38,6 @@ import (
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"cosmossdk.io/log"
-	dbm "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmos "github.com/cometbft/cometbft/libs/os"
@@ -104,7 +104,7 @@ type App struct {
 // New returns a reference to an initialized blockchain app.
 func New(
 	logger log.Logger,
-	db dbm.DB,
+	db db.DB,
 	traceStore io.Writer,
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
@@ -134,6 +134,7 @@ func New(
 	}
 
 	app.NewAppKeepers(
+		logger,
 		appCodec,
 		bApp,
 		encodingConfig.Amino,
@@ -222,7 +223,7 @@ func New(
 	app.sm.RegisterStoreDecoders()
 
 	// initialize stores
-	app.MountKVStores(app.GetKVStoreKey())
+	app.MountKVStores(app.GetKVStoreKeys())
 	app.MountTransientStores(app.GetTransientStoreKey())
 	app.MountMemoryStores(app.GetMemoryStoreKey())
 
@@ -239,11 +240,11 @@ func New(
 				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 				FeegrantKeeper:  app.FeegrantKeeper,
 			},
-			BankKeeper:        app.BankKeeper,
-			TaxKeeper:         *app.TaxKeeper,
-			TxCounterStoreKey: app.GetKVStoreKey()[wasmtypes.StoreKey],
-			WasmConfig:        &app.WasmConfig,
-			IBCKeeper:         app.IBCKeeper,
+			BankKeeper:            app.BankKeeper,
+			TaxKeeper:             *app.TaxKeeper,
+			TxCounterStoreService: runtime.NewKVStoreService(app.GetKVStoreKeys()[wasmtypes.StoreKey]),
+			WasmConfig:            &app.WasmConfig,
+			IBCKeeper:             app.IBCKeeper,
 		},
 	)
 	if err != nil {
@@ -290,8 +291,8 @@ func New(
 	return app
 }
 
-func (app *App) PreBlocker(ctx sdk.Context, req *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
-	return app.mm.PreBlock(ctx, req)
+func (app *App) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
+	return app.mm.PreBlock(ctx)
 }
 
 func (app *App) SetInterchainTxsLocalChain() {
@@ -359,7 +360,7 @@ func (app *App) EndBlocker(ctx sdk.Context) (sdk.EndBlock, error) {
 }
 
 // InitChainer application update at chain initialization.
-func (app *App) InitChainer(ctx sdk.Context, req abci.RequestInitChain) (*abci.ResponseInitChain, error) {
+func (app *App) InitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
 	var genesisState GenesisState
 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
 		return nil, err

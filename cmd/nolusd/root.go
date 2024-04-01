@@ -10,11 +10,16 @@ import (
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/snapshots"
 	snapshottypes "cosmossdk.io/store/snapshots/types"
+	storetypes "cosmossdk.io/store/types"
+
 	"github.com/CosmWasm/wasmd/x/wasm"
-	dbm "github.com/cometbft/cometbft-db"
+
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
 	tmtypes "github.com/cometbft/cometbft/types"
+
+	db "github.com/cosmos/cosmos-db"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -25,7 +30,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -45,7 +49,7 @@ type (
 	// AppBuilder is a method that allows to build an app.
 	AppBuilder func(
 		logger log.Logger,
-		db dbm.DB,
+		database db.DB,
 		traceStore io.Writer,
 		loadLatest bool,
 		skipUpgradeHeights map[int64]bool,
@@ -196,20 +200,28 @@ func initRootCmd(
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(moduleBasics, defaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome, gentxModule.GenTxValidator),
-		genutilcli.MigrateGenesisCmd(),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome, gentxModule.GenTxValidator, encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec()),
+		// TODO: Do we need MigrateGenesisCmd?
+		// genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(
 			moduleBasics,
 			encodingConfig.TxConfig,
 			banktypes.GenesisBalancesIterator{},
 			defaultNodeHome,
+			encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec(),
 		),
 		genutilcli.ValidateGenesisCmd(moduleBasics),
 		AddGenesisAccountCmd(defaultNodeHome),
-		AddGenesisWasmMsgCmd(defaultNodeHome),
+		// TODO: uncomment when genwasm.go is ready
+		// AddGenesisWasmMsgCmd(defaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
-		config.Cmd(),
+		// TODO: cmd/nolusd/config.go
+		// ConfigCmd(),
+
+		// TODO: test and decide if we need those two new pruning/snapshot commands
+		// pruning.Cmd(newApp, simapp.DefaultNodeHome),
+		// snapshot.Cmd(newApp),
 	)
 
 	a := appCreator{encodingConfig}
@@ -231,10 +243,10 @@ func initRootCmd(
 
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
-		rpc.StatusCommand(),
+		server.StatusCommand(),
 		queryCommand(moduleBasics),
 		txCommand(moduleBasics),
-		keys.Commands(defaultNodeHome),
+		keys.Commands(),
 	)
 
 	// add user given sub commands.
@@ -255,9 +267,9 @@ func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		authcmd.GetAccountCmd(),
+		//TODO: authcmd.GetAccountCmd(),
 		rpc.ValidatorCommand(),
-		rpc.BlockCommand(),
+		//TODO: rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
 	)
@@ -323,11 +335,11 @@ func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
 // newApp creates a new Cosmos SDK app.
 func (a appCreator) newApp(
 	logger log.Logger,
-	db dbm.DB,
+	database db.DB,
 	traceStore io.Writer,
 	appOpts servertypes.AppOptions,
 ) servertypes.Application {
-	var cache sdk.MultiStorePersistentCache
+	var cache storetypes.MultiStorePersistentCache
 
 	if cast.ToBool(appOpts.Get(server.FlagInterBlockCache)) {
 		cache = store.NewCommitKVStoreCacheManager()
@@ -344,7 +356,7 @@ func (a appCreator) newApp(
 	}
 
 	snapshotDir := filepath.Join(cast.ToString(appOpts.Get(flags.FlagHome)), "data", "snapshots")
-	snapshotDB, err := dbm.NewDB("metadata", dbm.GoLevelDBBackend, snapshotDir)
+	snapshotDB, err := db.NewDB("metadata", db.GoLevelDBBackend, snapshotDir)
 	if err != nil {
 		panic(err)
 	}
@@ -372,7 +384,7 @@ func (a appCreator) newApp(
 
 	return app.New(
 		logger,
-		db,
+		database,
 		traceStore,
 		true,
 		skipUpgradeHeights,
@@ -399,7 +411,7 @@ func (a appCreator) newApp(
 // appExport creates a new simapp (optionally at a given height).
 func (a appCreator) appExport(
 	logger log.Logger,
-	db dbm.DB,
+	database db.DB,
 	traceStore io.Writer,
 	height int64,
 	forZeroHeight bool,
@@ -416,7 +428,7 @@ func (a appCreator) appExport(
 
 	exportableApp = app.New(
 		logger,
-		db,
+		database,
 		traceStore,
 		height == -1, // -1: no height provided
 		map[int64]bool{},
