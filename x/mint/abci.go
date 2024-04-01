@@ -1,6 +1,7 @@
 package mint
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -160,7 +161,8 @@ func predictTotalMinted(totalMinted sdkmath.Uint, normTimePassed, timeAhead sdkm
 }
 
 // BeginBlocker mints new tokens for the previous block.
-func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
+func BeginBlocker(ctx context.Context, k keeper.Keeper) {
+	c := sdk.UnwrapSDKContext(ctx)
 	minter := k.GetMinter(ctx)
 	if minter.TotalMinted.GTE(types.MintingCap) {
 		return
@@ -169,14 +171,14 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
 	params := k.GetParams(ctx)
-	blockTime := ctx.BlockTime().UnixNano()
+	blockTime := c.BlockTime().UnixNano()
 	if blockTime < 0 {
 		panic(errNegativeBlockTime)
 	}
 
 	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
 	minter.AnnualInflation = predictTotalMinted(minter.TotalMinted, minter.NormTimePassed, twelveMonths)
-	ctx.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
+	c.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 	k.SetMinter(ctx, minter)
 
 	if coinAmount.GT(sdkmath.ZeroUint()) {
@@ -197,7 +199,7 @@ func BeginBlocker(ctx sdk.Context, k keeper.Keeper) {
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
 	}
 
-	ctx.EventManager().EmitEvent(
+	c.EventManager().EmitEvent(
 		sdk.NewEvent(
 			types.EventTypeMint,
 			sdk.NewAttribute(types.AttributeKeyDenom, params.MintDenom),

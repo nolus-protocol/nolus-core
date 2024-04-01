@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"context"
 	"fmt"
 
 	"cosmossdk.io/log"
@@ -53,11 +54,11 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // GetModuleAccountAddress gets the module account address.
-func (k Keeper) GetModuleAccountAddress(_ sdk.Context) sdk.AccAddress {
+func (k Keeper) GetModuleAccountAddress(_ context.Context) sdk.AccAddress {
 	return k.accountKeeper.GetModuleAddress(types.ModuleName)
 }
 
 // GetModuleAccount gets the module account.
-func (k Keeper) GetModuleAccount(ctx sdk.Context, moduleName string) authtypes.AccountI {
+func (k Keeper) GetModuleAccount(ctx context.Context, moduleName string) authtypes.AccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, moduleName)
 }

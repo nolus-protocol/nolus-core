@@ -273,8 +273,8 @@ func TestAppImportExport(t *testing.T) {
 
 	t.Log("comparing stores...")
 
-	keys := nolusApp.AppKeepers.GetKVStoreKey()
-	newKeys := newNolusApp.AppKeepers.GetKVStoreKey()
+	keys := nolusApp.AppKeepers.GetKVStoreKeys()
+	newKeys := newNolusApp.AppKeepers.GetKVStoreKeys()
 	storeKeysPrefixes := []StoreKeysPrefixes{
 		{keys[authtypes.StoreKey], newKeys[authtypes.StoreKey], [][]byte{}},
 		{

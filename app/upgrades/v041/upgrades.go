@@ -1,11 +1,12 @@
 package v041
 
 import (
+	"context"
+
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/codec"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
@@ -15,7 +16,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Upgrade handler execution...")
 		ctx.Logger().Info("Running migrations")
 		return mm.RunMigrations(ctx, configurator, fromVM)

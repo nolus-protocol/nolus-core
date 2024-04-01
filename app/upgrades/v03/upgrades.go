@@ -1,6 +1,8 @@
 package v03
 
 import (
+	"context"
+
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 
@@ -21,7 +23,7 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
 		ctx.Logger().Info("Upgrade handler execution...")
 		ctx.Logger().Info("Running migrations")
 		interchainQueriesParams := icqtypes.Params{
