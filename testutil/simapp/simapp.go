@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"cosmossdk.io/log"
-	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/json"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
@@ -17,6 +16,7 @@ import (
 	tmtypes "github.com/cometbft/cometbft/types"
 
 	pruningtypes "cosmossdk.io/store/pruning/types"
+	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
@@ -36,11 +36,11 @@ import (
 // New creates application instance with in-memory database and disabled logging.
 func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 	// _ = params.SetAddressPrefixes()
-	db := tmdb.NewMemDB()
+	database := db.NewMemDB()
 	logger := log.NewNopLogger()
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
-	a := app.New(logger, db, nil, true, map[int64]bool{}, dir, 0, encoding,
+	a := app.New(logger, database, nil, true, map[int64]bool{}, dir, 0, encoding,
 		sims.EmptyAppOptions{})
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
@@ -70,7 +70,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 
 		return nolusApp
 	}
-	a.InitChain(abci.RequestInitChain{
+	a.InitChain(&abci.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,
 		AppStateBytes:   genState,
 	})
@@ -92,7 +92,7 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 
 	// init chain will set the validator set and initialize the genesis accounts
 	nolusApp.InitChain(
-		abci.RequestInitChain{
+		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: defaultConsensusParams,
 			AppStateBytes:   stateBytes,
@@ -101,13 +101,15 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 
 	// commit genesis changes
 	nolusApp.Commit()
-	nolusApp.BeginBlock(abci.RequestBeginBlock{Header: tmproto.Header{
-		Height:             nolusApp.LastBlockHeight() + 1,
-		AppHash:            nolusApp.LastCommitID().Hash,
-		ValidatorsHash:     valSet.Hash(),
-		NextValidatorsHash: valSet.Hash(),
-		Time:               time.Now(),
-	}})
+
+	//TODO:
+	// nolusApp.BeginBlocker(&abci.RequestBeginBlock{Header: tmproto.Header{
+	// 	Height:             nolusApp.LastBlockHeight() + 1,
+	// 	AppHash:            nolusApp.LastCommitID().Hash,
+	// 	ValidatorsHash:     valSet.Hash(),
+	// 	NextValidatorsHash: valSet.Hash(),
+	// 	Time:               time.Now(),
+	// }})
 
 	return nolusApp
 }
@@ -146,7 +148,7 @@ func genesisStateWithValSet(t *testing.T,
 			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress(), val.Address.Bytes(), sdkmath.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), val.Address.String(), sdkmath.LegacyOneDec()))
 	}
 	// set validators and delegations
 	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
@@ -208,7 +210,7 @@ func NewAppConstructor() network.AppConstructor {
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	return func(val network.ValidatorI) servertypes.Application {
-		return app.New(val.GetCtx().Logger, tmdb.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0, encoding,
+		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0, encoding,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),

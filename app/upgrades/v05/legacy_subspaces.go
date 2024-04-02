@@ -1,7 +1,6 @@
 package v05
 
 import (
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
@@ -45,8 +44,9 @@ func getLegacySubspaces(paramsKeeper *paramskeeper.Keeper) paramstypes.Subspace 
 		case govtypes.ModuleName:
 			keyTable = govv1.ParamKeyTable() //nolint:staticcheck
 		// wasm
-		case wasmtypes.ModuleName:
-			keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
+		// TODO:
+		// case wasmtypes.ModuleName:
+		// 	keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case icacontrollertypes.SubModuleName:
 			keyTable = icacontrollertypes.ParamKeyTable() //nolint:staticcheck
 		// default modules have not migrated away from x/params or have no params to migrate: ibcexported.ModuleName, ibctransfertypes.ModuleName,vestingstypes.ModuleName
