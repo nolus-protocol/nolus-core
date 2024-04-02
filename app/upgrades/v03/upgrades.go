@@ -23,7 +23,9 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
+
 		ctx.Logger().Info("Upgrade handler execution...")
 		ctx.Logger().Info("Running migrations")
 		interchainQueriesParams := icqtypes.Params{
