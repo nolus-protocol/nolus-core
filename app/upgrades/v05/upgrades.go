@@ -9,6 +9,7 @@ import (
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 
+	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -37,7 +38,9 @@ func CreateUpgradeHandler(
 	keepers *keepers.AppKeepers,
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
-	return func(ctx context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+	return func(c context.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ctx := sdk.UnwrapSDKContext(c)
+
 		ctx.Logger().Info("running upgrade handler")
 
 		// ibc v4-to-v5
@@ -79,7 +82,7 @@ func CreateUpgradeHandler(
 		baseAppLegacySS := getLegacySubspaces(keepers.ParamsKeeper)
 		// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
 		ctx.Logger().Info("migrating tendermint x/consensus params")
-		baseapp.MigrateParams(ctx, baseAppLegacySS, keepers.ConsensusParamsKeeper)
+		baseapp.MigrateParams(ctx, baseAppLegacySS, keepers.ConsensusParamsKeeper.ParamsStore)
 
 		ctx.Logger().Info("running module manager migrations")
 
@@ -219,7 +222,7 @@ func migrateInterchainQueriesParams(ctx sdk.Context, paramsKeepers paramskeeper.
 	subspace, _ := paramsKeepers.GetSubspace(icqtypes.StoreKey)
 	subspace.GetParamSet(ctx, &currParams)
 
-	currParams.QueryDeposit = sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, sdk.NewInt(1_000_000)))
+	currParams.QueryDeposit = sdk.NewCoins(sdk.NewCoin(params.BaseCoinUnit, math.NewInt(1_000_000)))
 
 	if err := currParams.Validate(); err != nil {
 		return err
@@ -261,7 +264,10 @@ func setContractManagerParams(ctx sdk.Context, keeper contractmanagerkeeper.Keep
 }
 
 func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) error {
-	stakingParams := keepers.StakingKeeper.GetParams(ctx)
+	stakingParams, err := keepers.StakingKeeper.GetParams(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get staking params: %w", err)
+	}
 	// DefaultMinComission rate is 0%
 	stakingParams.MinCommissionRate = stakingtypes.DefaultMinCommissionRate
 	if err := keepers.StakingKeeper.SetParams(ctx, stakingParams); err != nil {
@@ -272,7 +278,10 @@ func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) e
 }
 
 func setMinInitialDepositRatio(ctx sdk.Context, keepers *keepers.AppKeepers) error {
-	govParams := keepers.GovKeeper.GetParams(ctx)
-	govParams.MinInitialDepositRatio = "0.25"
-	return keepers.GovKeeper.SetParams(ctx, govParams)
+	// TODO:
+	// temp return nil
+	return nil
+	// govParams := keepers.GovKeeper.GetParams(ctx)
+	// govParams.MinInitialDepositRatio = "0.25"
+	// return keepers.GovKeeper.SetParams(ctx, govParams)
 }
