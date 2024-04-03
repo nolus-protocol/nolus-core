@@ -5,6 +5,10 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
+<<<<<<< HEAD
+=======
+
+>>>>>>> d6418d5 (wip: fix some unit-tests)
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -21,7 +25,7 @@ var (
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -41,7 +45,7 @@ func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
 }
 
 func TestCustomTxFeeCheckerFailDueToZeroPrices(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -60,7 +64,7 @@ func TestCustomTxFeeCheckerFailDueToZeroPrices(t *testing.T) {
 
 // Successfully pay fees in ibc/5DE... which represents axlUSDC from osmosis. Minimum gas prices set to X unls.
 func TestCustomTxFeeCheckerSuccessfulInUsdc(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -81,7 +85,7 @@ func TestCustomTxFeeCheckerSuccessfulInUsdc(t *testing.T) {
 
 // Fail to pay fees in ibc/5DE... which represents axlUSDC from osmosis. Minimum gas prices set to unls. High gas -> fee amount not enough.
 func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -101,7 +105,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 
 // Fail to pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls. High gas -> fee amount not enough.
 func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -121,7 +125,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 
 // Successfully pay fees in unls which represents NLS. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
-	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -136,8 +140,13 @@ func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
 }
 
 // Fail to pay fees in unsupported denom.
+<<<<<<< HEAD
 func TestCustomTxFeeCheckerFailWhenUnsupportedDenom(t *testing.T) {
 	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+=======
+func TestCustomTxFeeCheckerSuccessfulInUnsupportedDenom(t *testing.T) {
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
+>>>>>>> d6418d5 (wip: fix some unit-tests)
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -151,7 +160,7 @@ func TestCustomTxFeeCheckerFailWhenUnsupportedDenom(t *testing.T) {
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
-	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -170,7 +179,7 @@ func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -189,7 +198,7 @@ func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -208,7 +217,7 @@ func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
 
 // Successfully pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
-	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, mockWasmKeeper := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
