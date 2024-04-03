@@ -15,7 +15,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
@@ -55,8 +54,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.Require().NoError(err)
 
 	blockTime := time.Now()
-	header := tmproto.Header{Height: s.app.LastBlockHeight() + 1}
-	s.ctx = s.app.BaseApp.NewContext(false, header).WithBlockTime(blockTime)
+	s.ctx = s.app.BaseApp.NewContext(false).WithBlockTime(blockTime)
 
 	// set up TxConfig
 	encodingConfig := nolusapp.MakeEncodingConfig(nolusapp.ModuleBasics)

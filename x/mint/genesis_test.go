@@ -9,7 +9,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/testutil/simapp"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,8 +19,7 @@ func TestGenesis(t *testing.T) {
 		t.Errorf("Error while creating simapp: %v\"", err)
 	}
 	blockTime := time.Now()
-	header := tmproto.Header{Height: app.LastBlockHeight() + 1}
-	ctx := app.BaseApp.NewContext(false, header).WithBlockTime(blockTime)
+	ctx := app.BaseApp.NewContext(false).WithBlockTime(blockTime)
 	minterKeeper := app.MintKeeper
 
 	genesisState := types.GenesisState{

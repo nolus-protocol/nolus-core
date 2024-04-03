@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"context"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
@@ -29,7 +30,7 @@ type KeeperTestSuite struct {
 	suite.Suite
 
 	app       *app.App
-	ctx       sdk.Context
+	ctx       context.Context
 	msgServer types.MsgServer
 }
 
