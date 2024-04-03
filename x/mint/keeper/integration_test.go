@@ -5,7 +5,6 @@ import (
 
 	sdkmath "cosmossdk.io/math"
 
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
@@ -23,7 +22,7 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	require.NoError(t, err)
 
 	isCheckTx := false
-	ctx := app.BaseApp.NewContext(isCheckTx, tmproto.Header{})
+	ctx := app.BaseApp.NewContext(isCheckTx)
 
 	_ = app.MintKeeper.SetParams(ctx, types.NewParams(denom, sdkmath.NewUint(maxMintableNanoseconds)))
 	app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())

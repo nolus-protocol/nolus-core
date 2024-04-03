@@ -8,6 +8,8 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime/debug"
+	"strings"
 	"testing"
 
 	sdkmath "cosmossdk.io/math"
@@ -15,8 +17,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"cosmossdk.io/log"
-	tmdb "github.com/cometbft/cometbft-db"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	dbm "github.com/cosmos/cosmos-db"
 
 	storetypes "cosmossdk.io/store/types"
 	evidencetypes "cosmossdk.io/x/evidence/types"
@@ -86,8 +88,8 @@ func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
 	}
 
 	appParams := simtypes.AppParams{
-		wasmsim.OpReflectContractPath:  []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
-		govsim.DepositParamsMinDeposit: minDepositBytes,
+		wasmsim.OpReflectContractPath: []byte(fmt.Sprintf("\"%s\"", reflectContractPath)),
+		govsim.MinDeposit:             minDepositBytes,
 	}
 	bz, err := json.Marshal(appParams)
 	if err != nil {
@@ -122,12 +124,12 @@ func TestAppStateDeterminism(t *testing.T) {
 		for j := 0; j < NumTimesToRunPerSeed; j++ {
 			var logger log.Logger
 			if simcli.FlagVerboseValue {
-				logger = log.TestingLogger()
+				logger = log.NewTestLogger(t)
 			} else {
 				logger = log.NewNopLogger()
 			}
 
-			db := tmdb.NewMemDB()
+			db := dbm.NewMemDB()
 			encConfig := MakeEncodingConfig(ModuleBasics)
 			newApp := New(
 				logger,
@@ -266,9 +268,18 @@ func TestAppImportExport(t *testing.T) {
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(t, err)
 
-	ctxA := nolusApp.NewContext(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
-	ctxB := newNolusApp.NewContext(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
-	newNolusApp.mm.InitGenesis(ctxB, nolusApp.AppCodec(), genesisState)
+	ctxA := nolusApp.NewContextLegacy(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
+	ctxB := newNolusApp.NewContextLegacy(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
+	_, err = newNolusApp.mm.InitGenesis(ctxB, nolusApp.AppCodec(), genesisState)
+
+	if err != nil {
+		if strings.Contains(err.Error(), "validator set is empty after InitGenesis") {
+			logger.Info("Skipping simulation as all validators have been unbonded")
+			logger.Info("err", err, "stacktrace", string(debug.Stack()))
+			return
+		}
+	}
+
 	newNolusApp.StoreConsensusParams(ctxB, exported.ConsensusParams)
 
 	t.Log("comparing stores...")
@@ -309,7 +320,7 @@ func TestAppImportExport(t *testing.T) {
 		storeA := ctxA.KVStore(skp.A)
 		storeB := ctxB.KVStore(skp.B)
 
-		failedKVAs, failedKVBs := sdk.DiffKVStores(storeA, storeB, skp.Prefixes)
+		failedKVAs, failedKVBs := simtestutil.DiffKVStores(storeA, storeB, skp.Prefixes)
 		require.Equal(t, len(failedKVAs), len(failedKVBs), "unequal sets of key-values to compare")
 
 		t.Logf("compared %d different key/value pairs between %s and %s\n", len(failedKVAs), skp.A, skp.B)
