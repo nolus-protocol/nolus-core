@@ -116,9 +116,10 @@ func (s *KeeperTestSuite) TestMintCoinsNoCoinsPassed() {
 func (s *KeeperTestSuite) TestAddCollectedFees() {
 	s.SetupTest(false)
 	minterKeeper := s.app.MintKeeper
+	sdkctx := sdk.UnwrapSDKContext(s.ctx)
 
-	_ = s.app.TaxKeeper.SetParams(s.ctx, taxtypes.DefaultParams())
-	taxParams := s.app.TaxKeeper.GetParams(s.ctx)
+	_ = s.app.TaxKeeper.SetParams(sdkctx, taxtypes.DefaultParams())
+	taxParams := s.app.TaxKeeper.GetParams(sdkctx)
 	// create account and fund it with 5000 of base denom
 	accs := s.createTestAccounts(1)
 	addr := accs[0].acc.GetAddress()
@@ -152,7 +153,7 @@ func (s *KeeperTestSuite) createTestAccounts(numAccs int) []TestAccount {
 
 // fundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) fundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+	err := banktestutil.FundAccount(s.ctx, s.app.BankKeeper, addr, amounts)
 	s.Require().NoError(err)
 }
 
