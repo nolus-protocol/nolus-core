@@ -20,6 +20,8 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
+
+	protov2 "google.golang.org/protobuf/proto"
 )
 
 func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Keeper, sdk.Context, *mock_types.MockWasmKeeper) {
@@ -60,14 +62,19 @@ type MockFeeTx struct {
 	Fee  sdk.Coins
 }
 
+// TODO:
+func (m MockFeeTx) GetMsgsV2() ([]protov2.Message, error) {
+	return []protov2.Message{}, nil // this is a hack for tests
+}
+
 func (m MockFeeTx) GetMsgs() []sdk.Msg {
 	return m.Msgs
 }
 
-func (m MockFeeTx) ValidateBasic() error {
-	// Implement your basic validation logic here or return nil if not needed for the test.
-	return nil
-}
+// func (m MockFeeTx) ValidateBasic() error {
+// 	// Implement your basic validation logic here or return nil if not needed for the test.
+// 	return nil
+// }
 
 func (m MockFeeTx) GetGas() uint64 {
 	return m.Gas
@@ -77,10 +84,10 @@ func (m MockFeeTx) GetFee() sdk.Coins {
 	return m.Fee
 }
 
-func (m MockFeeTx) FeePayer() sdk.AccAddress {
+func (m MockFeeTx) FeePayer() []byte {
 	return sdk.AccAddress{}
 }
 
-func (m MockFeeTx) FeeGranter() sdk.AccAddress {
+func (m MockFeeTx) FeeGranter() []byte {
 	return sdk.AccAddress{}
 }
