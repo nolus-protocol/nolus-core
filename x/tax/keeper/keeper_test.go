@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -93,12 +94,17 @@ func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 
 // FundAcc funds target address with specified amount.
 func (s *KeeperTestSuite) FundAcc(addr sdk.AccAddress, amounts sdk.Coins) {
-	err := banktestutil.FundAccount(s.app.BankKeeper, s.ctx, addr, amounts)
+	err := banktestutil.FundAccount(s.ctx, s.app.BankKeeper, addr, amounts)
 	s.Require().NoError(err)
 }
 
 // CreateTestTx is a helper function to create a tx given multiple inputs.
 func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []uint64, accSeqs []uint64, chainID string) (xauthsigning.Tx, error) {
+	defaultSignMode, err := xauthsigning.APISignModeToInternal(s.clientCtx.TxConfig.SignModeHandler().DefaultMode())
+	if err != nil {
+		return nil, err
+	}
+
 	// First round: we gather all the signer infos. We use the "set empty
 	// signature" hack to do that.
 	var sigsV2 []signing.SignatureV2
@@ -106,7 +112,7 @@ func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []ui
 		sigV2 := signing.SignatureV2{
 			PubKey: priv.PubKey(),
 			Data: &signing.SingleSignatureData{
-				SignMode:  s.clientCtx.TxConfig.SignModeHandler().DefaultMode(),
+				SignMode:  defaultSignMode,
 				Signature: nil,
 			},
 			Sequence: accSeqs[i],
@@ -114,7 +120,7 @@ func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []ui
 
 		sigsV2 = append(sigsV2, sigV2)
 	}
-	err := s.txBuilder.SetSignatures(sigsV2...)
+	err = s.txBuilder.SetSignatures(sigsV2...)
 	if err != nil {
 		return nil, err
 	}
@@ -127,8 +133,8 @@ func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []ui
 			AccountNumber: accNums[i],
 			Sequence:      accSeqs[i],
 		}
-		sigV2, err := tx.SignWithPrivKey(
-			s.clientCtx.TxConfig.SignModeHandler().DefaultMode(), signerData,
+		sigV2, err := tx.SignWithPrivKey(context.TODO(),
+			defaultSignMode, signerData,
 			s.txBuilder, priv, s.clientCtx.TxConfig, accSeqs[i])
 		if err != nil {
 			return nil, err
