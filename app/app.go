@@ -45,7 +45,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	"github.com/Nolus-Protocol/nolus-core/app/openapiconsole"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v053 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v053"
@@ -145,7 +144,7 @@ func New(
 		homePath,
 		invCheckPeriod,
 		appOpts,
-		params.Bech32PrefixAccAddr,
+		appparams.Bech32PrefixAccAddr,
 	)
 
 	// TODO: decide if we want textual sign mode (https://github.com/cosmos/cosmos-sdk/blob/release/v0.50.x/UPGRADING.md#textual-sign-mode)
@@ -173,7 +172,7 @@ func New(
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
-	//TODO: decide if we need this
+	// TODO: decide if we need this
 	// app.mm.NewBasicManagerFromManager
 
 	app.mm.SetOrderPreBlockers(

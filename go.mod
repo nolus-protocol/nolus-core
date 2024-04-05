@@ -2,8 +2,6 @@ module github.com/Nolus-Protocol/nolus-core
 
 go 1.22
 
-toolchain go1.22.1
-
 require (
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/CosmWasm/wasmvm v1.5.2
@@ -40,6 +38,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-metrics v0.5.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
+	google.golang.org/protobuf v1.32.0
 	gotest.tools/v3 v3.5.1
 )
 
@@ -202,7 +201,6 @@ require (
 	google.golang.org/appengine v1.6.8 // indirect
 	google.golang.org/genproto v0.0.0-20240102182953-50ed04b92917 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240108191215-35c7eff3a6b1 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.10 // indirect
