@@ -10,7 +10,7 @@ require (
 	github.com/cosmos/cosmos-sdk v0.50.4
 	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/ibc-go/v8 v8.1.0
-	github.com/golang/protobuf v1.5.3
+	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
 	github.com/neutron-org/neutron/v3 v3.0.1-0.20240325143813-55032cb17e7b
@@ -38,7 +38,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-metrics v0.5.2
 	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917
-	google.golang.org/protobuf v1.32.0
+	google.golang.org/protobuf v1.33.0
 	gotest.tools/v3 v3.5.1
 )
 
