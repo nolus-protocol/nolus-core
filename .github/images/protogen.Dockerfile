@@ -1,7 +1,7 @@
 # This Dockerfile is used for proto generation
 FROM bufbuild/buf:1.28.0 as BUILDER
 
-FROM golang:1.21-alpine
+FROM golang:1.22-alpine
 
 
 RUN apk add --no-cache \
