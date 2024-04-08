@@ -95,7 +95,7 @@ func (m *CustomMessenger) ibcTransfer(ctx sdk.Context, contractAddr sdk.AccAddre
 		return nil, nil, errors.Wrap(err, "failed to validate ibcTransferMsg")
 	}
 
-	response, err := m.transferKeeper.Transfer(sdk.WrapSDKContext(ctx), &ibcTransferMsg)
+	response, err := m.transferKeeper.Transfer(ctx, &ibcTransferMsg)
 	if err != nil {
 		ctx.Logger().Debug("transferServer.Transfer: failed to transfer",
 			"from_address", contractAddr.String(),
@@ -163,7 +163,7 @@ func (m *CustomMessenger) performUpdateInterchainQuery(ctx sdk.Context, contract
 		return nil, errors.Wrap(err, "failed to validate incoming UpdateInterchainQuery message")
 	}
 
-	response, err := m.Icqmsgserver.UpdateInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
+	response, err := m.Icqmsgserver.UpdateInterchainQuery(ctx, &msg)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to update interchain query")
 	}
@@ -209,7 +209,7 @@ func (m *CustomMessenger) performRemoveInterchainQuery(ctx sdk.Context, contract
 		return nil, errors.Wrap(err, "failed to validate incoming RemoveInterchainQuery message")
 	}
 
-	response, err := m.Icqmsgserver.RemoveInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
+	response, err := m.Icqmsgserver.RemoveInterchainQuery(ctx, &msg)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to remove interchain query")
 	}
@@ -268,7 +268,7 @@ func (m *CustomMessenger) performSubmitTx(ctx sdk.Context, contractAddr sdk.AccA
 		return nil, errors.Wrap(err, "failed to validate incoming SubmitTx message")
 	}
 
-	response, err := m.Ictxmsgserver.SubmitTx(sdk.WrapSDKContext(ctx), &tx)
+	response, err := m.Ictxmsgserver.SubmitTx(ctx, &tx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to submit interchain transaction")
 	}
@@ -318,7 +318,7 @@ func (m *CustomMessenger) performRegisterInterchainAccount(ctx sdk.Context, cont
 		return nil, errors.Wrap(err, "failed to validate incoming RegisterInterchainAccount message")
 	}
 
-	response, err := m.Ictxmsgserver.RegisterInterchainAccount(sdk.WrapSDKContext(ctx), &msg)
+	response, err := m.Ictxmsgserver.RegisterInterchainAccount(ctx, &msg)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register interchain account")
 	}
@@ -379,7 +379,7 @@ func (m *CustomMessenger) performRegisterInterchainQuery(ctx sdk.Context, contra
 		return nil, errors.Wrap(err, "failed to validate incoming RegisterInterchainQuery message")
 	}
 
-	response, err := m.Icqmsgserver.RegisterInterchainQuery(sdk.WrapSDKContext(ctx), &msg)
+	response, err := m.Icqmsgserver.RegisterInterchainQuery(ctx, &msg)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to register interchain query")
 	}

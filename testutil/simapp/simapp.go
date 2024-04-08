@@ -70,10 +70,12 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 
 		return nolusApp
 	}
-	a.InitChain(&abci.RequestInitChain{
+	_, err := a.InitChain(&abci.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,
 		AppStateBytes:   genState,
 	})
+	require.NoError(t, err)
+
 	return a
 }
 
@@ -91,18 +93,20 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 	require.NoError(t, err)
 
 	// init chain will set the validator set and initialize the genesis accounts
-	nolusApp.InitChain(
+	_, err = nolusApp.InitChain(
 		&abci.RequestInitChain{
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: defaultConsensusParams,
 			AppStateBytes:   stateBytes,
 		},
 	)
+	require.NoError(t, err)
 
 	// commit genesis changes
-	nolusApp.Commit()
+	_, err = nolusApp.Commit()
+	require.NoError(t, err)
 
-	//TODO:
+	// TODO:
 	// nolusApp.BeginBlocker(&abci.RequestBeginBlock{Header: tmproto.Header{
 	// 	Height:             nolusApp.LastBlockHeight() + 1,
 	// 	AppHash:            nolusApp.LastCommitID().Hash,

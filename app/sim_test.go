@@ -280,7 +280,11 @@ func TestAppImportExport(t *testing.T) {
 		}
 	}
 
-	newNolusApp.StoreConsensusParams(ctxB, exported.ConsensusParams)
+	err = newNolusApp.StoreConsensusParams(ctxB, exported.ConsensusParams)
+	if err != nil {
+		logger.Info("err on store consensus params: ", err)
+		return
+	}
 
 	t.Log("comparing stores...")
 

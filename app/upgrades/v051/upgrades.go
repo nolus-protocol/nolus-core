@@ -42,6 +42,6 @@ func CreateUpgradeHandler(
 		// InitModule sets the params for host, binds the hostKeeper to port `icahost` and claims port capability
 		icamodule.InitModule(ctx, icacontrollertypes.DefaultParams(), hostParams)
 
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return mm.RunMigrations(ctx, configurator, fromVM) //nolint:contextcheck
 	}
 }

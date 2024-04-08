@@ -36,7 +36,7 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	_ = testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
 	_ = testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 
-	// TODO: remove after confriming tets work
+	// TODO: remove after confirming tets work
 	// err := testapp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
 	// if err != nil {
 	// 	panic(err)

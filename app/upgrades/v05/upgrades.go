@@ -82,12 +82,15 @@ func CreateUpgradeHandler(
 		baseAppLegacySS := getLegacySubspaces(keepers.ParamsKeeper)
 		// Migrate Tendermint consensus parameters from x/params module to a dedicated x/consensus module.
 		ctx.Logger().Info("migrating tendermint x/consensus params")
-		baseapp.MigrateParams(ctx, baseAppLegacySS, keepers.ConsensusParamsKeeper.ParamsStore)
+		err = baseapp.MigrateParams(ctx, baseAppLegacySS, keepers.ConsensusParamsKeeper.ParamsStore)
+		if err != nil {
+			return nil, err
+		}
 
 		ctx.Logger().Info("running module manager migrations")
 
 		ctx.Logger().Info(fmt.Sprintf("[MM] pre migrate version map: %v", fromVM))
-		newVersionMap, err := mm.RunMigrations(ctx, configurator, fromVM)
+		newVersionMap, err := mm.RunMigrations(ctx, configurator, fromVM) //nolint:contextcheck
 		if err != nil {
 			return nil, err
 		}
@@ -255,7 +258,7 @@ func setInterchainTxsParams(ctx sdk.Context, paramsKeepers paramskeeper.Keeper, 
 	return nil
 }
 
-func setContractManagerParams(ctx sdk.Context, keeper contractmanagerkeeper.Keeper) error {
+func setContractManagerParams(ctx context.Context, keeper contractmanagerkeeper.Keeper) error {
 	sudoGasLimit := uint64(3_000_000)
 	cmParams := contractmanagertypes.Params{
 		SudoCallGasLimit: sudoGasLimit,
@@ -263,7 +266,7 @@ func setContractManagerParams(ctx sdk.Context, keeper contractmanagerkeeper.Keep
 	return keeper.SetParams(ctx, cmParams)
 }
 
-func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+func setInitialMinCommissionRate(ctx context.Context, keepers *keepers.AppKeepers) error {
 	stakingParams, err := keepers.StakingKeeper.GetParams(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get staking params: %w", err)
@@ -277,7 +280,7 @@ func setInitialMinCommissionRate(ctx sdk.Context, keepers *keepers.AppKeepers) e
 	return nil
 }
 
-func setMinInitialDepositRatio(ctx sdk.Context, keepers *keepers.AppKeepers) error {
+func setMinInitialDepositRatio(ctx context.Context, keepers *keepers.AppKeepers) error {
 	// TODO:
 	// temp return nil
 	return nil
