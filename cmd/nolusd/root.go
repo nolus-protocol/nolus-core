@@ -267,9 +267,9 @@ func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
 	}
 
 	cmd.AddCommand(
-		//TODO: authcmd.GetAccountCmd(),
+		// TODO: authcmd.GetAccountCmd(),
 		rpc.ValidatorCommand(),
-		//TODO: rpc.BlockCommand(),
+		// TODO: rpc.BlockCommand(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
 	)
@@ -301,7 +301,7 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetDecodeCommand(),
 	)
 
-	//TODO: autocli
+	// TODO: autocli
 	moduleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 

@@ -201,7 +201,10 @@ func New(
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
-	app.mm.RegisterServices(app.configurator)
+	err := app.mm.RegisterServices(app.configurator)
+	if err != nil {
+		panic(fmt.Sprintf("failed to register services: %s", err))
+	}
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#app-wiring
 	// For app.go without dependency injection(valid for nolus), add the following lines to your app.go in order to provide newer gRPC services:
@@ -393,7 +396,7 @@ func (app *App) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-//TODO: autocli
+// TODO: autocli
 // AutoCliOpts returns the autocli options for the app.
 // func (app *App) AutoCliOpts() autocli.AppOptions {
 // 	modules := make(map[string]appmodule.AppModule, 0)

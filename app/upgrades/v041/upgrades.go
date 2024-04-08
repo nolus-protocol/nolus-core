@@ -22,6 +22,6 @@ func CreateUpgradeHandler(
 
 		ctx.Logger().Info("Upgrade handler execution...")
 		ctx.Logger().Info("Running migrations")
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return mm.RunMigrations(ctx, configurator, fromVM) //nolint:contextcheck
 	}
 }

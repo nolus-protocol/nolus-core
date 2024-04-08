@@ -55,12 +55,13 @@ func (suite *CustomQuerierTestSuite) TestInterchainQueryResult() {
 	err := neutron.InterchainQueriesKeeper.SaveQuery(ctx, registeredQuery)
 	suite.Require().NoError(err)
 
-	chainBResp := suite.ChainB.App.Query(abci.RequestQuery{
+	chainBResp, err := suite.ChainB.App.Query(ctx, &abci.RequestQuery{
 		Path:   fmt.Sprintf("store/%s/key", ibchost.StoreKey),
 		Height: suite.ChainB.LastHeader.Header.Height - 1,
 		Data:   clientKey,
 		Prove:  true,
 	})
+	suite.Require().NoError(err)
 
 	expectedQueryResult := &icqtypes.QueryResult{
 		KvResults: []*icqtypes.StorageValue{{
