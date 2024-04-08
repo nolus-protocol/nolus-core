@@ -38,6 +38,6 @@ func CreateUpgradeHandler(
 			return nil, err
 		}
 
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return mm.RunMigrations(ctx, configurator, fromVM) //nolint:contextcheck
 	}
 }
