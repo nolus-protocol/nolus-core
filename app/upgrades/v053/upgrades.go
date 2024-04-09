@@ -1,4 +1,4 @@
-package v987
+package v051
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
@@ -16,6 +16,7 @@ func CreateUpgradeHandler(
 	codec codec.Codec,
 ) upgradetypes.UpgradeHandler {
 	return func(ctx sdk.Context, plan upgradetypes.Plan, fromVM module.VersionMap) (module.VersionMap, error) {
+		ctx.Logger().Info(`IBC-Go v7.4.0 upgrade handler execution...`)
 		return mm.RunMigrations(ctx, configurator, fromVM)
 	}
 }

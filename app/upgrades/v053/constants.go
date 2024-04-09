@@ -1,4 +1,4 @@
-package v987
+package v051
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
@@ -7,11 +7,13 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrades name.
-	UpgradeName = "v9.8.7"
+	UpgradeName = "v0.5.3"
 )
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
-	StoreUpgrades:        store.StoreUpgrades{},
+	StoreUpgrades: store.StoreUpgrades{
+		Added: []string{},
+	},
 }
