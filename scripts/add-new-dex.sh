@@ -29,6 +29,7 @@ CHAIN_TRUSTING_PERIOD=""
 IF_INTERCHAIN_SECURITY="true"
 
 PROTOCOL_CURRENCY=""
+STABLE_CURRENCY=""
 ADMIN_CONTRACT_ADDRESS="nolus1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrq8welhp"
 TREASURY_CONTRACT_ADDRESS="nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
 TIMEALARMS_CONTRACT_ADDRESS="nolus1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqrr2r7y"
@@ -60,6 +61,7 @@ while [[ $# -gt 0 ]]; do
     [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
     [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
     [--protocol-currency <new_protocol_currency>]
+    [--stable-currency <new_protocol_stable_currency>]
     [--admin-contract-address <admin_contract_address>]
     [--treasury-contract-address <treasury_contract_address>]
     [--timealarms-contract-address <timealarms_contract_address>]
@@ -176,6 +178,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --stable-currency)
+    STABLE_CURRENCY="$2"
+    shift
+    shift
+    ;;
+
   --admin-contract-address)
     ADMIN_CONTRACT_ADDRESS="$2"
     shift
@@ -224,7 +232,8 @@ verify_mandatory "$CHAIN_IP_ADDR_GRPC" "new DEX gRPC addr - fully host part"
 verify_mandatory "$CHAIN_ACCOUNT_PREFIX" "new DEX account prefix"
 verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price denom"
 verify_mandatory "$CHAIN_TRUSTING_PERIOD" "new DEX trusting period"
-verify_mandatory "$PROTOCOL_CURRENCY" "new protocol currency"
+verify_mandatory "$PROTOCOL_CURRENCY" "new protocol lpn"
+verify_mandatory "$STABLE_CURRENCY" "new protocol stable currency"
 verify_mandatory "$SWAP_TREE" "new protocol swap_tree"
 
 verify_file_exist "$DEPLOY_CONTRACTS_SCRIPT" "The script does not exist"
@@ -258,4 +267,4 @@ DEX_CHANNEL_REMOTE=$(echo "$CONNECTION_INFO" | jq -r '.channels[0].counterparty.
 # Deploy contracts
 _=$(deploy_contracts "$NOLUS_NET" "$NOLUS_CHAIN_ID" "$NOLUS_HOME_DIR" "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" \
 "$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" "$DEX_NAME" "$DEX_CONNECTION_ID"  "$DEX_CHANNEL_LOCAL"  "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
-"$TREASURY_CONTRACT_ADDRESS" "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE")
+"$STABLE_CURRENCY" "$TREASURY_CONTRACT_ADDRESS" "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE")
