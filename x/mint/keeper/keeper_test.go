@@ -10,7 +10,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
@@ -21,7 +20,7 @@ import (
 
 // TestAccount represents a client Account that can be used in unit tests.
 type TestAccount struct {
-	acc  authtypes.AccountI
+	acc  sdk.AccountI
 	priv cryptotypes.PrivKey
 }
 

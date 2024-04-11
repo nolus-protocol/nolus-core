@@ -26,12 +26,11 @@ import (
 	simulationapp "github.com/Nolus-Protocol/nolus-core/testutil/simapp"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 	xauthsigning "github.com/cosmos/cosmos-sdk/x/auth/signing"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // TestAccount represents a client Account that can be used in unit tests.
 type TestAccount struct {
-	acc  authtypes.AccountI
+	acc  sdk.AccountI
 	priv cryptotypes.PrivKey
 }
 

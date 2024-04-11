@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/CosmWasm/wasmvm/types"
 
 	ibcchanneltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -41,6 +42,7 @@ type CustomMessengerTestSuite struct {
 	messenger       *wasmbinding.CustomMessenger
 	contractOwner   sdk.AccAddress
 	contractAddress sdk.AccAddress
+	contractKeeper  wasmtypes.ContractOpsKeeper
 }
 
 func (suite *CustomMessengerTestSuite) SetupTest() {
@@ -53,6 +55,8 @@ func (suite *CustomMessengerTestSuite) SetupTest() {
 	suite.messenger.Icqmsgserver = icqkeeper.NewMsgServerImpl(suite.neutron.InterchainQueriesKeeper)
 	suite.messenger.ContractmanagerKeeper = &suite.neutron.ContractManagerKeeper
 	suite.contractOwner = keeper.RandomAccountAddress(suite.T())
+
+	suite.contractKeeper = keeper.NewDefaultPermissionKeeper(&suite.neutron.WasmKeeper)
 }
 
 func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
@@ -421,6 +425,36 @@ func (suite *CustomMessengerTestSuite) craftMarshaledMsgSubmitTxWithNumMsgs(numM
 	})
 	suite.NoError(err)
 	return
+}
+
+func (suite *CustomMessengerTestSuite) executeCustomMsg(contractAddress sdk.AccAddress, fullMsg json.RawMessage) (data []byte, err error) {
+	customMsg := types.CosmosMsg{
+		Custom: fullMsg,
+	}
+
+	type ExecuteMsg struct {
+		ReflectMsg struct {
+			Msgs []types.CosmosMsg `json:"msgs"`
+		} `json:"reflect_msg"`
+	}
+
+	execMsg := ExecuteMsg{ReflectMsg: struct {
+		Msgs []types.CosmosMsg `json:"msgs"`
+	}(struct{ Msgs []types.CosmosMsg }{Msgs: []types.CosmosMsg{customMsg}})}
+
+	msg, err := json.Marshal(execMsg)
+	suite.NoError(err)
+
+	data, err = suite.contractKeeper.Execute(suite.ctx, contractAddress, suite.contractOwner, msg, nil)
+
+	return
+}
+
+func (suite *CustomMessengerTestSuite) executeNeutronMsg(contractAddress sdk.AccAddress, fullMsg bindings.NeutronMsg) (data []byte, err error) {
+	fullMsgBz, err := json.Marshal(fullMsg)
+	suite.NoError(err)
+
+	return suite.executeCustomMsg(contractAddress, fullMsgBz)
 }
 
 func TestMessengerTestSuite(t *testing.T) {

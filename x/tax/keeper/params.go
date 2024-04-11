@@ -5,6 +5,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// TODO add storeService storetypes.KVStoreService as a field in the keeper and use context.context here;
+// refer to the cosmos-sdk SetParams() to see how they reach the KVStore -> store := k.storeService.OpenKVStore(ctx)
+// OR use unwrapSDKContext / do this for all of our custom modules
+
 // GetParams get all parameters as types.Params.
 func (k Keeper) GetParams(ctx sdk.Context) (p types.Params) {
 	store := ctx.KVStore(k.storeKey)
