@@ -13,22 +13,20 @@ import (
 func TestParamsQuery(t *testing.T) {
 	params.GetDefaultConfig()
 	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
-	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	_ = keeper.SetParams(ctx, params)
 
-	response, err := keeper.Params(wctx, &types.QueryParamsRequest{})
+	response, err := keeper.Params(ctx, &types.QueryParamsRequest{})
 	require.NoError(t, err)
 	require.Equal(t, &types.QueryParamsResponse{Params: params}, response)
 }
 
 func TestParamsQueryNilRequest(t *testing.T) {
 	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
-	wctx := sdk.WrapSDKContext(ctx)
 	params := types.DefaultParams()
 	_ = keeper.SetParams(ctx, params)
 
-	response, err := keeper.Params(wctx, nil)
+	response, err := keeper.Params(ctx, nil)
 	require.Error(t, err)
 	require.Nil(t, response)
 }
