@@ -211,9 +211,6 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// fixes build problem: "cometbft/cometbft/crypto/sr25519/pubkey.go:58:9: too many return values"
-	github.com/ChainSafe/go-schnorrkel => github.com/ChainSafe/go-schnorrkel v0.0.0-20200405005733-88cbf1b4c40d
-
 	// TODO: use wasmd release of neutron's fork and fix genwasm.go
 	// github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.45.0
 
@@ -221,7 +218,7 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.1-0.20240222150313-41be244e33e8
 
-	// adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
+	// TODO adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
 	// github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
