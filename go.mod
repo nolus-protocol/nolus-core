@@ -5,15 +5,15 @@ go 1.22
 require (
 	github.com/CosmWasm/wasmd v0.50.0
 	github.com/CosmWasm/wasmvm v1.5.2
-	github.com/cometbft/cometbft v0.38.5
-	github.com/cometbft/cometbft-db v0.10.0 // indirect
+	github.com/cometbft/cometbft v0.38.6
+	github.com/cometbft/cometbft-db v0.11.0 // indirect
 	github.com/cosmos/cosmos-sdk v0.50.4
 	github.com/cosmos/gogoproto v1.4.11
 	github.com/cosmos/ibc-go/v8 v8.1.0
 	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/neutron-org/neutron/v3 v3.0.1-0.20240325143813-55032cb17e7b
+	github.com/neutron-org/neutron/v3 v3.0.1-0.20240411101630-4b497644cbf9
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -216,7 +216,7 @@ replace (
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
-	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.1-0.20240222150313-41be244e33e8
+	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056
 
 	// TODO adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
 	// github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
