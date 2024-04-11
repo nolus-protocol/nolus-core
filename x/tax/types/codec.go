@@ -9,10 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 )
 
-var (
-	Amino     = codec.NewLegacyAmino()
-	ModuleCdc = codec.NewAminoCodec(Amino)
-)
+var Amino = codec.NewLegacyAmino()
 
 func init() {
 	RegisterLegacyAminoCodec(Amino)

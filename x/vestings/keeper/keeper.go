@@ -8,7 +8,6 @@ import (
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
@@ -59,6 +58,6 @@ func (k Keeper) GetModuleAccountAddress(_ context.Context) sdk.AccAddress {
 }
 
 // GetModuleAccount gets the module account.
-func (k Keeper) GetModuleAccount(ctx context.Context, moduleName string) authtypes.AccountI {
+func (k Keeper) GetModuleAccount(ctx context.Context, moduleName string) sdk.AccountI {
 	return k.accountKeeper.GetModuleAccount(ctx, moduleName)
 }

@@ -76,6 +76,10 @@ func (k Keeper) SetMinter(ctx context.Context, minter types.Minter) {
 	store.Set(types.MinterKey, b)
 }
 
+// TODO add storeService storetypes.KVStoreService as a field in the keeper and use context.context here;
+// refer to the cosmos-sdk SetParams() to see how they reach the KVStore -> store := k.storeService.OpenKVStore(ctx)
+// OR use unwrapSDKContext / do this for all of our custom modules
+
 // GetParams returns the current x/mint module parameters.
 func (k Keeper) GetParams(ctx context.Context) (p types.Params) {
 	c := sdk.UnwrapSDKContext(ctx)
@@ -106,18 +110,16 @@ func (k Keeper) SetParams(ctx context.Context, p types.Params) error {
 // MintCoins implements an alias call to the underlying supply keeper's
 // MintCoins to be used in BeginBlocker.
 func (k Keeper) MintCoins(ctx context.Context, newCoins sdk.Coins) error {
-	c := sdk.UnwrapSDKContext(ctx)
 	if newCoins.Empty() {
 		// skip as no coins need to be minted
 		return nil
 	}
 
-	return k.bankKeeper.MintCoins(c, types.ModuleName, newCoins)
+	return k.bankKeeper.MintCoins(ctx, types.ModuleName, newCoins)
 }
 
 // AddCollectedFees implements an alias call to the underlying supply keeper's
 // AddCollectedFees to be used in BeginBlocker.
 func (k Keeper) AddCollectedFees(ctx context.Context, fees sdk.Coins) error {
-	c := sdk.UnwrapSDKContext(ctx)
-	return k.bankKeeper.SendCoinsFromModuleToModule(c, types.ModuleName, k.feeCollectorName, fees)
+	return k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.feeCollectorName, fees)
 }

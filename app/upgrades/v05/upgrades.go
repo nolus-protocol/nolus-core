@@ -97,12 +97,12 @@ func CreateUpgradeHandler(
 		ctx.Logger().Info(fmt.Sprintf("[MM] post migrate version map: %v", newVersionMap))
 
 		ctx.Logger().Info("setting x/staking min commission rate to 5%")
-		if err = setInitialMinCommissionRate(ctx, keepers); err != nil {
+		if err = setInitialMinCommissionRate(ctx, keepers); err != nil { //nolint:contextcheck
 			return nil, err
 		}
 
 		ctx.Logger().Info("setting x/gov min initial deposit ratio to 25%")
-		if err = setMinInitialDepositRatio(ctx, keepers); err != nil {
+		if err = setMinInitialDepositRatio(ctx, keepers); err != nil { //nolint:contextcheck
 			return nil, err
 		}
 
@@ -132,7 +132,7 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info("Setting sudo callback limit...")
-		err = setContractManagerParams(ctx, *keepers.ContractManagerKeeper)
+		err = setContractManagerParams(ctx, *keepers.ContractManagerKeeper) //nolint:contextcheck
 		if err != nil {
 			return nil, err
 		}

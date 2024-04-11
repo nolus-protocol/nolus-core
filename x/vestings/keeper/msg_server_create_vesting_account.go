@@ -14,8 +14,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 )
 
-func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k msgServer) CreateVestingAccount(ctx context.Context, msg *types.MsgCreateVestingAccount) (*types.MsgCreateVestingAccountResponse, error) {
 	ak := k.accountKeeper
 	bk := k.bankKeeper
 
@@ -50,7 +49,7 @@ func (k msgServer) CreateVestingAccount(goCtx context.Context, msg *types.MsgCre
 		return nil, err
 	}
 
-	var acc authtypes.AccountI
+	var acc sdk.AccountI
 
 	if msg.Delayed {
 		acc = vestingtypes.NewDelayedVestingAccountRaw(baseVestingAccount)
