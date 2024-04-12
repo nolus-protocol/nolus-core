@@ -53,6 +53,7 @@ while [[ $# -gt 0 ]]; do
   -h | --help)
     printf \
     "Usage: %s
+    [--nolus-network-addr <nolus_node_listen_address>]
     [--chain-id <chain_id>]
     [-v|--validators <count>]
     [--validators-root-dir <validators_root_dir>]
@@ -72,6 +73,11 @@ while [[ $# -gt 0 ]]; do
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]" \
     "$0"
     exit 0
+    ;;
+
+  --nolus-network-addr)
+    NOLUS_NETWORK_ADDR="$2"
+    shift 2
     ;;
 
   --chain-id)
