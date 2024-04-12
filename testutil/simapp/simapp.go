@@ -106,14 +106,12 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 	_, err = nolusApp.Commit()
 	require.NoError(t, err)
 
-	// TODO:
-	// nolusApp.BeginBlocker(&abci.RequestBeginBlock{Header: tmproto.Header{
-	// 	Height:             nolusApp.LastBlockHeight() + 1,
-	// 	AppHash:            nolusApp.LastCommitID().Hash,
-	// 	ValidatorsHash:     valSet.Hash(),
-	// 	NextValidatorsHash: valSet.Hash(),
-	// 	Time:               time.Now(),
-	// }})
+	nolusApp.FinalizeBlock(&abci.RequestFinalizeBlock{
+		Height:             nolusApp.LastBlockHeight() + 1,
+		Hash:               nolusApp.LastCommitID().Hash,
+		NextValidatorsHash: valSet.Hash(),
+		Time:               time.Now(),
+	})
 
 	return nolusApp
 }
