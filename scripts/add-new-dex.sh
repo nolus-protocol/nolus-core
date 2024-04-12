@@ -20,6 +20,7 @@ HERMES_CONFIG_DIR_PATH="$HOME/.hermes"
 HERMES_BINARY_DIR_PATH="$HOME/hermes"
 DEX_NETWORK=""
 DEX_NAME=""
+DEX_TYPE_AND_PARAMS=""
 CHAIN_ID=""
 CHAIN_IP_ADDR_RPC=""
 CHAIN_IP_ADDR_GRPC=""
@@ -55,6 +56,7 @@ while [[ $# -gt 0 ]]; do
     [--hermes-binary-dir-path <hermes_binary_dir_path>]
     [--dex-network <dex_network>]
     [--dex-name <dex_name>]
+    [--dex-type-and-params <dex_type_and_params>]
     [--dex-chain-id <new_dex_chain_id>]
     [--dex-ip-addr-rpc-host <new_dex_chain_ip_addr_rpc_fully_host>]
     [--dex-ip-addr-grpc-host <new_dex_chain_ip_addr_grpc_fully_host>]
@@ -74,140 +76,122 @@ while [[ $# -gt 0 ]]; do
 
   --nolus-home-dir)
     NOLUS_HOME_DIR="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --nolus-money-market-dir)
     NOLUS_MONEY_MARKET_DIR="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --account-key-to-feed-hermes-address)
     ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-admin-key)
     DEX_ADMIN_KEY="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --store-code-privileged-user-key)
     STORE_CODE_PRIVILEGED_USER_KEY="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --wasm-artifacts-path)
     WASM_ARTIFACTS_PATH="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --hermes-config-dir-path)
     HERMES_CONFIG_DIR_PATH="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --hermes-binary-dir-path)
     HERMES_BINARY_DIR_PATH="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-network)
     DEX_NETWORK="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-name)
     DEX_NAME="$2"
-    shift
-    shift
+    shift 2
+    ;;
+
+  --dex-type-and-params)
+    DEX_TYPE_AND_PARAMS="$2"
+    shift 2
     ;;
 
   --dex-chain-id)
     CHAIN_ID="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-ip-addr-rpc-host)
     CHAIN_IP_ADDR_RPC="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-ip-addr-grpc-host)
     CHAIN_IP_ADDR_GRPC="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-account-prefix)
     CHAIN_ACCOUNT_PREFIX="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-price-denom)
     CHAIN_PRICE_DENOM="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-trusting-period-secs)
     CHAIN_TRUSTING_PERIOD="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --dex-if-interchain-security)
     IF_INTERCHAIN_SECURITY="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --protocol-currency)
     PROTOCOL_CURRENCY="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --stable-currency)
     STABLE_CURRENCY="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --admin-contract-address)
     ADMIN_CONTRACT_ADDRESS="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --treasury-contract-address)
     TREASURY_CONTRACT_ADDRESS="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --timealarms-contract-address)
     TIMEALARMS_CONTRACT_ADDRESS="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   --protocol-swap-tree)
     SWAP_TREE="$2"
-    shift
-    shift
+    shift 2
     ;;
 
   *)
@@ -225,6 +209,7 @@ DEPLOY_CONTRACTS_SCRIPT="$NOLUS_MONEY_MARKET_DIR/scripts/deploy-contracts-live.s
 
 verify_dir_exist "$WASM_ARTIFACTS_PATH" "The WASM_ARTIFACTS_PATH dir does not exist"
 verify_mandatory "$DEX_NAME" "new DEX name"
+verify_mandatory "$DEX_TYPE_AND_PARAMS" "DEX type and parameters"
 verify_mandatory "$DEX_ADMIN_KEY" "dex-admin key name"
 verify_mandatory "$STORE_CODE_PRIVILEGED_USER_KEY" "sotre-code privileged user key"
 verify_mandatory "$DEX_NETWORK" "new DEX network"
@@ -267,6 +252,12 @@ DEX_CHANNEL_REMOTE=$(echo "$CONNECTION_INFO" | jq -r '.channels[0].counterparty.
 
 # TO DO - Remove and run manually
 # Deploy contracts
-_=$(deploy_contracts "$NOLUS_NET" "$NOLUS_CHAIN_ID" "$NOLUS_HOME_DIR" "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" \
-"$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" "$DEX_NAME" "$DEX_CONNECTION_ID"  "$DEX_CHANNEL_LOCAL"  "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
-"$STABLE_CURRENCY" "$TREASURY_CONTRACT_ADDRESS" "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE")
+_=$(
+  deploy_contracts "$NOLUS_NET" "$NOLUS_CHAIN_ID" "$NOLUS_HOME_DIR" \
+    "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" \
+    "$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" \
+    "$DEX_NAME" "$DEX_TYPE_AND_PARAMS" "$DEX_CONNECTION_ID" \
+    "$DEX_CHANNEL_LOCAL" "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
+    "$STABLE_CURRENCY" "$TREASURY_CONTRACT_ADDRESS" \
+    "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE"
+)
