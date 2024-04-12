@@ -13,6 +13,8 @@ import (
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
+	"cosmossdk.io/client/v2/autocli"
+	"cosmossdk.io/core/appmodule"
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
@@ -32,6 +34,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
@@ -95,6 +98,8 @@ type App struct {
 
 	// the module manager
 	mm *module.Manager
+	// TODO: decide if we need this
+	// BasicModuleManager module.BasicManager
 	// simulation manager
 	sm           *module.SimulationManager
 	configurator module.Configurator
@@ -173,7 +178,21 @@ func New(
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
 	// TODO: decide if we need this
-	// app.mm.NewBasicManagerFromManager
+	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration and genesis verification.
+	// By default it is composed of all the module from the module manager.
+	// Additionally, app module basics can be overwritten by passing them as argument.
+	// app.BasicModuleManager = module.NewBasicManagerFromManager(
+	// 	app.mm,
+	// 	map[string]module.AppModuleBasic{
+	// 		govtypes.ModuleName: gov.NewAppModuleBasic(
+	// 			[]govclient.ProposalHandler{
+	// 				paramsclient.ProposalHandler,
+	// 			},
+	// 		),
+	// 	})
+	// app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
+	// app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
@@ -186,8 +205,6 @@ func New(
 	// NOTE: capability module's beginblocker must come before any modules using capabilities (e.g. IBC)
 	// Tell the app's module manager how to set the order of BeginBlockers, which are run at the beginning of every block.
 	app.mm.SetOrderBeginBlockers(orderBeginBlockers()...)
-
-	app.SetPreBlocker(app.PreBlocker)
 
 	app.mm.SetOrderEndBlockers(orderEndBlockers()...)
 
@@ -231,7 +248,9 @@ func New(
 
 	// initialize BaseApp
 	app.SetInitChainer(app.InitChainer)
+	app.SetPreBlocker(app.PreBlocker)
 	app.SetBeginBlocker(app.BeginBlocker)
+	app.SetEndBlocker(app.EndBlocker)
 
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
@@ -254,9 +273,6 @@ func New(
 	}
 
 	app.SetAnteHandler(anteHandler)
-	app.SetEndBlocker(app.EndBlocker)
-	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetInitChainer(app.InitChainer)
 
 	// RegisterUpgradeHandlers is used for registering any on-chain upgrades.
 	// Make sure it's called after `app.mm` and `app.configurator` are set.
@@ -396,27 +412,26 @@ func (app *App) LegacyAmino() *codec.LegacyAmino {
 	return app.cdc
 }
 
-// TODO: autocli
 // AutoCliOpts returns the autocli options for the app.
-// func (app *App) AutoCliOpts() autocli.AppOptions {
-// 	modules := make(map[string]appmodule.AppModule, 0)
-// 	for _, m := range app.mm.Modules {
-// 		if moduleWithName, ok := m.(module.HasName); ok {
-// 			moduleName := moduleWithName.Name()
-// 			if appModule, ok := moduleWithName.(appmodule.AppModule); ok {
-// 				modules[moduleName] = appModule
-// 			}
-// 		}
-// 	}
+func (app *App) AutoCliOpts() autocli.AppOptions {
+	modules := make(map[string]appmodule.AppModule, 0)
+	for _, m := range app.mm.Modules {
+		if moduleWithName, ok := m.(module.HasName); ok {
+			moduleName := moduleWithName.Name()
+			if appModule, ok := moduleWithName.(appmodule.AppModule); ok {
+				modules[moduleName] = appModule
+			}
+		}
+	}
 
-// 	return autocli.AppOptions{
-// 		Modules:               modules,
-// 		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(app.ModuleManager.Modules),
-// 		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-// 		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
-// 		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
-// 	}
-// }
+	return autocli.AppOptions{
+		Modules:               modules,
+		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(app.mm.Modules),
+		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+	}
+}
 
 // AppCodec returns Gaia's app codec.
 //
