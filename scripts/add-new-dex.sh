@@ -28,11 +28,13 @@ CHAIN_PRICE_DENOM=""
 CHAIN_TRUSTING_PERIOD=""
 IF_INTERCHAIN_SECURITY="true"
 
+source "$NOLUS_MONEY_MARKET_DIR/scripts/deploy-platform.sh"
+
 PROTOCOL_CURRENCY=""
 STABLE_CURRENCY=""
-ADMIN_CONTRACT_ADDRESS="nolus1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrq8welhp"
-TREASURY_CONTRACT_ADDRESS="nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz"
-TIMEALARMS_CONTRACT_ADDRESS="nolus1nc5tatafv6eyq7llkr2gv50ff9e22mnf70qgjlv737ktmt4eswrqrr2r7y"
+ADMIN_CONTRACT_ADDRESS="$(admin_contract_instance_addr)"
+TREASURY_CONTRACT_ADDRESS="$(treasury_instance_addr)"
+TIMEALARMS_CONTRACT_ADDRESS="$(timealarms_instance_addr)"
 SWAP_TREE=""
 
 while [[ $# -gt 0 ]]; do
