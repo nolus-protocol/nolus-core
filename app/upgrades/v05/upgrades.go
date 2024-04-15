@@ -281,10 +281,10 @@ func setInitialMinCommissionRate(ctx context.Context, keepers *keepers.AppKeeper
 }
 
 func setMinInitialDepositRatio(ctx context.Context, keepers *keepers.AppKeepers) error {
-	// TODO:
-	// temp return nil
-	return nil
-	// govParams := keepers.GovKeeper.GetParams(ctx)
-	// govParams.MinInitialDepositRatio = "0.25"
-	// return keepers.GovKeeper.SetParams(ctx, govParams)
+	govParams, err := keepers.GovKeeper.Params.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get gov params: %w", err)
+	}
+	govParams.MinInitialDepositRatio = "0.25"
+	return keepers.GovKeeper.Params.Set(ctx, govParams)
 }

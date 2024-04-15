@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
@@ -36,12 +37,12 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	_ = testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
 	_ = testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 
-	// TODO: remove after confirming tets work
-	// err := testapp.AccountKeeper.SetParams(ctx, authtypes.DefaultParams())
-	// if err != nil {
-	// 	panic(err)
-	// }
-	err := testapp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
+	err := testapp.AccountKeeper.Params.Set(ctx, authtypes.DefaultParams())
+	if err != nil {
+		panic(err)
+	}
+
+	err = testapp.BankKeeper.SetParams(ctx, banktypes.DefaultParams())
 	if err != nil {
 		panic(err)
 	}
