@@ -70,7 +70,7 @@ update_config "$hermes_config_dir" '.chains[0]."max_block_time"' '"30s"'
 update_config "$hermes_config_dir" '.chains[0]."trusting_period"' '"14days"'
 update_config "$hermes_config_dir" '.chains[0]."trust_threshold"' '{ numerator : "1", denominator : "3" }'
 update_config "$hermes_config_dir" '.chains[0]."memo_prefix"' '"''"'
-update_config "$hermes_config_dir" '.chains[0]."event_source"' '{ mode : "push", url : "ws://127.0.0.1:'"$chain1_rpc_port"'/websocket", batch_delay : "500ms" }'
+update_config "$hermes_config_dir" '.chains[0]."event_source"' '{ mode : "push", url : "ws://'"$chain1_ip_addr"':'"$chain1_rpc_port"'/websocket", batch_delay : "500ms" }'
 
 # Account setup
 declare hermes_mnemonic_file="$hermes_config_dir"/hermes.seed
