@@ -43,10 +43,6 @@ func getLegacySubspaces(paramsKeeper *paramskeeper.Keeper) paramstypes.Subspace 
 			keyTable = crisistypes.ParamKeyTable() //nolint:staticcheck
 		case govtypes.ModuleName:
 			keyTable = govv1.ParamKeyTable() //nolint:staticcheck
-		// wasm
-		// TODO:
-		// case wasmtypes.ModuleName:
-		// 	keyTable = wasmtypes.ParamKeyTable() //nolint:staticcheck
 		case icacontrollertypes.SubModuleName:
 			keyTable = icacontrollertypes.ParamKeyTable() //nolint:staticcheck
 		// default modules have not migrated away from x/params or have no params to migrate: ibcexported.ModuleName, ibctransfertypes.ModuleName,vestingstypes.ModuleName

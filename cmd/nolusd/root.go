@@ -211,9 +211,8 @@ func initRootCmd(
 			encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec(),
 		),
 		genutilcli.ValidateGenesisCmd(moduleBasics),
-		AddGenesisAccountCmd(defaultNodeHome),
-		// TODO: uncomment when genwasm.go is ready
-		// AddGenesisWasmMsgCmd(defaultNodeHome),
+		addGenesisAccountCmd(defaultNodeHome),
+		addGenesisWasmMsgCmd(defaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		// TODO: cmd/nolusd/config.go
