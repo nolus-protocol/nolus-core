@@ -142,7 +142,7 @@ func (s *KeeperTestSuite) createTestAccounts(numAccs int) []TestAccount {
 	for i := 0; i < numAccs; i++ {
 		priv, _, addr := sdktestutil.KeyTestPubAddr()
 		acc := s.app.AccountKeeper.NewAccountWithAddress(s.ctx, addr)
-		s.Require().NoError(acc.SetAccountNumber(uint64(i)))
+		s.Require().NoError(acc.SetAccountNumber(uint64(i + 1000)))
 		s.app.AccountKeeper.SetAccount(s.ctx, acc)
 		accounts = append(accounts, TestAccount{acc, priv})
 	}
