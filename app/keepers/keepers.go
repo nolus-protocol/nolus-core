@@ -15,7 +15,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
@@ -205,7 +204,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
+		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
 	)
 
 	// Add normal keepers
@@ -214,7 +213,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		runtime.NewKVStoreService(appKeepers.keys[authtypes.StoreKey]),
 		authtypes.ProtoBaseAccount,
 		maccPerms,
-		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
+		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
 		nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -243,8 +242,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		authcodec.NewBech32Codec(sdk.Bech32PrefixValAddr),
-		authcodec.NewBech32Codec(sdk.Bech32PrefixConsAddr),
+		address.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		address.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	)
 	appKeepers.StakingKeeper = stakingKeeper
 
@@ -349,7 +348,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		runtime.NewKVStoreService(appKeepers.keys[evidencetypes.StoreKey]),
 		appKeepers.StakingKeeper,
 		appKeepers.SlashingKeeper,
-		address.NewBech32Codec(nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix()),
+		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
 		runtime.ProvideCometInfoService(),
 	)
 
