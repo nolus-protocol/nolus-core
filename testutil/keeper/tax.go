@@ -51,7 +51,8 @@ func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Ke
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, isCheckTx, log.NewNopLogger()).WithMinGasPrices(gasPrices)
 
 	// Initialize params
-	_ = k.SetParams(ctx, types.DefaultParams())
+	err := k.SetParams(ctx, types.DefaultParams())
+	require.NoError(t, err)
 
 	return &k, ctx, mockWasmKeeper
 }
@@ -85,9 +86,9 @@ func (m MockFeeTx) GetFee() sdk.Coins {
 }
 
 func (m MockFeeTx) FeePayer() []byte {
-	return sdk.AccAddress{}
+	return []byte{}
 }
 
 func (m MockFeeTx) FeeGranter() []byte {
-	return sdk.AccAddress{}
+	return []byte{}
 }

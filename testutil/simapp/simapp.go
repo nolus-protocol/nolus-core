@@ -11,9 +11,9 @@ import (
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/json"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	cmttypes "github.com/cometbft/cometbft/types"
 	cometbfttypes "github.com/cometbft/cometbft/types"
-	tmtypes "github.com/cometbft/cometbft/types"
 
 	pruningtypes "cosmossdk.io/store/pruning/types"
 	db "github.com/cosmos/cosmos-db"
@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
@@ -37,10 +38,17 @@ import (
 func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 	// _ = params.SetAddressPrefixes()
 	database := db.NewMemDB()
-	logger := log.NewNopLogger()
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
-	a := app.New(logger, database, nil, true, map[int64]bool{}, dir, 0, encoding,
+	a := app.New(
+		log.NewNopLogger(),
+		database,
+		nil,
+		true,
+		map[int64]bool{},
+		dir,
+		0,
+		encoding,
 		sims.EmptyAppOptions{})
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
@@ -50,14 +58,13 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		require.NoError(t, err)
 
 		// create validator set with single validator
-		validator := tmtypes.NewValidator(pubKey, 1)
-		valSet := tmtypes.NewValidatorSet([]*tmtypes.Validator{validator})
+		validator := cmttypes.NewValidator(pubKey, 1)
+		valSet := cmttypes.NewValidatorSet([]*cmttypes.Validator{validator})
 
 		// generate genesis account
-		senderPrivKey := mock.NewPV()
-		senderPubKey := senderPrivKey.PrivKey.PubKey()
+		senderPrivKey := secp256k1.GenPrivKey()
 
-		acc := authtypes.NewBaseAccount(senderPubKey.Address().Bytes(), senderPubKey, 0, 0)
+		acc := authtypes.NewBaseAccount(senderPrivKey.PubKey().Address().Bytes(), senderPrivKey.PubKey(), 0, 0)
 		balance := banktypes.Balance{
 			Address: acc.GetAddress().String(),
 			Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
@@ -65,8 +72,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 
 		genState := NewDefaultGenesisState(encoding.Marshaler)
 
-		genesisAccounts := []authtypes.GenesisAccount{acc}
-		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, genesisAccounts, balance)
+		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
 		return nolusApp
 	}
@@ -83,10 +89,9 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit in the default token of the GaiaApp from first genesis
 // account. A Nop logger is set in GaiaApp.
-func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.GenesisState, valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *app.App {
+func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.GenesisState, valSet *cmttypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *app.App {
 	t.Helper()
 
-	// gaiaApp, genesisState := setup()
 	genesisState = genesisStateWithValSet(t, nolusApp, genesisState, valSet, genAccs, balances...)
 
 	stateBytes, err := json.MarshalIndent(genesisState, "", " ")
@@ -102,23 +107,24 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 	)
 	require.NoError(t, err)
 
-	// commit genesis changes
-	_, err = nolusApp.Commit()
-	require.NoError(t, err)
-
-	nolusApp.FinalizeBlock(&abci.RequestFinalizeBlock{
+	_, err = nolusApp.FinalizeBlock(&abci.RequestFinalizeBlock{
 		Height:             nolusApp.LastBlockHeight() + 1,
 		Hash:               nolusApp.LastCommitID().Hash,
 		NextValidatorsHash: valSet.Hash(),
 		Time:               time.Now(),
 	})
+	require.NoError(t, err)
+
+	// commit genesis changes
+	// _, err = nolusApp.Commit()
+	// require.NoError(t, err)
 
 	return nolusApp
 }
 
 func genesisStateWithValSet(t *testing.T,
 	nolusApp *app.App, genesisState app.GenesisState,
-	valSet *tmtypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
+	valSet *cmttypes.ValidatorSet, genAccs []authtypes.GenesisAccount,
 	balances ...banktypes.Balance,
 ) app.GenesisState {
 	t.Helper()
@@ -134,8 +140,10 @@ func genesisStateWithValSet(t *testing.T,
 	for _, val := range valSet.Validators {
 		pk, err := cryptocodec.FromCmtPubKeyInterface(val.PubKey)
 		require.NoError(t, err)
+
 		pkAny, err := codectypes.NewAnyWithValue(pk)
 		require.NoError(t, err)
+
 		validator := stakingtypes.Validator{
 			OperatorAddress:   sdk.ValAddress(val.Address).String(),
 			ConsensusPubkey:   pkAny,
@@ -150,8 +158,9 @@ func genesisStateWithValSet(t *testing.T,
 			MinSelfDelegation: sdkmath.ZeroInt(),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), val.Address.String(), sdkmath.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec()))
 	}
+
 	// set validators and delegations
 	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
 	genesisState[stakingtypes.ModuleName] = nolusApp.AppCodec().MustMarshalJSON(stakingGenesis)
@@ -190,17 +199,17 @@ func NewDefaultGenesisState(cdc codec.JSONCodec) app.GenesisState {
 	return app.ModuleBasics.DefaultGenesis(cdc)
 }
 
-var defaultConsensusParams = &tmproto.ConsensusParams{
-	Block: &tmproto.BlockParams{
+var defaultConsensusParams = &cmtproto.ConsensusParams{
+	Block: &cmtproto.BlockParams{
 		MaxBytes: 200000,
 		MaxGas:   2000000,
 	},
-	Evidence: &tmproto.EvidenceParams{
+	Evidence: &cmtproto.EvidenceParams{
 		MaxAgeNumBlocks: 302400,
 		MaxAgeDuration:  504 * time.Hour, // 3 weeks is the max duration
 		MaxBytes:        10000,
 	},
-	Validator: &tmproto.ValidatorParams{
+	Validator: &cmtproto.ValidatorParams{
 		PubKeyTypes: []string{
 			cometbfttypes.ABCIPubKeyTypeEd25519,
 		},

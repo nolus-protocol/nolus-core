@@ -133,10 +133,8 @@ func NewRootCmd(
 	moduleBasics module.BasicManager,
 ) (*cobra.Command, app.EncodingConfig) {
 	rootOptions := newRootOptions()
-	// Set config for prefixes
-	// params.SetAddressPrefixes()
-
 	encodingConfig := app.MakeEncodingConfig(moduleBasics)
+
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -150,11 +148,12 @@ func NewRootCmd(
 
 	rootCmd := &cobra.Command{
 		Use:   appName + "d",
-		Short: "Start nolus app",
+		Short: "Nolus",
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
 			cmd.SetErr(cmd.ErrOrStderr())
+
 			initClientCtx, err := client.ReadPersistentCommandFlags(initClientCtx, cmd.Flags())
 			if err != nil {
 				return err

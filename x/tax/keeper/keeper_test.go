@@ -83,7 +83,7 @@ func (s *KeeperTestSuite) CreateTestAccounts(numAccs int) []TestAccount {
 	for i := 0; i < numAccs; i++ {
 		priv, _, addr := sdktestutil.KeyTestPubAddr()
 		acc := s.app.AccountKeeper.NewAccountWithAddress(s.ctx, addr)
-		s.Require().NoError(acc.SetAccountNumber(uint64(i)))
+		s.Require().NoError(acc.SetAccountNumber(uint64(i + 1000)))
 		s.app.AccountKeeper.SetAccount(s.ctx, acc)
 		accounts = append(accounts, TestAccount{acc, priv})
 	}
@@ -128,12 +128,14 @@ func (s *KeeperTestSuite) CreateTestTx(privs []cryptotypes.PrivKey, accNums []ui
 	sigsV2 = []signing.SignatureV2{}
 	for i, priv := range privs {
 		signerData := xauthsigning.SignerData{
+			Address:       sdk.AccAddress(priv.PubKey().Bytes()).String(),
 			ChainID:       chainID,
 			AccountNumber: accNums[i],
 			Sequence:      accSeqs[i],
+			PubKey:        priv.PubKey(),
 		}
-		sigV2, err := tx.SignWithPrivKey(context.TODO(),
-			defaultSignMode, signerData,
+		sigV2, err := tx.SignWithPrivKey(
+			context.TODO(), defaultSignMode, signerData,
 			s.txBuilder, priv, s.clientCtx.TxConfig, accSeqs[i])
 		if err != nil {
 			return nil, err
