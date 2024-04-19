@@ -7,11 +7,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/gogoproto/proto"
-
-	nolusparams "github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
@@ -30,10 +29,10 @@ func makeEncodingConfig() EncodingConfig {
 		ProtoFiles: proto.HybridResolver,
 		SigningOptions: signing.Options{
 			AddressCodec: address.Bech32Codec{
-				Bech32Prefix: nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix(),
+				Bech32Prefix: sdk.GetConfig().GetBech32AccountAddrPrefix(),
 			},
 			ValidatorAddressCodec: address.Bech32Codec{
-				Bech32Prefix: nolusparams.GetDefaultConfig().GetBech32ValidatorAddrPrefix(),
+				Bech32Prefix: sdk.GetConfig().GetBech32ValidatorAddrPrefix(),
 			},
 		},
 	})
