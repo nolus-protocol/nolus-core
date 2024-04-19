@@ -98,7 +98,7 @@ type App struct {
 
 	// the module manager
 	mm *module.Manager
-	// TODO: decide if we need this
+	// TODO
 	// BasicModuleManager module.BasicManager
 	// simulation manager
 	sm           *module.SimulationManager
@@ -191,7 +191,7 @@ func New(
 	// 			},
 	// 		),
 	// 	})
-	// app.BasicModuleManager.RegisterLegacyAminoCodec(legacyAmino)
+	// app.BasicModuleManager.RegisterLegacyAminoCodec(cdc)
 	// app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	app.mm.SetOrderPreBlockers(
