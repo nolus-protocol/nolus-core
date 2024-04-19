@@ -59,7 +59,6 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
-	nolusparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -214,7 +213,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.ProtoBaseAccount,
 		maccPerms,
 		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-		nolusparams.GetDefaultConfig().GetBech32AccountAddrPrefix(),
+		sdk.GetConfig().GetBech32AccountAddrPrefix(),
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.AccountKeeper = &accountKeeper
