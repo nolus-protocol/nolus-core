@@ -11,12 +11,12 @@ import (
 	"cosmossdk.io/store/snapshots"
 	snapshottypes "cosmossdk.io/store/snapshots/types"
 	storetypes "cosmossdk.io/store/types"
+	confixcmd "cosmossdk.io/tools/confix/cmd"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
-	tmtypes "github.com/cometbft/cometbft/types"
 
 	db "github.com/cosmos/cosmos-db"
 
@@ -27,9 +27,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
+	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	authcmd "github.com/cosmos/cosmos-sdk/x/auth/client/cli"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -38,6 +40,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -135,6 +138,18 @@ func NewRootCmd(
 	rootOptions := newRootOptions()
 	encodingConfig := app.MakeEncodingConfig(moduleBasics)
 
+	tempApp := app.New(
+		log.NewNopLogger(),
+		db.NewMemDB(),
+		nil,
+		true,
+		nil,
+		tempDir(),
+		0,
+		encodingConfig,
+		simtestutil.NewAppOptionsWithFlagHome(tempDir()),
+	)
+
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
 		WithInterfaceRegistry(encodingConfig.InterfaceRegistry).
@@ -180,6 +195,17 @@ func NewRootCmd(
 		moduleBasics,
 		rootOptions,
 	)
+
+	// add keyring to autocli opts
+	autoCliOpts := tempApp.AutoCliOpts()
+	initClientCtx, _ = config.ReadDefaultValuesFromDefaultClientConfig(initClientCtx)
+	autoCliOpts.Keyring, _ = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
+	autoCliOpts.ClientCtx = initClientCtx
+
+	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
+		panic(err)
+	}
+
 	overwriteFlagDefaults(rootCmd, map[string]string{
 		flags.FlagChainID:        defaultChainID,
 		flags.FlagKeyringBackend: "test",
@@ -214,8 +240,7 @@ func initRootCmd(
 		addGenesisWasmMsgCmd(defaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
-		// TODO: cmd/nolusd/config.go
-		// ConfigCmd(),
+		confixcmd.ConfigCommand(),
 
 		// TODO: test and decide if we need those two new pruning/snapshot commands
 		// pruning.Cmd(newApp, simapp.DefaultNodeHome),
@@ -292,15 +317,17 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetSignCommand(),
 		authcmd.GetSignBatchCommand(),
 		authcmd.GetMultiSignCommand(),
+		authcmd.GetMultiSignBatchCmd(),
 		authcmd.GetValidateSignaturesCommand(),
 		flags.LineBreak,
 		authcmd.GetBroadcastCommand(),
 		authcmd.GetEncodeCommand(),
 		authcmd.GetDecodeCommand(),
+		authcmd.GetSimulateCmd(),
 	)
 
 	// TODO: autocli
-	moduleBasics.AddTxCommands(cmd)
+	// moduleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -372,7 +399,7 @@ func (a appCreator) newApp(
 	chainID := cast.ToString(appOpts.Get(flags.FlagChainID))
 	if chainID == "" {
 		// fallback to genesis chain-id
-		appGenesis, err := tmtypes.GenesisDocFromFile(filepath.Join(homePath, "config", "genesis.json"))
+		appGenesis, err := genutiltypes.AppGenesisFromFile(filepath.Join(homePath, "config", "genesis.json"))
 		if err != nil {
 			panic(err)
 		}
@@ -499,4 +526,14 @@ query_gas_limit = 300000
 lru_size = 0`
 
 	return customAppTemplate, customAppConfig
+}
+
+var tempDir = func() string {
+	dir, err := os.MkdirTemp("", "nolusd")
+	if err != nil {
+		panic("failed to create temp dir: " + err.Error())
+	}
+	defer os.RemoveAll(dir)
+
+	return dir
 }

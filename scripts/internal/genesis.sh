@@ -141,8 +141,8 @@ __generate_proto_genesis_no_wasm() {
   local -a wasm_allowed_addresses=("$admin_contract_addr" "$store_code_privileged_addr")
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
-  run_cmd "$genesis_home_dir" config keyring-backend test
-  run_cmd "$genesis_home_dir" config chain-id "$chain_id"
+  run_cmd "$genesis_home_dir" config set client keyring-backend test
+  run_cmd "$genesis_home_dir" config set client chain-id "$chain_id"
 
   __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
@@ -230,8 +230,9 @@ __set_gov_parameters() {
 
   < "$genesis_file" \
     jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="'"$max_deposit_period"'"' \
-    | jq '.app_state["gov"]["params"]["voting_period"]="'"$voting_period"'"' \
-    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$voting_period"'"' > "$genesis_tmp_file"
+    | jq '.app_state["gov"]["params"]["voting_period"]="'"$gov_voting_period"'"' \
+    | jq '.app_state["gov"]["params"]["expedited_voting_period"]="'"$voting_period"'"' \
+    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$gov_voting_period"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
