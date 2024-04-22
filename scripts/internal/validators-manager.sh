@@ -12,8 +12,8 @@ init_val_mngr_sh() {
   val_mngr_home_dir="$1"
   val_mngr_chain_id="$2"
 
-  run_cmd "$val_mngr_home_dir" config chain-id "$val_mngr_chain_id"
-  run_cmd "$val_mngr_home_dir" config keyring-backend test
+  run_cmd "$val_mngr_home_dir" config set client chain-id "$val_mngr_chain_id"
+  run_cmd "$val_mngr_home_dir" config set client keyring-backend test
 }
 
 # outputs the generated create validator transaction to the standard output
