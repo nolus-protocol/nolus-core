@@ -5,10 +5,6 @@ import (
 	"testing"
 
 	"cosmossdk.io/math"
-<<<<<<< HEAD
-=======
-
->>>>>>> d6418d5 (wip: fix some unit-tests)
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -140,13 +136,8 @@ func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
 }
 
 // Fail to pay fees in unsupported denom.
-<<<<<<< HEAD
 func TestCustomTxFeeCheckerFailWhenUnsupportedDenom(t *testing.T) {
 	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
-=======
-func TestCustomTxFeeCheckerSuccessfulInUnsupportedDenom(t *testing.T) {
-	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
->>>>>>> d6418d5 (wip: fix some unit-tests)
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},

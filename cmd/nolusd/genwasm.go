@@ -8,7 +8,7 @@ import (
 
 func addGenesisWasmMsgCmd(defaultNodeHome string) *cobra.Command {
 	txCmd := &cobra.Command{
-		Use:                        "add-wasm-message",
+		Use:                        "add-wasm-genesis-message",
 		Short:                      "Wasm genesis subcommands",
 		DisableFlagParsing:         true,
 		SuggestionsMinimumDistance: 2,
