@@ -196,7 +196,7 @@ done
 __config_client() {
   run_cmd "$USER_DIR" config chain-id "$CHAIN_ID"
   run_cmd "$USER_DIR" config keyring-backend "test"
-  run_cmd "$USER_DIR" config node "tcp://localhost:$(first_node_rpc_port)"
+  run_cmd "$USER_DIR" config node "tcp://${NOLUS_NETWORK_ADDR}:$(first_node_rpc_port)"
 }
 
 verify_dir_exist "$WASM_SCRIPT_PATH" "WASM sripts path"
