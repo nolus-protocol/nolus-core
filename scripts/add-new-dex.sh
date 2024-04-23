@@ -8,7 +8,8 @@ SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 source "$SCRIPTS_DIR"/internal/verify.sh
 source "$SCRIPTS_DIR"/internal/add-dex-support.sh
 
-NOLUS_NET="http://localhost:26612/"
+NOLUS_NETWORK_ADDR="localhost"
+NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_HOME_DIR="$HOME/.nolus"
 NOLUS_MONEY_MARKET_DIR="$SCRIPTS_DIR/../../nolus-money-market"
 ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="reserve"
@@ -47,6 +48,8 @@ while [[ $# -gt 0 ]]; do
     printf \
     "Usage: %s
     [--nolus-home-dir <nolus_home_dir>]
+    [--nolus-network-addr <nolus_node_listen_address>]
+    [--nolus-network-port <nolus_node_listen_port>]
     [--nolus-money-market-dir <nolus_money_market_dir>]
     [--account-key-to-feed-hermes-address <account_key_to_feed_hermes_address>]
     [--dex-admin-key <dex_admin_key>]
@@ -76,6 +79,16 @@ while [[ $# -gt 0 ]]; do
 
   --nolus-home-dir)
     NOLUS_HOME_DIR="$2"
+    shift 2
+    ;;
+
+  --nolus-network-addr)
+    NOLUS_NETWORK_ADDR="$2"
+    shift 2
+    ;;
+
+  --nolus-network-port)
+    NOLUS_NETWORK_RPC_PORT="$2"
     shift 2
     ;;
 
@@ -239,6 +252,8 @@ add_new_chain_hermes "$HERMES_CONFIG_DIR_PATH" "$CHAIN_ID" "$CHAIN_IP_ADDR_RPC" 
 dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH"/hermes.seed
 
 NOLUS_HERMES_ADDRESS=$(get_hermes_address "$HERMES_BINARY_DIR_PATH" "$NOLUS_CHAIN_ID")
+
+NOLUS_NET="http://${NOLUS_NETWORK_ADDR}:${NOLUS_NETWORK_RPC_PORT}/"
 
 # Open a connection (exports CONNECTION_ID)
 open_connection "$NOLUS_NET" "$NOLUS_HOME_DIR" "$ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS" "$HERMES_BINARY_DIR_PATH" \
