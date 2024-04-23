@@ -98,8 +98,7 @@ type App struct {
 
 	// the module manager
 	mm *module.Manager
-	// TODO
-	// BasicModuleManager module.BasicManager
+
 	// simulation manager
 	sm           *module.SimulationManager
 	configurator module.Configurator
@@ -176,23 +175,6 @@ func New(
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
-
-	// TODO: decide if we need this
-	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration and genesis verification.
-	// By default it is composed of all the module from the module manager.
-	// Additionally, app module basics can be overwritten by passing them as argument.
-	// app.BasicModuleManager = module.NewBasicManagerFromManager(
-	// 	app.mm,
-	// 	map[string]module.AppModuleBasic{
-	// 		govtypes.ModuleName: gov.NewAppModuleBasic(
-	// 			[]govclient.ProposalHandler{
-	// 				paramsclient.ProposalHandler,
-	// 			},
-	// 		),
-	// 	})
-	// app.BasicModuleManager.RegisterLegacyAminoCodec(cdc)
-	// app.BasicModuleManager.RegisterInterfaces(interfaceRegistry)
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,

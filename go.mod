@@ -175,6 +175,7 @@ require (
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
+	github.com/skip-mev/block-sdk v1.4.0 // indirect
 	github.com/skip-mev/block-sdk/v2 v2.1.1 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
@@ -219,7 +220,6 @@ replace (
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056
-
 	// TODO adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
 	// github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
 
@@ -229,7 +229,8 @@ replace (
 
 	// For more info https://github.com/CosmWasm/wasmd/blob/d63bea442bedf5b3055f3821472c7e6cafc3d813/go.mod#L131
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
-
+	github.com/neutron-org/neutron/v3 => /home/denislavivanov/go/github/neutron
+    github.com/cosmos/cosmos-sdk => /home/denislavivanov/go/github/cosmos-sdk
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
 )
