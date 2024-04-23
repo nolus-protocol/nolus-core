@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
     "Usage: %s
     [--nolus-home-dir <nolus_home_dir>]
     [--nolus-network-addr <nolus_node_listen_address>]
-    [--nolus-network-port <nolus_node_listen_port>]
+    [--nolus-network-rpc-port <nolus_node_rpc_port>]
     [--nolus-money-market-dir <nolus_money_market_dir>]
     [--account-key-to-feed-hermes-address <account_key_to_feed_hermes_address>]
     [--dex-admin-key <dex_admin_key>]
@@ -87,7 +87,7 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
 
-  --nolus-network-port)
+  --nolus-network-rpc-port)
     NOLUS_NETWORK_RPC_PORT="$2"
     shift 2
     ;;
