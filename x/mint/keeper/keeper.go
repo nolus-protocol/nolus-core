@@ -76,10 +76,6 @@ func (k Keeper) SetMinter(ctx context.Context, minter types.Minter) {
 	store.Set(types.MinterKey, b)
 }
 
-// TODO add storeService storetypes.KVStoreService as a field in the keeper and use context.context here;
-// refer to the cosmos-sdk SetParams() to see how they reach the KVStore -> store := k.storeService.OpenKVStore(ctx)
-// OR use unwrapSDKContext / do this for all of our custom modules
-
 // GetParams returns the current x/mint module parameters.
 func (k Keeper) GetParams(ctx context.Context) (p types.Params) {
 	c := sdk.UnwrapSDKContext(ctx)
