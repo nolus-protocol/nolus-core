@@ -63,9 +63,8 @@ type MockFeeTx struct {
 	Fee  sdk.Coins
 }
 
-// TODO:
 func (m MockFeeTx) GetMsgsV2() ([]protov2.Message, error) {
-	return []protov2.Message{}, nil // this is a hack for tests
+	return []protov2.Message{}, nil
 }
 
 func (m MockFeeTx) GetMsgs() []sdk.Msg {

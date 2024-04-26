@@ -82,7 +82,7 @@ func appParamsConfigurationSim(t *testing.T, config *simtypes.Config) {
 	}
 
 	reflectContractPath := filepath.Join(pkg.Dir, "testdata/reflect_1_1.wasm")
-	minDepositBytes, err := json.Marshal(sdk.NewCoins((sdk.NewCoin("nolus", sdkmath.NewInt(500000)))))
+	minDepositBytes, err := json.Marshal(sdk.NewCoins((sdk.NewCoin("unls", sdkmath.NewInt(500000)))))
 	if err != nil {
 		t.Fatal("Marshaling of sdk coins to be used for min deposit param in gov module failed")
 	}
@@ -143,6 +143,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				simtestutil.EmptyAppOptions{},
 				fauxMerkleModeOpt,
 				baseapp.SetChainID(SimAppChainID),
+				baseapp.SetMinGasPrices("0unls"),
 			)
 
 			fmt.Printf(
