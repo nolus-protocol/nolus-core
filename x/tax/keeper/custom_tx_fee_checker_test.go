@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"cosmossdk.io/math"
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -223,5 +224,19 @@ func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(byteOsmoPrices, nil)
 
 	_, _, err = taxKeeper.CustomTxFeeChecker(ctx, feeTx)
+	require.Error(t, err)
+}
+
+// Fail tx on zero fees provided. Minimum gas prices set to 1unls.
+func TestCustomTxFeeCheckerFailOnZeroFees(t *testing.T) {
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
+	// create a new CustomTxFeeChecker
+	feeTx := keepertest.MockFeeTx{
+		Msgs: []sdk.Msg{},
+		Gas:  100000,
+		Fee:  sdk.Coins{sdk.NewInt64Coin("unls", 0)},
+	}
+
+	_, _, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
 }
