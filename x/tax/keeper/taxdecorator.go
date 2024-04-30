@@ -57,9 +57,9 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	feeCoin := txFees[0]
 	// TODO: with sdk50, now there are simulations with no fee provided, decide how to handle this
 	// fmt.Println("2222222", feeCoin)
-	if feeCoin.IsNil() || feeCoin.Amount.IsZero() {
-		return ctx, types.ErrAmountNilOrZero
-	}
+	// if feeCoin.IsNil() || feeCoin.Amount.IsZero() {
+	// 	return ctx, types.ErrAmountNilOrZero
+	// }
 
 	if err = feeCoin.Validate(); err != nil {
 		return ctx, err
