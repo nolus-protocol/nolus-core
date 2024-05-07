@@ -36,7 +36,7 @@ func SimulateMsgUpdateParams(r *rand.Rand, _ sdk.Context, _ []simtypes.Account) 
 
 	params := types.DefaultParams()
 	params.BaseDenom = simtypes.RandStringOfLength(r, 10)
-	params.ContractAddress = simtypes.RandStringOfLength(r, 20)
+	params.ContractAddress = simtypes.RandomAccounts(r, 1)[0].Address.String()
 	params.FeeRate = GenRandomFeeRate(r)
 
 	return &types.MsgUpdateParams{

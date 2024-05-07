@@ -57,15 +57,15 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/neutron-org/neutron/v3/x/contractmanager"
-	contractmanagermoduletypes "github.com/neutron-org/neutron/v3/x/contractmanager/types"
-	"github.com/neutron-org/neutron/v3/x/feerefunder"
-	feetypes "github.com/neutron-org/neutron/v3/x/feerefunder/types"
-	"github.com/neutron-org/neutron/v3/x/interchainqueries"
-	interchainqueriestypes "github.com/neutron-org/neutron/v3/x/interchainqueries/types"
-	"github.com/neutron-org/neutron/v3/x/interchaintxs"
-	interchaintxstypes "github.com/neutron-org/neutron/v3/x/interchaintxs/types"
-	transferSudo "github.com/neutron-org/neutron/v3/x/transfer"
+	"github.com/neutron-org/neutron/v4/x/contractmanager"
+	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
+	"github.com/neutron-org/neutron/v4/x/feerefunder"
+	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
+	"github.com/neutron-org/neutron/v4/x/interchainqueries"
+	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
+	"github.com/neutron-org/neutron/v4/x/interchaintxs"
+	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	transferSudo "github.com/neutron-org/neutron/v4/x/transfer"
 )
 
 // module account permissions.
