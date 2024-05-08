@@ -133,10 +133,8 @@ func NewRootCmd(
 	appName,
 	defaultNodeHome,
 	defaultChainID string,
-	moduleBasics module.BasicManager,
 ) (*cobra.Command, app.EncodingConfig) {
 	rootOptions := newRootOptions()
-	encodingConfig := app.MakeEncodingConfig(moduleBasics)
 
 	tempApp := app.New(
 		log.NewNopLogger(),
@@ -146,9 +144,9 @@ func NewRootCmd(
 		nil,
 		tempDir(),
 		0,
-		encodingConfig,
 		simtestutil.NewAppOptionsWithFlagHome(tempDir()),
 	)
+	encodingConfig := tempApp.EncodingConfig()
 
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
@@ -192,7 +190,7 @@ func NewRootCmd(
 		rootCmd,
 		encodingConfig,
 		defaultNodeHome,
-		moduleBasics,
+		tempApp.BasicModuleManager,
 		rootOptions,
 	)
 
@@ -221,7 +219,7 @@ func initRootCmd(
 	moduleBasics module.BasicManager,
 	options rootOptions,
 ) {
-	gentxModule := app.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
+	gentxModule := moduleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 
 	rootCmd.AddCommand(
 		genutilcli.InitCmd(moduleBasics, defaultNodeHome),
@@ -415,7 +413,6 @@ func (a appCreator) newApp(
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
-		a.encodingConfig,
 		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
@@ -459,7 +456,6 @@ func (a appCreator) appExport(
 		map[int64]bool{},
 		homePath,
 		uint(1),
-		a.encodingConfig,
 		appOpts,
 	)
 
