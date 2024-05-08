@@ -14,6 +14,6 @@ import (
 type GenesisState map[string]json.RawMessage
 
 // NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(encConfig EncodingConfig) GenesisState {
-	return ModuleBasics.DefaultGenesis(encConfig.Marshaler)
+func (a *App) NewDefaultGenesisState(encConfig EncodingConfig) GenesisState {
+	return a.BasicModuleManager.DefaultGenesis(encConfig.Marshaler)
 }

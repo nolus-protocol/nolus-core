@@ -38,6 +38,12 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
+	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"cosmossdk.io/log"
@@ -91,13 +97,15 @@ type App struct {
 	keepers.AppKeepers
 
 	cdc               *codec.LegacyAmino
+	txConfig          client.TxConfig
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 	encodingConfig    EncodingConfig
 	invCheckPeriod    uint
 
 	// the module manager
-	mm *module.Manager
+	mm                 *module.Manager
+	BasicModuleManager module.BasicManager
 
 	// simulation manager
 	sm           *module.SimulationManager
@@ -113,32 +121,30 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
-	encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	appCodec := encodingConfig.Marshaler
-	cdc := encodingConfig.Amino
-	interfaceRegistry := encodingConfig.InterfaceRegistry
+	encodingConfig := MakeEncodingConfig()
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
-	bApp.SetInterfaceRegistry(interfaceRegistry)
+	bApp.SetInterfaceRegistry(encodingConfig.InterfaceRegistry)
 
 	app := &App{
 		BaseApp:           bApp,
 		AppKeepers:        keepers.AppKeepers{},
-		cdc:               cdc,
-		appCodec:          appCodec,
-		interfaceRegistry: interfaceRegistry,
+		cdc:               encodingConfig.Amino,
+		txConfig:          encodingConfig.TxConfig,
+		appCodec:          encodingConfig.Marshaler,
+		interfaceRegistry: encodingConfig.InterfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
 		encodingConfig:    EncodingConfig(encodingConfig),
 	}
 
 	app.NewAppKeepers(
 		logger,
-		appCodec,
+		encodingConfig.Marshaler,
 		bApp,
 		encodingConfig.Amino,
 		encodingConfig.InterfaceRegistry,
@@ -176,6 +182,23 @@ func New(
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
 
+	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
+	// non-dependant module elements, such as codec registration and genesis verification.
+	// By default it is composed of all the module from the module manager.
+	// Additionally, app module basics can be overwritten by passing them as argument.
+	app.BasicModuleManager = module.NewBasicManagerFromManager(
+		app.mm,
+		map[string]module.AppModuleBasic{
+			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+			govtypes.ModuleName: gov.NewAppModuleBasic(
+				[]govclient.ProposalHandler{
+					paramsclient.ProposalHandler,
+				},
+			),
+		})
+	app.BasicModuleManager.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	app.BasicModuleManager.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
 	)
@@ -196,7 +219,8 @@ func New(
 	// NOTE: Capability module must occur first so that it can initialize any capabilities
 	// so that other modules that want to create or claim capabilities afterwards in InitChain
 	// can do so safely.
-	app.mm.SetOrderInitGenesis(orderInitBlockers()...)
+	app.mm.SetOrderInitGenesis(genesisModuleOrder()...)
+	app.mm.SetOrderExportGenesis(genesisModuleOrder()...)
 
 	app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
@@ -452,7 +476,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register new tendermint queries routes from grpc-gateway.
 	cmtservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register nodeservice grpc-gateway routes.
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -483,4 +507,8 @@ func GetMaccPerms() map[string][]string {
 
 func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
+}
+
+func (app *App) TxConfig() client.TxConfig {
+	return app.txConfig
 }

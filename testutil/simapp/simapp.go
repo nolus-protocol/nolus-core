@@ -18,7 +18,6 @@ import (
 	pruningtypes "cosmossdk.io/store/pruning/types"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -38,7 +37,7 @@ import (
 func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 	// _ = params.SetAddressPrefixes()
 	database := db.NewMemDB()
-	encoding := app.MakeEncodingConfig(app.ModuleBasics)
+	encoding := app.MakeEncodingConfig()
 
 	a := app.New(
 		log.NewNopLogger(),
@@ -48,7 +47,6 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		map[int64]bool{},
 		dir,
 		0,
-		encoding,
 		sims.EmptyAppOptions{})
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
@@ -70,7 +68,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 			Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
 		}
 
-		genState := NewDefaultGenesisState(encoding.Marshaler)
+		genState := a.BasicModuleManager.DefaultGenesis(encoding.Marshaler)
 
 		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
@@ -194,11 +192,6 @@ func TestSetup(t *testing.T) (*app.App, error) {
 	return nolusApp, nil
 }
 
-// NewDefaultGenesisState generates the default state for the application.
-func NewDefaultGenesisState(cdc codec.JSONCodec) app.GenesisState {
-	return app.ModuleBasics.DefaultGenesis(cdc)
-}
-
 var defaultConsensusParams = &cmtproto.ConsensusParams{
 	Block: &cmtproto.BlockParams{
 		MaxBytes: 200000,
@@ -218,10 +211,8 @@ var defaultConsensusParams = &cmtproto.ConsensusParams{
 
 // NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
-	encoding := app.MakeEncodingConfig(app.ModuleBasics)
-
 	return func(val network.ValidatorI) servertypes.Application {
-		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0, encoding,
+		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
