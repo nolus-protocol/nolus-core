@@ -822,8 +822,6 @@ github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056 h1:mb3f
 github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056/go.mod h1:di9iYm/L6fwGZXig6kNw8jCkCLfNdHo46UMcFgIbJUo=
 github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230 h1:ua4avhGdG0SxLRTWXJNm9AeykCY3T025JLvWuvQ4t0A=
 github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230/go.mod h1:c4oYjNwdfPKAhxzkwzTkkWROXKeUNPvc4VJHyNWrRU8=
-github.com/neutron-org/neutron/v4 v4.0.0-20240503121616-0cf5f130dea5 h1:7iBAYlPzrXoE+VRkFpPKzPIwkfjTdJfdPO7ayXYiSpo=
-github.com/neutron-org/neutron/v4 v4.0.0-20240503121616-0cf5f130dea5/go.mod h1:HeFDBb4p332Lk3dxaffLC8S2FWBUXFUG/nAKYNbcnes=
 github.com/neutron-org/wasmd v0.45.1-0.20240304172302-564e5d10417a h1:uH2grrTCu2xMIdlzoPUAhZ1HVM4jgay3oFxw07gXmIc=
 github.com/neutron-org/wasmd v0.45.1-0.20240304172302-564e5d10417a/go.mod h1:MeEiOLBR9HoKCB/sR7jw22Puxf34/znekoRQvZIAZzg=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=

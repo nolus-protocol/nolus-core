@@ -63,11 +63,5 @@ func MakeEncodingConfig() EncodingConfig {
 	return encodingConfig
 }
 
-func (app *App) EncodingConfig() EncodingConfig {
-	return EncodingConfig{
-		InterfaceRegistry: app.InterfaceRegistry(),
-		Marshaler:         app.AppCodec(),
-		TxConfig:          app.TxConfig(),
-		Amino:             app.LegacyAmino(),
-	}
-}
+// EncodingConfig returns the encoding config of the App.
+func (app *App) EncodingConfig() EncodingConfig { return app.encodingConfig }

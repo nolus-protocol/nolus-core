@@ -265,6 +265,9 @@ func initRootCmd(
 	// add keybase, auxiliary RPC, query, and tx child commands
 	rootCmd.AddCommand(
 		server.StatusCommand(),
+		server.ShowValidatorCmd(),
+		server.ShowNodeIDCmd(),
+		server.ShowAddressCmd(),
 		queryCommand(moduleBasics),
 		txCommand(moduleBasics),
 		keys.Commands(),
@@ -290,7 +293,9 @@ func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
 	cmd.AddCommand(
 		// TODO: authcmd.GetAccountCmd(),
 		rpc.ValidatorCommand(),
-		// TODO: rpc.BlockCommand(),
+		server.QueryBlockResultsCmd(),
+		server.QueryBlocksCmd(),
+		server.QueryBlockCmd(),
 		authcmd.QueryTxsByEventsCmd(),
 		authcmd.QueryTxCmd(),
 	)

@@ -239,7 +239,7 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// TODO Remove when official release of neutron with sdk50 is out:
-	// github.com/neutron-org/neutron/v4 => /home/denislavivanov/go/github/neutron
+	github.com/neutron-org/neutron/v4 => /home/denislavivanov/go/github/neutron-fork/neutron
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
