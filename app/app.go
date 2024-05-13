@@ -45,6 +45,7 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -62,6 +63,8 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+
+	transferSudo "github.com/neutron-org/neutron/v4/x/transfer"
 )
 
 const (
@@ -195,7 +198,11 @@ func New(
 					paramsclient.ProposalHandler,
 				},
 			),
-		})
+			// TODO: Decide if neutron-transfer module should have a separate key
+			// Manually register the transfer module since we dont use a native ibc-go transfer module but a custom implementation
+			ibctransfertypes.ModuleName: transferSudo.AppModuleBasic{},
+		},
+	)
 	app.BasicModuleManager.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	app.BasicModuleManager.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 

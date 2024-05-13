@@ -37,7 +37,6 @@ import (
 func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 	// _ = params.SetAddressPrefixes()
 	database := db.NewMemDB()
-	encoding := app.MakeEncodingConfig()
 
 	a := app.New(
 		log.NewNopLogger(),
@@ -47,7 +46,10 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		map[int64]bool{},
 		dir,
 		0,
-		sims.EmptyAppOptions{})
+		sims.EmptyAppOptions{},
+	)
+
+	encoding := a.EncodingConfig()
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
 	if withDefaultGenesisState {

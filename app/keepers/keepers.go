@@ -399,6 +399,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.memKeys[interchaintxstypes.MemStoreKey],
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.ICAControllerKeeper,
+		icacontrollerkeeper.NewMsgServerImpl(appKeepers.ICAControllerKeeper),
 		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 		appKeepers.FeeRefunderKeeper,
 		appKeepers.BankKeeper,
