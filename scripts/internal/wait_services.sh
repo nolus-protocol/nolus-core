@@ -2,19 +2,25 @@
 
 wait_nolus_gets_ready() {
   local -r nolus_home_dir="$1"
-  local nolus_node_status=""
-  local latest_block_height=0
 
-  while [ "$latest_block_height" -le 0 ]
+  while pidof -q "nolusd"
   do
-    sleep 1
-    nolus_node_status=$(run_cmd "$nolus_home_dir" status) && nolus_node_status="STARTED"
-
-    if [ "$nolus_node_status" == "STARTED" ]
+    if local response="$(run_cmd "$nolus_home_dir" "status")"
+    then
+      if echo "${response}" | jq -e ".SyncInfo.latest_block_height | tonumber | . == 0" 2>"/dev/null"
       then
-          latest_block_height=$(run_cmd "$nolus_home_dir" status | jq .SyncInfo.latest_block_height | tr -d '"')
+        echo "Block not incremented!"
+      else
+        return 0
       fi
+    else
+      echo "Failed to fetch node instance's status!"
+    fi
+
+    sleep 1
   done
+
+  return 1
 }
 
 wait_hermes_config_gets_healthy() {
