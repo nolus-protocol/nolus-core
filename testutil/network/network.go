@@ -57,7 +57,7 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 func DefaultConfig() network.Config {
 	tempApp := app.New(log.NewNopLogger(), db.NewMemDB(), nil, true, nil, tempDir(), 0, simtestutil.NewAppOptionsWithFlagHome(tempDir()))
 
-	encoding := app.MakeEncodingConfig()
+	encoding := tempApp.EncodingConfig()
 	chainID := "chain-" + tmrand.NewRand().Str(6)
 	return network.Config{
 		Codec:             encoding.Marshaler,
