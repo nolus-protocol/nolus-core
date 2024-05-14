@@ -10,10 +10,21 @@ add_new_chain_hermes() {
   declare -r chain_id="$2"
   declare -r chain_ip_addr_RPC="$3"
   declare -r chain_ip_addr_gRPC="$4"
-  declare -r chain_account_prefix="$5"
-  declare -r chain_price_denom="$6"
-  declare -r chain_trusting_period="$7"
-  declare if_interchain_security="$8"
+  declare -r chain_rpc_timeout_secs="$5"
+  declare -r chain_account_prefix="$6"
+  declare -r chain_default_gas="$7"
+  declare -r chain_max_gas="$8"
+  declare -r chain_gas_price_price="$9"
+  declare -r chain_gas_price_denom="${10}"
+  declare -r chain_gas_multiplier="${11}"
+  declare -r chain_max_msg_num="${12}"
+  declare -r chain_max_tx_size="${13}"
+  declare -r chain_clock_drift_secs="${14}"
+  declare -r chain_max_block_time_secs="${15}"
+  declare -r chain_trusting_period_secs="${16}"
+  declare -r chain_trust_threshold_numerator="${17}"
+  declare -r chain_trust_threshold_denumerator="${18}"
+  declare if_interchain_security="${19}"
 
   declare -r chains_count=$(grep -c "\[\[chains\]\]" "$hermes_config_file_path/config.toml")
 
@@ -22,21 +33,21 @@ add_new_chain_hermes() {
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."id"' '"'"$chain_id"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."rpc_addr"' '"https://'"$chain_ip_addr_RPC"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."grpc_addr"' '"https://'"$chain_ip_addr_gRPC"'"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."rpc_timeout"' '"10s"'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."rpc_timeout"' '"'"$chain_rpc_timeout_secs"'s"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."account_prefix"' '"'"$chain_account_prefix"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."key_name"' '"'"$chain_key_name"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."address_type"' '{ derivation : "cosmos" }'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."store_prefix"' '"ibc"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."default_gas"' 5000000
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_gas"' 15000000
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_price"' '{ price : 0.056, denom : "'"$chain_price_denom"'" }'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_multiplier"' 1.3
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_msg_num"' 20
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_tx_size"' 209715
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."clock_drift"' '"20s"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_block_time"' '"10s"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trusting_period"' '"'"$chain_trusting_period"'s"'
-  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trust_threshold"' '{ numerator : "2", denominator : "3" }'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."default_gas"' "$chain_default_gas"
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_gas"' "$chain_max_gas"
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_price"' '{ price : '"$chain_gas_price_price"', denom : "'"$chain_gas_price_denom"'" }'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."gas_multiplier"' "$chain_gas_multiplier"
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_msg_num"' "$chain_max_msg_num"
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_tx_size"' "$chain_max_tx_size"
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."clock_drift"' '"'"$chain_clock_drift_secs"'s"'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."max_block_time"' '"'"$chain_max_block_time_secs"'s"'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trusting_period"' '"'"$chain_trusting_period_secs"'s"'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trust_threshold"' '{ numerator : '"$chain_trust_threshold_numerator"', denominator : '"$chain_trust_threshold_denumerator"' }'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."event_source"' '{ mode : "push", url : "wss://'"$chain_ip_addr_RPC"'/websocket", batch_delay : "500ms" }'
 
   if [ "$if_interchain_security" == "true" ]

@@ -26,8 +26,20 @@ CHAIN_ID=""
 CHAIN_IP_ADDR_RPC=""
 CHAIN_IP_ADDR_GRPC=""
 CHAIN_ACCOUNT_PREFIX=""
-CHAIN_PRICE_DENOM=""
-CHAIN_TRUSTING_PERIOD=""
+CHAIN_GAS_PRICE_DENOM=""
+CHAIN_TRUSTING_PERIOD_SECS=""
+
+CHAIN_RPC_TIMEOUT_SECS="10"
+CHAIN_DEFAULT_GAS="5000000"
+CHAIN_MAX_GAS="15000000"
+CHAIN_GAS_PRICE_PRICE="0.056"
+CHAIN_GAS_MULTIPLIER="1.3"
+CHAIN_MAX_MSG_NUM="20"
+CHAIN_MAX_TX_SIZE="209715"
+CHAIN_CLOCK_DRIFT_SECS="20"
+CHAIN_MAX_BLOCK_TIME_SECS="10"
+CHAIN_TRUST_THRESHOLD_NUMERATOR="2"
+CHAIN_TRUST_THRESHOLD_DENOMINATOR="3"
 IF_INTERCHAIN_SECURITY="true"
 
 source "$NOLUS_MONEY_MARKET_DIR/scripts/deploy-platform.sh"
@@ -67,6 +79,18 @@ while [[ $# -gt 0 ]]; do
     [--dex-price-denom <new_dex_price_denom>]
     [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
     [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
+    [--dex-rpc-timeout-secs <dex_rpc_timeout_in_seconds>]
+    [--dex-default-gas <dex_default_gas>]
+    [--dex-max-gas <dex_max_gas>]
+    [--dex-gas-price-price <dex_gas_price_price>]
+    [--dex-gas-multiplier <dex_gas_multiplier>]
+    [--dex-max-msg-num <dex_max_msg_num>]
+    [--dex-max-tx-size <dex_max_tx_size>]
+    [--dex-clock-drift-secs <dex_clock_drift_in_seconds>]
+    [--dex-max-block-time-secs <dex_max_block_time_in_seconds>]
+    [--dex-trusting-period-secs <dex_trusting_period_in_seconds>]
+    [--dex-trust-threshold-numerator <dex_trust_threshold_numerator>]
+    [--dex-trust-threshold-denominator <dex_trust_threshold_denominator>]
     [--protocol-currency <new_protocol_currency>]
     [--stable-currency <new_protocol_stable_currency>]
     [--admin-contract-address <admin_contract_address>]
@@ -162,13 +186,63 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
 
-  --dex-price-denom)
-    CHAIN_PRICE_DENOM="$2"
+  --dex-gas-price-denom)
+    CHAIN_GAS_PRICE_DENOM="$2"
     shift 2
     ;;
 
   --dex-trusting-period-secs)
-    CHAIN_TRUSTING_PERIOD="$2"
+    CHAIN_TRUSTING_PERIOD_SECS="$2"
+    shift 2
+    ;;
+
+  --dex-rpc-timeout-secs)
+    CHAIN_RPC_TIMEOUT_SECS="$2"
+    shift 2
+      ;;
+
+  --dex-default-gas)
+    CHAIN_DEFAULT_GAS="$2"
+    shift 2
+    ;;
+
+  --dex-max-gas)
+    CHAIN_MAX_GAS="$2"
+    shift 2
+    ;;
+
+  --dex-gas-multiplier)
+    CHAIN_GAS_MULTIPLIER="$2"
+    shift 2
+    ;;
+
+  --dex-max-msg-num)
+    CHAIN_MAX_MSG_NUM="$2"
+    shift 2
+    ;;
+
+  --dex-max-tx-size)
+    CHAIN_MAX_TX_SIZE="$2"
+    shift 2
+    ;;
+
+  --dex-clock-drift-secs)
+    CHAIN_CLOCK_DRIFT_SECS="$2"
+    shift 2
+    ;;
+
+  --dex-max-block-time-secs)
+    CHAIN_MAX_BLOCK_TIME_SECS="$2"
+    shift 2
+    ;;
+
+  --dex-trust-threshold-numerator)
+    CHAIN_TRUST_THRESHOLD_NUMERATOR="$2"
+    shift 2
+    ;;
+
+  --dex-trust-threshold-denominator)
+    CHAIN_TRUST_THRESHOLD_DENOMINATOR="$2"
     shift 2
     ;;
 
@@ -230,8 +304,8 @@ verify_mandatory "$CHAIN_ID" "new DEX chain_id"
 verify_mandatory "$CHAIN_IP_ADDR_RPC" "new DEX RPC addr - fully host part"
 verify_mandatory "$CHAIN_IP_ADDR_GRPC" "new DEX gRPC addr - fully host part"
 verify_mandatory "$CHAIN_ACCOUNT_PREFIX" "new DEX account prefix"
-verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price denom"
-verify_mandatory "$CHAIN_TRUSTING_PERIOD" "new DEX trusting period"
+verify_mandatory "$CHAIN_GAS_PRICE_DENOM" "new DEX gas price denom"
+verify_mandatory "$CHAIN_TRUSTING_PERIOD_SECS" "new DEX trusting period"
 verify_mandatory "$PROTOCOL_CURRENCY" "new protocol lpn"
 verify_mandatory "$STABLE_CURRENCY" "new protocol stable currency"
 verify_mandatory "$SWAP_TREE" "new protocol swap_tree"
@@ -246,7 +320,10 @@ source "$DEPLOY_CONTRACTS_SCRIPT"
 
 # Extend the existing Hermes configuration
 add_new_chain_hermes "$HERMES_CONFIG_DIR_PATH" "$CHAIN_ID" "$CHAIN_IP_ADDR_RPC" "$CHAIN_IP_ADDR_GRPC" \
-    "$CHAIN_ACCOUNT_PREFIX" "$CHAIN_PRICE_DENOM" "$CHAIN_TRUSTING_PERIOD" "$IF_INTERCHAIN_SECURITY"
+   "$CHAIN_RPC_TIMEOUT_SECS"  "$CHAIN_ACCOUNT_PREFIX" "$CHAIN_DEFAULT_GAS" "$CHAIN_MAX_GAS" "$CHAIN_GAS_PRICE_PRICE" \
+    "$CHAIN_GAS_PRICE_DENOM" "$CHAIN_GAS_MULTIPLIER" "$CHAIN_MAX_MSG_NUM" "$CHAIN_MAX_TX_SIZE" \
+    "$CHAIN_CLOCK_DRIFT_SECS" "$CHAIN_MAX_BLOCK_TIME_SECS" "$CHAIN_TRUSTING_PERIOD_SECS" \
+    "$CHAIN_TRUST_THRESHOLD_NUMERATOR" "$CHAIN_TRUST_THRESHOLD_DENOMINATOR" "$IF_INTERCHAIN_SECURITY"
 
 # Link the Hermes account to the DEX
 dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH"/hermes.seed
