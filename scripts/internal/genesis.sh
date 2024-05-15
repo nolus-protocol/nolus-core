@@ -41,11 +41,13 @@ generate_genesis() {
   local -r treasury_init_tokens_u128="$9"
   local -r node_id_and_val_pubkeys="${10}"
   local -r gov_voting_period="${11}"
-  local -r feerefunder_ack_fee_min="${12}"
-  local -r feerefunder_timeout_fee_min="${13}"
-  local -r dex_admin_mnemonic="${14}"
-  local -r store_code_privileged_account_mnemonic="${15}"
-  local -r admins_tokens="${16}"
+  local -r gov_max_deposit_period="${12}"
+  local -r staking_max_validators="${13}"
+  local -r feerefunder_ack_fee_min="${14}"
+  local -r feerefunder_timeout_fee_min="${15}"
+  local -r dex_admin_mnemonic="${16}"
+  local -r store_code_privileged_account_mnemonic="${17}"
+  local -r admins_tokens="${18}"
 
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
@@ -67,10 +69,11 @@ generate_genesis() {
   treasury_contract_addr="$(treasury_instance_addr)"
   admin_contract_addr="$(admin_contract_instance_addr)"
 
+
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
     "$accounts_spec" "$treasury_contract_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
-    "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
+    "$gov_max_deposit_period" "$staking_max_validators" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
   _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$treasury_init_tokens" "$dex_admin_address")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
@@ -129,9 +132,11 @@ __generate_proto_genesis_no_wasm() {
   local -r treasury_init_tokens="$5"
   local -r admin_contract_addr="$6"
   local -r gov_voting_period="$7"
-  local -r feerefunder_ack_fee_min="$8"
-  local -r feerefunder_timeout_fee_min="$9"
-  local -r store_code_privileged_addr="${10}"
+  local -r gov_max_deposit_period="$8"
+  local -r staking_max_validators="$9"
+  local -r feerefunder_ack_fee_min="${10}"
+  local -r feerefunder_timeout_fee_min="${11}"
+  local -r store_code_privileged_addr="${12}"
 
   local -a wasm_allowed_addresses=("$admin_contract_addr" "$store_code_privileged_addr")
 
@@ -142,8 +147,8 @@ __generate_proto_genesis_no_wasm() {
   __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
   __set_wasm_permission_params "$genesis_file" "${wasm_allowed_addresses[@]}"
-  __set_gov_parameters "$genesis_file" "$gov_voting_period"
-  __modify_slashing_and_staking_params "$genesis_file"
+  __set_gov_parameters "$genesis_file" "$gov_voting_period" "$gov_max_deposit_period"
+  __modify_slashing_and_staking_params "$genesis_file" "$staking_max_validators"
   __modify_neutron_modules_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
 
   while IFS= read -r account_spec ; do
@@ -218,26 +223,29 @@ __set_wasm_permission_params() {
 
 __set_gov_parameters() {
   local genesis_file="$1"
-  local gov_voting_period="$2"
+  local -r voting_period="$2"
+  local -r max_deposit_period="$3"
 
   local genesis_tmp_file="$genesis_file".tmp
 
   < "$genesis_file" \
-    jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="43200s"' \
-    | jq '.app_state["gov"]["params"]["voting_period"]="'"$gov_voting_period"'"' \
-    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$gov_voting_period"'"' > "$genesis_tmp_file"
+    jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="'"$max_deposit_period"'"' \
+    | jq '.app_state["gov"]["params"]["voting_period"]="'"$voting_period"'"' \
+    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$voting_period"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
 __modify_slashing_and_staking_params() {
   local genesis_file="$1"
+  local -r max_validators="$2"
+
   local genesis_tmp_file="$genesis_file".tmp
 
   < "$genesis_file" \
     jq '.app_state["slashing"]["params"]["signed_blocks_window"]="10000"' \
     | jq '.app_state["slashing"]["params"]["min_signed_per_window"]="0.050000000000000000"' \
     | jq '.app_state["slashing"]["params"]["slash_fraction_downtime"]="0.0001"' \
-    | jq '.app_state["staking"]["params"]["max_validators"]="40"' > "$genesis_tmp_file"
+    | jq '.app_state["staking"]["params"]["max_validators"]="'"$max_validators"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 

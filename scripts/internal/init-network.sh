@@ -22,11 +22,13 @@ init_network() {
   local -r wasm_code_path="${11}"
   local -r treasury_init_tokens_u128="${12}"
   local -r gov_voting_period="${13}"
-  local -r feerefunder_ack_fee_min="${14}"
-  local -r feerefunder_timeout_fee_min="${15}"
-  local -r dex_admin_mnemonic="${16}"
-  local -r store_code_privileged_account_mnemonic="${17}"
-  local -r admins_tokens="${18}"
+  local -r gov_max_deposit_period="${14}"
+  local -r staking_max_validators="${15}"
+  local -r feerefunder_ack_fee_min="${16}"
+  local -r feerefunder_timeout_fee_min="${17}"
+  local -r dex_admin_mnemonic="${18}"
+  local -r store_code_privileged_account_mnemonic="${19}"
+  local -r admins_tokens="${20}"
 
   node_id_and_val_pubkeys="$(setup_validators "$validators" "$minimum_gas_price" "$query_gas_limit")"
   local final_genesis_file;
@@ -36,7 +38,8 @@ init_network() {
                                           "$wasm_script_path" "$wasm_code_path" \
                                           "$treasury_init_tokens_u128" \
                                           "$node_id_and_val_pubkeys" \
-                                          "$gov_voting_period" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" \
+                                          "$gov_voting_period" "$gov_max_deposit_period" "$staking_max_validators" \
+                                          "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" \
                                           "$dex_admin_mnemonic" "$store_code_privileged_account_mnemonic" "$admins_tokens")
   propagate_genesis "$final_genesis_file" "$validators"
 }
