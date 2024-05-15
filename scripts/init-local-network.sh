@@ -24,6 +24,8 @@ NOLUS_NETWORK_RPC_PORT="26612"
 NOLUS_NETWORK_GRPC_PORT="26615"
 NATIVE_CURRENCY="unls"
 VALIDATORS=1
+MINIMUM_GAS_PRICE="0.0025unls"
+QUERY_GAS_LIMIT="3500000"
 VALIDATORS_ROOT_DIR="networks/nolus"
 VAL_ACCOUNTS_DIR="$VALIDATORS_ROOT_DIR/val-accounts"
 USER_DIR="$HOME/.nolus"
@@ -72,6 +74,8 @@ while [[ $# -gt 0 ]]; do
     [--nolus-network-grpc-port <nolus_network_grpc_port>]
     [--native-currency <native_currency>]
     [-v|--validators <count>]
+    [--minimum-gas-price <minimum_gas_price - X.XXunls>]
+    [--query-gas-limit <query_gas_limit>]
     [--validators-root-dir <validators_root_dir>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <validators_initial_tokens>]
@@ -130,6 +134,18 @@ while [[ $# -gt 0 ]]; do
   --validators)
     VALIDATORS="$2"
     shift 2
+    ;;
+
+    --minimum-gas-price)
+    MINIMUM_GAS_PRICE="$2"
+    shift
+    shift
+    ;;
+
+  --query-gas-limit)
+    QUERY_GAS_LIMIT="$2"
+    shift
+    shift
     ;;
 
   --validators-root-dir)
@@ -317,7 +333,7 @@ source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/setup-validator-local.sh
 init_setup_validator_local_sh "$INIT_LOCAL_NETWORK_SCRIPT_DIR" "$VALIDATORS_ROOT_DIR"
 
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" \
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$MINIMUM_GAS_PRICE" "$QUERY_GAS_LIMIT" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_ARTIFACTS_PATH_PLATFORM" \
               "$TREASURY_NLS_U128" "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
               "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_BALANCE"

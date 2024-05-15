@@ -21,8 +21,11 @@ home_dir="$1"
 node_moniker="$2"
 base_port="$3"
 timeout_commit="$4"
-if [[ $# -gt 4 ]]; then
-    first_node_id="$5"
+minimum_gas_price="$5"
+query_gas_limit="$6"
+
+if [[ $# -gt 6 ]]; then
+    first_node_id="$7"
 else
     first_node_id=""
 fi
@@ -49,10 +52,10 @@ update_app "$config_dir" '."api"."enabled-unsafe-cors"' "true" >/dev/null
 update_app "$config_dir" '."grpc"."enable"' "true" >/dev/null
 update_app "$config_dir" '."grpc"."address"' '"0.0.0.0:'"$GRPC_PORT"'"' >/dev/null
 update_app "$config_dir" '."grpc-web"."enable"' "false" >/dev/null
-update_app "$config_dir" '."minimum-gas-prices"' '"'"0.0025unls"'"' >/dev/null
+update_app "$config_dir" '."minimum-gas-prices"' '"'"$minimum_gas_price"'"' >/dev/null
 update_app "$config_dir" '."telemetry"."enabled"' "true" >/dev/null
 update_app "$config_dir" '."telemetry"."prometheus-retention-time"' "1" >/dev/null
-update_app "$config_dir" '."wasm"."query_gas_limit"' "3500000" >/dev/null
+update_app "$config_dir" '."wasm"."query_gas_limit"' '"'"$query_gas_limit"'"' >/dev/null
 
 update_config "$config_dir" '."rpc"."laddr"' '"tcp://0.0.0.0:'"$RPC_PORT"'"' >/dev/null
 update_config "$config_dir" '."rpc"."cors_allowed_origins"' '["*"]' >/dev/null

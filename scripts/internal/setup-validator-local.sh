@@ -19,9 +19,12 @@ init_setup_validator_local_sh() {
 setup_validators() {
   set -euo pipefail
   local validators_nb="$1"
+  local -r minimum_gas_price="$2"
+  local -r query_gas_limit="$3"
+
 
   for i in $(seq "$validators_nb"); do
-    __config "$i"
+    __config "$i" "$minimum_gas_price" "$query_gas_limit"
   done
 }
 
@@ -58,6 +61,8 @@ __node_base_port() {
 
 __config() {
   local node_index="$1"
+  local -r minimum_gas_price="$2"
+  local -r query_gas_limit="$3"
 
   local home_dir
   home_dir=$(__home_dir "$node_index")
@@ -69,7 +74,7 @@ __config() {
   local node_id_val_pub_key
   node_id_val_pub_key=$("$setup_validator_local_scripts_home_dir"/remote/validator-config.sh "$home_dir" "$node_moniker" \
                                           "$node_base_port" "$SETUP_VALIDATOR_LOCAL_TIMEOUT_COMMIT" \
-                                          "$setup_validator_local_prev_node_id")
+                                          "$minimum_gas_price" "$query_gas_limit" "$setup_validator_local_prev_node_id")
   read -r setup_validator_local_prev_node_id __val_pub_key <<< "$node_id_val_pub_key"
   echo "$node_id_val_pub_key"
 }

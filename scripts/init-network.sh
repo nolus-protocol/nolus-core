@@ -25,6 +25,8 @@ determine_faucet_addr() {
 
 MONIKER_BASE="validator"
 VALIDATORS=1
+MINIMUM_GAS_PRICE="0.0025unls"
+QUERY_GAS_LIMIT="3500000"
 VAL_ACCOUNTS_DIR="networks/nolus/val-accounts"
 ARTIFACT_BIN=""
 ARTIFACT_SCRIPTS=""
@@ -62,6 +64,8 @@ while [[ $# -gt 0 ]]; do
     [--ssh-key <string - ssh pvt key file path>]
     [--chain-id <string>]
     [--validators <number>]
+    [--minimum-gas-price <minimum_gas_price - X.XXunls>]
+    [--query-gas-limit <query_gas_limit>]
     [--validator-accounts-dir <validator_accounts_dir>]
     [--validator-tokens <tokens_for_val_genesis_accounts>]
     [--validator-stake <tokens_val_will_stake>]
@@ -122,6 +126,18 @@ while [[ $# -gt 0 ]]; do
       echo >&2 "validators must be a positive number"
       exit 1
     }
+    shift
+    shift
+    ;;
+
+  --minimum-gas-price)
+    MINIMUM_GAS_PRICE="$2"
+    shift
+    shift
+    ;;
+
+  --query-gas-limit)
+    QUERY_GAS_LIMIT="$2"
     shift
     shift
     ;;
@@ -243,8 +259,8 @@ deploy_scripts
 setup_services "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
-init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" \
-  "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
+init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$MINIMUM_GAS_PRICE" "$QUERY_GAS_LIMIT" "$CHAIN_ID" "$NATIVE_CURRENCY" \
+  "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
   "$TREASURY_NLS_U128" "$GOV_VOTING_PERIOD" "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
   "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS"
 

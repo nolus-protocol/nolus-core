@@ -44,9 +44,11 @@ deploy_scripts() {
 setup_validators() {
   set -euo pipefail
   local validators_nb="$1"
+  local -r minimum_gas_price="$2"
+  local -r query_gas_limit="$3"
 
   for i in $(seq "$validators_nb"); do
-    config "$i"
+    config "$i" "$minimum_gas_price" "$query_gas_limit"
   done
 }
 
@@ -92,6 +94,8 @@ stop_validators() {
 #
 config() {
   local node_index="$1"
+  local -r minimum_gas_price="$2"
+  local -r query_gas_limit="$3"
 
   local home_dir
   home_dir=$(__home_dir "$node_index")
@@ -105,6 +109,7 @@ config() {
     "/opt/deploy/scripts/remote/validator-config.sh \
                               $home_dir $node_moniker $node_base_port \
                               $SETUP_VALIDATOR_TIMEOUT_COMMIT \
+                              $minimum_gas_price $query_gas_limit \
                               $setup_validator_prev_node_id" \
     $setup_validator_server_user \
     $setup_validator_server_ip \
