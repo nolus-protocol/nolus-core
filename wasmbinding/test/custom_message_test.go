@@ -12,7 +12,7 @@ import (
 
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	"github.com/CosmWasm/wasmvm/types"
+	"github.com/CosmWasm/wasmvm/v2/types"
 
 	ibcchanneltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
@@ -87,7 +87,7 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
 	suite.NoError(err)
 
 	// Dispatch RegisterInterchainAccount message
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -112,7 +112,7 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccountLongID() {
 	suite.NoError(err)
 
 	// Dispatch RegisterInterchainAccount message
-	_, _, err = suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	_, _, _, err = suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.Error(err)
@@ -150,7 +150,7 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainQuery() {
 	suite.NoError(err)
 
 	// Dispatch RegisterInterchainQuery message
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -173,7 +173,7 @@ func (suite *CustomMessengerTestSuite) TestUpdateInterchainQuery() {
 	suite.NoError(err)
 
 	// Dispatch UpdateInterchainQuery message
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -195,7 +195,7 @@ func (suite *CustomMessengerTestSuite) TestUpdateInterchainQueryFailed() {
 	// Dispatch UpdateInterchainQuery message
 	owner, err := sdk.AccAddressFromBech32(testutil.TestOwnerAddress)
 	suite.NoError(err)
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, owner, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, owner, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	expectedErrMsg := "failed to update interchain query: failed to update interchain query: failed to get query by query id: there is no query with id: 1"
@@ -218,7 +218,7 @@ func (suite *CustomMessengerTestSuite) TestRemoveInterchainQuery() {
 
 	// Dispatch RemoveInterchainQuery message
 	suite.NoError(err)
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -238,7 +238,7 @@ func (suite *CustomMessengerTestSuite) TestRemoveInterchainQueryFailed() {
 	// Dispatch RemoveInterchainQuery message
 	owner, err := sdk.AccAddressFromBech32(testutil.TestOwnerAddress)
 	suite.NoError(err)
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, owner, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, owner, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	expectedErrMsg := "failed to remove interchain query: failed to remove interchain query: failed to get query by query id: there is no query with id: 1"
@@ -262,7 +262,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTx() {
 	err = testutil.SetupICAPath(suite.Path, suite.contractAddress.String())
 	suite.Require().NoError(err)
 
-	events, data, err := suite.messenger.DispatchMsg(
+	events, data, _, err := suite.messenger.DispatchMsg(
 		suite.ctx,
 		suite.contractAddress,
 		suite.Path.EndpointA.ChannelConfig.PortID,
@@ -272,7 +272,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTx() {
 	)
 	suite.NoError(err)
 
-	var response bindings.SubmitTxResponse
+	var response ictxtypes.MsgSubmitTxResponse
 	err = json.Unmarshal(data[0], &response)
 	suite.NoError(err)
 	suite.Nil(events)
@@ -289,7 +289,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTxTooMuchTxs() {
 	err := testutil.SetupICAPath(suite.Path, suite.contractAddress.String())
 	suite.Require().NoError(err)
 
-	_, _, err = suite.messenger.DispatchMsg(
+	_, _, _, err = suite.messenger.DispatchMsg(
 		suite.ctx,
 		suite.contractAddress,
 		suite.Path.EndpointA.ChannelConfig.PortID,
@@ -325,7 +325,7 @@ func (suite *CustomMessengerTestSuite) TestResubmitFailureAck() {
 	suite.NoError(err)
 
 	// Dispatch
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -357,7 +357,7 @@ func (suite *CustomMessengerTestSuite) TestResubmitFailureTimeout() {
 	suite.NoError(err)
 
 	// Dispatch
-	events, data, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.NoError(err)
@@ -392,7 +392,7 @@ func (suite *CustomMessengerTestSuite) TestResubmitFailureFromDifferentContract(
 	suite.NoError(err)
 
 	// Dispatch
-	_, _, err = suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
+	_, _, _, err = suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})
 	suite.ErrorContains(err, "no failure found to resubmit: not found")
