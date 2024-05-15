@@ -52,7 +52,7 @@ declare -r hermes_version="${19}"
 # Install
 
 declare -r archive_name="hermes-binary.tar.gz"
-wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/v"$hermes_version"/hermes-v"$hermes_version"-x86_64-unknown-linux-gnu.tar.gz
+wget -O "$archive_name" https://github.com/informalsystems/hermes/releases/download/"$hermes_version"/hermes-"$hermes_version"-x86_64-unknown-linux-gnu.tar.gz
 
 declare -r hermes_binary_dir="$hermes_root"/hermes
 mkdir -p  "$hermes_binary_dir"

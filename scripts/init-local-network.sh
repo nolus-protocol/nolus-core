@@ -36,9 +36,9 @@ RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 GOV_VOTING_PERIOD="300s"
 FEEREFUNDER_ACK_FEE_MIN="1"
 FEEREFUNDER_TIMEOUT_FEE_MIN="1"
+HERMES_VERSION="v1.8.2"
 DEX_ADMIN_MNEMONIC=""
 HERMES_ACCOUNT_MNEMONIC=""
-HERMES_VERSION=""
 STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC=""
 
 # Hermes - Nolus chain configuration
@@ -86,7 +86,7 @@ while [[ $# -gt 0 ]]; do
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
     [--dex-admin-mnemonic <dex_admin_mnemonic>]
     [--hermes-mnemonic <hermes_account_mnemonic>]
-    [--hermes-version <hermes_version>]
+    [--hermes-version <hermes_version-vX.X.X>]
     [--store-code-privileged-account-mnemonic <store_code_privileged_account_mnemonic>]
     [--rpc-timeout-secs <rpc_timeout_seconds>]
     [--default-gas <default_gas_amount>]
@@ -304,7 +304,6 @@ __config_client() {
 verify_dir_exist "$WASM_SCRIPT_PATH" "WASM sripts path"
 verify_dir_exist "$WASM_CODE_ARTIFACTS_PATH_PLATFORM" "WASM code path - platform"
 verify_mandatory "$HERMES_ACCOUNT_MNEMONIC" "Hermes account mnemonic"
-verify_mandatory "$HERMES_VERSION" "Hermes version (for example: 1.8.0)"
 verify_mandatory "$DEX_ADMIN_MNEMONIC" "DEX-Admin account mnemonic"
 verify_mandatory "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "WASM store-code privileged account mnemonic"
 
