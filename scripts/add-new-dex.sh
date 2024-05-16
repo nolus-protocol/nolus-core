@@ -33,7 +33,6 @@ IF_INTERCHAIN_SECURITY="true"
 source "$NOLUS_MONEY_MARKET_DIR/scripts/deploy-platform.sh"
 
 PROTOCOL_CURRENCY=""
-STABLE_CURRENCY=""
 ADMIN_CONTRACT_ADDRESS="$(admin_contract_instance_addr)"
 TREASURY_CONTRACT_ADDRESS="$(treasury_instance_addr)"
 TIMEALARMS_CONTRACT_ADDRESS="$(timealarms_instance_addr)"
@@ -68,7 +67,6 @@ while [[ $# -gt 0 ]]; do
     [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
     [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
     [--protocol-currency <new_protocol_currency>]
-    [--stable-currency <new_protocol_stable_currency>]
     [--admin-contract-address <admin_contract_address>]
     [--treasury-contract-address <treasury_contract_address>]
     [--timealarms-contract-address <timealarms_contract_address>]
@@ -182,11 +180,6 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
 
-  --stable-currency)
-    STABLE_CURRENCY="$2"
-    shift 2
-    ;;
-
   --admin-contract-address)
     ADMIN_CONTRACT_ADDRESS="$2"
     shift 2
@@ -233,7 +226,6 @@ verify_mandatory "$CHAIN_ACCOUNT_PREFIX" "new DEX account prefix"
 verify_mandatory "$CHAIN_PRICE_DENOM" "new DEX price denom"
 verify_mandatory "$CHAIN_TRUSTING_PERIOD" "new DEX trusting period"
 verify_mandatory "$PROTOCOL_CURRENCY" "new protocol lpn"
-verify_mandatory "$STABLE_CURRENCY" "new protocol stable currency"
 verify_mandatory "$SWAP_TREE" "new protocol swap_tree"
 
 verify_file_exist "$DEPLOY_CONTRACTS_SCRIPT" "The script does not exist"
@@ -273,6 +265,6 @@ _=$(
     "$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" \
     "$DEX_NAME" "$DEX_TYPE_AND_PARAMS" "$DEX_CONNECTION_ID" \
     "$DEX_CHANNEL_LOCAL" "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
-    "$STABLE_CURRENCY" "$TREASURY_CONTRACT_ADDRESS" \
+    "$TREASURY_CONTRACT_ADDRESS" \
     "$TIMEALARMS_CONTRACT_ADDRESS" "$SWAP_TREE"
 )
