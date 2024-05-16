@@ -43,6 +43,11 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 			baseDenom := k.GetParams(ctx).BaseDenom
 			minimumFeeRequired := sdk.NewCoin(baseDenom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
+			// if there are no fees provided
+			if feeCoins.Len() == 0 {
+				return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
+			}
+
 			// if there are no fees paid in the base asset
 			if ok, _ := feeCoins.Find(baseDenom); !ok {
 				// Get Fee Param for select dex based on the feeCoins provided
