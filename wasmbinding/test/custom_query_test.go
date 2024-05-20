@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
-	wasmvmtypes "github.com/CosmWasm/wasmvm/types"
+	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
