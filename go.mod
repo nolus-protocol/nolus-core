@@ -4,7 +4,7 @@ go 1.22
 
 require (
 	github.com/CosmWasm/wasmd v0.51.0
-	github.com/CosmWasm/wasmvm v1.5.2
+	github.com/CosmWasm/wasmvm/v2 v2.0.0
 	github.com/cometbft/cometbft v0.38.7
 	github.com/cosmos/cosmos-sdk v0.50.6
 	github.com/cosmos/gogoproto v1.4.12
@@ -34,7 +34,6 @@ require (
 	cosmossdk.io/x/feegrant v0.1.0
 	cosmossdk.io/x/tx v0.13.3
 	cosmossdk.io/x/upgrade v0.1.1
-	github.com/CosmWasm/wasmvm/v2 v2.0.0
 	github.com/cosmos/cosmos-db v1.0.2
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/ibc-go/modules/capability v1.0.0
