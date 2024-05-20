@@ -829,8 +829,8 @@ github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056 h1:mb3f
 github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056/go.mod h1:di9iYm/L6fwGZXig6kNw8jCkCLfNdHo46UMcFgIbJUo=
 github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230 h1:ua4avhGdG0SxLRTWXJNm9AeykCY3T025JLvWuvQ4t0A=
 github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230/go.mod h1:c4oYjNwdfPKAhxzkwzTkkWROXKeUNPvc4VJHyNWrRU8=
-github.com/neutron-org/neutron/v4 v4.0.0-20240514121531-c899aa4dbf9a h1:d/NnJSVjGtorjxnMo0WK9sLt5t2N5FbGNWg56rzQzNI=
-github.com/neutron-org/neutron/v4 v4.0.0-20240514121531-c899aa4dbf9a/go.mod h1:U+tWwTSJi30QB2Kx6StWJ1Yo1lFB4TMjfAMf7T+lL/0=
+github.com/neutron-org/neutron/v4 v4.0.0-20240517170556-77154d21c70e h1:naB1NQYmta1X0KkpfYuuwViPdRApUoRNOvnTw2vHurY=
+github.com/neutron-org/neutron/v4 v4.0.0-20240517170556-77154d21c70e/go.mod h1:Tv6ZgTrRdgnPiEm0uTOpc/d7OoKpoKUU4/1y8ZK+KpE=
 github.com/neutron-org/wasmd v0.45.1-0.20240501180153-d9bebe629e05 h1:HTf3tdocEy9MDElIe9wePm/P9A74cE/3gyIgnWvOGEc=
 github.com/neutron-org/wasmd v0.45.1-0.20240501180153-d9bebe629e05/go.mod h1:7TSaj5HoolghujuVWeExqmcUKgpcYWEySGLSODbnnwY=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
@@ -968,8 +968,8 @@ github.com/sirupsen/logrus v1.6.0/go.mod h1:7uNnSEd1DgxDLC74fIahvMZmmYsHGZGEOFrf
 github.com/sirupsen/logrus v1.7.0/go.mod h1:yWOB1SBYBC5VeMP7gHvWumXLIWorT60ONWic61uBYv0=
 github.com/sirupsen/logrus v1.9.3 h1:dueUQJ1C2q9oE3F7wvmSGAaVtTmUizReu6fjN8uqzbQ=
 github.com/sirupsen/logrus v1.9.3/go.mod h1:naHLuLoDiP4jHNo9R0sCBMtWGeIprob74mVsIT4qYEQ=
-github.com/skip-mev/block-sdk/v2 v2.1.1 h1:Audcf6Dtev16JRewV8M8GfjEDDsu6ayxlz9GHAt8tXs=
-github.com/skip-mev/block-sdk/v2 v2.1.1/go.mod h1:AOjFICNrPpq/Cq1f97CcC7ljWhxCzmfmyz4/Ir8/xFM=
+github.com/skip-mev/block-sdk/v2 v2.1.2 h1:fNKbrb+PVVzuU0JiSuWgBV4Afj5zZ1VeHQJp88wSl1g=
+github.com/skip-mev/block-sdk/v2 v2.1.2/go.mod h1:kIq7SMva0/eHKTCiG/oI5XGxD4HNVK0t71TrUZqHcvA=
 github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803 h1:VRRVYN3wsOIOqVT3e3nDh3vyUl6RvF9QwdK4BvgPP9c=
 github.com/skip-mev/chaintestutil v0.0.0-20240116134208-3e49bf514803/go.mod h1:LF2koCTmygQnz11yjSfHvNP8axdyZ2lTEw0EwI+dnno=
 github.com/skip-mev/slinky v0.4.3 h1:4LWqeDa2and84GXG3HgAAmDa145+TG2WQ0uRDAU7AzA=
