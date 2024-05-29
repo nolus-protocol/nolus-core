@@ -130,7 +130,7 @@ func TestAppStateDeterminism(t *testing.T) {
 			}
 
 			db := dbm.NewMemDB()
-			encConfig := MakeEncodingConfig()
+			encConfig := MakeEncodingConfig(ModuleBasics)
 			newApp := New(
 				logger,
 				db,
@@ -139,6 +139,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				map[int64]bool{},
 				DefaultNodeHome,
 				simcli.FlagPeriodValue,
+				encConfig,
 				simtestutil.EmptyAppOptions{},
 				fauxMerkleModeOpt,
 				baseapp.SetChainID(SimAppChainID),
@@ -154,7 +155,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				t,
 				os.Stdout,
 				newApp.BaseApp,
-				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), newApp.NewDefaultGenesisState(encConfig)),
+				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
 				simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
 				newApp.BlockedAddrs(),
@@ -197,7 +198,7 @@ func TestAppImportExport(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 
-	encConf := MakeEncodingConfig()
+	encConfig := MakeEncodingConfig(ModuleBasics)
 	nolusApp := New(
 		logger,
 		db,
@@ -206,6 +207,7 @@ func TestAppImportExport(t *testing.T) {
 		map[int64]bool{},
 		dir,
 		simcli.FlagPeriodValue,
+		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),
@@ -217,7 +219,7 @@ func TestAppImportExport(t *testing.T) {
 		t,
 		os.Stdout,
 		nolusApp.BaseApp,
-		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), nolusApp.NewDefaultGenesisState(encConf)),
+		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 		simtypes.RandomAccounts,
 		simtestutil.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
 		nolusApp.ModuleAccountAddrs(),
@@ -256,6 +258,7 @@ func TestAppImportExport(t *testing.T) {
 		map[int64]bool{},
 		DefaultNodeHome,
 		simcli.FlagPeriodValue,
+		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(SimAppChainID),

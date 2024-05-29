@@ -133,8 +133,13 @@ func NewRootCmd(
 	appName,
 	defaultNodeHome,
 	defaultChainID string,
+	moduleBasics module.BasicManager,
 ) (*cobra.Command, app.EncodingConfig) {
 	rootOptions := newRootOptions()
+	encodingConfig := app.MakeEncodingConfig(moduleBasics)
+
+	// create a temporary application for use in constructing query + tx commands
+	tempDir := tempDir()
 
 	tempApp := app.New(
 		log.NewNopLogger(),
@@ -142,11 +147,16 @@ func NewRootCmd(
 		nil,
 		true,
 		nil,
-		tempDir(),
+		tempDir,
 		0,
-		simtestutil.NewAppOptionsWithFlagHome(tempDir()),
+		encodingConfig,
+		simtestutil.NewAppOptionsWithFlagHome(tempDir),
 	)
-	encodingConfig := tempApp.EncodingConfig()
+	defer func() {
+		if err := tempApp.Close(); err != nil {
+			panic(err)
+		}
+	}()
 
 	initClientCtx := client.Context{}.
 		WithCodec(encodingConfig.Marshaler).
@@ -190,14 +200,20 @@ func NewRootCmd(
 		rootCmd,
 		encodingConfig,
 		defaultNodeHome,
-		tempApp.BasicModuleManager,
+		moduleBasics,
 		rootOptions,
 	)
 
 	// add keyring to autocli opts
 	autoCliOpts := tempApp.AutoCliOpts()
-	initClientCtx, _ = config.ReadDefaultValuesFromDefaultClientConfig(initClientCtx)
-	autoCliOpts.Keyring, _ = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
+	initClientCtx, err := config.ReadDefaultValuesFromDefaultClientConfig(initClientCtx)
+	if err != nil {
+		panic(err)
+	}
+	autoCliOpts.Keyring, err = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
+	if err != nil {
+		panic(err)
+	}
 	autoCliOpts.ClientCtx = initClientCtx
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
@@ -269,7 +285,7 @@ func initRootCmd(
 		server.ShowNodeIDCmd(),
 		server.ShowAddressCmd(),
 		queryCommand(moduleBasics),
-		txCommand(moduleBasics),
+		txCommand(),
 		keys.Commands(),
 	)
 
@@ -307,7 +323,7 @@ func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
 }
 
 // txCommand returns the sub-command to send transactions to the app.
-func txCommand(moduleBasics module.BasicManager) *cobra.Command {
+func txCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "tx",
 		Short:                      "Transactions subcommands",
@@ -329,8 +345,6 @@ func txCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.GetSimulateCmd(),
 	)
 
-	// TODO: autocli
-	// moduleBasics.AddTxCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
@@ -418,6 +432,7 @@ func (a appCreator) newApp(
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
+		a.encodingConfig,
 		appOpts,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(cast.ToString(appOpts.Get(server.FlagMinGasPrices))),
@@ -461,6 +476,7 @@ func (a appCreator) appExport(
 		map[int64]bool{},
 		homePath,
 		uint(1),
+		a.encodingConfig,
 		appOpts,
 	)
 

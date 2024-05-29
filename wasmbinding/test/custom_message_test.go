@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -57,14 +58,13 @@ func (suite *CustomMessengerTestSuite) SetupTest() {
 	suite.contractOwner = keeper.RandomAccountAddress(suite.T())
 
 	suite.contractKeeper = keeper.NewDefaultPermissionKeeper(&suite.neutron.WasmKeeper)
-}
 
-func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
-	// Store code and instantiate reflect contract
 	codeID := suite.StoreTestCode(suite.ctx, suite.contractOwner, "../testdata/reflect.wasm")
 	suite.contractAddress = suite.InstantiateTestContract(suite.ctx, suite.contractOwner, codeID)
 	suite.Require().NotEmpty(suite.contractAddress)
+}
 
+func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
 	err := suite.neutron.FeeBurnerKeeper.SetParams(suite.ctx, feeburnertypes.Params{
 		NeutronDenom:    "untrn",
 		TreasuryAddress: "neutron13jrwrtsyjjuynlug65r76r2zvfw5xjcq6532h2",
@@ -72,27 +72,22 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccount() {
 	suite.Require().NoError(err)
 
 	// Craft RegisterInterchainAccount message
-	msg, err := json.Marshal(bindings.NeutronMsg{
+	msg := bindings.NeutronMsg{
 		RegisterInterchainAccount: &bindings.RegisterInterchainAccount{
 			ConnectionId:        suite.Path.EndpointA.ConnectionID,
 			InterchainAccountId: testutil.TestInterchainID,
-			RegisterFee:         sdk.NewCoins(sdk.NewCoin(params.DefaultDenom, sdkmath.NewInt(1_000_000))),
+			RegisterFee:         sdk.NewCoins(sdk.NewCoin(params.DefaultDenom, math.NewInt(1_000_000))),
 		},
-	})
-	suite.NoError(err)
+	}
 
 	bankKeeper := suite.neutron.BankKeeper
 	senderAddress := suite.ChainA.SenderAccounts[0].SenderAccount.GetAddress()
-	err = bankKeeper.SendCoins(suite.ctx, senderAddress, suite.contractAddress, sdk.NewCoins(sdk.NewCoin(params.DefaultDenom, sdkmath.NewInt(1_000_000))))
+	err = bankKeeper.SendCoins(suite.ctx, senderAddress, suite.contractAddress, sdk.NewCoins(sdk.NewCoin(params.DefaultDenom, math.NewInt(1_000_000))))
 	suite.NoError(err)
 
 	// Dispatch RegisterInterchainAccount message
-	events, data, _, err := suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
-		Custom: msg,
-	})
+	_, err = suite.executeNeutronMsg(suite.contractAddress, msg)
 	suite.NoError(err)
-	suite.Nil(events)
-	suite.Equal([][]byte{[]byte(`{}`)}, data)
 }
 
 func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccountLongID() {
@@ -111,7 +106,7 @@ func (suite *CustomMessengerTestSuite) TestRegisterInterchainAccountLongID() {
 	})
 	suite.NoError(err)
 
-	// Dispatch RegisterInterchainAccount message
+	// Dispatch RegisterInterchainAccount message via DispatchHandler cause we want to catch an error from SDK directly, not from a contract
 	_, _, _, err = suite.messenger.DispatchMsg(suite.ctx, suite.contractAddress, suite.Path.EndpointA.ChannelConfig.PortID, types.CosmosMsg{
 		Custom: msg,
 	})

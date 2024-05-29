@@ -12,7 +12,7 @@ require (
 	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
-	github.com/neutron-org/neutron/v4 v4.0.0-20240517170556-77154d21c70e
+	github.com/neutron-org/neutron/v4 v4.0.0-20240524162930-c635611231ed
 	github.com/spf13/cast v1.6.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -223,13 +223,12 @@ replace (
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056
-	github.com/cosmos/cosmos-sdk => /home/denislavivanov/go/github/cosmos-sdk
 
 	// TODO adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
 	// github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
 
 	// TODO review and try to remove interchain-security replace
-	github.com/cosmos/interchain-security/v5 => github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230
+	// github.com/cosmos/interchain-security/v5 => github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
@@ -239,7 +238,7 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	// TODO Remove when official release of neutron with sdk50 is out:
-	// github.com/neutron-org/neutron/v4 => /home/denislavivanov/go/github/neutron-fork/neutron
+	github.com/neutron-org/neutron/v4 => /home/denislavivanov/go/github/neutron
 
 	// https://github.com/cosmos/cosmos-sdk/blob/main/UPGRADING.md#replaces
 	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7

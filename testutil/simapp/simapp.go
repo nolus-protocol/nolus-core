@@ -35,8 +35,8 @@ import (
 
 // New creates application instance with in-memory database and disabled logging.
 func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
-	// _ = params.SetAddressPrefixes()
 	database := db.NewMemDB()
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	a := app.New(
 		log.NewNopLogger(),
@@ -46,10 +46,10 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		map[int64]bool{},
 		dir,
 		0,
+		encoding,
 		sims.EmptyAppOptions{},
 	)
 
-	encoding := a.EncodingConfig()
 	// InitChain updates deliverState which is required when app.NewContext is called
 	genState := []byte("{}")
 	if withDefaultGenesisState {
@@ -70,7 +70,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 			Coins:   sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(100000000000000))),
 		}
 
-		genState := a.BasicModuleManager.DefaultGenesis(encoding.Marshaler)
+		genState := app.NewDefaultGenesisState(encoding)
 
 		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, []authtypes.GenesisAccount{acc}, balance)
 
@@ -213,8 +213,11 @@ var defaultConsensusParams = &cmtproto.ConsensusParams{
 
 // NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
+
 	return func(val network.ValidatorI) servertypes.Application {
 		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0,
+			encoding,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),

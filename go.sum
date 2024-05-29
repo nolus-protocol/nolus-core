@@ -356,6 +356,8 @@ github.com/cosmos/cosmos-db v1.0.2 h1:hwMjozuY1OlJs/uh6vddqnk9j7VamLv+0DBlbEXbAK
 github.com/cosmos/cosmos-db v1.0.2/go.mod h1:Z8IXcFJ9PqKK6BIsVOB3QXtkKoqUOp1vRvPT39kOXEA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5 h1:eNcayDLpip+zVLRLYafhzLvQlSmyab+RC5W7ZfmxJLA=
 github.com/cosmos/cosmos-proto v1.0.0-beta.5/go.mod h1:hQGLpiIUloJBMdQMMWb/4wRApmI9hjHH05nefC0Ojec=
+github.com/cosmos/cosmos-sdk v0.50.6 h1:efR3MsvMHX5sxS3be+hOobGk87IzlZbSpsI2x/Vw3hk=
+github.com/cosmos/cosmos-sdk v0.50.6/go.mod h1:lVkRY6cdMJ0fG3gp8y4hFrsKZqF4z7y0M2UXFb9Yt40=
 github.com/cosmos/go-bip39 v1.0.0 h1:pcomnQdrdH22njcAatO0yWojsUnCO3y2tNoV1cb6hHY=
 github.com/cosmos/go-bip39 v1.0.0/go.mod h1:RNJv0H/pOIVgxw6KS7QeX2a0Uo0aKUlfhZ4xuwvCdJw=
 github.com/cosmos/gogogateway v1.2.0 h1:Ae/OivNhp8DqBi/sh2A8a1D0y638GpL3tkmLQAiKxTE=
@@ -373,6 +375,8 @@ github.com/cosmos/ibc-go/v8 v8.2.1 h1:MTsnZZjxvGD4Fv5pYyx5UkELafSX0rlPt6IfsE2BpT
 github.com/cosmos/ibc-go/v8 v8.2.1/go.mod h1:wj3qx75iC/XNnsMqbPDCIGs0G6Y3E/lo3bdqCyoCy+8=
 github.com/cosmos/ics23/go v0.10.0 h1:iXqLLgp2Lp+EdpIuwXTYIQU+AiHj9mOC2X9ab++bZDM=
 github.com/cosmos/ics23/go v0.10.0/go.mod h1:ZfJSmng/TBNTBkFemHHHj5YY7VAU/MBU980F4VU1NG0=
+github.com/cosmos/interchain-security/v5 v5.0.0-rc0 h1:Sh5CDqLDS32q2WsO9k5j3NyBzmW+mm66c+kgRniCthA=
+github.com/cosmos/interchain-security/v5 v5.0.0-rc0/go.mod h1:h/RkwOppo5AJj+1pkQyfjqU1MPdpohD/S6oEeAXpGZY=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
 github.com/cosmos/keyring v1.2.0/go.mod h1:fc+wB5KTk9wQ9sDx0kFXB3A0MaeGHM9AwRStKOQ5vOA=
 github.com/cosmos/ledger-cosmos-go v0.13.3 h1:7ehuBGuyIytsXbd4MP43mLeoN2LTOEnk5nvue4rK+yM=
@@ -825,10 +829,6 @@ github.com/nats-io/nkeys v0.1.3/go.mod h1:xpnFELMwJABBLVhffcfd1MZx6VsNRFpEugbxzi
 github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OSON2c=
 github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056 h1:mb3fNlOG3gO5fG/z2zY7glHZhHFQ2/aDzGFZMZinkPo=
 github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056/go.mod h1:di9iYm/L6fwGZXig6kNw8jCkCLfNdHo46UMcFgIbJUo=
-github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230 h1:ua4avhGdG0SxLRTWXJNm9AeykCY3T025JLvWuvQ4t0A=
-github.com/neutron-org/interchain-security/v5 v5.0.0-20240319145305-bf0abfba3230/go.mod h1:c4oYjNwdfPKAhxzkwzTkkWROXKeUNPvc4VJHyNWrRU8=
-github.com/neutron-org/neutron/v4 v4.0.0-20240517170556-77154d21c70e h1:naB1NQYmta1X0KkpfYuuwViPdRApUoRNOvnTw2vHurY=
-github.com/neutron-org/neutron/v4 v4.0.0-20240517170556-77154d21c70e/go.mod h1:Tv6ZgTrRdgnPiEm0uTOpc/d7OoKpoKUU4/1y8ZK+KpE=
 github.com/neutron-org/wasmd v0.45.1-0.20240501180153-d9bebe629e05 h1:HTf3tdocEy9MDElIe9wePm/P9A74cE/3gyIgnWvOGEc=
 github.com/neutron-org/wasmd v0.45.1-0.20240501180153-d9bebe629e05/go.mod h1:7TSaj5HoolghujuVWeExqmcUKgpcYWEySGLSODbnnwY=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
