@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/gogoproto/proto"
 )
@@ -24,7 +25,6 @@ type EncodingConfig struct {
 // makeEncodingConfig creates an EncodingConfig for an amino based test configuration.
 func makeEncodingConfig() EncodingConfig {
 	amino := codec.NewLegacyAmino()
-	// signingOptions :=
 	interfaceRegistry, err := types.NewInterfaceRegistryWithOptions(types.InterfaceRegistryOptions{
 		ProtoFiles: proto.HybridResolver,
 		SigningOptions: signing.Options{
@@ -56,12 +56,11 @@ func makeEncodingConfig() EncodingConfig {
 }
 
 // MakeEncodingConfig creates an EncodingConfig for testing.
-func MakeEncodingConfig() EncodingConfig {
+func MakeEncodingConfig(moduleBasics module.BasicManager) EncodingConfig {
 	encodingConfig := makeEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	moduleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
+	moduleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	return encodingConfig
 }
-
-// EncodingConfig returns the encoding config of the App.
-func (app *App) EncodingConfig() EncodingConfig { return app.encodingConfig }

@@ -57,7 +57,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.ctx = s.app.BaseApp.NewContext(false).WithBlockTime(blockTime)
 
 	// set up TxConfig
-	encodingConfig := nolusapp.MakeEncodingConfig()
+	encodingConfig := nolusapp.MakeEncodingConfig(nolusapp.ModuleBasics)
 	s.clientCtx = client.Context{}.WithTxConfig(encodingConfig.TxConfig)
 	s.txBuilder = s.clientCtx.TxConfig.NewTxBuilder()
 	s.Require().NoError(s.txBuilder.SetMsgs([]sdk.Msg{}...))
