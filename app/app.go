@@ -25,7 +25,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/grpc/cmtservice"
 	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	"github.com/cosmos/cosmos-sdk/codec"
-	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 	"github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/server/api"
@@ -35,17 +34,11 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
+	authcodec "github.com/cosmos/cosmos-sdk/x/auth/codec"
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/cosmos/cosmos-sdk/x/gov"
-	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
@@ -63,8 +56,6 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
-
-	transferSudo "github.com/neutron-org/neutron/v4/x/transfer"
 )
 
 const (
@@ -90,6 +81,8 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+appparams.Name)
+
+	appparams.GetDefaultConfig()
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
@@ -100,15 +93,13 @@ type App struct {
 	keepers.AppKeepers
 
 	cdc               *codec.LegacyAmino
-	txConfig          client.TxConfig
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 	encodingConfig    EncodingConfig
 	invCheckPeriod    uint
 
 	// the module manager
-	mm                 *module.Manager
-	BasicModuleManager module.BasicManager
+	mm *module.Manager
 
 	// simulation manager
 	sm           *module.SimulationManager
@@ -124,10 +115,13 @@ func New(
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
 	invCheckPeriod uint,
+	encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
 ) *App {
-	encodingConfig := MakeEncodingConfig()
+	appCodec := encodingConfig.Marshaler
+	cdc := encodingConfig.Amino
+	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
@@ -137,17 +131,16 @@ func New(
 	app := &App{
 		BaseApp:           bApp,
 		AppKeepers:        keepers.AppKeepers{},
-		cdc:               encodingConfig.Amino,
-		txConfig:          encodingConfig.TxConfig,
-		appCodec:          encodingConfig.Marshaler,
-		interfaceRegistry: encodingConfig.InterfaceRegistry,
+		cdc:               cdc,
+		appCodec:          appCodec,
+		interfaceRegistry: interfaceRegistry,
 		invCheckPeriod:    invCheckPeriod,
 		encodingConfig:    EncodingConfig(encodingConfig),
 	}
 
 	app.NewAppKeepers(
 		logger,
-		encodingConfig.Marshaler,
+		appCodec,
 		bApp,
 		encodingConfig.Amino,
 		encodingConfig.InterfaceRegistry,
@@ -184,27 +177,6 @@ func New(
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
-
-	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration and genesis verification.
-	// By default it is composed of all the module from the module manager.
-	// Additionally, app module basics can be overwritten by passing them as argument.
-	app.BasicModuleManager = module.NewBasicManagerFromManager(
-		app.mm,
-		map[string]module.AppModuleBasic{
-			genutiltypes.ModuleName: genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-			govtypes.ModuleName: gov.NewAppModuleBasic(
-				[]govclient.ProposalHandler{
-					paramsclient.ProposalHandler,
-				},
-			),
-			// TODO: Decide if neutron-transfer module should have a separate key
-			// Manually register the transfer module since we dont use a native ibc-go transfer module but a custom implementation
-			ibctransfertypes.ModuleName: transferSudo.AppModuleBasic{},
-		},
-	)
-	app.BasicModuleManager.RegisterLegacyAminoCodec(encodingConfig.Amino)
-	app.BasicModuleManager.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
@@ -440,9 +412,9 @@ func (app *App) AutoCliOpts() autocli.AppOptions {
 	return autocli.AppOptions{
 		Modules:               modules,
 		ModuleOptions:         runtimeservices.ExtractAutoCLIOptions(app.mm.Modules),
-		AddressCodec:          addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-		ValidatorAddressCodec: addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
-		ConsensusAddressCodec: addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
+		AddressCodec:          authcodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+		ValidatorAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ValidatorAddrPrefix()),
+		ConsensusAddressCodec: authcodec.NewBech32Codec(sdk.GetConfig().GetBech32ConsensusAddrPrefix()),
 	}
 }
 
@@ -483,7 +455,7 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register new tendermint queries routes from grpc-gateway.
 	cmtservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	app.BasicModuleManager.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
+	ModuleBasics.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
 	// Register nodeservice grpc-gateway routes.
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
@@ -514,8 +486,4 @@ func GetMaccPerms() map[string][]string {
 
 func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
-}
-
-func (app *App) TxConfig() client.TxConfig {
-	return app.txConfig
 }

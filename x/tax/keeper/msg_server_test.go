@@ -44,9 +44,9 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 	}
 
 	for _, tc := range testCases {
-		s.SetupTest(false)
 		tc := tc
 		s.Run(tc.name, func() {
+			s.SetupTest(false)
 			_, err := s.msgServer.UpdateParams(s.ctx, tc.request)
 			if tc.expectErr {
 				s.Require().Error(err)

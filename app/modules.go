@@ -19,6 +19,7 @@ import (
 	authzmodule "github.com/cosmos/cosmos-sdk/x/authz/module"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -27,34 +28,44 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
+	govclient "github.com/cosmos/cosmos-sdk/x/gov/client"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	sdkparams "github.com/cosmos/cosmos-sdk/x/params"
+	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	"github.com/cosmos/ibc-go/modules/capability"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
-
+	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibc "github.com/cosmos/ibc-go/v8/modules/core"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	ibctm "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/vestings"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/neutron-org/neutron/v4/x/contractmanager"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
+	"github.com/neutron-org/neutron/v4/x/feerefunder"
 	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
+	"github.com/neutron-org/neutron/v4/x/interchainqueries"
 	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
+	"github.com/neutron-org/neutron/v4/x/interchaintxs"
 	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	transferSudo "github.com/neutron-org/neutron/v4/x/transfer"
 )
 
 // module account permissions.
@@ -76,40 +87,40 @@ var maccPerms = map[string][]string{
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
 // non-dependant module elements, such as codec registration
 // and genesis verification.
-// var ModuleBasics = module.NewBasicManager(
-// 	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
-// 	auth.AppModuleBasic{},
-// 	bank.AppModuleBasic{},
-// 	capability.AppModuleBasic{},
-// 	staking.AppModuleBasic{},
-// 	mint.AppModuleBasic{},
-// 	distribution.AppModuleBasic{},
-// 	gov.NewAppModuleBasic(
-// 		[]govclient.ProposalHandler{
-// 			paramsclient.ProposalHandler,
-// 		},
-// 	),
-// 	sdkparams.AppModuleBasic{},
-// 	crisis.AppModuleBasic{},
-// 	slashing.AppModuleBasic{},
-// 	feegrantmodule.AppModuleBasic{},
-// 	ibc.AppModuleBasic{},
-// 	upgrade.AppModuleBasic{},
-// 	evidence.AppModuleBasic{},
-// 	transferSudo.AppModuleBasic{},
-// 	vesting.AppModuleBasic{},
-// 	wasm.AppModuleBasic{},
-// 	vestings.AppModuleBasic{},
-// 	tax.AppModuleBasic{},
-// 	ica.AppModuleBasic{},
-// 	interchaintxs.AppModuleBasic{},
-// 	interchainqueries.AppModuleBasic{},
-// 	feerefunder.AppModuleBasic{},
-// 	contractmanager.AppModuleBasic{},
-// 	authzmodule.AppModuleBasic{},
-// 	consensus.AppModuleBasic{},
-// 	ibctm.AppModuleBasic{},
-// )
+var ModuleBasics = module.NewBasicManager(
+	genutil.NewAppModuleBasic(genutiltypes.DefaultMessageValidator),
+	auth.AppModuleBasic{},
+	bank.AppModuleBasic{},
+	capability.AppModuleBasic{},
+	staking.AppModuleBasic{},
+	mint.AppModuleBasic{},
+	distribution.AppModuleBasic{},
+	gov.NewAppModuleBasic(
+		[]govclient.ProposalHandler{
+			paramsclient.ProposalHandler,
+		},
+	),
+	sdkparams.AppModuleBasic{},
+	crisis.AppModuleBasic{},
+	slashing.AppModuleBasic{},
+	feegrantmodule.AppModuleBasic{},
+	ibc.AppModuleBasic{},
+	upgrade.AppModuleBasic{},
+	evidence.AppModuleBasic{},
+	transferSudo.AppModuleBasic{},
+	vesting.AppModuleBasic{},
+	wasm.AppModuleBasic{},
+	vestings.AppModuleBasic{},
+	tax.AppModuleBasic{},
+	ica.AppModuleBasic{},
+	interchaintxs.AppModuleBasic{},
+	interchainqueries.AppModuleBasic{},
+	feerefunder.AppModuleBasic{},
+	contractmanager.AppModuleBasic{},
+	authzmodule.AppModuleBasic{},
+	consensus.AppModuleBasic{},
+	ibctm.AppModuleBasic{},
+)
 
 func appModules(
 	app *App,

@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/log"
 	pruningtypes "cosmossdk.io/store/pruning/types"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
@@ -18,7 +17,6 @@ import (
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
@@ -55,9 +53,8 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 // DefaultConfig will initialize config for the network with custom application,
 // genesis and single validator. All other parameters are inherited from cosmos-sdk/testutil/network.DefaultConfig.
 func DefaultConfig() network.Config {
-	tempApp := app.New(log.NewNopLogger(), db.NewMemDB(), nil, true, nil, tempDir(), 0, simtestutil.NewAppOptionsWithFlagHome(tempDir()))
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
-	encoding := tempApp.EncodingConfig()
 	chainID := "chain-" + tmrand.NewRand().Str(6)
 	return network.Config{
 		Codec:             encoding.Marshaler,
@@ -68,13 +65,14 @@ func DefaultConfig() network.Config {
 		AppConstructor: func(val network.ValidatorI) servertypes.Application {
 			return app.New(
 				val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0,
+				encoding,
 				sims.EmptyAppOptions{},
 				baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 				baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
 				baseapp.SetChainID(chainID),
 			)
 		},
-		GenesisState:  tempApp.BasicModuleManager.DefaultGenesis(encoding.Marshaler),
+		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
 		TimeoutCommit: 2 * time.Second,
 		ChainID:       chainID,
 		NumValidators: 1,
