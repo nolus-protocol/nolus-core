@@ -54,7 +54,7 @@ func (s *KeeperTestSuite) SetupTest(isCheckTx bool) {
 	s.Require().NoError(err)
 
 	blockTime := time.Now()
-	s.ctx = s.app.BaseApp.NewContext(false).WithBlockTime(blockTime)
+	s.ctx = s.app.BaseApp.NewContext(isCheckTx).WithBlockTime(blockTime)
 
 	// set up TxConfig
 	encodingConfig := nolusapp.MakeEncodingConfig(nolusapp.ModuleBasics)

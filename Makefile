@@ -172,6 +172,8 @@ test-unit-cosmos:
 test-unit:
 	go install gotest.tools/gotestsum@latest
 	gotestsum --junitfile testreport.xml --format testname -- $(BUILD_FLAGS) -mod=readonly -coverprofile=cover.out -covermode=atomic ./...
+	@rm -rf ./wasmbinding/test/github.com
+	@rm -rf ./testutil/.testchains
 
 test-unit-coverage: ## Generate global code coverage report
 	go install github.com/boumenot/gocover-cobertura@latest
