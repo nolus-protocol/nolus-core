@@ -81,8 +81,6 @@ func init() {
 	}
 
 	DefaultNodeHome = filepath.Join(userHomeDir, "."+appparams.Name)
-
-	appparams.GetDefaultConfig()
 }
 
 // App extends an ABCI application, but with most of its parameters exported.
@@ -126,7 +124,7 @@ func New(
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
-	bApp.SetInterfaceRegistry(encodingConfig.InterfaceRegistry)
+	bApp.SetInterfaceRegistry(interfaceRegistry)
 
 	app := &App{
 		BaseApp:           bApp,
@@ -217,7 +215,6 @@ func New(
 		panic(err)
 	}
 	reflectionv1.RegisterReflectionServiceServer(app.GRPCQueryRouter(), reflectionSvc)
-
 	// create the simulation manager and define the order of the modules for deterministic simulations
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
