@@ -2,7 +2,6 @@ package network
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -87,14 +86,4 @@ func DefaultConfig() network.Config {
 		SigningAlgo:     string(hd.Secp256k1Type),
 		KeyringOptions:  []keyring.Option{},
 	}
-}
-
-var tempDir = func() string {
-	dir, err := os.MkdirTemp("", "nolusd")
-	if err != nil {
-		panic("failed to create temp dir: " + err.Error())
-	}
-	defer os.RemoveAll(dir)
-
-	return dir
 }

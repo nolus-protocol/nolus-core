@@ -17,7 +17,7 @@ type ProtobufAny struct {
 }
 
 // NeutronMsg is used like a sum type to hold one of custom Neutron messages.
-// Follow https://github.com/neutron-org/neutron/v4-contracts/tree/main/packages/bindings/src/msg.rs
+// Follow https://github.com/neutron-org/neutron/neutron-contracts/tree/main/packages/bindings/src/msg.rs
 // for more information.
 type NeutronMsg struct {
 	SubmitTx                  *SubmitTx                         `json:"submit_tx,omitempty"`

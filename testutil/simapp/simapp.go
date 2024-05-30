@@ -1,6 +1,8 @@
 package simapp
 
 import (
+	"path"
+	"runtime"
 	"testing"
 	"time"
 
@@ -11,6 +13,7 @@ import (
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/json"
+	tmrand "github.com/cometbft/cometbft/libs/rand"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 	cometbfttypes "github.com/cometbft/cometbft/types"
@@ -33,10 +36,22 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app"
 )
 
+func RootDir() string {
+	_, b, _, _ := runtime.Caller(0) //nolint:dogsled
+	d := path.Join(path.Dir(b), "..")
+	return d
+}
+
+func testHomeDir(chainID string) string {
+	projectRoot := RootDir()
+	return path.Join(projectRoot, ".testchains", chainID)
+}
+
 // New creates application instance with in-memory database and disabled logging.
-func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
+func New(t *testing.T, withDefaultGenesisState bool) *app.App {
 	database := db.NewMemDB()
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
+	chainID := "chain-" + tmrand.NewRand().Str(6)
 
 	a := app.New(
 		log.NewNopLogger(),
@@ -44,10 +59,11 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 		nil,
 		true,
 		map[int64]bool{},
-		dir,
+		testHomeDir(chainID),
 		0,
 		encoding,
 		sims.EmptyAppOptions{},
+		baseapp.SetChainID(chainID),
 	)
 
 	// InitChain updates deliverState which is required when app.NewContext is called
@@ -72,13 +88,14 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 
 		genState := app.NewDefaultGenesisState(encoding)
 
-		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, []authtypes.GenesisAccount{acc}, balance)
+		nolusApp := SetupWithGenesisValSet(t, a, genState, valSet, []authtypes.GenesisAccount{acc}, chainID, balance)
 
 		return nolusApp
 	}
 	_, err := a.InitChain(&abci.RequestInitChain{
 		ConsensusParams: defaultConsensusParams,
 		AppStateBytes:   genState,
+		ChainId:         chainID,
 	})
 	require.NoError(t, err)
 
@@ -89,7 +106,7 @@ func New(t *testing.T, dir string, withDefaultGenesisState bool) *app.App {
 // that also act as delegators. For simplicity, each validator is bonded with a delegation
 // of one consensus engine unit in the default token of the GaiaApp from first genesis
 // account. A Nop logger is set in GaiaApp.
-func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.GenesisState, valSet *cmttypes.ValidatorSet, genAccs []authtypes.GenesisAccount, balances ...banktypes.Balance) *app.App {
+func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.GenesisState, valSet *cmttypes.ValidatorSet, genAccs []authtypes.GenesisAccount, chainID string, balances ...banktypes.Balance) *app.App {
 	t.Helper()
 
 	genesisState = genesisStateWithValSet(t, nolusApp, genesisState, valSet, genAccs, balances...)
@@ -103,6 +120,7 @@ func SetupWithGenesisValSet(t *testing.T, nolusApp *app.App, genesisState app.Ge
 			Validators:      []abci.ValidatorUpdate{},
 			ConsensusParams: defaultConsensusParams,
 			AppStateBytes:   stateBytes,
+			ChainId:         chainID,
 		},
 	)
 	require.NoError(t, err)
@@ -190,7 +208,7 @@ func genesisStateWithValSet(t *testing.T,
 }
 
 func TestSetup(t *testing.T) (*app.App, error) {
-	nolusApp := New(t, app.DefaultNodeHome, true)
+	nolusApp := New(t, true)
 	return nolusApp, nil
 }
 
