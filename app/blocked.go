@@ -1,6 +1,8 @@
 package app
 
-import "strings"
+import (
+	"strings"
+)
 
 // BlockedAddrs returns all the app's module account addresses that are not
 // allowed to receive external tokens.

@@ -14,6 +14,9 @@ import (
 
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+
+	feeabsante "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/ante"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
 )
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.
@@ -24,6 +27,7 @@ type HandlerOptions struct {
 	TxCounterStoreKey storetypes.StoreKey
 	WasmConfig        *wasmTypes.WasmConfig
 	IBCKeeper         *keeper.Keeper
+	FeeabsKeeper      feeabskeeper.Keeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -53,10 +57,12 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		wasmkeeper.NewLimitSimulationGasDecorator(options.WasmConfig.SimulationGasLimit), // after setup context to enforce limits early
 		wasmkeeper.NewCountTXDecorator(options.TxCounterStoreKey),
 		ante.NewExtensionOptionsDecorator(nil),
+		feeabsante.NewFeeAbstrationMempoolFeeDecorator(options.FeeabsKeeper),
 		ante.NewValidateBasicDecorator(),
 		ante.NewTxTimeoutHeightDecorator(),
 		ante.NewValidateMemoDecorator(options.AccountKeeper),
 		ante.NewConsumeGasForTxSizeDecorator(options.AccountKeeper),
+		feeabsante.NewFeeAbstractionDeductFeeDecorate(options.AccountKeeper, options.BankKeeper, options.FeeabsKeeper, options.FeegrantKeeper),
 		ante.NewDeductFeeDecorator(options.AccountKeeper, options.BankKeeper, options.FeegrantKeeper, options.TxFeeChecker),
 
 		// Tax calculation must be called after fees

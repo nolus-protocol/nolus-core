@@ -45,7 +45,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	"github.com/Nolus-Protocol/nolus-core/app/openapiconsole"
-	"github.com/Nolus-Protocol/nolus-core/app/params"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v053 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v053"
@@ -144,7 +143,7 @@ func New(
 		homePath,
 		invCheckPeriod,
 		appOpts,
-		params.Bech32PrefixAccAddr,
+		appparams.Bech32PrefixAccAddr,
 	)
 
 	/****  Module Options ****/
@@ -220,6 +219,7 @@ func New(
 			TxCounterStoreKey: app.GetKVStoreKey()[wasmtypes.StoreKey],
 			WasmConfig:        &app.WasmConfig,
 			IBCKeeper:         app.IBCKeeper,
+			FeeabsKeeper:      app.FeeabsKeeper,
 		},
 	)
 	if err != nil {

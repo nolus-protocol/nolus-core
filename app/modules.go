@@ -66,6 +66,9 @@ import (
 	"github.com/neutron-org/neutron/x/interchaintxs"
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
+
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 )
 
 // module account permissions.
@@ -82,6 +85,7 @@ var maccPerms = map[string][]string{
 	icatypes.ModuleName:               nil,
 	interchainqueriestypes.ModuleName: nil,
 	feetypes.ModuleName:               nil,
+	feeabstypes.ModuleName:            nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -124,6 +128,7 @@ var ModuleBasics = module.NewBasicManager(
 	authzmodule.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	ibctm.AppModuleBasic{},
+	feeabsmodule.AppModuleBasic{},
 )
 
 func appModules(
@@ -165,6 +170,7 @@ func appModules(
 		app.AppKeepers.InterchainTxsModule,
 		app.AppKeepers.FeeRefunderModule,
 		app.AppKeepers.ContractManagerModule,
+		app.AppKeepers.FeeabsModule,
 	}
 }
 
@@ -240,6 +246,7 @@ func orderBeginBlockers() []string {
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
+		feeabstypes.ModuleName,
 	}
 }
 
@@ -271,6 +278,7 @@ func orderEndBlockers() []string {
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
+		feeabstypes.ModuleName,
 	}
 }
 
@@ -312,5 +320,6 @@ func orderInitBlockers() []string {
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		feeabstypes.ModuleName,
 	}
 }

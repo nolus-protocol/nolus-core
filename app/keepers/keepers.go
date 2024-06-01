@@ -85,6 +85,10 @@ import (
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
 	transferSudo "github.com/neutron-org/neutron/x/transfer"
 	wrapkeeper "github.com/neutron-org/neutron/x/transfer/keeper"
+
+	feeabsmodule "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs"
+	feeabskeeper "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/keeper"
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 )
 
 type AppKeepers struct {
@@ -113,6 +117,7 @@ type AppKeepers struct {
 	FeeRefunderKeeper     *feerefunderkeeper.Keeper
 	ConsensusParamsKeeper *consensusparamskeeper.Keeper
 	AuthzKeeper           *authzkeeper.Keeper
+	FeeabsKeeper          feeabskeeper.Keeper
 
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper           capabilitykeeper.ScopedKeeper
@@ -121,6 +126,7 @@ type AppKeepers struct {
 	ScopedWasmKeeper          capabilitykeeper.ScopedKeeper
 	ScopedICAControllerKeeper capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
+	ScopedFeeabsKeeper        capabilitykeeper.ScopedKeeper
 
 	MintKeeper     *mintkeeper.Keeper
 	TaxKeeper      *taxmodulekeeper.Keeper
@@ -142,6 +148,7 @@ type AppKeepers struct {
 	VestingsModule          vestings.AppModule
 	IcaModule               ica.AppModule
 	AuthzModule             authzmodule.AppModule
+	FeeabsModule            feeabsmodule.AppModule
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
@@ -188,6 +195,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.ScopedICAControllerKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	appKeepers.ScopedICAHostKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
 	appKeepers.ScopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasmtypes.ModuleName)
+	appKeepers.ScopedFeeabsKeeper = appKeepers.CapabilityKeeper.ScopeToModule(feeabstypes.ModuleName)
 
 	// seal capabilities after scoping modules
 	appKeepers.CapabilityKeeper.Seal()
@@ -392,6 +400,20 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
+	appKeepers.FeeabsKeeper = feeabskeeper.NewKeeper(
+		appCodec,
+		appKeepers.keys[feeabstypes.StoreKey],
+		appKeepers.GetSubspace(feeabstypes.ModuleName),
+		appKeepers.StakingKeeper,
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.TransferKeeper.Keeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.ScopedFeeabsKeeper,
+	)
+	appKeepers.FeeabsModule = feeabsmodule.NewAppModule(appCodec, appKeepers.FeeabsKeeper)
+
 	wasmDir := filepath.Join(homePath, "wasm")
 	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
 	if err != nil {
@@ -435,7 +457,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(*appKeepers.ParamsKeeper)).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
 		AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
-		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper))
+		AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)).
+		AddRoute(feeabstypes.RouterKey, feeabsmodule.NewHostZoneProposal(appKeepers.FeeabsKeeper))
 
 	govConfig := govtypes.DefaultConfig()
 	// MaxMetadataLen defines the maximum proposal metadata length.
@@ -492,7 +515,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
-		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper)).
+		AddRoute(feeabstypes.ModuleName, feeabsmodule.NewIBCModule(appCodec, appKeepers.FeeabsKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
 	authzKeepper := authzkeeper.NewKeeper(
