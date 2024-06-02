@@ -1003,8 +1003,8 @@ github.com/openzipkin/zipkin-go v0.2.1/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnh
 github.com/openzipkin/zipkin-go v0.2.2/go.mod h1:NaW6tEwdmWMaCDZzg8sh+IBNOxHMPnhQw8ySjnjRyN4=
 github.com/ory/dockertest v3.3.5+incompatible h1:iLLK6SQwIhcbrG783Dghaaa3WPzGc+4Emza6EbVUUGA=
 github.com/ory/dockertest v3.3.5+incompatible/go.mod h1:1vX4m9wsvi00u5bseYwXaSnhNrne+V0E6LAcBILJdPs=
-github.com/osmosis-labs/fee-abstraction/v7 v7.0.0-20240408070113-b8791624f3be h1:CBgtICAJK19dIBOfXMUAa8H/f78iFCUmVSy5Sk8HTdw=
-github.com/osmosis-labs/fee-abstraction/v7 v7.0.0-20240408070113-b8791624f3be/go.mod h1:y/N5kGya7AQm/kfBvlhi2CmwjsXMXGHOuRQ1WH7jK8Y=
+github.com/osmosis-labs/fee-abstraction/v7 v7.0.1 h1:5HMn5tLKey8OGDqXocrIUh9s8S4H8PtmrEtnQqjwCzw=
+github.com/osmosis-labs/fee-abstraction/v7 v7.0.1/go.mod h1:UolJe3/VRdWGyrcdy6tNe+gJ7G3qmJ4x8bmftVuMrR8=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0 h1:Yyk5ov0ZPKBXtVEeIWtc4J2XVrHuNoIK+0F2BUJgtsc=
 github.com/oxyno-zeta/gomock-extra-matcher v1.1.0/go.mod h1:UMGTHYEmJ1dRq8LDZ7VTAYO4nqM3GD1UGC3RJEUxEz0=
 github.com/pact-foundation/pact-go v1.0.4/go.mod h1:uExwJY4kCzNPcHRj+hCR/HBbOOIwwtUjcrb0b5/5kLM=
