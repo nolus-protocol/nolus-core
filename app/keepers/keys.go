@@ -33,6 +33,8 @@ import (
 	feerefundertypes "github.com/neutron-org/neutron/x/feerefunder/types"
 	interchainqueriestypes "github.com/neutron-org/neutron/x/interchainqueries/types"
 	interchaintxstypes "github.com/neutron-org/neutron/x/interchaintxs/types"
+
+	feeabstypes "github.com/osmosis-labs/fee-abstraction/v7/x/feeabs/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {
@@ -65,6 +67,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		wasmtypes.StoreKey,
 		feerefundertypes.StoreKey,
 		consensusparamtypes.StoreKey,
+		feeabstypes.StoreKey,
 	)
 
 	// Define transient store keys
