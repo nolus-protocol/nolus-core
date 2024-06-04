@@ -7,7 +7,9 @@ import (
 	"go/build"
 	"math/rand"
 	"os"
+	"path"
 	"path/filepath"
+	"runtime"
 	"runtime/debug"
 	"strings"
 	"testing"
@@ -17,6 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"cosmossdk.io/log"
+	tmrand "github.com/cometbft/cometbft/libs/rand"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 
@@ -108,20 +111,21 @@ func TestAppStateDeterminism(t *testing.T) {
 		t.Skip("skipping application simulation")
 	}
 
-	config := simcli.NewConfigFromFlags()
-	config.InitialBlockHeight = 1
-	config.ExportParamsPath = ""
-	config.OnOperation = false
-	config.AllInvariants = false
-	config.ChainID = SimAppChainID
-	appParamsConfigurationSim(t, &config)
-
 	appHashList := make([]json.RawMessage, NumTimesToRunPerSeed)
 
 	for i := 0; i < NumSeeds; i++ {
+		config := simcli.NewConfigFromFlags()
+		config.InitialBlockHeight = 1
+		config.ExportParamsPath = ""
+		config.OnOperation = false
+		config.AllInvariants = false
+
 		config.Seed = rand.Int63()
 
 		for j := 0; j < NumTimesToRunPerSeed; j++ {
+			config.ChainID = SimAppChainID + tmrand.NewRand().Str(6)
+			appParamsConfigurationSim(t, &config)
+
 			var logger log.Logger
 			if simcli.FlagVerboseValue {
 				logger = log.NewTestLogger(t)
@@ -137,12 +141,12 @@ func TestAppStateDeterminism(t *testing.T) {
 				nil,
 				true,
 				map[int64]bool{},
-				DefaultNodeHome,
+				testHomeDir(config.ChainID),
 				simcli.FlagPeriodValue,
 				encConfig,
 				simtestutil.EmptyAppOptions{},
 				fauxMerkleModeOpt,
-				baseapp.SetChainID(SimAppChainID),
+				baseapp.SetChainID(config.ChainID),
 				baseapp.SetMinGasPrices("0unls"),
 			)
 
@@ -184,7 +188,7 @@ func TestAppStateDeterminism(t *testing.T) {
 func TestAppImportExport(t *testing.T) {
 	sdk.DefaultBondDenom = params.DefaultBondDenom
 	config := simcli.NewConfigFromFlags()
-	config.ChainID = SimAppChainID
+	config.ChainID = SimAppChainID + tmrand.NewRand().Str(6)
 	appParamsConfigurationSim(t, &config)
 
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, "leveldb-app-sim", "Simulation", simcli.FlagVerboseValue, simcli.FlagEnabledValue)
@@ -205,12 +209,12 @@ func TestAppImportExport(t *testing.T) {
 		nil,
 		true,
 		map[int64]bool{},
-		dir,
+		testHomeDir(config.ChainID),
 		simcli.FlagPeriodValue,
 		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
-		baseapp.SetChainID(SimAppChainID),
+		baseapp.SetChainID(config.ChainID),
 	)
 	require.Equal(t, Name, nolusApp.Name())
 
@@ -250,18 +254,20 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
+
+	config.ChainID = SimAppChainID + tmrand.NewRand().Str(6)
 	newNolusApp := New(
 		log.NewNopLogger(),
 		newDB,
 		nil,
 		true,
 		map[int64]bool{},
-		DefaultNodeHome,
+		testHomeDir(config.ChainID),
 		simcli.FlagPeriodValue,
 		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
-		baseapp.SetChainID(SimAppChainID),
+		baseapp.SetChainID(config.ChainID),
 	)
 	require.Equal(t, Name, newNolusApp.Name())
 
@@ -357,4 +363,15 @@ func GetSimulationLog(storeName string, sdr simtypes.StoreDecoderRegistry, kvAs,
 // an IAVLStore for faster simulation speed.
 func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 	bapp.SetFauxMerkleMode()
+}
+
+func RootDir() string {
+	_, b, _, _ := runtime.Caller(0) //nolint:dogsled
+	d := path.Join(path.Dir(b), "..")
+	return d
+}
+
+func testHomeDir(chainID string) string {
+	projectRoot := RootDir()
+	return path.Join(projectRoot, ".testchains", chainID)
 }

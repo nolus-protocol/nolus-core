@@ -161,6 +161,7 @@ func appModules(
 		app.AppKeepers.InterchainTxsModule,
 		app.AppKeepers.FeeRefunderModule,
 		app.AppKeepers.ContractManagerModule,
+		consensus.NewAppModule(appCodec, *app.AppKeepers.ConsensusParamsKeeper),
 	}
 }
 
