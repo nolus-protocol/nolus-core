@@ -224,6 +224,9 @@ replace (
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module => github.com/neutron-org/admin-module v1.0.2-0.20240402143659-7dcb4a8c2056
 
+	// TODO remove after neutron/x/transfer is updated so sims can pass without this replace
+	github.com/cosmos/ibc-go/v8 => /home/denislavivanov/go/github/ibc-go
+
 	// TODO adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
 	// github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.47.6-nolus
 

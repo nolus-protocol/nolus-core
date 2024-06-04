@@ -53,6 +53,7 @@ import (
 	icahostkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/host/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	ibcclient "github.com/cosmos/ibc-go/v8/modules/core/02-client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
 	ibcconnectiontypes "github.com/cosmos/ibc-go/v8/modules/core/03-connection/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
@@ -159,6 +160,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
 	bech32Prefix string,
+	msgServiceRouter *baseapp.MsgServiceRouter,
+	grpcQueryRouter *baseapp.GRPCQueryRouter,
 ) {
 	// Set keys KVStoreKey, TransientStoreKey, MemoryStoreKey
 	appKeepers.GenerateKeys()
@@ -359,7 +362,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedICAControllerKeeper,
-		bApp.MsgServiceRouter(),
+		msgServiceRouter,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAControllerKeeper = &icaControllerKeeper
@@ -373,10 +376,12 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
 		appKeepers.ScopedICAHostKeeper,
-		bApp.MsgServiceRouter(),
+		msgServiceRouter,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAHostKeeper = &icaHostKeeper
+	// TODO: use this with ibc-go v8.3.0 https://github.com/cosmos/ibc-go/issues/6415
+	// appKeepers.ICAHostKeeper.WithQueryRouter(grpcQueryRouter)
 
 	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, appKeepers.ICAHostKeeper)
 
@@ -439,8 +444,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.ScopedWasmKeeper,
 		appKeepers.TransferKeeper,
-		bApp.MsgServiceRouter(),
-		bApp.GRPCQueryRouter(),
+		msgServiceRouter,
+		grpcQueryRouter,
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
@@ -455,9 +460,9 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
 		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
+		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)). //nolint:staticcheck
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(*appKeepers.ParamsKeeper))
 	// TODO: test these proposals and remove these legacy handler
-	// AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)). //nolint:staticcheck
 	// AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
 	// AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)) //nolint:staticcheck
 
@@ -472,7 +477,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.BankKeeper,
 		appKeepers.StakingKeeper,
 		appKeepers.DistrKeeper,
-		bApp.MsgServiceRouter(),
+		msgServiceRouter,
 		govConfig,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -523,7 +528,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	authzKeepper := authzkeeper.NewKeeper(
 		runtime.NewKVStoreService(appKeepers.keys[authzkeeper.StoreKey]),
 		appCodec,
-		bApp.MsgServiceRouter(),
+		msgServiceRouter,
 		appKeepers.AccountKeeper,
 	)
 	appKeepers.AuthzKeeper = &authzKeepper

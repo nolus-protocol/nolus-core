@@ -149,6 +149,8 @@ func New(
 		invCheckPeriod,
 		appOpts,
 		appparams.Bech32PrefixAccAddr,
+		app.MsgServiceRouter(),
+		app.GRPCQueryRouter(),
 	)
 
 	// TODO: decide if we want textual sign mode (https://github.com/cosmos/cosmos-sdk/blob/release/v0.50.x/UPGRADING.md#textual-sign-mode)
