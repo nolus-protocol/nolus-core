@@ -35,7 +35,7 @@ type TestAccount struct {
 	priv cryptotypes.PrivKey
 }
 
-// AnteTestSuite is a test suite to be used with ante handler tests.
+// KeeperTestSuite is a test suite to be used with ante handler tests.
 type KeeperTestSuite struct {
 	suite.Suite
 
