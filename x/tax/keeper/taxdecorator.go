@@ -55,39 +55,37 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	}
 
 	feeCoin := txFees[0]
-	// TODO: with sdk50, now there are simulations with no fee provided, decide how to handle this
-	// if feeCoin.IsNil() || feeCoin.Amount.IsZero() {
-	// 	return ctx, types.ErrAmountNilOrZero
-	// }
 
-	if err = feeCoin.Validate(); err != nil {
-		return ctx, err
-	}
-
-	// if tax is paid in something different than base denom
-	// we deduct tax and send it to the profit address for the corresponding dex
-	// based on the denom which tax is paid in
-	baseDenom := dtd.tk.BaseDenom(ctx)
-	if baseDenom != feeCoin.Denom {
-		feeParam, err := getFeeParamBasedOnDenom(dtd.tk.GetParams(ctx).FeeParams, sdk.NewCoins(feeCoin))
-		if err != nil {
+	if !feeCoin.IsNil() {
+		if err = feeCoin.Validate(); err != nil {
 			return ctx, err
 		}
 
-		// Ensure the profit address has been set
-		profitAddr, err := sdk.AccAddressFromBech32(feeParam.ProfitAddress)
-		if err != nil {
-			return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid profit smart contract address: %s", err.Error()))
-		}
+		// if tax is paid in something different than base denom
+		// we deduct tax and send it to the profit address for the corresponding dex
+		// based on the denom which tax is paid in
+		baseDenom := dtd.tk.BaseDenom(ctx)
+		if baseDenom != feeCoin.Denom {
+			feeParam, err := getFeeParamBasedOnDenom(dtd.tk.GetParams(ctx).FeeParams, sdk.NewCoins(feeCoin))
+			if err != nil {
+				return ctx, err
+			}
 
-		// since it's not baseDenom, send it to the profit
-		if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, profitAddr); err != nil {
-			return ctx, err
-		}
-	} else {
-		// if it's baseDenom, then we send it to the treasury
-		if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, treasuryAddr); err != nil {
-			return ctx, err
+			// Ensure the profit address has been set
+			profitAddr, err := sdk.AccAddressFromBech32(feeParam.ProfitAddress)
+			if err != nil {
+				return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid profit smart contract address: %s", err.Error()))
+			}
+
+			// since it's not baseDenom, send it to the profit
+			if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, profitAddr); err != nil {
+				return ctx, err
+			}
+		} else {
+			// if it's baseDenom, then we send it to the treasury
+			if err = deductTax(ctx, dtd.tk, dtd.bk, feeCoin, treasuryAddr); err != nil {
+				return ctx, err
+			}
 		}
 	}
 
