@@ -137,7 +137,7 @@ func TestCustomTxFeeCheckerSuccessfulInNLS(t *testing.T) {
 
 // Fail to pay fees in unsupported denom.
 func TestCustomTxFeeCheckerFailWhenUnsupportedDenom(t *testing.T) {
-	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{
 		Msgs: []sdk.Msg{},
@@ -243,7 +243,7 @@ func TestCustomTxFeeCheckerFailOnZeroFees(t *testing.T) {
 
 // Successfully pay fees in unls which represents NLS. Minimum gas prices set to unls.
 func TestCustomTxFeeCheckerFailWhenEmptyFee(t *testing.T) {
-	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", sdk.NewInt(1))})
+	taxKeeper, ctx, _ := keepertest.TaxKeeper(t, true, sdk.DecCoins{sdk.NewDecCoin("unls", math.NewInt(1))})
 	// create a new CustomTxFeeChecker
 	feeTx := keepertest.MockFeeTx{}
 
