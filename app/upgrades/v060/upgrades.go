@@ -27,13 +27,6 @@ func CreateUpgradeHandler(
 			return vm, err
 		}
 
-		// TODO
-		// ctx.Logger().Info("Setting consensus params...")
-		// err = enableVoteExtensions(ctx, keepers.ConsensusKeeper)
-		// if err != nil {
-		// 	return nil, err
-		// }
-
 		ctx.Logger().Info(`
 $$\   $$\           $$\                                       $$$$$$\      $$$$$$\      $$$$$$\  
 $$$\  $$ |          $$ |                                     $$$ __$$\    $$  __$$\    $$$ __$$\ 
@@ -68,24 +61,3 @@ $$$$$$$$$$\ $$ |      $$  __|   $$ |
 		return vm, nil
 	}
 }
-
-// func enableVoteExtensions(ctx sdk.Context, consensusKeeper *consensuskeeper.Keeper) error {
-// 	oldParams, err := consensusKeeper.Params(ctx, &types.QueryParamsRequest{})
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// we need to enable VoteExtensions for Slinky
-// 	oldParams.Params.Abci = &comettypes.ABCIParams{VoteExtensionsEnableHeight: ctx.BlockHeight() + 4}
-
-// 	updateParamsMsg := types.MsgUpdateParams{
-// 		Authority: authtypes.NewModuleAddress(adminmoduletypes.ModuleName).String(),
-// 		Block:     oldParams.Params.Block,
-// 		Evidence:  oldParams.Params.Evidence,
-// 		Validator: oldParams.Params.Validator,
-// 		Abci:      oldParams.Params.Abci,
-// 	}
-
-// 	_, err = consensusKeeper.UpdateParams(ctx, &updateParamsMsg)
-// 	return err
-// }
