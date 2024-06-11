@@ -16,7 +16,7 @@ env:
   ERC_REGISTRY_ALIAS: "nolus"
   ERC_REPOSITORY: "builder"
   # make sure to update build-binary container tag as well
-  IMAGE_TAG: "1.21.6"
+  IMAGE_TAG: "1.22.1"
   DOCKERFILE: ".github/images/builder.Dockerfile"
   CHECKSUM_FILE: "sha256sum.txt"
   METADATA_FILE: "${{ github.ref_name }}_binaries.json"
@@ -90,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
-      image: "public.ecr.aws/nolus/builder:1.21.6"
+      image: "public.ecr.aws/nolus/builder:1.22.1"
 
     steps:
       - uses: actions/checkout@v3
