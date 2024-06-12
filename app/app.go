@@ -94,7 +94,6 @@ type App struct {
 
 	cdc               *codec.LegacyAmino
 	appCodec          codec.Codec
-	txConfig          client.TxConfig
 	interfaceRegistry types.InterfaceRegistry
 	encodingConfig    EncodingConfig
 	invCheckPeriod    uint
@@ -123,12 +122,12 @@ func New(
 	appCodec := encodingConfig.Marshaler
 	cdc := encodingConfig.Amino
 	interfaceRegistry := encodingConfig.InterfaceRegistry
-	txConfig := authtx.NewTxConfig(appCodec, authtx.DefaultSignModes)
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
+	bApp.SetTxEncoder(encodingConfig.TxConfig.TxEncoder())
 
 	app := &App{
 		BaseApp:           bApp,
@@ -169,7 +168,7 @@ func New(
 	if err != nil {
 		panic(err)
 	}
-	app.txConfig = txConfig
+	app.encodingConfig.TxConfig = txConfig
 
 	/****  Module Options ****/
 
