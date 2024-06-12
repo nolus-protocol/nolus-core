@@ -228,11 +228,12 @@ __set_gov_parameters() {
 
   local genesis_tmp_file="$genesis_file".tmp
 
+# TODO: use a variable for expedited_voting_period
   < "$genesis_file" \
     jq '.app_state["gov"]["deposit_params"]["max_deposit_period"]="'"$max_deposit_period"'"' \
-    | jq '.app_state["gov"]["params"]["voting_period"]="'"$gov_voting_period"'"' \
-    | jq '.app_state["gov"]["params"]["expedited_voting_period"]="'"$voting_period"'"' \
-    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$gov_voting_period"'"' > "$genesis_tmp_file"
+    | jq '.app_state["gov"]["params"]["voting_period"]="'"$voting_period"'"' \
+    | jq '.app_state["gov"]["params"]["expedited_voting_period"]="2m"' \
+    | jq '.app_state["gov"]["voting_params"]["voting_period"]="'"$voting_period"'"' > "$genesis_tmp_file"
   mv "$genesis_tmp_file" "$genesis_file"
 }
 
