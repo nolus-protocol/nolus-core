@@ -85,49 +85,6 @@ type (
 	}
 )
 
-// Option configures root command option.
-type Option func(*rootOptions)
-
-// scaffoldingOptions keeps set of options to apply scaffolding.
-type rootOptions struct {
-	addSubCmds         []*cobra.Command
-	startCmdCustomizer func(*cobra.Command)
-	envPrefix          string
-}
-
-func newRootOptions(options ...Option) rootOptions {
-	opts := rootOptions{}
-	opts.apply(options...)
-	return opts
-}
-
-func (s *rootOptions) apply(options ...Option) {
-	for _, o := range options {
-		o(s)
-	}
-}
-
-// AddSubCmd adds sub commands.
-func AddSubCmd(cmd ...*cobra.Command) Option {
-	return func(o *rootOptions) {
-		o.addSubCmds = append(o.addSubCmds, cmd...)
-	}
-}
-
-// CustomizeStartCmd accepts a handler to customize the start command.
-func CustomizeStartCmd(h func(startCmd *cobra.Command)) Option {
-	return func(o *rootOptions) {
-		o.startCmdCustomizer = h
-	}
-}
-
-// WithEnvPrefix accepts a new prefix for environment variables.
-func WithEnvPrefix(envPrefix string) Option {
-	return func(o *rootOptions) {
-		o.envPrefix = envPrefix
-	}
-}
-
 // NewRootCmd creates a new root command for a Cosmos SDK application.
 func NewRootCmd(
 	appName,
@@ -135,7 +92,6 @@ func NewRootCmd(
 	defaultChainID string,
 	moduleBasics module.BasicManager,
 ) (*cobra.Command, app.EncodingConfig) {
-	rootOptions := newRootOptions()
 	encodingConfig := app.MakeEncodingConfig(moduleBasics)
 
 	// create a temporary application for use in constructing query + tx commands
@@ -167,7 +123,7 @@ func NewRootCmd(
 		WithAccountRetriever(types.AccountRetriever{}).
 		WithBroadcastMode(flags.BroadcastSync).
 		WithHomeDir(defaultNodeHome).
-		WithViper(rootOptions.envPrefix)
+		WithViper("")
 
 	rootCmd := &cobra.Command{
 		Use:   appName + "d",
@@ -181,6 +137,7 @@ func NewRootCmd(
 			if err != nil {
 				return err
 			}
+
 			initClientCtx, err = config.ReadFromClientConfig(initClientCtx)
 			if err != nil {
 				return err
@@ -199,12 +156,8 @@ func NewRootCmd(
 	initRootCmd(
 		rootCmd,
 		encodingConfig,
-		defaultNodeHome,
-		moduleBasics,
-		rootOptions,
 	)
 
-	// add keyring to autocli opts
 	autoCliOpts := tempApp.AutoCliOpts()
 	initClientCtx, err := config.ReadDefaultValuesFromDefaultClientConfig(initClientCtx)
 	if err != nil {
@@ -231,27 +184,24 @@ func NewRootCmd(
 func initRootCmd(
 	rootCmd *cobra.Command,
 	encodingConfig app.EncodingConfig,
-	defaultNodeHome string,
-	moduleBasics module.BasicManager,
-	options rootOptions,
 ) {
-	gentxModule := moduleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
+	gentxModule := app.ModuleBasics[genutiltypes.ModuleName].(genutil.AppModuleBasic)
 
 	rootCmd.AddCommand(
-		genutilcli.InitCmd(moduleBasics, defaultNodeHome),
-		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, defaultNodeHome, gentxModule.GenTxValidator, encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec()),
+		genutilcli.InitCmd(app.ModuleBasics, app.DefaultNodeHome),
+		genutilcli.CollectGenTxsCmd(banktypes.GenesisBalancesIterator{}, app.DefaultNodeHome, gentxModule.GenTxValidator, encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec()),
 		// TODO: Do we need MigrateGenesisCmd?
 		// genutilcli.MigrateGenesisCmd(),
 		genutilcli.GenTxCmd(
-			moduleBasics,
+			app.ModuleBasics,
 			encodingConfig.TxConfig,
 			banktypes.GenesisBalancesIterator{},
-			defaultNodeHome,
+			app.DefaultNodeHome,
 			encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec(),
 		),
-		genutilcli.ValidateGenesisCmd(moduleBasics),
-		addGenesisAccountCmd(defaultNodeHome),
-		addGenesisWasmMsgCmd(defaultNodeHome),
+		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
+		addGenesisAccountCmd(app.DefaultNodeHome),
+		addGenesisWasmMsgCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
@@ -266,16 +216,10 @@ func initRootCmd(
 	// add server commands
 	server.AddCommands(
 		rootCmd,
-		defaultNodeHome,
+		app.DefaultNodeHome,
 		a.newApp,
 		a.appExport,
-		func(cmd *cobra.Command) {
-			addModuleInitFlags(cmd)
-
-			if options.startCmdCustomizer != nil {
-				options.startCmdCustomizer(cmd)
-			}
-		},
+		addModuleInitFlags,
 	)
 
 	// add keybase, auxiliary RPC, query, and tx child commands
@@ -284,19 +228,14 @@ func initRootCmd(
 		server.ShowValidatorCmd(),
 		server.ShowNodeIDCmd(),
 		server.ShowAddressCmd(),
-		queryCommand(moduleBasics),
+		queryCommand(),
 		txCommand(),
 		keys.Commands(),
 	)
-
-	// add user given sub commands.
-	for _, cmd := range options.addSubCmds {
-		rootCmd.AddCommand(cmd)
-	}
 }
 
 // queryCommand returns the sub-command to send queries to the app.
-func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
+func queryCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        "query",
 		Aliases:                    []string{"q"},
@@ -316,7 +255,6 @@ func queryCommand(moduleBasics module.BasicManager) *cobra.Command {
 		authcmd.QueryTxCmd(),
 	)
 
-	moduleBasics.AddQueryCommands(cmd)
 	cmd.PersistentFlags().String(flags.FlagChainID, "", "The network chain ID")
 
 	return cmd
