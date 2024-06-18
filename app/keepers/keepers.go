@@ -462,9 +462,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
 		AddRoute(ibcclienttypes.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)). //nolint:staticcheck
 		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(*appKeepers.ParamsKeeper))
-	// TODO: test these proposals and remove these legacy handler
-	// AddRoute(upgradetypes.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(appKeepers.UpgradeKeeper)).
-	// AddRoute(ibcexported.RouterKey, ibcclient.NewClientProposalHandler(appKeepers.IBCKeeper.ClientKeeper)) //nolint:staticcheck
 
 	govConfig := govtypes.DefaultConfig()
 	// MaxMetadataLen defines the maximum proposal metadata length.
