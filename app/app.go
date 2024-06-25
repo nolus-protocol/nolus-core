@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
-	"strings"
 
 	"github.com/spf13/cast"
 
@@ -268,10 +266,10 @@ func New(
 
 func (app *App) SetInterchainTxsLocalChain() {
 	// ChainID gets chainID from private fields of BaseApp
-	chainID := reflect.ValueOf(app.BaseApp).Elem().FieldByName("chainID").String()
+	// chainID := reflect.ValueOf(app.BaseApp).Elem().FieldByName("chainID").String()
 
 	// If chain is not at block 0 or it's not a local chain, we don't set the storage param
-	if app.LastBlockHeight() != 0 || !strings.Contains(chainID, "local") {
+	if app.LastBlockHeight() != 0 {
 		return
 	}
 	store := app.CommitMultiStore()
