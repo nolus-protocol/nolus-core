@@ -3,6 +3,8 @@ package nolus.vestings.v1beta1;
 
 import "gogoproto/gogo.proto";
 import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "amino/amino.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/vestings/types";
 
@@ -17,6 +19,8 @@ service Msg {
 // MsgCreateVestingAccount defines a message that enables creating a vesting
 // account.
 message MsgCreateVestingAccount {
+  option (cosmos.msg.v1.signer) = "from_address";
+  option (amino.name) = "nolus-core/x/vestings/CreateVestingAccount";
   option (gogoproto.equal) = true;
 
   string from_address = 1 [ (gogoproto.moretags) = "yaml:\"from_address\"" ];

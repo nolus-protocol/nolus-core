@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"errors"
 	"strconv"
 
 	"github.com/spf13/cobra"
@@ -38,6 +39,10 @@ timestamp.`,
 			toAddr, err := sdk.AccAddressFromBech32(args[0])
 			if err != nil {
 				return err
+			}
+
+			if args[1] == "" {
+				return errors.New("amount is empty")
 			}
 
 			amount, err := sdk.ParseCoinsNormalized(args[1])
