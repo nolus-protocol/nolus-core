@@ -49,7 +49,6 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
-	"github.com/Nolus-Protocol/nolus-core/app/openapiconsole"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v060 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v060"
@@ -461,9 +460,8 @@ func (app *App) RegisterAPIRoutes(apiSvr *api.Server, apiConfig config.APIConfig
 	// Register nodeservice grpc-gateway routes.
 	nodeservice.RegisterGRPCGatewayRoutes(clientCtx, apiSvr.GRPCGatewayRouter)
 
-	// register app's OpenAPI routes.
-	apiSvr.Router.Handle("/static/openapi.yml", http.FileServer(http.FS(docs.Docs)))
-	apiSvr.Router.HandleFunc("/", openapiconsole.Handler(Name, "/static/openapi.yml"))
+	// Register app's swagger ui on "/swagger" path
+	apiSvr.Router.PathPrefix("/swagger").Handler(http.FileServer(http.FS(docs.SwaggerFiles)))
 }
 
 // RegisterTxService implements the Application.RegisterTxService method.

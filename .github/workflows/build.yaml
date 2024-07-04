@@ -50,7 +50,7 @@ jobs:
               --region $AWS_REGION \
               --image-ids=imageTag=$IMAGE_TAG
 
-  # Builds and pushed builder image if it does not exist
+  # Builds and push builder image if it does not exist
   builder-create:
     name: Create builder image
     needs: builder-exists
