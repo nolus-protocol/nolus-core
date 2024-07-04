@@ -2,6 +2,8 @@ name: Protobuf
 # Protobuf runs buf (https://buf.build/) lint and check-breakage
 # This workflow is only run when a .proto file has been changed
 on:
+  # Allows the workflow to be triggered manually
+  workflow_dispatch:
   pull_request:
     paths:
       - "proto/**"
@@ -16,10 +18,11 @@ env:
   ERC_REGISTRY: "public.ecr.aws"
   ERC_REGISTRY_ALIAS: "nolus"
   ERC_REPOSITORY: "protogen"
-  IMAGE_TAG: "0.1"
+  IMAGE_TAG: "0.2.0"
   DOCKERFILE: ".github/images/protogen.Dockerfile"
 
 jobs:
+  # Checks if protogen image exists in docker registry
   protogen-exists:
       name: Check protogen exists
       runs-on: ubuntu-latest
@@ -46,8 +49,9 @@ jobs:
                 --repository-name $ERC_REPOSITORY \
                 --region $AWS_REGION \
                 --image-ids=imageTag=$IMAGE_TAG
-
-  protogen-build:
+  
+  # Builds and push protogen image if it does not exist
+  protogen-create:
     name: Create protogen image
     needs: protogen-exists
     runs-on: ubuntu-latest
@@ -79,8 +83,8 @@ jobs:
             echo "Image version $IMAGE_TAG exists. Skipping step..."
           fi
 
-  lint:
-    name: Lint
+  proto-lint:
+    name: Lint protobuf files
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -90,7 +94,7 @@ jobs:
         with:
           input: "proto"
 
-  break-check:
+  proto-break-check:
     name: Detect breaking changes
     runs-on: ubuntu-latest
     steps:

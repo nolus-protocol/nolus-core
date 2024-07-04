@@ -187,19 +187,19 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=0.14.0
-protoImageName=ghcr.io/cosmos/proto-builder:$(protoVer)
+protoVer=0.2.0
+protoImageName=public.ecr.aws/nolus/protogen:$(protoVer)
 protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user root $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
 
 proto-gen:
 	@echo "Generating Protobuf files"
-	@$(protoImage) sh ./proto/scripts/protocgen.sh
+	@$(protoImage) ./proto/scripts/protocgen.sh
 
 proto-swagger-gen:
 	@echo "Generating Protobuf Swagger"
-	@$(protoImage) sh ./proto/scripts/protoc-swagger-gen.sh
+	@$(protoImage) ./proto/scripts/protoc-swagger-gen.sh
 
 proto-format:
 	@$(protoImage) find ./ -name "*.proto" -exec clang-format -i {} \;
