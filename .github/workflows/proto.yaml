@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - "proto/**"
-    workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
   contents: read
