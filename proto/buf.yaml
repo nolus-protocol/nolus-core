@@ -1,6 +1,6 @@
 # cosmos-sdk pinned to v0.47.0 required for cosmos/gogoproto - https://github.com/cosmos/cosmos-sdk/blob/main/proto/README.md
 version: v1
-name: buf.build/nomo/nolus-core
+name: buf.build/Nolus-Protocol/nolus-core
 deps:
   - buf.build/cosmos/cosmos-proto
   - buf.build/cosmos/gogo-proto
