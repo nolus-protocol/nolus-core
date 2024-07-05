@@ -1,8 +1,7 @@
 name: Protobuf
 # Protobuf runs buf (https://buf.build/) lint and check-breakage
 # This workflow is only run when a .proto file has been changed
-on:
-  # Allows the workflow to be triggered manually
+on: 
   workflow_dispatch:
   pull_request:
     paths:
