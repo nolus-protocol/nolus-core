@@ -58,7 +58,6 @@ import (
 	_ "github.com/cosmos/cosmos-sdk/x/staking" // import for side-effects
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	capabilitymodulev1 "github.com/cosmos/ibc-go/modules/capability"
 	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
@@ -218,10 +217,11 @@ var (
 					// OrderMigrations: []string{},
 				}),
 			},
-			{
-				Name:   capabilitytypes.ModuleName,
-				Config: appconfig.WrapAny(&capabilitymodulev1.Module{}),
-			},
+			// TODO: capability module config : ? -> generate .pulsar. files for the modules below
+			// {
+			// 	Name:   capabilitytypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&capabilitymodulev1.Module{}),
+			// },
 			{
 				Name: authtypes.ModuleName,
 				Config: appconfig.WrapAny(&authmodulev1.Module{
@@ -267,18 +267,19 @@ var (
 				Name:   crisistypes.ModuleName,
 				Config: appconfig.WrapAny(&crisismodulev1.Module{}),
 			},
-			{
-				Name:   taxmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&taxmoduletypes.Module{}),
-			},
-			{
-				Name:   vestingstypes.ModuleName,
-				Config: appconfig.WrapAny(&vestingstypes.Module{}),
-			},
-			{
-				Name:   ibcexported.ModuleName,
-				Config: appconfig.WrapAny(&ibcexported.Module{}),
-			},
+			// TODO: generate .pulsar. files for the modules below
+			// {
+			// 	Name:   taxmoduletypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&taxmoduletypes.Module{}),
+			// },
+			// {
+			// 	Name:   vestingstypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&vestingstypes.Module{}),
+			// },
+			// {
+			// 	Name:   ibcexported.ModuleName,
+			// 	Config: appconfig.WrapAny(&ibcexported.Module{}),
+			// },
 			{
 				Name:   genutiltypes.ModuleName,
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),
@@ -303,38 +304,39 @@ var (
 				Name:   upgradetypes.ModuleName,
 				Config: appconfig.WrapAny(&upgrademodulev1.Module{}),
 			},
-			{
-				Name:   ibctransfertypes.ModuleName,
-				Config: appconfig.WrapAny(&ibctransfertypes.Module{}),
-			},
-			{
-				Name:   icatypes.ModuleName,
-				Config: appconfig.WrapAny(&icatypes.Module{}),
-			},
-			{
-				Name:   interchainqueriestypes.ModuleName,
-				Config: appconfig.WrapAny(&interchainqueriestypes.Module{}),
-			},
-			{
-				Name:   interchaintxstypes.ModuleName,
-				Config: appconfig.WrapAny(&interchaintxstypes.Module{}),
-			},
-			{
-				Name:   contractmanagermoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&contractmanagermoduletypes.Module{}),
-			},
-			{
-				Name:   wasmtypes.ModuleName,
-				Config: appconfig.WrapAny(&wasmtypes.Module{}),
-			},
-			{
-				Name:   feetypes.ModuleName,
-				Config: appconfig.WrapAny(&feetypes.Module{}),
-			},
-			{
-				Name:   consensusparamtypes.ModuleName,
-				Config: appconfig.WrapAny(&consensusparamtypes.Module{}),
-			},
+			// TODO: generate .pulsar. files for the modules below
+			// {
+			// 	Name:   ibctransfertypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&ibctransfertypes.Module{}),
+			// },
+			// {
+			// 	Name:   icatypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&icatypes.Module{}),
+			// },
+			// {
+			// 	Name:   interchainqueriestypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&interchainqueriestypes.Module{}),
+			// },
+			// {
+			// 	Name:   interchaintxstypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&interchaintxstypes.Module{}),
+			// },
+			// {
+			// 	Name:   contractmanagermoduletypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&contractmanagermoduletypes.Module{}),
+			// },
+			// {
+			// 	Name:   wasmtypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&wasmtypes.Module{}),
+			// },
+			// {
+			// 	Name:   feetypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&feetypes.Module{}),
+			// },
+			// {
+			// 	Name:   consensusparamtypes.ModuleName,
+			// 	Config: appconfig.WrapAny(&consensusparamtypes.Module{}),
+			// },
 		},
 	}),
 		depinject.Supply(
