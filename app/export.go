@@ -33,7 +33,7 @@ func (app *App) ExportAppStateAndValidators(
 		}
 	}
 
-	genState, err := app.mm.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
+	genState, err := app.ModuleManager.ExportGenesisForModules(ctx, app.appCodec, modulesToExport)
 	if err != nil {
 		return servertypes.ExportedApp{}, err
 	}

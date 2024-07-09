@@ -34,6 +34,9 @@ require (
 	cosmossdk.io/x/tx v0.14.0
 	cosmossdk.io/x/upgrade v0.2.0
 	github.com/cosmos/admin-module/v2 v2.0.0-20240430142959-8b3328d1b1a2
+	cosmossdk.io/depinject v1.0.0-alpha.4
+	cosmossdk.io/x/circuit v0.1.1
+	cosmossdk.io/x/nft v0.1.1
 	github.com/cosmos/cosmos-db v1.1.1
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/cosmos/ibc-go/modules/capability v1.0.1
