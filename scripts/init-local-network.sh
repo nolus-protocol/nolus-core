@@ -37,6 +37,7 @@ RESERVE_NAME="reserve"
 RESERVE_TOKENS="1000000000""$NATIVE_CURRENCY"
 GOV_VOTING_PERIOD="300s"
 GOV_MAX_DEPOSIT_PERIOD="43200s"
+GOV_EXPEDITED_VOTING_PERIOD="2m"
 STAKING_MAX_VALIDATORS="40"
 FEEREFUNDER_ACK_FEE_MIN="1"
 FEEREFUNDER_TIMEOUT_FEE_MIN="1"
@@ -89,6 +90,7 @@ while [[ $# -gt 0 ]]; do
     [--reserve-tokens <initial_reserve_tokens>]
     [--gov-voting-period <voting_period>]
     [--gov-max-deposit-period <max_deposit_period - XXs>]
+    [--gov-expedited-voting-period <expedited_voting_period>]
     [--staking-max-validators <staking_max_validators>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
@@ -204,6 +206,11 @@ while [[ $# -gt 0 ]]; do
 
   --gov-max-deposit-period)
     GOV_MAX_DEPOSIT_PERIOD="$2"
+    shift 2
+    ;;
+
+  --gov-expedited-voting-period)
+    GOV_EXPEDITED_VOTING_PERIOD="$2"
     shift 2
     ;;
 
@@ -349,7 +356,7 @@ init_setup_validator_local_sh "$INIT_LOCAL_NETWORK_SCRIPT_DIR" "$VALIDATORS_ROOT
 source "$INIT_LOCAL_NETWORK_SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$MINIMUM_GAS_PRICE" "$QUERY_GAS_LIMIT" "$CHAIN_ID" "$NATIVE_CURRENCY" \
               "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_ARTIFACTS_PATH_PLATFORM" \
-              "$TREASURY_NLS_U128" "$GOV_VOTING_PERIOD" "$GOV_MAX_DEPOSIT_PERIOD" "$STAKING_MAX_VALIDATORS" \
+              "$TREASURY_NLS_U128" "$GOV_VOTING_PERIOD" "$GOV_MAX_DEPOSIT_PERIOD" "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
               "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
               "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_BALANCE"
 
