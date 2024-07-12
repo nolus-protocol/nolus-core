@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine3.18
+FROM golang:1.22.5-alpine3.20
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
@@ -22,7 +22,7 @@ ARG WASMVM_REL_DIR=".wasmvm"
 ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
 # pointing the linker to the dir the library is stored
 ENV WASMVM_DIR=${WASMVM_DIR}
-ARG WASMVM_LIB_LOCAL="libwasmvm_muslc.a"
+ARG WASMVM_LIB_LOCAL="libwasmvm_muslc.x86_64.a"
 ARG WASMVM_LOCAL_PATH="$WASMVM_DIR/$WASMVM_LIB_LOCAL"
 ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL/checksums.txt"
 
