@@ -20,6 +20,7 @@ env:
   DOCKERFILE: ".github/images/builder.Dockerfile"
   CHECKSUM_FILE: "sha256sum.txt"
   METADATA_FILE: "${{ github.ref_name }}_binaries.json"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 jobs:
   # Checks if builder image exists in docker registry
