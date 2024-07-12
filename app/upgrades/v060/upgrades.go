@@ -22,7 +22,7 @@ func CreateUpgradeHandler(
 		ctx := sdk.UnwrapSDKContext(c)
 
 		ctx.Logger().Info("Starting module migrations...")
-		vm, err := mm.RunMigrations(ctx, configurator, vm)
+		vm, err := mm.RunMigrations(ctx, configurator, vm) //nolint:contextcheck
 		if err != nil {
 			return vm, err
 		}
