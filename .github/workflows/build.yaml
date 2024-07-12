@@ -25,7 +25,7 @@ jobs:
   # Checks if builder image exists in docker registry
   builder-exists:
     name: Builder exists
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: amazon/aws-cli
     outputs:
       # 'failure' -  when no image with such tag exists
@@ -54,7 +54,7 @@ jobs:
   builder-create:
     name: Create builder image
     needs: builder-exists
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
