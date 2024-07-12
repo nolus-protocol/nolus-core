@@ -27,6 +27,7 @@ __print_usage() {
     [--validator-stake <tokens_validator_stakes>]
     [--gov-voting-period <voting_period>]
     [--gov-max-deposit-period <max_deposit_period - XXs>]
+    [--gov-expedited-voting-period <gov_expedited_voting_period>]
     [--staking-max-validators <staking_max_validators>]
     [--feerefunder-ack-fee-min <feerefunder_ack_fee_min_amount>]
     [--feerefunder-timeout-fee-min <feerefunder_timeout_fee_min_amount>]
@@ -50,6 +51,7 @@ VAL_STAKE="1000000""$NATIVE_CURRENCY"
 OUTPUT_FILE=""
 GOV_VOTING_PERIOD="43200s"
 GOV_MAX_DEPOSIT_PERIOD="43200s"
+GOV_EXPEDITED_VOTING_PERIOD="2m"
 STAKING_MAX_VALIDATORS="40"
 FEEREFUNDER_ACK_FEE_MIN="1"
 FEEREFUNDER_TIMEOUT_FEE_MIN="1"
@@ -147,6 +149,12 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
+  --gov-expedited-voting-period)
+    GOV_EXPEDITED_VOTING_PERIOD="$2"
+    shift
+    shift
+    ;;
+
   --staking-max-validators)
     STAKING_MAX_VALIDATORS="$2"
     shift
@@ -206,7 +214,7 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
                                   "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
                                   "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$GOV_VOTING_PERIOD" \
-                                  "$GOV_MAX_DEPOSIT_PERIOD" "$STAKING_MAX_VALIDATORS" \
+                                  "$GOV_MAX_DEPOSIT_PERIOD" "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
                                   "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"  \
                                   "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" \
                                   "$ADMINS_TOKENS")
