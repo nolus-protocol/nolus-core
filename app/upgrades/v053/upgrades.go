@@ -21,6 +21,6 @@ func CreateUpgradeHandler(
 		ctx := sdk.UnwrapSDKContext(c)
 
 		ctx.Logger().Info(`IBC-Go v7.4.0 upgrade handler execution...`)
-		return mm.RunMigrations(ctx, configurator, fromVM)
+		return mm.RunMigrations(ctx, configurator, fromVM) //nolint:contextcheck
 	}
 }
