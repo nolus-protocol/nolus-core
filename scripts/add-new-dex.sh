@@ -42,12 +42,7 @@ CHAIN_TRUST_THRESHOLD_NUMERATOR="2"
 CHAIN_TRUST_THRESHOLD_DENOMINATOR="3"
 IF_INTERCHAIN_SECURITY="true"
 
-source "$NOLUS_MONEY_MARKET_DIR/scripts/deploy-platform.sh"
-
 PROTOCOL_CURRENCY=""
-ADMIN_CONTRACT_ADDRESS="$(admin_contract_instance_addr)"
-TREASURY_CONTRACT_ADDRESS="$(treasury_instance_addr)"
-TIMEALARMS_CONTRACT_ADDRESS="$(timealarms_instance_addr)"
 SWAP_TREE=""
 
 while [[ $# -gt 0 ]]; do
@@ -75,13 +70,12 @@ while [[ $# -gt 0 ]]; do
     [--dex-ip-addr-rpc-host <new_dex_chain_ip_addr_rpc_fully_host>]
     [--dex-ip-addr-grpc-host <new_dex_chain_ip_addr_grpc_fully_host>]
     [--dex-account-prefix <new_dex_account_prefix>]
-    [--dex-price-denom <new_dex_price_denom>]
     [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
     [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
     [--dex-rpc-timeout-secs <dex_rpc_timeout_in_seconds>]
     [--dex-default-gas <dex_default_gas>]
     [--dex-max-gas <dex_max_gas>]
-    [--dex-gas-price-price <dex_gas_price_price>]
+    [--dex-gas-price-denom <dex_gas_price_denom>]
     [--dex-gas-multiplier <dex_gas_multiplier>]
     [--dex-max-msg-num <dex_max_msg_num>]
     [--dex-max-tx-size <dex_max_tx_size>]
@@ -281,6 +275,12 @@ while [[ $# -gt 0 ]]; do
 
   esac
 done
+
+source "$NOLUS_MONEY_MARKET_DIR/scripts/deploy-platform.sh"
+
+ADMIN_CONTRACT_ADDRESS="$(admin_contract_instance_addr)"
+TREASURY_CONTRACT_ADDRESS="$(treasury_instance_addr)"
+TIMEALARMS_CONTRACT_ADDRESS="$(timealarms_instance_addr)"
 
 NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
 
