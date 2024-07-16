@@ -32,8 +32,9 @@ var (
 	_ module.AppModuleSimulation = (*AppModule)(nil)
 	_ module.HasABCIGenesis      = (*AppModule)(nil)
 
-	_ appmodule.AppModule    = (*AppModule)(nil)
-	_ module.HasABCIEndBlock = (*AppModule)(nil)
+	_ appmodule.AppModule       = (*AppModule)(nil)
+	_ module.HasABCIEndBlock    = (*AppModule)(nil)
+	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
 )
 
 // AppModuleBasic defines the basic application module used by the mint module.
@@ -166,8 +167,8 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return ConsensusVersion }
 
 // BeginBlock returns the begin blocker for the mint module.
-func (am AppModule) BeginBlock(ctx context.Context) {
-	BeginBlocker(ctx, am.keeper)
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	return BeginBlocker(ctx, am.keeper)
 }
 
 // EndBlock returns the end blocker for the mint module. It returns no validator

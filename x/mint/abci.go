@@ -161,11 +161,11 @@ func predictTotalMinted(totalMinted sdkmath.Uint, normTimePassed, timeAhead sdkm
 }
 
 // BeginBlocker mints new tokens for the previous block.
-func BeginBlocker(ctx context.Context, k keeper.Keeper) {
+func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	c := sdk.UnwrapSDKContext(ctx)
 	minter := k.GetMinter(ctx)
 	if minter.TotalMinted.GTE(types.MintingCap) {
-		return
+		return errors.New("minting cap has been reached")
 	}
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
@@ -206,4 +206,6 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) {
 			sdk.NewAttribute(sdk.AttributeKeyAmount, coinAmount.String()),
 		),
 	)
+
+	return nil
 }
