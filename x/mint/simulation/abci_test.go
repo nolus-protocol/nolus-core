@@ -28,10 +28,16 @@ func Test_BeginBlock(t *testing.T) {
 	blockTime := time.Now()
 	ctx := app.BaseApp.NewContext(false).WithBlockTime(blockTime)
 	minterKeeper := app.MintKeeper
-	mint.BeginBlocker(ctx, *minterKeeper)
+
+	err = mint.BeginBlocker(ctx, *minterKeeper)
+	require.NoError(t, err)
+
 	header := tmproto.Header{Height: app.LastBlockHeight() + 2}
 	ctx2 := ctx.WithBlockHeader(header).WithBlockTime(blockTime.Add(time.Second * 40))
-	mint.BeginBlocker(ctx2, *minterKeeper)
+
+	err = mint.BeginBlocker(ctx2, *minterKeeper)
+	require.NoError(t, err)
+
 	minter := minterKeeper.GetMinter(ctx2)
 	feeCollector := app.AccountKeeper.GetModuleAccount(ctx2, types.FeeCollectorName)
 	feesCollectedInt := app.BankKeeper.GetAllBalances(ctx2, feeCollector.GetAddress())
