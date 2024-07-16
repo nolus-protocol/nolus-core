@@ -4,18 +4,19 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
 
-	storetypes "cosmossdk.io/store/types"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 // Keeper of the mint store.
 type Keeper struct {
 	cdc              codec.BinaryCodec
-	storeKey         storetypes.StoreKey
+	storeService     store.KVStoreService
 	bankKeeper       types.BankKeeper
 	feeCollectorName string
 
@@ -26,7 +27,7 @@ type Keeper struct {
 
 // NewKeeper creates a new mint Keeper instance.
 func NewKeeper(
-	cdc codec.BinaryCodec, key storetypes.StoreKey,
+	cdc codec.BinaryCodec, storeService store.KVStoreService,
 	ak types.AccountKeeper, bk types.BankKeeper,
 	feeCollectorName string, authority string,
 ) Keeper {
@@ -37,7 +38,7 @@ func NewKeeper(
 
 	return Keeper{
 		cdc:              cdc,
-		storeKey:         key,
+		storeService:     storeService,
 		bankKeeper:       bk,
 		feeCollectorName: feeCollectorName,
 		authority:        authority,
@@ -56,49 +57,58 @@ func (k Keeper) Logger(ctx context.Context) log.Logger {
 }
 
 // GetMinter get the minter.
-func (k Keeper) GetMinter(ctx context.Context) (minter types.Minter) {
-	c := sdk.UnwrapSDKContext(ctx)
-	store := c.KVStore(k.storeKey)
-	b := store.Get(types.MinterKey)
-	if b == nil {
-		panic("stored minter should not have been nil")
+func (k Keeper) GetMinter(ctx context.Context) types.Minter {
+	store := k.storeService.OpenKVStore(ctx)
+
+	b, err := store.Get(types.MinterKey)
+	if err != nil {
+		panic("error getting stored minter")
 	}
 
+	var minter types.Minter
 	k.cdc.MustUnmarshal(b, &minter)
-	return
+	return minter
 }
 
 // SetMinter set the minter.
-func (k Keeper) SetMinter(ctx context.Context, minter types.Minter) {
-	c := sdk.UnwrapSDKContext(ctx)
-	store := c.KVStore(k.storeKey)
+func (k Keeper) SetMinter(ctx context.Context, minter types.Minter) error {
+	store := k.storeService.OpenKVStore(ctx)
 	b := k.cdc.MustMarshal(&minter)
-	store.Set(types.MinterKey, b)
+
+	err := store.Set(types.MinterKey, b)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // GetParams returns the current x/mint module parameters.
-func (k Keeper) GetParams(ctx context.Context) (p types.Params) {
-	c := sdk.UnwrapSDKContext(ctx)
-	store := c.KVStore(k.storeKey)
-	bz := store.Get(types.ParamsKey)
-	if bz == nil {
-		return p
+func (k Keeper) GetParams(ctx context.Context) types.Params {
+	store := k.storeService.OpenKVStore(ctx)
+
+	b, err := store.Get(types.ParamsKey)
+	if err != nil {
+		panic("error getting stored minter")
 	}
 
-	k.cdc.MustUnmarshal(bz, &p)
-	return p
+	var params types.Params
+	k.cdc.MustUnmarshal(b, &params)
+	return params
 }
 
 // SetParams sets the x/mint module parameters.
 func (k Keeper) SetParams(ctx context.Context, p types.Params) error {
-	c := sdk.UnwrapSDKContext(ctx)
 	if err := p.Validate(); err != nil {
 		return err
 	}
 
-	store := c.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&p)
-	store.Set(types.ParamsKey, bz)
+	store := k.storeService.OpenKVStore(ctx)
+	b := k.cdc.MustMarshal(&p)
+
+	if err := store.Set(types.ParamsKey, b); err != nil {
+		return err
+	}
 
 	return nil
 }
