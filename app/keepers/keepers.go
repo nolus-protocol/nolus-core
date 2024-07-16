@@ -251,7 +251,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	mintKeeper := mintkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[minttypes.StoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[minttypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.FeeCollectorName,

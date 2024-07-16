@@ -8,8 +8,12 @@ import (
 
 // InitGenesis new mint genesis.
 func InitGenesis(ctx sdk.Context, keeper keeper.Keeper, ak types.AccountKeeper, data *types.GenesisState) {
-	keeper.SetMinter(ctx, data.Minter)
-	err := keeper.SetParams(ctx, data.Params)
+	err := keeper.SetMinter(ctx, data.Minter)
+	if err != nil {
+		ctx.Logger().Error("error setting minter", "error", err)
+	}
+
+	err = keeper.SetParams(ctx, data.Params)
 	if err != nil {
 		ctx.Logger().Error("error setting mint params", "error", err)
 	}

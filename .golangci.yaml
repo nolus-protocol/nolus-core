@@ -13,8 +13,8 @@ linters:
     - asciicheck
     - bidichk
     - bodyclose
-    - contextcheck
-    #- depguard
+    # - contextcheck
+    # - depguard
     - godot
     - gofmt
     - gofumpt

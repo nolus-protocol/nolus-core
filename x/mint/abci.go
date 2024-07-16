@@ -179,7 +179,10 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
 	minter.AnnualInflation = predictTotalMinted(minter.TotalMinted, minter.NormTimePassed, twelveMonths)
 	c.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
-	k.SetMinter(ctx, minter)
+	err := k.SetMinter(ctx, minter)
+	if err != nil {
+		panic(err)
+	}
 
 	if coinAmount.GT(sdkmath.ZeroUint()) {
 		// mint coins, update supply

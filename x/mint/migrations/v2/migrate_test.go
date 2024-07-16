@@ -10,12 +10,14 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/exported"
-	v2 "github.com/Nolus-Protocol/nolus-core/x/mint/migrations/v2"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 
+	"github.com/cosmos/cosmos-sdk/runtime"
 	"github.com/cosmos/cosmos-sdk/testutil"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	moduletestutil "github.com/cosmos/cosmos-sdk/types/module/testutil"
+
+	v2 "github.com/Nolus-Protocol/nolus-core/x/mint/migrations/v2"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 type mockSubspace struct {
@@ -38,13 +40,16 @@ func TestMigrate(t *testing.T) {
 	storeKey := storetypes.NewKVStoreKey(v2.ModuleName)
 	tKey := storetypes.NewTransientStoreKey("transient_test")
 	ctx := testutil.DefaultContext(storeKey, tKey)
-	store := ctx.KVStore(storeKey)
-
 	legacySubspace := newMockSubspace(types.DefaultParams())
-	require.NoError(t, v2.Migrate(ctx, store, legacySubspace, cdc))
+	storeService := runtime.NewKVStoreService(storeKey)
+	store := storeService.OpenKVStore(ctx)
+
+	require.NoError(t, v2.Migrate(ctx, runtime.NewKVStoreService(storeKey), legacySubspace, cdc))
+
+	b, err := store.Get(v2.ParamsKey)
+	require.NoError(t, err)
 
 	var res types.Params
-	bz := store.Get(v2.ParamsKey)
-	require.NoError(t, cdc.Unmarshal(bz, &res))
+	require.NoError(t, cdc.Unmarshal(b, &res))
 	require.Equal(t, legacySubspace.ps, res)
 }

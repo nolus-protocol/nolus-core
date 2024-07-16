@@ -24,8 +24,11 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	isCheckTx := false
 	ctx := app.BaseApp.NewContext(isCheckTx)
 
-	_ = app.MintKeeper.SetParams(ctx, types.NewParams(denom, sdkmath.NewUint(maxMintableNanoseconds)))
-	app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
+	err = app.MintKeeper.SetParams(ctx, types.NewParams(denom, sdkmath.NewUint(maxMintableNanoseconds)))
+	require.NoError(t, err)
+
+	err = app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
+	require.NoError(t, err)
 
 	require.Equal(t, denom, app.MintKeeper.GetParams(ctx).MintDenom)
 	require.Equal(t, sdkmath.NewUint(maxMintableNanoseconds), app.MintKeeper.GetParams(ctx).MaxMintableNanoseconds)
