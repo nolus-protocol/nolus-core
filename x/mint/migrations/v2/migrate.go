@@ -1,11 +1,13 @@
 package v2
 
 import (
-	storetypes "cosmossdk.io/store/types"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/exported"
-	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	"cosmossdk.io/core/store"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/mint/exported"
+	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
 
 const (
@@ -20,7 +22,7 @@ var ParamsKey = []byte{0x01}
 // module state.
 func Migrate(
 	ctx sdk.Context,
-	store storetypes.KVStore,
+	storeService store.KVStoreService,
 	legacySubspace exported.Subspace,
 	cdc codec.BinaryCodec,
 ) error {
@@ -31,8 +33,12 @@ func Migrate(
 		return err
 	}
 
-	bz := cdc.MustMarshal(&currParams)
-	store.Set(ParamsKey, bz)
+	store := storeService.OpenKVStore(ctx)
+	b := cdc.MustMarshal(&currParams)
+
+	if err := store.Set(ParamsKey, b); err != nil {
+		return err
+	}
 
 	return nil
 }
