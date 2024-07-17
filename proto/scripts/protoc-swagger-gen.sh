@@ -36,11 +36,6 @@ done
 # rm -rf ./tmp-swagger-gen/cosmos/tx/v1beta1/service.swagger.json
 # rm -rf ./tmp-swagger-gen/cosmos/autocli/v1/query.swagger.json
 
-# remove unnecessary modules and their proto files
-# rm -rf tmp-swagger-gen/cosmos/mint
-# rm -rf tmp-swagger-gen/cosmos/tax
-# rm -rf tmp-swagger-gen/cosmos/vestings
-
 # Convert all *.swagger.json files into a single folder _all
 files=$(find ./tmp-swagger-gen -name '*.swagger.json' -print0 | xargs -0)
 mkdir -p ./tmp-swagger-gen/_all
@@ -73,7 +68,7 @@ python3 ./scripts/swagger_merger.py
 swagger-combine ./tmp-swagger-gen/FINAL.json -o ./tmp-swagger-gen/tmp_swagger.yaml -f yaml --continueOnConflictingPaths true --includeDefinitions true
 
 # extends out the *ref instances to their full value
-swagger-merger --input ./tmp-swagger-gen/tmp_swagger.yaml -o ./docs/static/swagger.yaml
+swagger-merger --input ./tmp-swagger-gen/tmp_swagger.yaml -o ./docs/swagger/swagger.yaml
 
-# rm -rf tmp-swagger-gen
-# rm -rf tmp_depscd 
+rm -rf tmp-swagger-gen
+rm -rf tmp_deps
