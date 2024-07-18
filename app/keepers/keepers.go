@@ -8,6 +8,8 @@ import (
 	evidencekeeper "cosmossdk.io/x/evidence/keeper"
 	evidencetypes "cosmossdk.io/x/evidence/types"
 	"cosmossdk.io/x/feegrant"
+	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/address"
@@ -60,20 +62,19 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
 
-	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
-	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
-	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
-	"github.com/Nolus-Protocol/nolus-core/x/vestings"
-	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
-	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
-
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	feegrantkeeper "cosmossdk.io/x/feegrant/keeper"
+	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
+	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
+	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	"github.com/Nolus-Protocol/nolus-core/x/vestings"
+	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
+	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
+
 	"github.com/neutron-org/neutron/v4/x/contractmanager"
 	contractmanagermodulekeeper "github.com/neutron-org/neutron/v4/x/contractmanager/keeper"
 	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
@@ -126,7 +127,7 @@ type AppKeepers struct {
 	ScopedICAHostKeeper       capabilitykeeper.ScopedKeeper
 
 	MintKeeper     *mintkeeper.Keeper
-	TaxKeeper      *taxmodulekeeper.Keeper
+	TaxKeeper      *taxkeeper.Keeper
 	VestingsKeeper *vestingskeeper.Keeper
 
 	InterchainTxsKeeper     *interchaintxskeeper.Keeper
@@ -482,10 +483,9 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	// Set legacy router for backwards compatibility with gov v1beta1
 	appKeepers.GovKeeper.SetLegacyRouter(govRouter)
 
-	taxKeeper := taxmodulekeeper.NewKeeper(
+	taxKeeper := taxkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[taxmoduletypes.StoreKey],
-		appKeepers.keys[taxmoduletypes.MemStoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[taxtypes.StoreKey]),
 		appKeepers.WasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
@@ -543,7 +543,7 @@ func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
 ) *paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
-	paramsKeeper.Subspace(taxmoduletypes.ModuleName).WithKeyTable(taxmoduletypes.ParamKeyTable())
+	paramsKeeper.Subspace(taxtypes.ModuleName).WithKeyTable(taxtypes.ParamKeyTable())
 	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())   //nolint:staticcheck

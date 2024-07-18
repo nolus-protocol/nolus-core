@@ -44,6 +44,7 @@ func (s *KeeperTestSuite) TestParams() {
 
 		s.Run(tc.name, func() {
 			expected := s.app.TaxKeeper.GetParams(s.ctx)
+			// TODO expect panic if params are not set
 			err := s.app.TaxKeeper.SetParams(s.ctx, tc.input)
 			if tc.expectErr {
 				s.Require().Error(err)
