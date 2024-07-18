@@ -19,11 +19,11 @@ nolusd tx gov submit-proposal migrate-contract [contract-address] [uploaded-code
 Message for calling smart contract's function should be in JSON format and pasted into ' '. In case when the message for your purpose is defined empty you should send only '{}'.
 2. After proposal is created it is in deposit period so amount of staked should reach 10000000unls to start the voting period. E.g.:
 ````shell
-nolusd tx gov deposit [proposal-id] [deposit-ammount] --from [your-account] --fees 500unls
+nolusd tx gov deposit [proposal-id] [deposit-amount] --from [your-account] --fees 500unls
 ````
 3. If you still have not delegated your tokens to validator and want to take part in the voting you should stake, E.g.:
 ````shell
-nolusd tx staking delegate [delegators-address] [ammount] --from [your-account] --fees 100000unls
+nolusd tx staking delegate [delegators-address] [amount] --from [your-account] --fees 100000unls
 ````
 The addresses of validators you can find by querying them:
 ````shell
