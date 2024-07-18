@@ -24,5 +24,5 @@ func NewMigrator(k Keeper, ss exported.Subspace) Migrator {
 // and managed by the x/params modules and stores them directly into the x/tax
 // module state.
 func (m Migrator) Migrate2to3(ctx sdk.Context) error {
-	return v3.Migrate(ctx, ctx.KVStore(m.keeper.storeKey), m.legacySubspace, m.keeper.cdc)
+	return v3.Migrate(ctx, m.keeper.storeService.OpenKVStore(ctx), m.legacySubspace, m.keeper.cdc)
 }
