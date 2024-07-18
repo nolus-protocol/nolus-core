@@ -1,22 +1,23 @@
 package keeper
 
 import (
+	"context"
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
 
-	sdktypes "cosmossdk.io/store/types"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 type Keeper struct {
-	cdc      codec.BinaryCodec
-	storeKey sdktypes.StoreKey
-	memKey   sdktypes.StoreKey
+	cdc          codec.BinaryCodec
+	storeService store.KVStoreService
+	wasmKeeper   types.WasmKeeper
 
-	wasmKeeper types.WasmKeeper
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
 	authority string
@@ -24,17 +25,15 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey sdktypes.StoreKey,
+	storeService store.KVStoreService,
 	wasmKeeper types.WasmKeeper,
 	authority string,
 ) Keeper {
 	return Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		wasmKeeper: wasmKeeper,
-		authority:  authority,
+		cdc:          cdc,
+		storeService: storeService,
+		wasmKeeper:   wasmKeeper,
+		authority:    authority,
 	}
 }
 
@@ -43,6 +42,7 @@ func (k Keeper) GetAuthority() string {
 	return k.authority
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k Keeper) Logger(ctx context.Context) log.Logger {
+	c := sdk.UnwrapSDKContext(ctx)
+	return c.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }

@@ -1,11 +1,13 @@
 package v3
 
 import (
-	storetypes "cosmossdk.io/store/types"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	storetypes "cosmossdk.io/core/store"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
+	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
 )
 
 const (
@@ -32,7 +34,9 @@ func Migrate(
 	}
 
 	bz := cdc.MustMarshal(&currParams)
-	store.Set(ParamsKey, bz)
+	if err := store.Set(ParamsKey, bz); err != nil {
+		return err
+	}
 
 	return nil
 }
