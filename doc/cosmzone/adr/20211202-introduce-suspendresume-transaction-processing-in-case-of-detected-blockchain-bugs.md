@@ -13,7 +13,7 @@ It is worth to note, that this functionality is intended to be used only in case
 
 ## Decision Drivers <!-- optional -->
 
-- ability to enter the pausing mode immediatelly after the Nolus operations team receive a notification
+- ability to enter the pausing mode immediately after the Nolus operations team receive a notification
 - ability to get back to the fully operational mode once the Nolus operations team decides
 
 ## Considered Options

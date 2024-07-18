@@ -211,7 +211,7 @@ func Test_CalcTokensFixed_WhenHittingMintCapInAMonth_DoesNotExceedMaxMintingCap(
 		mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 	mintThreshold := sdkmath.NewUint(1_000_000) // 1 token
 	if types.MintingCap.Sub(minter.TotalMinted).GT(sdkmath.ZeroUint()) {
-		t.Errorf("Minting Cap exeeded, minted total %v, with minting cap %v",
+		t.Errorf("Minting Cap exceeded, minted total %v, with minting cap %v",
 			minter.TotalMinted, types.MintingCap)
 	}
 	if types.GetAbsDiff(halfFixedAmount, mintedCoins).GT(mintThreshold) {

@@ -68,7 +68,7 @@
 
     So if the gitlab is on a VPN and the gitlab runner host's host resolution is set (a) to add VPN dns entries in `/etc/resolv.conf` that leads to intermittent host resolution failures when non-VPN dns is being used, or (b) to use a local resolver, e.g. `systemd-resolved` which sets a local host address as a name server, for example 127.0.0.53, which docker then filters it out and replaces it with the Google's one causing host resolution failures.
 
-    A workaround is to setup explicit `dns` on the GitLab Runner and executors, namely on the helper container that performs source code cloning. The Runner needs `--dns` parameter on the command line. The executors, incl. the helper container may be fixed specifying `dns = [""]` in `[runners.docker]` of the GitLab Runner `congif.toml`.
+    A workaround is to setup explicit `dns` on the GitLab Runner and executors, namely on the helper container that performs source code cloning. The Runner needs `--dns` parameter on the command line. The executors, incl. the helper container may be fixed specifying `dns = [""]` in `[runners.docker]` of the GitLab Runner `config.toml`.
 
 # TBD
 - [Build Docker images](https://docs.gitlab.com/ee/ci/docker/using_docker_build.html)
