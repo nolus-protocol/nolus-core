@@ -493,8 +493,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.VestingsKeeper = vestingskeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[vestingstypes.StoreKey],
-		appKeepers.keys[vestingstypes.MemStoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[vestingstypes.StoreKey]),
 		appKeepers.AccountKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),

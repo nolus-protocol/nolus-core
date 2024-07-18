@@ -4,8 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
-	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -13,9 +14,8 @@ import (
 )
 
 type Keeper struct {
-	cdc      codec.BinaryCodec
-	storeKey storetypes.StoreKey
-	memKey   storetypes.StoreKey
+	cdc          codec.BinaryCodec
+	storeService store.KVStoreService
 
 	accountKeeper types.AccountKeeper
 	bankKeeper    types.BankKeeper
@@ -27,16 +27,14 @@ type Keeper struct {
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
+	storeService store.KVStoreService,
 	accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
 		cdc:           cdc,
-		storeKey:      storeKey,
-		memKey:        memKey,
+		storeService:  storeService,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		authority:     authority,
