@@ -1,4 +1,9 @@
-FROM golang:1.22.5-alpine3.20
+# Use alpine:3.18 as base image and manually download golang temporarily
+# TODO: once we migrate to wasmvm 2.1.0, we can go back to using base golang image
+FROM alpine:3.18
+
+ENV PATH /usr/local/go/bin:$PATH
+COPY --from=golang:1.22 /usr/local/go /usr/local/go
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
