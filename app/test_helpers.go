@@ -16,7 +16,6 @@ import (
 
 // returns context and app with params set on account keeper.
 func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
-	encoding := MakeEncodingConfig(ModuleBasics)
 	app := New(
 		log.NewNopLogger(),
 		db.NewMemDB(),

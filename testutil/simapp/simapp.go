@@ -229,8 +229,6 @@ var defaultConsensusParams = &cmtproto.ConsensusParams{
 
 // NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
-	encoding := app.MakeEncodingConfig(app.ModuleBasics)
-
 	return func(val network.ValidatorI) servertypes.Application {
 		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir,
 			encoding,

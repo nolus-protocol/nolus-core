@@ -124,7 +124,8 @@ func appModules(
 		),
 		authzmodule.NewAppModule(appCodec, *app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, encodingConfig.InterfaceRegistry),
 		auth.NewAppModule(appCodec, *app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
-		vestings.NewAppModule(*app.AccountKeeper, app.BankKeeper),
+		// TODO:
+		// vestings.NewAppModule(*app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, *app.FeegrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
@@ -224,11 +225,7 @@ func orderEndBlockers() []string {
 		slashingtypes.ModuleName,
 		upgradetypes.ModuleName,
 		authtypes.ModuleName,
-<<<<<<< HEAD
 		vestingtypes.ModuleName,
-=======
-		capabilitytypes.ModuleName,
->>>>>>> 5450786 (wip)
 		minttypes.ModuleName,
 		evidencetypes.ModuleName,
 		feegrant.ModuleName,
