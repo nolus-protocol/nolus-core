@@ -8,7 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -17,16 +16,11 @@ import (
 
 // returns context and app with params set on account keeper.
 func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
-	encoding := MakeEncodingConfig(ModuleBasics)
 	app := New(
 		log.NewNopLogger(),
 		db.NewMemDB(),
 		nil,
 		true,
-		map[int64]bool{},
-		tempDir,
-		simcli.FlagPeriodValue,
-		encoding,
 		sims.EmptyAppOptions{},
 	)
 

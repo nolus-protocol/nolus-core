@@ -140,10 +140,6 @@ func TestAppStateDeterminism(t *testing.T) {
 				db,
 				nil,
 				true,
-				map[int64]bool{},
-				testHomeDir(config.ChainID),
-				simcli.FlagPeriodValue,
-				encConfig,
 				simtestutil.EmptyAppOptions{},
 				fauxMerkleModeOpt,
 				baseapp.SetChainID(config.ChainID),
@@ -208,10 +204,6 @@ func TestAppImportExport(t *testing.T) {
 		db,
 		nil,
 		true,
-		map[int64]bool{},
-		testHomeDir(config.ChainID),
-		simcli.FlagPeriodValue,
-		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(config.ChainID),
@@ -226,7 +218,7 @@ func TestAppImportExport(t *testing.T) {
 		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 		simtypes.RandomAccounts,
 		simtestutil.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
-		nolusApp.ModuleAccountAddrs(),
+		BlockedAddresses(),
 		config,
 		nolusApp.AppCodec(),
 	)
@@ -242,7 +234,7 @@ func TestAppImportExport(t *testing.T) {
 
 	t.Log("exporting genesis...")
 
-	exported, err := nolusApp.ExportAppStateAndValidators(false, []string{}, nolusApp.mm.ModuleNames())
+	exported, err := nolusApp.ExportAppStateAndValidators(false, []string{}, nolusApp.ModuleManager.ModuleNames())
 	require.NoError(t, err)
 
 	t.Log("importing genesis...")
@@ -261,10 +253,6 @@ func TestAppImportExport(t *testing.T) {
 		newDB,
 		nil,
 		true,
-		map[int64]bool{},
-		testHomeDir(config.ChainID),
-		simcli.FlagPeriodValue,
-		encConfig,
 		simtestutil.EmptyAppOptions{},
 		fauxMerkleModeOpt,
 		baseapp.SetChainID(config.ChainID),
@@ -277,7 +265,7 @@ func TestAppImportExport(t *testing.T) {
 
 	ctxA := nolusApp.NewContextLegacy(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
 	ctxB := newNolusApp.NewContextLegacy(true, tmproto.Header{Height: nolusApp.LastBlockHeight()})
-	_, err = newNolusApp.mm.InitGenesis(ctxB, nolusApp.AppCodec(), genesisState)
+	_, err = newNolusApp.ModuleManager.InitGenesis(ctxB, nolusApp.AppCodec(), genesisState)
 
 	if err != nil {
 		if strings.Contains(err.Error(), "validator set is empty after InitGenesis") {

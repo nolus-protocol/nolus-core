@@ -58,10 +58,6 @@ func New(t *testing.T, withDefaultGenesisState bool) *app.App {
 		database,
 		nil,
 		true,
-		map[int64]bool{},
-		testHomeDir(chainID),
-		0,
-		encoding,
 		sims.EmptyAppOptions{},
 		baseapp.SetChainID(chainID),
 	)
@@ -231,11 +227,8 @@ var defaultConsensusParams = &cmtproto.ConsensusParams{
 
 // NewAppConstructor returns a new simapp AppConstructor.
 func NewAppConstructor() network.AppConstructor {
-	encoding := app.MakeEncodingConfig(app.ModuleBasics)
-
 	return func(val network.ValidatorI) servertypes.Application {
-		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0,
-			encoding,
+		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
 			baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),

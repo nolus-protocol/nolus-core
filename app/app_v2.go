@@ -33,6 +33,10 @@ import (
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
+const (
+	Name = "nolus"
+)
+
 // DefaultNodeHome default home directories for the application daemon
 var DefaultNodeHome string
 
