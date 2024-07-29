@@ -3,22 +3,14 @@ package app
 import (
 	"context"
 
-	storetypes "cosmossdk.io/store/types"
-	circuittypes "cosmossdk.io/x/circuit/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 
+	v062 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v062"
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
-// TODO:
-
-// UpgradeName defines the on-chain upgrade name for the sample SimApp upgrade
-// from v047 to v050.
-//
-// NOTE: This upgrade defines a reference implementation of what an upgrade
-// could look like when an application is migrating from Cosmos SDK version
-// v0.47.x to v0.50.x.
-const UpgradeName = "v047-to-v050"
+// TODO: test
+var UpgradeName = v062.Upgrade.UpgradeName
 
 func (app App) RegisterUpgradeHandlers() {
 	app.UpgradeKeeper.SetUpgradeHandler(
@@ -34,11 +26,7 @@ func (app App) RegisterUpgradeHandlers() {
 	}
 
 	if upgradeInfo.Name == UpgradeName && !app.UpgradeKeeper.IsSkipHeight(upgradeInfo.Height) {
-		storeUpgrades := storetypes.StoreUpgrades{
-			Added: []string{
-				circuittypes.ModuleName,
-			},
-		}
+		storeUpgrades := v062.Upgrade.StoreUpgrades
 
 		// configure store loader that checks if version == upgradeHeight and applies store upgrades
 		app.SetStoreLoader(upgradetypes.UpgradeStoreLoader(upgradeInfo.Height, &storeUpgrades))
