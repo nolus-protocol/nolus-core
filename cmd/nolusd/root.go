@@ -224,7 +224,8 @@ func initRootCmd(
 		),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		addGenesisAccountCmd(app.DefaultNodeHome),
-		addGenesisWasmMsgCmd(app.DefaultNodeHome),
+		// TODO: remove?
+		// addGenesisWasmMsgCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
