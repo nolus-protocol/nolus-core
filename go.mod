@@ -3,9 +3,9 @@ module github.com/Nolus-Protocol/nolus-core
 go 1.22.4
 
 require (
-	github.com/CosmWasm/wasmd v0.51.0
-	github.com/CosmWasm/wasmvm/v2 v2.0.0
-	github.com/cometbft/cometbft v0.38.11
+	github.com/CosmWasm/wasmd v0.52.0
+	github.com/CosmWasm/wasmvm/v2 v2.1.0
+	github.com/cometbft/cometbft v0.38.10
 	github.com/cosmos/cosmos-sdk v0.50.7
 	github.com/cosmos/gogoproto v1.5.0
 	github.com/cosmos/ibc-go/v8 v8.3.2

@@ -75,7 +75,8 @@ generate_genesis() {
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
     "$accounts_spec" "$treasury_contract_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
     "$gov_max_deposit_period" "$gov_expedited_voting_period" "$staking_max_validators" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
-  _=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$treasury_init_tokens" "$dex_admin_address")
+  # TODO
+  #_=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$treasury_init_tokens" "$dex_admin_address")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   _=$(__integrate_genesis_txs "$create_validator_txs")
