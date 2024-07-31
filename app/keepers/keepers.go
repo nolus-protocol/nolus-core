@@ -381,8 +381,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAHostKeeper = &icaHostKeeper
-	// TODO: use this with ibc-go v8.3.0 https://github.com/cosmos/ibc-go/issues/6415
-	// appKeepers.ICAHostKeeper.WithQueryRouter(grpcQueryRouter)
+	appKeepers.ICAHostKeeper.WithQueryRouter(grpcQueryRouter)
 
 	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, appKeepers.ICAHostKeeper)
 
@@ -424,7 +423,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	var wasmOpts []wasmkeeper.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := []string{"iterator", "stargate", "staking", "neutron", "migrate", "upgrade", "cosmwasm_1_1", "cosmwasm_1_2", "cosmwasm_1_3", "cosmwasm_1_4", "cosmwasm_2_0"}
+	supportedFeatures := []string{"iterator", "stargate", "staking", "neutron", "migrate", "upgrade", "cosmwasm_1_1", "cosmwasm_1_2", "cosmwasm_1_3", "cosmwasm_1_4", "cosmwasm_2_0", "cosmwasm_2_1"}
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(
 		appKeepers.InterchainTxsKeeper,
 		appKeepers.InterchainQueriesKeeper,
