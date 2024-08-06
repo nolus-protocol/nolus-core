@@ -38,7 +38,6 @@ VAL_TOKENS="1000000000""$NATIVE_CURRENCY"
 VAL_STAKE="1000000""$NATIVE_CURRENCY"
 CHAIN_ID=""
 WASM_SCRIPT_PATH=""
-WASM_CODE_PATH=""
 TREASURY_NLS_U128="1000000000000"
 FAUCET_MNEMONIC=""
 FAUCET_TOKENS="100000000000""$NATIVE_CURRENCY"
@@ -172,12 +171,6 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
 
-  --wasm-code-path)
-    WASM_CODE_PATH="$2"
-    shift
-    shift
-    ;;
-
   --treasury-nls-u128)
     TREASURY_NLS_U128="$2"
     shift
@@ -261,7 +254,6 @@ done
 verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
 verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
 verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
-verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
 verify_mandatory "$FAUCET_MNEMONIC" "Faucet mnemonic"
 verify_mandatory "$CHAIN_ID" "Nolus Chain ID"
 verify_mandatory "$SSH_USER" "Server ssh user"
@@ -284,8 +276,8 @@ setup_services "$VALIDATORS"
 
 source "$SCRIPT_DIR"/internal/init-network.sh
 init_network "$VAL_ACCOUNTS_DIR" "$VALIDATORS" "$MINIMUM_GAS_PRICE" "$QUERY_GAS_LIMIT" "$CHAIN_ID" "$NATIVE_CURRENCY" \
-  "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$WASM_CODE_PATH" \
-  "$TREASURY_NLS_U128" "$GOV_VOTING_PERIOD" "$GOV_MAX_DEPOSIT_PERIOD" "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
+  "$VAL_TOKENS" "$VAL_STAKE" "$accounts_spec" "$WASM_SCRIPT_PATH" "$TREASURY_NLS_U128" \
+  "$GOV_VOTING_PERIOD" "$GOV_MAX_DEPOSIT_PERIOD" "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
   "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN" \
   "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" "$ADMINS_TOKENS"
 

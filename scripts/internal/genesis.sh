@@ -28,6 +28,19 @@ determine_addr() {
   rm_dir "$key_dir"
 }
 
+__addresses_to_string() {
+  local -r addresses=("${@:1}")
+
+  local addresses_to_string="["
+  for address in "${addresses[@]}"; do
+      addresses_to_string+="\"$address\","
+  done
+  addresses_to_string="${addresses_to_string%,}"
+  addresses_to_string+="]"
+
+  echo "$addresses_to_string"
+}
+
 generate_genesis() {
   set -euo pipefail
   local -r chain_id="$1"
@@ -37,19 +50,17 @@ generate_genesis() {
   local -r val_accounts_dir="$5"
   local -r accounts_spec_in="$6"
   local -r wasm_script_path="$7"
-  local -r wasm_code_path="$8"
-  local -r treasury_init_tokens_u128="$9"
-  local -r node_id_and_val_pubkeys="${10}"
-  local -r gov_voting_period="${11}"
-  local -r gov_max_deposit_period="${12}"
-  local -r gov_expedited_voting_period="${13}"
-  local -r staking_max_validators="${14}"
-  local -r feerefunder_ack_fee_min="${15}"
-  local -r feerefunder_timeout_fee_min="${16}"
-  local -r dex_admin_mnemonic="${17}"
-  local -r store_code_privileged_account_mnemonic="${18}"
-  local -r admins_tokens="${19}"
-
+  local -r treasury_init_tokens_u128="$8"
+  local -r node_id_and_val_pubkeys="$9"
+  local -r gov_voting_period="${10}"
+  local -r gov_max_deposit_period="${11}"
+  local -r gov_expedited_voting_period="${12}"
+  local -r staking_max_validators="${13}"
+  local -r feerefunder_ack_fee_min="${14}"
+  local -r feerefunder_timeout_fee_min="${15}"
+  local -r dex_admin_mnemonic="${16}"
+  local -r store_code_privileged_account_mnemonic="${17}"
+  local -r admins_tokens="${18}"
 
   local -r treasury_init_tokens="$treasury_init_tokens_u128$native_currency"
   init_val_mngr_sh "$val_accounts_dir" "$chain_id"
@@ -74,9 +85,8 @@ generate_genesis() {
   # use the below pattern to let the pipefail dump the failed command output
   _=$(__generate_proto_genesis_no_wasm "$chain_id" "$native_currency" \
     "$accounts_spec" "$treasury_contract_addr" "$treasury_init_tokens_u128" "$admin_contract_addr" "$gov_voting_period" \
-    "$gov_max_deposit_period" "$gov_expedited_voting_period" "$staking_max_validators" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$store_code_privileged_addr")
-  # TODO
-  #_=$(add_wasm_messages "$genesis_home_dir" "$wasm_code_path" "$treasury_init_tokens" "$dex_admin_address")
+    "$gov_max_deposit_period" "$gov_expedited_voting_period" "$staking_max_validators" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" \
+    "$store_code_privileged_addr")
 
   create_validator_txs="$(__gen_val_txns "$genesis_file" "$node_id_and_val_pubkeys" "$val_stake")"
   _=$(__integrate_genesis_txs "$create_validator_txs")
@@ -141,7 +151,7 @@ __generate_proto_genesis_no_wasm() {
   local -r feerefunder_timeout_fee_min="${12}"
   local -r store_code_privileged_addr="${13}"
 
-  local -a wasm_allowed_addresses=("$admin_contract_addr" "$store_code_privileged_addr")
+  local -a wasm_allowed_addresses_store=("$admin_contract_addr" "$store_code_privileged_addr")
 
   run_cmd "$genesis_home_dir" init genesis_manager --chain-id "$chain_id"
   run_cmd "$genesis_home_dir" config set client keyring-backend test
@@ -149,7 +159,7 @@ __generate_proto_genesis_no_wasm() {
 
   __set_token_denominations "$genesis_file" "$native_currency"
   __set_tax_recipient "$genesis_file" "$treasury_addr"
-  __set_wasm_permission_params "$genesis_file" "${wasm_allowed_addresses[@]}"
+  __set_wasm_permission_params "$genesis_file" "${wasm_allowed_addresses_store[@]}"
   __set_gov_parameters "$genesis_file" "$gov_voting_period" "$gov_max_deposit_period" "$gov_expedited_voting_period"
   __modify_slashing_and_staking_params "$genesis_file" "$staking_max_validators"
   __modify_neutron_modules_params "$genesis_file" "$feerefunder_ack_fee_min" "$feerefunder_timeout_fee_min" "$native_currency"
@@ -206,20 +216,15 @@ __set_tax_recipient() {
 
 __set_wasm_permission_params() {
   local -r genesis_file="$1"
-  local -a allowed_addresses=("${@:2}")
+  local -a allowed_addresses_store=("${@:2}")
 
   local genesis_tmp_file="$genesis_file".tmp
 
-  local addresses_to_string="["
-  for address in "${allowed_addresses[@]}"; do
-      addresses_to_string+="\"$address\","
-  done
-  addresses_to_string="${addresses_to_string%,}"
-  addresses_to_string+="]"
+  local -r allowed_addresses_store_string=$(__addresses_to_string "${allowed_addresses_store[@]}")
 
   < "$genesis_file" \
     jq '.app_state["wasm"]["params"]["code_upload_access"]["permission"]="AnyOfAddresses"' \
-    | jq '.app_state["wasm"]["params"]["code_upload_access"]["addresses"]='$addresses_to_string'' \
+    | jq '.app_state["wasm"]["params"]["code_upload_access"]["addresses"]='$allowed_addresses_store_string'' \
     | jq '.app_state["wasm"]["params"]["instantiate_default_permission"]="Everybody"' > "$genesis_tmp_file"
 
   mv "$genesis_tmp_file" "$genesis_file"
