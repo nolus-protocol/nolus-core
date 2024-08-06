@@ -19,7 +19,6 @@ __print_usage() {
     [--currency <native_currency>]
     [--accounts <accounts_spec_json>]
     [--wasm-script-path <wasm_script_path>]
-    [--wasm-code-path <wasm_code_path>]
     [--treasury-nls-u128 <init treasury amount of uNLS>
     [--validator-node-urls-pubkeys <validator_node_urls_and_validator_pubkeys>]
     [--validator-accounts-dir <validator_accounts_dir>]
@@ -42,7 +41,6 @@ CHAIN_ID=""
 NATIVE_CURRENCY="unls"
 ACCOUNTS_SPEC=""
 WASM_SCRIPT_PATH=""
-WASM_CODE_PATH=""
 TREASURY_INIT_TOKENS_U128=""
 VAL_NODE_URLS_AND_VAL_PUBKEYS=""
 VAL_ACCOUNTS_DIR="val-accounts"
@@ -97,12 +95,6 @@ while [[ $# -gt 0 ]]; do
 
   --wasm-script-path)
     WASM_SCRIPT_PATH="$2"
-    shift
-    shift
-    ;;
-
-  --wasm-code-path)
-    WASM_CODE_PATH="$2"
     shift
     shift
     ;;
@@ -203,7 +195,6 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
   verify_mandatory "$CHAIN_ID" "Nolus chain identifier"
   verify_mandatory "$ACCOUNTS_SPEC" "Nolus genesis accounts spec"
   verify_mandatory "$WASM_SCRIPT_PATH" "Wasm script path"
-  verify_mandatory "$WASM_CODE_PATH" "Wasm code path"
   verify_mandatory "$TREASURY_INIT_TOKENS_U128" "Treasury init tokens"
   verify_mandatory "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "Validator URLs and validator public keys spec"
   verify_mandatory "$OUTPUT_FILE" "Genesis output file"
@@ -212,9 +203,9 @@ if [[ "$COMMAND" == "$COMMAND_FULL_GEN" ]]; then
 
   genesis_file=$(generate_genesis "$CHAIN_ID" "$NATIVE_CURRENCY" "$VAL_TOKENS" "$VAL_STAKE" \
                                   "$VAL_ACCOUNTS_DIR" "$ACCOUNTS_SPEC" "$WASM_SCRIPT_PATH" \
-                                  "$WASM_CODE_PATH" "$TREASURY_INIT_TOKENS_U128" \
-                                  "$VAL_NODE_URLS_AND_VAL_PUBKEYS" "$GOV_VOTING_PERIOD" \
-                                  "$GOV_MAX_DEPOSIT_PERIOD" "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
+                                  "$TREASURY_INIT_TOKENS_U128" "$VAL_NODE_URLS_AND_VAL_PUBKEYS" \
+                                  "$GOV_VOTING_PERIOD" "$GOV_MAX_DEPOSIT_PERIOD" \
+                                  "$GOV_EXPEDITED_VOTING_PERIOD" "$STAKING_MAX_VALIDATORS" \
                                   "$FEEREFUNDER_ACK_FEE_MIN" "$FEEREFUNDER_TIMEOUT_FEE_MIN"  \
                                   "$DEX_ADMIN_MNEMONIC" "$STORE_CODE_PRIVILEGED_ACCOUNT_MNEMONIC" \
                                   "$ADMINS_TOKENS")
