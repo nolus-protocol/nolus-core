@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+# move generated files to the right places
+cp -r ./nolus ./api/  
+rm -rf ./nolus
+
 go mod tidy
 
 echo "Generating gogo proto code"

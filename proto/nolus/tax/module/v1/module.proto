@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package nolus.tax.module.v1;
+
+import "cosmos/app/v1alpha1/module.proto";
+
+// Module is the config object of the mint module.
+message Module {
+  option (cosmos.app.v1alpha1.module) = {
+    go_import : "github.com/Nolus-Protocol/nolus-core/x/tax"
+  };
+
+  // TODO: this what params would be needed here
+  // authority defines the custom module authority. If not set, defaults to the
+  // governance module. string authority = 2;
+}

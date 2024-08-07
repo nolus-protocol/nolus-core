@@ -8,13 +8,13 @@ import (
 	authmodulev1 "cosmossdk.io/api/cosmos/auth/module/v1"
 	authzmodulev1 "cosmossdk.io/api/cosmos/authz/module/v1"
 	bankmodulev1 "cosmossdk.io/api/cosmos/bank/module/v1"
+	consensusmodulev1 "cosmossdk.io/api/cosmos/consensus/module/v1"
 	crisismodulev1 "cosmossdk.io/api/cosmos/crisis/module/v1"
 	distrmodulev1 "cosmossdk.io/api/cosmos/distribution/module/v1"
 	evidencemodulev1 "cosmossdk.io/api/cosmos/evidence/module/v1"
 	feegrantmodulev1 "cosmossdk.io/api/cosmos/feegrant/module/v1"
 	genutilmodulev1 "cosmossdk.io/api/cosmos/genutil/module/v1"
 	govmodulev1 "cosmossdk.io/api/cosmos/gov/module/v1"
-	mintmodulev1 "cosmossdk.io/api/cosmos/mint/module/v1"
 	paramsmodulev1 "cosmossdk.io/api/cosmos/params/module/v1"
 	slashingmodulev1 "cosmossdk.io/api/cosmos/slashing/module/v1"
 	stakingmodulev1 "cosmossdk.io/api/cosmos/staking/module/v1"
@@ -63,6 +63,9 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
+	mintmodulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/mint/module/v1"
+	taxmodulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/tax/module/v1"
+	vestingsmodulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/vestings/module/v1"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
@@ -267,19 +270,14 @@ var (
 				Name:   crisistypes.ModuleName,
 				Config: appconfig.WrapAny(&crisismodulev1.Module{}),
 			},
-			// TODO: generate .pulsar. files for the modules below
-			// {
-			// 	Name:   taxmoduletypes.ModuleName,
-			// 	Config: appconfig.WrapAny(&taxmoduletypes.Module{}),
-			// },
-			// {
-			// 	Name:   vestingstypes.ModuleName,
-			// 	Config: appconfig.WrapAny(&vestingstypes.Module{}),
-			// },
-			// {
-			// 	Name:   ibcexported.ModuleName,
-			// 	Config: appconfig.WrapAny(&ibcexported.Module{}),
-			// },
+			{
+				Name:   taxmoduletypes.ModuleName,
+				Config: appconfig.WrapAny(&taxmodulev1.Module{}),
+			},
+			{
+				Name:   vestingstypes.ModuleName,
+				Config: appconfig.WrapAny(&vestingsmodulev1.Module{}),
+			},
 			{
 				Name:   genutiltypes.ModuleName,
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),
@@ -304,7 +302,15 @@ var (
 				Name:   upgradetypes.ModuleName,
 				Config: appconfig.WrapAny(&upgrademodulev1.Module{}),
 			},
-			// TODO: generate .pulsar. files for the modules below
+			{
+				Name:   consensusparamtypes.ModuleName,
+				Config: appconfig.WrapAny(&consensusmodulev1.Module{}),
+			},
+			// TODO: external dependency - have to wait them to implement
+			// {
+			// 	Name:   ibcexported.ModuleName,
+			// 	Config: appconfig.WrapAny(&ibcexportedmodulev1.Module{}),
+			// },
 			// {
 			// 	Name:   ibctransfertypes.ModuleName,
 			// 	Config: appconfig.WrapAny(&ibctransfertypes.Module{}),
@@ -332,10 +338,6 @@ var (
 			// {
 			// 	Name:   feetypes.ModuleName,
 			// 	Config: appconfig.WrapAny(&feetypes.Module{}),
-			// },
-			// {
-			// 	Name:   consensusparamtypes.ModuleName,
-			// 	Config: appconfig.WrapAny(&consensusparamtypes.Module{}),
 			// },
 		},
 	}),
