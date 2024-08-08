@@ -3,7 +3,7 @@
 - Status: accepted
 - Deciders: the Nolus dev team
 - Published: 2022-10-14
-- Last updated: 2023-04-12
+- Last updated: 2024-08-08
 - Tags: genesis, wasm, infrastructure, smart-contract
 
 Technical Story: https://app.clickup.com/t/1yyn7rm
@@ -26,7 +26,7 @@ The decision that most suited both of the above requirements was to have one add
 
 - If we were to have all of our contracts instantiated with an admin address, we would have to keep it's private key. And if anyone
 broke through and got the private key, he might have malicious intentions and damage our contracts.
-- Using the Admin contract's address as contracts owner has limited options in terms of what one might do(can execute functions only defined in the contract) which would make automated testing more difficul, but it gives security.
+- Using the Admin contract's address as contracts owner has limited options in terms of what one might do(can execute functions only defined in the contract) which would make automated testing more difficult, but it gives security.
 
 ## Considered Options
 
@@ -46,9 +46,16 @@ Global wasm permissions:
     code-upload: OnlyAddress - admin contract address
     instantiation: Everybody
 
+- [option 6] Upload and instantiate contracts after the chain has started, where each contract instance will have a specific address with instantiation permissions, selected when uploading the contracts.
+Global wasm permissions:
+    code-upload: OnlyAddress - admin contract address
+    instantiation: Everybody
+
 ## Decision Outcome
 
-We decided to go with option-5 because it is the most safe approach and we won't need to overengineer the genesis creation.
+We decided to go with option-6 because it is the most safe approach and we won't need to overengineer the genesis creation.
+We also decided to decuple from neutron wasm fork and we won't be using the gen_msgs anymore as it is not supported in the basic wasmd functionlities. We've created
+a wasmd-nolus fork which includes code optimization and ibc events filtering which are required for neutron interchain-txs and interchain-queries' modules.
 
 In the future if we need faster contracts execution, we can do code pinning [https://docs.cosmwasm.com/docs/1.0/smart-contracts/code-pinning/]
 We can also have DAO governed smart contracts, adding another layer to voting [https://docs.cosmwasm.com/dev-academy/dao-governance/what-is-a-dao#dao-governed-smart-contracts]
