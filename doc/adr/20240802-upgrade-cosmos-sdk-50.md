@@ -1,4 +1,4 @@
-# Upgrade cosmos-sdk Library to v0.47+
+# Upgrade cosmos-sdk Library to v0.50+
 
 - Status: Accepted
 - Deciders: Product Owner, Development Team
