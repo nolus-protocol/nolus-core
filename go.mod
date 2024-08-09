@@ -259,8 +259,7 @@ replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// github.com/CosmWasm/wasmd => github.com/neutron-org/wasmd v0.51.0
-	github.com/CosmWasm/wasmd => /home/denislavivanov/go/github/wasmd-nolus-fork/wasmd
+	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.52.0-nolus
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
