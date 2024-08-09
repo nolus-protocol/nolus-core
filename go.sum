@@ -920,6 +920,8 @@ github.com/nolus-protocol/cosmos-sdk v0.50.7-nolus-rc1 h1:QK59L25el60UuVoosifSg3
 github.com/nolus-protocol/cosmos-sdk v0.50.7-nolus-rc1/go.mod h1:84xDDJEHttRT7NDGwBaUOLVOMN0JNE9x7NbsYIxXs1s=
 github.com/nolus-protocol/neutron/v4 v4.0.1-nolus h1:21r0fWxqjfaLHkPS/y/H1WDxytisOZ3xPsvp+JHa1jU=
 github.com/nolus-protocol/neutron/v4 v4.0.1-nolus/go.mod h1:7TRawLFzMRs7sXuDd/R5VKHPUfNPDDMYaTcY2UjCqF0=
+github.com/nolus-protocol/wasmd v0.52.0-nolus h1:SrmACftzuXy/FwCAUccSkMEMysj3StoB3Mf8pvoqzmI=
+github.com/nolus-protocol/wasmd v0.52.0-nolus/go.mod h1:hyy1wt7c589Cs4kOK2cYdtphzCd2Xo20q/t7tfby7oI=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.8 h1:nPr65rt6Y5JFSKQO7qToXr7pePgD6Gwiw05lkbyAQTE=
 github.com/nxadm/tail v1.4.8/go.mod h1:+ncqLTQzXmGhMZNUePPaPqPvBxHAIsmXswZKocGu+AU=
