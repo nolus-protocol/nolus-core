@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"cosmossdk.io/log"
 	"cosmossdk.io/store"
@@ -53,6 +56,9 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app"
 )
 
+// FlagRejectConfigDefaults defines a flag to reject some select defaults that override what is in the config file.
+const FlagRejectConfigDefaults = "reject-config-defaults"
+
 type (
 	// AppBuilder is a method that allows to build an app.
 	AppBuilder func(
@@ -87,6 +93,46 @@ type (
 	// appCreator is an app creator.
 	appCreator struct {
 		encodingConfig app.EncodingConfig
+	}
+
+	// SectionKeyValue is used for modifying node config with recommended values.
+	SectionKeyValue struct {
+		Section string
+		Key     string
+		Value   any
+	}
+)
+
+var (
+	recommendedAppTomlValues = []SectionKeyValue{
+		{
+			Section: "wasm",
+			Key:     "query_gas_limit",
+			Value:   "2000000",
+		},
+	}
+
+	recommendedConfigTomlValues = []SectionKeyValue{
+		{
+			Section: "p2p",
+			Key:     "flush_throttle_timeout",
+			Value:   "80ms",
+		},
+		{
+			Section: "consensus",
+			Key:     "timeout_commit",
+			Value:   "500ms",
+		},
+		{
+			Section: "consensus",
+			Key:     "timeout_propose",
+			Value:   "1.8s",
+		},
+		{
+			Section: "consensus",
+			Key:     "peer_gossip_sleep_duration",
+			Value:   "50ms",
+		},
 	}
 )
 
@@ -251,6 +297,41 @@ func initRootCmd(
 		txCommand(),
 		keys.Commands(),
 	)
+
+	for i, cmd := range rootCmd.Commands() {
+		if cmd.Name() == "start" {
+			startRunE := cmd.RunE
+
+			// Instrument start command pre run hook with custom logic
+			cmd.RunE = func(cmd *cobra.Command, args []string) error {
+				serverCtx := server.GetServerContextFromCmd(cmd)
+
+				// Get flag value for rejecting config defaults
+				rejectConfigDefaults := serverCtx.Viper.GetBool(FlagRejectConfigDefaults)
+
+				// overwrite config.toml and app.toml values, if rejectConfigDefaults is false
+				if !rejectConfigDefaults {
+					// Add ctx logger line to indicate that config.toml and app.toml values are being overwritten
+					serverCtx.Logger.Info("Overwriting config.toml and app.toml values with some recommended defaults. To prevent this, set the --reject-config-defaults flag to true.")
+
+					err := overwriteConfigTomlValues(serverCtx)
+					if err != nil {
+						return err
+					}
+
+					err = overwriteAppTomlValues(serverCtx)
+					if err != nil {
+						return err
+					}
+				}
+
+				return startRunE(cmd, args)
+			}
+
+			rootCmd.Commands()[i] = cmd
+			break
+		}
+	}
 }
 
 // queryCommand returns the sub-command to send queries to the app.
@@ -309,6 +390,7 @@ func txCommand() *cobra.Command {
 func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
 	wasm.AddModuleInitFlags(startCmd)
+	startCmd.Flags().Bool(FlagRejectConfigDefaults, false, "Reject some select recommended default values from being automatically set in the config.toml and app.toml")
 }
 
 func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
@@ -509,4 +591,214 @@ var tempDir = func() string {
 	defer os.RemoveAll(dir)
 
 	return dir
+}
+
+// overwriteConfigTomlValues overwrites config.toml values. Returns error if config.toml does not exist
+//
+// Currently, overwrites:
+// - timeout_commit
+//
+// Also overwrites the respective viper config value.
+//
+// Silently handles and skips any error/panic due to write permission issues.
+// No-op otherwise.
+func overwriteConfigTomlValues(serverCtx *server.Context) error {
+	// Get paths to config.toml and config parent directory
+	rootDir := serverCtx.Viper.GetString(tmcli.HomeFlag)
+
+	configParentDirPath := filepath.Join(rootDir, "config")
+	configFilePath := filepath.Join(configParentDirPath, "config.toml")
+
+	fileInfo, err := os.Stat(configFilePath)
+	if err != nil {
+		// something besides a does not exist error
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to read in %s: %w", configFilePath, err)
+		}
+	} else {
+		// config.toml exists
+
+		// Check if each key is already set to the recommended value
+		// If it is, we don't need to overwrite it and can also skip the app.toml overwrite
+		var sectionKeyValuesToWrite []SectionKeyValue
+
+		// Set aside which keys need to be updated in the config.toml
+		for _, rec := range recommendedConfigTomlValues {
+			currentValue := serverCtx.Viper.Get(rec.Section + "." + rec.Key)
+			if currentValue != rec.Value {
+				// Current value in config.toml is not the recommended value
+				// Set the value in viper to the recommended value
+				// and add it to the list of key values we will overwrite in the config.toml
+				serverCtx.Viper.Set(rec.Section+"."+rec.Key, rec.Value)
+				sectionKeyValuesToWrite = append(sectionKeyValuesToWrite, rec)
+			}
+		}
+
+		defer func() {
+			if err := recover(); err != nil {
+				fmt.Printf("failed to write to %s: %s\n", configFilePath, err)
+			}
+		}()
+
+		// Check if the file is writable
+		if fileInfo.Mode()&os.FileMode(0200) != 0 {
+			// It will be re-read in server.InterceptConfigsPreRunHandler
+			// this may panic for permissions issues. So we catch the panic.
+			// Note that this exits with a non-zero exit code if fails to write the file.
+
+			// Write the new config.toml file
+			if len(sectionKeyValuesToWrite) > 0 {
+				err := OverwriteWithCustomConfig(configFilePath, sectionKeyValuesToWrite)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			fmt.Printf("config.toml is not writable. Cannot apply update. Please consider manually changing to the following: %v\n", recommendedConfigTomlValues)
+		}
+	}
+	return nil
+}
+
+// overwriteAppTomlValues overwrites app.toml values. Returns error if app.toml does not exist
+//
+// Currently, overwrites:
+// - wasm query_gas_limit
+//
+// Also overwrites the respective viper config value.
+//
+// Silently handles and skips any error/panic due to write permission issues.
+// No-op otherwise.
+func overwriteAppTomlValues(serverCtx *server.Context) error {
+	// Get paths to app.toml and config parent directory
+	rootDir := serverCtx.Viper.GetString(tmcli.HomeFlag)
+
+	configParentDirPath := filepath.Join(rootDir, "config")
+	appFilePath := filepath.Join(configParentDirPath, "app.toml")
+
+	fileInfo, err := os.Stat(appFilePath)
+	if err != nil {
+		// something besides a does not exist error
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("failed to read in %s: %w", appFilePath, err)
+		}
+	} else {
+		// app.toml exists
+
+		// Check if each key is already set to the recommended value
+		// If it is, we don't need to overwrite it and can also skip the app.toml overwrite
+		var sectionKeyValuesToWrite []SectionKeyValue
+
+		for _, rec := range recommendedAppTomlValues {
+			currentValue := serverCtx.Viper.Get(rec.Section + "." + rec.Key)
+			if currentValue != rec.Value {
+				// Current value in app.toml is not the recommended value
+				// Set the value in viper to the recommended value
+				// and add it to the list of key values we will overwrite in the app.toml
+				serverCtx.Viper.Set(rec.Section+"."+rec.Key, rec.Value)
+				sectionKeyValuesToWrite = append(sectionKeyValuesToWrite, rec)
+			}
+		}
+
+		// Check if the file is writable
+		if fileInfo.Mode()&os.FileMode(0200) != 0 {
+			// It will be re-read in server.InterceptConfigsPreRunHandler
+			// this may panic for permissions issues. So we catch the panic.
+			// Note that this exits with a non-zero exit code if fails to write the file.
+
+			// Write the new app.toml file
+			if len(sectionKeyValuesToWrite) > 0 {
+				err := OverwriteWithCustomConfig(appFilePath, sectionKeyValuesToWrite)
+				if err != nil {
+					return err
+				}
+			}
+		} else {
+			fmt.Printf("app.toml is not writable. Cannot apply update. Please consider manually changing to the following: %v\n", recommendedAppTomlValues)
+		}
+	}
+	return nil
+}
+
+// OverwriteWithCustomConfig searches the respective config file for the given section and key and overwrites the current value with the given value.
+func OverwriteWithCustomConfig(configFilePath string, sectionKeyValues []SectionKeyValue) error {
+	// Open the file for reading and writing
+	file, err := os.OpenFile(configFilePath, os.O_RDWR, 0o644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	// Create a map from the sectionKeyValues array
+	// This map will be used to quickly look up the new values for each section and key
+	configMap := make(map[string]map[string]string)
+	for _, skv := range sectionKeyValues {
+		// If the section does not exist in the map, create it
+		if _, ok := configMap[skv.Section]; !ok {
+			configMap[skv.Section] = make(map[string]string)
+		}
+		// Add the key and value to the section in the map
+		// If the value is a string, add quotes around it
+		switch v := skv.Value.(type) {
+		case string:
+			configMap[skv.Section][skv.Key] = "\"" + v + "\""
+		default:
+			configMap[skv.Section][skv.Key] = fmt.Sprintf("%v", v)
+		}
+	}
+
+	// Read the file line by line
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	currentSection := ""
+	for scanner.Scan() {
+		line := scanner.Text()
+		// If the line is a section header, update the current section
+		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
+			currentSection = line[1 : len(line)-1]
+		} else if configMap[currentSection] != nil {
+			// If the line is in a section that needs to be overwritten, check each key
+			for key, value := range configMap[currentSection] {
+				// Split the line into key and value parts
+				parts := strings.SplitN(line, "=", 2)
+				if len(parts) != 2 {
+					continue
+				}
+				// Trim spaces and compare the key part with the target key
+				if strings.TrimSpace(parts[0]) == key {
+					// If the keys match, overwrite the line with the new key-value pair
+					line = key + " = " + value
+					break
+				}
+			}
+		}
+		// Add the line to the lines slice, whether it was overwritten or not
+		lines = append(lines, line)
+	}
+
+	// Check for errors from the scanner
+	if err := scanner.Err(); err != nil {
+		return err
+	}
+
+	// Seek to the beginning of the file
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return err
+	}
+
+	// Truncate the file to remove the old content
+	err = file.Truncate(0)
+	if err != nil {
+		return err
+	}
+
+	// Write the new lines to the file
+	for _, line := range lines {
+		if _, err := file.WriteString(line + "\n"); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
