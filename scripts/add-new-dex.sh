@@ -285,7 +285,7 @@ TIMEALARMS_CONTRACT_ADDRESS="$(timealarms_instance_addr)"
 NOLUS_CHAIN_ID=$(grep -oP 'chain-id = "\K[^"]+' "$NOLUS_HOME_DIR"/config/client.toml)
 
 verify_dir_exist "$NOLUS_MONEY_MARKET_DIR" "The NOLUS_MONEY_MARKET dir does not exist"
-DEPLOY_CONTRACTS_SCRIPT="$NOLUS_MONEY_MARKET_DIR/scripts/deploy-contracts-live.sh"
+DEPLOY_CONTRACTS_SCRIPT="$NOLUS_MONEY_MARKET_DIR/scripts/deploy-protocol.sh"
 
 verify_dir_exist "$WASM_ARTIFACTS_PATH" "The WASM_ARTIFACTS_PATH dir does not exist"
 verify_mandatory "$DEX_NAME" "new DEX name"
