@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/depinject"
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
@@ -18,7 +20,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
+	modulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/tax/module/v1"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/client/cli"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
@@ -30,13 +35,15 @@ import (
 const ConsensusVersion = 3
 
 var (
-	_ module.AppModuleBasic      = (*AppModule)(nil)
-	_ module.AppModuleSimulation = (*AppModule)(nil)
-	_ module.HasABCIGenesis      = (*AppModule)(nil)
+	_ module.AppModuleBasic      = AppModule{}
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasABCIGenesis      = AppModule{}
 
-	_ appmodule.AppModule       = (*AppModule)(nil)
-	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
-	_ appmodule.HasEndBlocker   = (*AppModule)(nil)
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
+
+	_ depinject.OnePerModuleType = AppModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -218,4 +225,42 @@ func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 // WeightedOperations doesn't return any tax module operation.
 func (AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
 	return nil
+}
+
+//
+// App Wiring Setup
+//
+
+func init() {
+	appmodule.Register(&modulev1.Module{}, appmodule.Provide(ProvideModule))
+}
+
+type ModuleInputs struct {
+	depinject.In
+
+	ModuleKey    depinject.OwnModuleKey
+	Config       *modulev1.Module
+	Cdc          codec.Codec
+	StoreService store.KVStoreService
+
+	AccountKeeper types.AccountKeeper
+	BankKeeper    types.BankKeeper
+	WasmKeeper    types.WasmKeeper
+
+	// LegacySubspace is used solely for migration of x/params managed parameters
+	LegacySubspace exported.Subspace `optional:"true"`
+}
+
+type ModuleOutputs struct {
+	depinject.Out
+
+	TaxKeeper keeper.Keeper
+	Module    appmodule.AppModule
+}
+
+func ProvideModule(in ModuleInputs) ModuleOutputs {
+	k := keeper.NewKeeper(in.Cdc, in.StoreService, in.WasmKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	m := NewAppModule(in.Cdc, k, in.AccountKeeper, in.BankKeeper, in.LegacySubspace)
+
+	return ModuleOutputs{TaxKeeper: k, Module: m}
 }
