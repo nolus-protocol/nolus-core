@@ -28,21 +28,19 @@ import (
 const ConsensusVersion = 2
 
 var (
-	_ module.AppModuleBasic      = (*AppModule)(nil)
-	_ module.AppModuleSimulation = (*AppModule)(nil)
-	_ module.HasABCIGenesis      = (*AppModule)(nil)
+	_ module.AppModuleBasic      = AppModule{}
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasABCIGenesis      = AppModule{}
 
-	_ appmodule.AppModule       = (*AppModule)(nil)
-	_ module.HasABCIEndBlock    = (*AppModule)(nil)
-	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
+	_ appmodule.AppModule       = AppModule{}
+	_ module.HasABCIEndBlock    = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
 )
 
 // AppModuleBasic defines the basic application module used by the mint module.
 type AppModuleBasic struct {
 	cdc codec.Codec
 }
-
-var _ module.AppModuleBasic = AppModuleBasic{}
 
 // Name returns the mint module's name.
 func (AppModuleBasic) Name() string {
