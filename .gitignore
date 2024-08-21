@@ -16,3 +16,7 @@ coverage.txt
 coverage.xml
 testreport.xml
 .testchains
+
+*.dot
+*.log
+vendor/
