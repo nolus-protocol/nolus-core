@@ -28,13 +28,13 @@ import (
 const ConsensusVersion = 2
 
 var (
-	_ module.AppModuleBasic      = AppModule{}
-	_ module.AppModuleSimulation = AppModule{}
-	_ module.HasABCIGenesis      = AppModule{}
+	_ module.AppModuleBasic      = (*AppModule)(nil)
+	_ module.AppModuleSimulation = (*AppModule)(nil)
+	_ module.HasABCIGenesis      = (*AppModule)(nil)
 
-	_ appmodule.AppModule       = AppModule{}
-	_ module.HasABCIEndBlock    = AppModule{}
-	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.AppModule       = (*AppModule)(nil)
+	_ module.HasABCIEndBlock    = (*AppModule)(nil)
+	_ appmodule.HasBeginBlocker = (*AppModule)(nil)
 )
 
 // AppModuleBasic defines the basic application module used by the mint module.
