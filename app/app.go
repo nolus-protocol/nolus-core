@@ -510,3 +510,21 @@ func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
 func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
 	return app.StakingKeeper
 }
+
+// InitChainer application update at chain initialization
+// ONLY FOR TESTING PURPOSES
+func (app *App) TestInitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
+	var genesisState GenesisState
+	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
+		panic(err)
+	}
+
+	// manually set consensus params here, cause there is no way to set it using ibctesting stuff for now
+	// TODO: app.ConsensusParamsKeeper.Set(ctx, sims.DefaultConsensusParams)
+
+	err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
+	if err != nil {
+		return nil, fmt.Errorf("failed to set module version map: %w", err)
+	}
+	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+}
