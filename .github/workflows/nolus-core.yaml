@@ -98,7 +98,8 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: stable
+          go-version: 1.22
+          cache: false
 
       - uses: actions/checkout@v4
 
@@ -111,7 +112,7 @@ jobs:
           skip-cache: true
 
           # Optional: The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
-          # install-mode: "goinstall"
+          install-mode: "goinstall"
 
   test-unit:
     name: Run unit tests
