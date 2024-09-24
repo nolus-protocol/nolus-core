@@ -2,7 +2,7 @@
 # TODO: once we migrate to wasmvm 2.1.0, we can go back to using base golang image
 FROM alpine:3.18
 
-ENV PATH /usr/local/go/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 COPY --from=golang:1.22 /usr/local/go /usr/local/go
 
 ARG LEDGER_ENABLED
@@ -19,7 +19,7 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
-ARG WASMVM_VERSION="v2.0.0"
+ARG WASMVM_VERSION="v2.1.2"
 ARG WASMVM_LIB="libwasmvm_muslc.x86_64.a"
 ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
 ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"

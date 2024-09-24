@@ -35,11 +35,6 @@ output:
   sort-results: true
 
 issues:
-  exclude-rules:
-    - text: 'has no field or method'
-      linters:
-        - typecheck
-
   # Maximum issues count per one linter.
   # Set to 0 to disable.
   # Default: 50
@@ -48,5 +43,3 @@ issues:
   # Set to 0 to disable.
   # Default: 3
   max-same-issues: 0
-
- 
