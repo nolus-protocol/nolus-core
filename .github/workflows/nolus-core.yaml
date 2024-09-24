@@ -172,7 +172,7 @@ jobs:
     needs: [test-unit-coverage, builder-image]
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
-      image: "public.ecr.aws/nolus/builder:1.22.4"
+      image: "ghcr.io/nolusprotocol/nolus-core/builder:1.22.4"
       
     steps:
       - uses: actions/checkout@v4
