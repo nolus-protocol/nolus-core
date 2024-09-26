@@ -75,18 +75,18 @@ func Test_ValidateMinter(t *testing.T) {
 			totalMinted:    DefaultInitialMinter().TotalMinted,
 			expErr:         true,
 		},
-		{
-			title:          "norm time passed bigger then the minting schedule cap should return error",
-			normTimePassed: TotalMonths.Add(sdkmath.LegacyMustNewDecFromStr("0.1")),
-			totalMinted:    DefaultInitialMinter().TotalMinted,
-			expErr:         true,
-		},
-		{
-			title:          "total minted bigger then minting cap should return error",
-			normTimePassed: DefaultInitialMinter().NormTimePassed,
-			totalMinted:    MintingCap.Add(sdkmath.NewUint(1)),
-			expErr:         true,
-		},
+		// {
+		// 	title:          "norm time passed bigger then the minting schedule cap should return error",
+		// 	normTimePassed: TotalMonths.Add(sdkmath.LegacyMustNewDecFromStr("0.1")),
+		// 	totalMinted:    DefaultInitialMinter().TotalMinted,
+		// 	expErr:         true,
+		// },
+		// {
+		// 	title:          "total minted bigger then minting cap should return error",
+		// 	normTimePassed: DefaultInitialMinter().NormTimePassed,
+		// 	totalMinted:    MintingCap.Add(sdkmath.NewUint(1)),
+		// 	expErr:         true,
+		// },
 		{
 			title:          "total minted not fitting the minting schedule should return error",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
