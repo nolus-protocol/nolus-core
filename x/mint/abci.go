@@ -47,9 +47,9 @@ func calcTimeDifference(blockTime, prevBlockTime, maxMintableSeconds sdkmath.Uin
 }
 
 func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds sdkmath.Uint) sdkmath.Uint {
-	if minter.TotalMinted.GTE(types.MintingCap) {
-		return sdkmath.ZeroUint()
-	}
+	// if minter.TotalMinted.GTE(types.MintingCap) {
+	// 	return sdkmath.ZeroUint()
+	// }
 
 	if minter.PrevBlockTimestamp.IsZero() {
 		// we do not know how much time has passed since the previous block, thus nothing will be mined
@@ -59,7 +59,7 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 
 	nsecPassed := calcTimeDifference(blockTime, minter.PrevBlockTimestamp, maxMintableSeconds)
 	if minter.NormTimePassed.LT(types.MonthsInFormula) {
-		// First 96 months follow the minting formula
+		// First 120 months follow the minting formula
 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
@@ -69,17 +69,31 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 
 		return updateMinter(minter, blockTime, newNormTime, delta)
 	} else {
-		// After reaching 96 normalized time, mint fixed amount of tokens per month until we reach the minting cap
-		normIncrement := calcFixedIncrement(nsecPassed)
-		delta := sdkmath.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
-
-		if minter.TotalMinted.Add(delta).GT(types.MintingCap) {
-			// Trim off excess tokens if the cap is reached
-			delta = types.MintingCap.Sub(minter.TotalMinted)
-		}
-
-		return updateMinter(minter, blockTime, minter.NormTimePassed.Add(normIncrement), delta)
+		return sdkmath.ZeroUint()
 	}
+
+	// 	if minter.NormTimePassed.LT(types.MonthsInFormula) {
+	// 		// First 96 months follow the minting formula
+	// 		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
+	// 		previousTotal := minter.TotalMinted.Add(normInitialTotal)
+	// 		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
+	// 		nextTotal := types.CalcTokensByIntegral(newNormTime)
+
+	// 		delta := nextTotal.Sub(previousTotal)
+
+	// 		return updateMinter(minter, blockTime, newNormTime, delta)
+	// 	} else {
+	// 		// After reaching 96 normalized time, mint fixed amount of tokens per month until we reach the minting cap
+	// 		normIncrement := calcFixedIncrement(nsecPassed)
+	// 		delta := sdkmath.NewUint((normIncrement.Mul(types.DecFromUint(types.FixedMintedAmount))).TruncateInt().Uint64())
+
+	// 		// if minter.TotalMinted.Add(delta).GT(types.MintingCap) {
+	// 		// Trim off excess tokens if the cap is reached
+	// 		// delta = types.MintingCap.Sub(minter.TotalMinted)
+	// 		// }
+
+	//		return updateMinter(minter, blockTime, minter.NormTimePassed.Add(normIncrement), delta)
+	//	}
 }
 
 func updateMinter(minter *types.Minter, blockTime sdkmath.Uint, newNormTime sdkmath.LegacyDec, newlyMinted sdkmath.Uint) sdkmath.Uint {
@@ -136,9 +150,9 @@ func predictMintedByFixedAmount(totalMinted sdkmath.Uint, normTimePassed, timeAh
 
 	newlyMinted := fixedPeriod.MulInt(sdkmath.Int(types.FixedMintedAmount))
 	// Trim off excess tokens if the cap is reached
-	if totalMinted.Add(sdkmath.Uint(newlyMinted.TruncateInt())).GT(types.MintingCap) {
-		return types.MintingCap.Sub(totalMinted), nil
-	}
+	// if totalMinted.Add(sdkmath.Uint(newlyMinted.TruncateInt())).GT(types.MintingCap) {
+	// return types.MintingCap.Sub(totalMinted), nil
+	// }
 
 	return sdkmath.Uint(newlyMinted.TruncateInt()), nil
 }
@@ -164,9 +178,9 @@ func predictTotalMinted(totalMinted sdkmath.Uint, normTimePassed, timeAhead sdkm
 func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	c := sdk.UnwrapSDKContext(ctx)
 	minter := k.GetMinter(ctx)
-	if minter.TotalMinted.GTE(types.MintingCap) {
-		return errors.New("minting cap has been reached")
-	}
+	// if minter.TotalMinted.GTE(types.MintingCap) {
+	// return errors.New("minting cap has been reached")
+	// }
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
