@@ -16,10 +16,9 @@ import (
 )
 
 var (
-	normInitialTotal     = types.CalcTokensByIntegral(types.NormOffset)
-	nanoSecondsInMonth   = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
-	nanoSecondsInFormula = types.MonthsInFormula.Mul(nanoSecondsInMonth)
-	twelveMonths         = sdkmath.LegacyMustNewDecFromStr("12.0")
+	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
+	nanoSecondsInMonth = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
+	twelveMonths       = sdkmath.LegacyMustNewDecFromStr("12.0")
 
 	errTimeInFutureBeforeTimePassed = errors.New("time in future can not be before passed time")
 	errNegativeBlockTime            = errors.New("block time can not be less then zero")
@@ -65,6 +64,7 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 
 		return updateMinter(minter, blockTime, newNormTime, delta)
 	} else {
+		// After 120 months, we don't mint any more tokens.
 		return sdkmath.ZeroUint()
 	}
 }
