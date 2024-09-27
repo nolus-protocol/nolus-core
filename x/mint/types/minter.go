@@ -11,13 +11,11 @@ import (
 // Legacy Minting formula integral-4.33275 x^3 + 952.82456 x^2 - 88567.49981 x + 3.86381×10^6 dx = -1.08319 x^4 + 317.608 x^3 - 44283.7 x^2 + 3863810 x + constant
 
 // Current Minting formula integral-0.11175 x^3 + 50.82456 x^2 - 1767.49981 x + 0.83381×10^6 dx = -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant
-// Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.17 to 120
 var (
-	QuadCoef   = sdkmath.LegacyMustNewDecFromStr("-0.0279375")
-	CubeCoef   = sdkmath.LegacyMustNewDecFromStr("16.9415")
-	SquareCoef = sdkmath.LegacyMustNewDecFromStr("-883.75")
-	Coef       = sdkmath.LegacyMustNewDecFromStr("833810")
-	// MintingCap        = util.ConvertToMicroNolusInt64(150000000)
+	QuadCoef          = sdkmath.LegacyMustNewDecFromStr("-0.0279375")
+	CubeCoef          = sdkmath.LegacyMustNewDecFromStr("16.9415")
+	SquareCoef        = sdkmath.LegacyMustNewDecFromStr("-883.75")
+	Coef              = sdkmath.LegacyMustNewDecFromStr("833810")
 	FixedMintedAmount = util.ConvertToMicroNolusInt64(103125)
 	NormOffset        = sdkmath.LegacyMustNewDecFromStr("0.17")
 	TotalMonths       = sdkmath.LegacyMustNewDecFromStr("120")
@@ -60,23 +58,12 @@ func ValidateMinter(minter Minter) error {
 			minter.NormTimePassed.String())
 	}
 
-	// if minter.NormTimePassed.GT(TotalMonths) {
-	// 	return fmt.Errorf("mint parameter normTimePassed: %v should not be bigger than TotalMonths: %v", minter.NormTimePassed, TotalMonths)
-	// }
-
-	// if minter.TotalMinted.GT(MintingCap) {
-	// 	return fmt.Errorf("mint parameter totalMinted: %v can not be bigger than MintingCap: %v",
-	// 		minter.TotalMinted, MintingCap)
-	// }
+	if minter.NormTimePassed.GT(TotalMonths) {
+		return fmt.Errorf("mint parameter normTimePassed: %v should not be bigger than TotalMonths: %v", minter.NormTimePassed, TotalMonths)
+	}
 
 	calculatedMintedTokens := calcMintedTokens(minter)
 
-	// if minter.NormTimePassed.GT(TotalMonths.Sub(sdkmath.LegacyNewDec(1))) {
-	// 	if calculatedMintedTokens.GT(MintingCap) || MintingCap.Sub(calculatedMintedTokens).GT(FixedMintedAmount) {
-	// 		return fmt.Errorf("mint parameters are not conformant with the minting schedule, for %s month minted %s unls",
-	// 			minter.NormTimePassed, calculatedMintedTokens)
-	// 	}
-	// } else
 	if !calculatedMintedTokens.Equal(minter.TotalMinted) {
 		return fmt.Errorf("minted unexpected amount of tokens for %s months. act: %v, exp: %v",
 			minter.NormTimePassed, minter.TotalMinted, calculatedMintedTokens)
@@ -86,19 +73,11 @@ func ValidateMinter(minter Minter) error {
 }
 
 func calcMintedTokens(m Minter) sdkmath.Uint {
-	// if m.NormTimePassed.GTE(MonthsInFormula) {
-	// 	fixedMonthsPeriod := sdkmath.NewUint(m.NormTimePassed.Sub(MonthsInFormula).TruncateInt().Uint64())
-	// 	fixedMonthsTokens := fixedMonthsPeriod.Mul(FixedMintedAmount)
-	// 	calculatedTokensByIntegral := CalcTokensByIntegral(MonthsInFormula).Sub(CalcTokensByIntegral(NormOffset))
-
-	// 	return calculatedTokensByIntegral.Add(fixedMonthsTokens)
-	// } else {
 	return CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
-	// }
 }
 
-// Integral:  -1.08319 x^4 + 314.871 x^3 - 44283.6 x^2 + 3.86335×10^6 x
-// transformed to: (((-1.08319 x + 314.871) x - 44283.6) x +3.86335×10^6) x.
+// Integral:  -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant
+// transformed to: (((-0.0279375 x + 16.9415) x - 883.75) x + 833810) x.
 func CalcTokensByIntegral(x sdkmath.LegacyDec) sdkmath.Uint {
 	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
 }

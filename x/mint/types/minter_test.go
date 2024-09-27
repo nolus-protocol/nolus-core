@@ -22,22 +22,22 @@ func Test_calcMintedTokens(t *testing.T) {
 		{
 			title:          "starting at the end of 1st month",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("1.46510417"),
-			expTotalMinted: sdkmath.NewUintFromString("3_760_114_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("1_078_052_419_498"),
 		},
 		{
 			title:          "starting at the end of 2nd month",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
-			expTotalMinted: sdkmath.NewUintFromString("7_435_238_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("190_4526_305_072"),
 		},
 		{
 			title:          "starting at the end of 96th month",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("96.00000000"),
-			expTotalMinted: sdkmath.NewUintFromString("147_535_257_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("84_375_290_749_165"),
 		},
 		{
 			title:          "starting at the end of 97th month",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("97.00000000"),
-			expTotalMinted: sdkmath.NewUintFromString("147_638_382_000_000"),
+			expTotalMinted: sdkmath.NewUintFromString("85_411_406_848_727"),
 		},
 	} {
 		t.Run(tc.title, func(t *testing.T) {
@@ -75,18 +75,12 @@ func Test_ValidateMinter(t *testing.T) {
 			totalMinted:    DefaultInitialMinter().TotalMinted,
 			expErr:         true,
 		},
-		// {
-		// 	title:          "norm time passed bigger then the minting schedule cap should return error",
-		// 	normTimePassed: TotalMonths.Add(sdkmath.LegacyMustNewDecFromStr("0.1")),
-		// 	totalMinted:    DefaultInitialMinter().TotalMinted,
-		// 	expErr:         true,
-		// },
-		// {
-		// 	title:          "total minted bigger then minting cap should return error",
-		// 	normTimePassed: DefaultInitialMinter().NormTimePassed,
-		// 	totalMinted:    MintingCap.Add(sdkmath.NewUint(1)),
-		// 	expErr:         true,
-		// },
+		{
+			title:          "norm time passed bigger then the minting schedule cap should return error",
+			normTimePassed: TotalMonths.Add(sdkmath.LegacyMustNewDecFromStr("0.1")),
+			totalMinted:    DefaultInitialMinter().TotalMinted,
+			expErr:         true,
+		},
 		{
 			title:          "total minted not fitting the minting schedule should return error",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
