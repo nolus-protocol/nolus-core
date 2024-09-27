@@ -8,9 +8,9 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/custom/util"
 )
 
-// Legacy Minting formula integral-4.33275 x^3 + 952.82456 x^2 - 88567.49981 x + 3.86381×10^6 dx = -1.08319 x^4 + 317.608 x^3 - 44283.7 x^2 + 3863810 x + constant
+// Legacy Minting formula integral-4.33275 x^3 + 952.82456 x^2 - 88567.49981 x + 3.86381×10^6 dx = -1.08319 x^4 + 317.608 x^3 - 44283.7 x^2 + 3863810 x + constant.
 
-// Current Minting formula integral-0.11175 x^3 + 50.82456 x^2 - 1767.49981 x + 0.83381×10^6 dx = -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant
+// Current Minting formula integral-0.11175 x^3 + 50.82456 x^2 - 1767.49981 x + 0.83381×10^6 dx = -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant.
 var (
 	QuadCoef          = sdkmath.LegacyMustNewDecFromStr("-0.0279375")
 	CubeCoef          = sdkmath.LegacyMustNewDecFromStr("16.9415")

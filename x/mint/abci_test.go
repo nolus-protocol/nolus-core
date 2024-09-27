@@ -157,6 +157,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 			expectedNormTime20Sec, normTimeThreshold, minter.NormTimePassed)
 	}
 }
+
 func Test_CalcTokens_WhenMintingAllTokens_OutputsExactExpectedTokens(t *testing.T) {
 	minter, mintedCoins, mintedMonth, timeOffset := defaultParams()
 	prevOffset := timeOffset
