@@ -27,7 +27,7 @@ func Test_calcMintedTokens(t *testing.T) {
 		{
 			title:          "starting at the end of 2nd month",
 			normTimePassed: sdkmath.LegacyMustNewDecFromStr("2.46020833"),
-			expTotalMinted: sdkmath.NewUintFromString("190_4526_305_072"),
+			expTotalMinted: sdkmath.NewUintFromString("1_904_526_305_072"),
 		},
 		{
 			title:          "starting at the end of 96th month",
