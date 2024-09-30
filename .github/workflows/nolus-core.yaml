@@ -31,6 +31,9 @@ jobs:
   protogen-image:
     name: Ensure protogen image exists
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
       tag: ${{ steps.ensure.outputs.tag }}
     steps:
@@ -73,6 +76,9 @@ jobs:
   builder-image:
     name: Ensure builder image exists
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     outputs:
       tag: ${{ steps.ensure.outputs.tag }}
     steps:
@@ -165,7 +171,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test-unit-coverage, builder-image]
     container:
-      image: "ghcr.io/${{ github.repository	}}/builder:${{ needs.builder-image.outputs.tag }}"
+      # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
+      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.22.3"
 
     steps:
       - uses: actions/checkout@v4

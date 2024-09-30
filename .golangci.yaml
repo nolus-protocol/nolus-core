@@ -1,3 +1,12 @@
+run:
+  tests: false
+  concurrency: 4
+  timeout: 5m
+  skip-dirs:
+    - build # docker files
+    - .cicd #
+    - doc
+
 linters:
   disable-all: true
   enable:
@@ -7,27 +16,17 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-    - typecheck
     - unused
     # Enable linters that are disabled by default 
     - asciicheck
     - bidichk
     - bodyclose
-    # - contextcheck
-    # - depguard
     - godot
     - gofmt
     - gofumpt
     - goimports
     - misspell
     - whitespace
-
-run:
-  timeout: 5m
-  skip-dirs:
-    - build # docker files
-    - .cicd #
-    - doc
 
 output:
   # Sort results by: filepath, line and column.
