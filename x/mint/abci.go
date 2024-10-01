@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	normInitialTotal   = types.CalcTokensByIntegral(types.NormOffset)
+	// normInitialTotal   = types.CalcTokensByIntegral(types.Offset)
 	nanoSecondsInMonth = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
 	twelveMonths       = sdkmath.LegacyMustNewDecFromStr("12.0")
 
@@ -24,11 +24,11 @@ var (
 	errNegativeBlockTime            = errors.New("block time can not be less then zero")
 )
 
-func calcFunctionIncrement(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
-	return types.NormMonthsRange.Mul(calcFixedIncrement(nanoSecondsPassed))
-}
+// func calcFractionOfMonthsRange(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
+// 	return types.MonthsRange.Mul(calcFractionOfMonth(nanoSecondsPassed))
+// }
 
-func calcFixedIncrement(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
+func calcFractionOfMonth(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
 	return types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
 }
 
@@ -53,30 +53,27 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 	}
 
 	nsecPassed := calcTimeDifference(blockTime, minter.PrevBlockTimestamp, maxMintableSeconds)
-	if minter.NormTimePassed.LT(types.MonthsInFormula) {
+	newTime := minter.NormTimePassed.Add(calcFractionOfMonth(nsecPassed))
+	if newTime.LT(types.MonthsInFormula) {
 		// First 120 months follow the minting formula
-		// As the integral starts from NormOffset (ie > 0), previous total needs to be incremented by predetermined amount
-		previousTotal := minter.TotalMinted.Add(normInitialTotal)
-		newNormTime := minter.NormTimePassed.Add(calcFunctionIncrement(nsecPassed))
-		nextTotal := types.CalcTokensByIntegral(newNormTime)
+		nextTotal := types.CalcTokensByIntegral(newTime)
+		delta := nextTotal.Sub(minter.TotalMinted)
 
-		delta := nextTotal.Sub(previousTotal)
-
-		return updateMinter(minter, blockTime, newNormTime, delta)
+		return updateMinter(minter, blockTime, newTime, delta)
 	} else {
 		// After 120 months, we don't mint any more tokens.
 		return sdkmath.ZeroUint()
 	}
 }
 
-func updateMinter(minter *types.Minter, blockTime sdkmath.Uint, newNormTime sdkmath.LegacyDec, newlyMinted sdkmath.Uint) sdkmath.Uint {
+func updateMinter(minter *types.Minter, blockTime sdkmath.Uint, newTimePassed sdkmath.LegacyDec, newlyMinted sdkmath.Uint) sdkmath.Uint {
 	if newlyMinted.LT(sdkmath.ZeroUint()) {
 		// Sanity check, should not happen. However, if this were to happen,
 		// do not update the minter state (primary the previous block timestamp)
 		// and wait for a new block which should increase the minted amount
 		return sdkmath.ZeroUint()
 	}
-	minter.NormTimePassed = newNormTime
+	minter.NormTimePassed = newTimePassed
 	minter.PrevBlockTimestamp = blockTime
 	minter.TotalMinted = minter.TotalMinted.Add(newlyMinted)
 	return newlyMinted
@@ -84,30 +81,30 @@ func updateMinter(minter *types.Minter, blockTime sdkmath.Uint, newNormTime sdkm
 
 // Returns the amount of tokens that should be minted by the integral formula
 // for the period between normTimePassed and the timeInFuture.
-func predictMintedByIntegral(totalMinted sdkmath.Uint, normTimePassed, timeAhead sdkmath.LegacyDec) (sdkmath.Uint, error) {
+func predictMintedByIntegral(totalMinted sdkmath.Uint, timePassed, timeAhead sdkmath.LegacyDec) (sdkmath.Uint, error) {
 	timeAheadNs := timeAhead.Mul(nanoSecondsInMonth).TruncateInt()
-	normTimeInFuture := normTimePassed.Add(calcFunctionIncrement(sdkmath.Uint(timeAheadNs)))
-	if normTimePassed.GT(normTimeInFuture) {
+	timeInFuture := timePassed.Add(calcFractionOfMonth(sdkmath.Uint(timeAheadNs)))
+	if timePassed.GT(timeInFuture) {
 		return sdkmath.ZeroUint(), errTimeInFutureBeforeTimePassed
 	}
 
-	if normTimePassed.GTE(types.MonthsInFormula) {
+	if timePassed.GTE(types.MonthsInFormula) {
 		return sdkmath.ZeroUint(), nil
 	}
 
 	// integral minting is caped to the 120th month
-	if normTimeInFuture.GT(types.MonthsInFormula) {
-		normTimeInFuture = types.MonthsInFormula
+	if timeInFuture.GT(types.MonthsInFormula) {
+		timeInFuture = types.MonthsInFormula
 	}
 
-	return types.CalcTokensByIntegral(normTimeInFuture).Sub(normInitialTotal).Sub(totalMinted), nil
+	return types.CalcTokensByIntegral(timeInFuture).Sub(totalMinted), nil
 }
 
 // Returns the amount of tokens that should be minted
 // between the NormTimePassed and the timeAhead
 // timeAhead expects months represented in decimal form.
-func predictTotalMinted(totalMinted sdkmath.Uint, normTimePassed, timeAhead sdkmath.LegacyDec) sdkmath.Uint {
-	integralAmount, err := predictMintedByIntegral(totalMinted, normTimePassed, timeAhead)
+func predictTotalMinted(totalMinted sdkmath.Uint, timePassed, timeAhead sdkmath.LegacyDec) sdkmath.Uint {
+	integralAmount, err := predictMintedByIntegral(totalMinted, timePassed, timeAhead)
 	if err != nil {
 		return sdkmath.ZeroUint()
 	}
