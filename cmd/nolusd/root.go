@@ -121,12 +121,12 @@ var (
 		{
 			Section: "consensus",
 			Key:     "timeout_commit",
-			Value:   "1s",
+			Value:   "2s",
 		},
 		{
 			Section: "consensus",
 			Key:     "timeout_propose",
-			Value:   "2s",
+			Value:   "3s",
 		},
 		{
 			Section: "consensus",
