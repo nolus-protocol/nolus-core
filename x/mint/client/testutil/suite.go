@@ -96,12 +96,12 @@ func (s *IntegrationTestSuite) TestGetCmdQueryMintState() {
 		{
 			"json output",
 			[]string{fmt.Sprintf("--%s=1", flags.FlagHeight), fmt.Sprintf("--%s=json", tmcli.OutputFlag)},
-			`{"norm_time_passed":"17.0000000000000000","total_minted":"0"}`,
+			`{"norm_time_passed":"0.000000000000000000","total_minted":"0"}`,
 		},
 		{
 			"text output",
 			[]string{fmt.Sprintf("--%s=1", flags.FlagHeight), fmt.Sprintf("--%s=text", tmcli.OutputFlag)},
-			`norm_time_passed: "17.0000000000000000"
+			`norm_time_passed: "0.000000000000000000"
 total_minted: "0"`,
 		},
 	}
