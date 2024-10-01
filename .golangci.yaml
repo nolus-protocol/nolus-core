@@ -27,6 +27,8 @@ linters:
     - goimports
     - misspell
     - whitespace
+    - unused
+    - ineffassign
 
 output:
   # Sort results by: filepath, line and column.

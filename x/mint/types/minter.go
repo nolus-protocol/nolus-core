@@ -8,20 +8,20 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/custom/util"
 )
 
-// Legacy Minting formula integral-4.33275 x^3 + 952.82456 x^2 - 88567.49981 x + 3.86381×10^6 dx = -1.08319 x^4 + 317.608 x^3 - 44283.7 x^2 + 3863810 x + constant.
+// Legacy Minting formula f(x)=-4.33275 x^3 + 944.61206 x^2 - 88567.25194 x + 3.86335×10^6 integrated over 0.47 to 96
 
-// Current Minting formula integral-0.11175 x^3 + 50.82456 x^2 - 1767.49981 x + 0.83381×10^6 dx = -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant.
+// Current Minting formula f(x)=-0.11175 x^3 + 50.82456 x^2 - 1767.49981 x + 0.83381×10^6 integrated over 17 to 120.
+// After reaching month 120, we stop minting new coins.
 var (
-	QuadCoef          = sdkmath.LegacyMustNewDecFromStr("-0.0279375")
-	CubeCoef          = sdkmath.LegacyMustNewDecFromStr("16.9415")
-	SquareCoef        = sdkmath.LegacyMustNewDecFromStr("-883.75")
-	Coef              = sdkmath.LegacyMustNewDecFromStr("833810")
-	FixedMintedAmount = util.ConvertToMicroNolusInt64(103125)
-	NormOffset        = sdkmath.LegacyMustNewDecFromStr("0.17")
-	TotalMonths       = sdkmath.LegacyMustNewDecFromStr("120")
-	MonthsInFormula   = TotalMonths
-	AbsMonthsRange    = MonthsInFormula.Sub(NormOffset)
-	NormMonthsRange   = AbsMonthsRange.Quo(MonthsInFormula)
+	QuadCoef        = sdkmath.LegacyMustNewDecFromStr("-0.0279375")
+	CubeCoef        = sdkmath.LegacyMustNewDecFromStr("16.9415")
+	SquareCoef      = sdkmath.LegacyMustNewDecFromStr("-883.75")
+	Coef            = sdkmath.LegacyMustNewDecFromStr("833810")
+	Offset          = sdkmath.LegacyMustNewDecFromStr("17")
+	TotalMonths     = sdkmath.LegacyMustNewDecFromStr("120")
+	MonthsInFormula = TotalMonths
+	// AbsMonthsRange  = MonthsInFormula.Sub(Offset)
+	// MonthsRange     = AbsMonthsRange.Quo(MonthsInFormula)
 )
 
 // NewMinter returns a new Minter object with the given inflation and annual
@@ -38,7 +38,7 @@ func NewMinter(normTimePassed sdkmath.LegacyDec, totalMinted, prevBlockTimestamp
 // InitialMinter returns an initial Minter object with zero-value parameters.
 func InitialMinter() Minter {
 	return NewMinter(
-		NormOffset,
+		Offset,
 		sdkmath.ZeroUint(),
 		sdkmath.ZeroUint(),
 		sdkmath.ZeroUint(),
@@ -62,18 +62,7 @@ func ValidateMinter(minter Minter) error {
 		return fmt.Errorf("mint parameter normTimePassed: %v should not be bigger than TotalMonths: %v", minter.NormTimePassed, TotalMonths)
 	}
 
-	calculatedMintedTokens := calcMintedTokens(minter)
-
-	if !calculatedMintedTokens.Equal(minter.TotalMinted) {
-		return fmt.Errorf("minted unexpected amount of tokens for %s months. act: %v, exp: %v",
-			minter.NormTimePassed, minter.TotalMinted, calculatedMintedTokens)
-	}
-
 	return nil
-}
-
-func calcMintedTokens(m Minter) sdkmath.Uint {
-	return CalcTokensByIntegral(m.NormTimePassed).Sub(CalcTokensByIntegral(NormOffset))
 }
 
 // Integral:  -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant

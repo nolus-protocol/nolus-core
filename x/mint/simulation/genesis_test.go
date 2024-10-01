@@ -45,7 +45,7 @@ func TestRandomizedGenState(t *testing.T) {
 
 	require.Equal(t, sdkmath.NewUint(uint64(time.Second.Nanoseconds()*13)), mintGenesis.Params.MaxMintableNanoseconds)
 	require.Equal(t, "0", mintGenesis.Minter.TotalMinted.String())
-	require.Equal(t, "0.170000000000000000", mintGenesis.Minter.NormTimePassed.String())
+	require.Equal(t, "17.000000000000000000", mintGenesis.Minter.NormTimePassed.String())
 	require.Equal(t, sdkmath.ZeroUint(), mintGenesis.Minter.PrevBlockTimestamp)
 }
 
