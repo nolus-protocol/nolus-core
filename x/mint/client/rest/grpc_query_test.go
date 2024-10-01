@@ -72,7 +72,7 @@ func (s *IntegrationTestSuite) TestQueryGRPC() {
 			map[string]string{},
 			&minttypes.QueryMintStateResponse{},
 			&minttypes.QueryMintStateResponse{
-				NormTimePassed: minttypes.Offset,
+				NormTimePassed: sdkmath.LegacyNewDec(0),
 				TotalMinted:    sdkmath.ZeroUint(),
 			},
 		},

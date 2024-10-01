@@ -16,17 +16,12 @@ import (
 )
 
 var (
-	// normInitialTotal   = types.CalcTokensByIntegral(types.Offset)
 	nanoSecondsInMonth = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
 	twelveMonths       = sdkmath.LegacyMustNewDecFromStr("12.0")
 
 	errTimeInFutureBeforeTimePassed = errors.New("time in future can not be before passed time")
 	errNegativeBlockTime            = errors.New("block time can not be less then zero")
 )
-
-// func calcFractionOfMonthsRange(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
-// 	return types.MonthsRange.Mul(calcFractionOfMonth(nanoSecondsPassed))
-// }
 
 func calcFractionOfMonth(nanoSecondsPassed sdkmath.Uint) sdkmath.LegacyDec {
 	return types.DecFromUint(nanoSecondsPassed).Quo(nanoSecondsInMonth)
