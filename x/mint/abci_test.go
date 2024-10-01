@@ -16,32 +16,32 @@ import (
 )
 
 var (
-	expectedCoins60Sec      = sdkmath.NewUint(110812991999999)
-	expectedNormTime20Sec   = sdkmath.LegacyMustNewDecFromStr("119.999999999999340800")
+	expectedCoins60Sec      = sdkmath.NewUint(110812965137065)
+	expectedNormTime20Sec   = sdkmath.LegacyMustNewDecFromStr("119.999976851851083852")
 	normTimeThreshold       = sdkmath.LegacyMustNewDecFromStr("0.0001")
 	fiveMinutesInNano       = sdkmath.NewUint(uint64(time.Minute.Nanoseconds() * 5))
 	expectedTokensInFormula = []int64{
-		831471167387, 829820863761, 828281868588, 826839730229,
-		825478208594, 824245045239, 823079423313, 822040420023, 821068654579, 820213875087,
-		819440568386, 818769585963, 818188244433, 817710710496, 817307924485, 816997527407,
-		816801218448, 816665071819, 816653649327, 816687516174, 816829020601, 817076870515,
-		817381227849, 817797546633, 818285112383, 818851440472, 819521147414, 820244244256,
-		821076677649, 821989017422, 822969470941, 824035436872, 825179899902, 826414307226,
-		827719521455, 829106029879, 830572546616, 832114890622, 833716613001, 835411110262,
-		837177165020, 839021213069, 840930930851, 842916649359, 844972836509, 847097499967,
-		849298799875, 851576789297, 853903163473, 856331938931, 858791497471, 861331985362,
-		863962242560, 866625630338, 869363060252, 872175658740, 875054103746, 877980110097,
-		880975946858, 884048218881, 887171089932, 890339954723, 893573962494, 896878411923,
-		900234010041, 903659884903, 907126102331, 910673269050, 914266110944, 917897409726,
-		921597576949, 925364386158, 929161815914, 933015513595, 936936824067, 940877689459,
-		944912156067, 948980488929, 953081003798, 957231607980, 961453590558, 965711597981,
-		970004010105, 974358571556, 978754847098, 983204268459, 987669657610, 992198558014,
-		996767161256, 1001386360978, 1006046700901, 1010749072213, 1015471626361, 1020258693631,
-		1025054584775, 1029909842031, 1034789697625, 1039716743761, 1044692845653, 1049702564826,
-		1054707264879, 1059775597373, 1064882345537, 1070005834258, 1075175024704, 1080380322095,
-		1085587142549, 1090852470274, 1096136767172, 1101460461185, 1106804686306, 1112155724140,
-		1117554744480, 1122993046929, 1128426460549, 1133897580718, 1139405112592, 1144914091087,
-		1150478593260, 1156032420164,
+		832934816948, 831271811242, 829695356341, 828248939385,
+		826872082714, 825599316449, 824443601132, 823355595954, 822380119519, 821514525561,
+		820713783758, 820046904203, 819429981640, 818930370019, 818537870306, 818196877181,
+		817837243611, 817842608993, 817841973385, 817787896698, 817834100906, 818194410133,
+		818486311253, 818880565551, 819357231376, 819936198264, 820587396977, 821307583408,
+		822131886932, 823014927908, 824006183536, 825059565539, 826200776447, 827438131216,
+		828725945831, 830119135298, 831565516158, 833096089173, 834721194003, 836405097569,
+		838161880877, 839996042692, 841900758200, 843890971176, 845947504653, 848071921510,
+		850277963103, 852541686330, 854890024849, 857297964698, 859773696598, 862315875568,
+		864920472267, 867607206887, 870343235595, 873161991403, 876027269974, 878960647865,
+		881968669856, 885027566950, 888160516719, 891350504585, 894584724825, 897887581250,
+		901252264319, 904697728175, 908160810698, 911698015060, 915289477634, 918933072653,
+		922661242632, 926417929254, 930215343691, 934077877155, 937995994556, 941979277093,
+		945984492200, 950072914452, 954194638263, 958346483768, 962582902635, 966854894285,
+		971148054036, 975513678053, 979916708309, 984371169138, 988869625055, 993411783806,
+		997982311017, 1002627953125, 1007265684343, 1011977261615, 1016715058280, 1021503025328,
+		1026335532432, 1031204039333, 1036112239206, 1041027695773, 1046012680041, 1051027734026,
+		1056080248391, 1061146619517, 1066273204031, 1071412196425, 1076581263984, 1081789735633,
+		1087038354691, 1092325785121, 1097597611815, 1102931622903, 1108289222364, 1113680416472,
+		1119099458450, 1124526125020, 1129982107999, 1135473837965, 1140980117098, 1146516049672,
+		1152083758164, 1157657672766,
 	}
 )
 
@@ -280,35 +280,35 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 		expError          bool
 	}{
 		{
-			title:             "start from genesis, 1 month calculated by integral",
-			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("0.17"),
+			title:             "start from 17th month when formula is applied for the first time, 1 month calculated by integral",
+			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("17"),
 			timeAhead:         sdkmath.LegacyMustNewDecFromStr("1"),
-			totalMinted:       sdkmath.ZeroUint(),
-			expIntegralMinted: sdkmath.NewUintFromString("831_474_371_998"),
+			totalMinted:       sdkmath.NewUintFromString("14_218_115_061_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("600_000_000_000"),
 			expError:          false,
 		},
 		{
-			title:             "start from genesis, 12 months calculated by integral",
-			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("0.17"),
+			title:             "start from 17th month when formula is applied for the first time, 12 months calculated by integral",
+			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("17"),
 			timeAhead:         twelveMonths,
-			totalMinted:       sdkmath.ZeroUint(),
-			expIntegralMinted: sdkmath.NewUintFromString("9_890_844_457_754"),
+			totalMinted:       sdkmath.NewUintFromString("14_218_115_061_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("9_612_567_769_562"),
 			expError:          false,
 		},
 		{
 			title:             "in the 120 months range, 12 months calculated by integral",
-			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("2.04"),
+			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("19"),
 			timeAhead:         twelveMonths,
-			totalMinted:       sdkmath.NewUintFromString("141_722_242_835"),
-			expIntegralMinted: sdkmath.NewUintFromString("11_280_925_194_119"),
+			totalMinted:       sdkmath.NewUintFromString("16_218_115_061_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("9_259_614_547_562"),
 			expError:          false,
 		},
 		{
 			title:             "ends on the 120th month, 12 months calculated by integral",
-			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("84.05875000"),
+			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("108.05875000"),
 			timeAhead:         twelveMonths,
-			totalMinted:       sdkmath.NewUintFromString("1_977_230_000_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("82_441_220_298_725"),
+			totalMinted:       sdkmath.NewUintFromString("100_218_115_061_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("10_594_876_939_000"),
 			expError:          false,
 		},
 		{
@@ -316,7 +316,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("119.00489583"),
 			timeAhead:         twelveMonths,
 			totalMinted:       sdkmath.NewUintFromString("100_290_028_000_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("10_381_241_757_165"),
+			expIntegralMinted: sdkmath.NewUintFromString("10_522_964_000_000"),
 			expError:          false,
 		},
 		{
@@ -339,7 +339,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			title:             "zero time ahead should not mint tokens",
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("85.05385417"),
 			timeAhead:         sdkmath.LegacyZeroDec(),
-			totalMinted:       sdkmath.NewUintFromString("73_345_777_103_641"),
+			totalMinted:       sdkmath.NewUintFromString("73_487_499_360_806"),
 			expIntegralMinted: sdkmath.ZeroUint(),
 			expError:          false,
 		},

@@ -17,11 +17,8 @@ var (
 	CubeCoef        = sdkmath.LegacyMustNewDecFromStr("16.9415")
 	SquareCoef      = sdkmath.LegacyMustNewDecFromStr("-883.75")
 	Coef            = sdkmath.LegacyMustNewDecFromStr("833810")
-	Offset          = sdkmath.LegacyMustNewDecFromStr("17")
 	TotalMonths     = sdkmath.LegacyMustNewDecFromStr("120")
 	MonthsInFormula = TotalMonths
-	// AbsMonthsRange  = MonthsInFormula.Sub(Offset)
-	// MonthsRange     = AbsMonthsRange.Quo(MonthsInFormula)
 )
 
 // NewMinter returns a new Minter object with the given inflation and annual
@@ -38,7 +35,7 @@ func NewMinter(normTimePassed sdkmath.LegacyDec, totalMinted, prevBlockTimestamp
 // InitialMinter returns an initial Minter object with zero-value parameters.
 func InitialMinter() Minter {
 	return NewMinter(
-		Offset,
+		sdkmath.LegacyNewDec(0),
 		sdkmath.ZeroUint(),
 		sdkmath.ZeroUint(),
 		sdkmath.ZeroUint(),
