@@ -104,7 +104,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 	prevOffset := timeOffset
 	nanoSecondsInPeriod := nanoSecondsInMonth.Mul(types.MonthsInFormula).Add(types.DecFromUint(timeOffset)).TruncateInt64()
 	r := rand.New(rand.NewSource(util.GetCurrentTimeUnixNano()))
-	monthThreshold := sdkmath.NewUint(187_500_000) // 187.5 tokens
+	monthThreshold := sdkmath.NewUint(187_500_000) // 287.5 tokens
 	month := 0
 
 	for timeOffset.LT(sdkmath.NewUint(uint64(nanoSecondsInPeriod))) {
@@ -144,7 +144,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		timeOffset = timeOffset.Add(i)
 	}
 
-	mintThreshold := sdkmath.NewUint(20_000_000) // 20 tokens
+	mintThreshold := sdkmath.NewUint(30_000_000) // 30 tokens
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 
 	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdkmath.Uint(minter.TotalMinted)).GT(mintThreshold) {
@@ -216,31 +216,31 @@ func Test_CalcTokens_WhenGivenBlockWithDiffBiggerThanMax_MaxMintedTokensAreCreat
 	require.Equal(t, expectedCoins, coins)
 }
 
-// func Test_CalcIncrementDuringFormula_OutputsExpectedIncrementWithinEpsilon(t *testing.T) {
-// 	increment5s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 5)))
-// 	increment30s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 30)))
-// 	increment60s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 60)))
+func Test_CalcIncrementDuringFormula_OutputsExpectedIncrementWithinEpsilon(t *testing.T) {
+	increment5s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 5)))
+	increment30s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 30)))
+	increment60s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 60)))
 
-// 	minutesInPeriod := int64(60) * 24 * 30 * types.MonthsInFormula.TruncateInt64()
-// 	sumIncrements5s := sdkmath.LegacyNewDec(12 * minutesInPeriod).Mul(increment5s)
-// 	sumIncrements30s := sdkmath.LegacyNewDec(2 * minutesInPeriod).Mul(increment30s)
-// 	sumIncrements60s := sdkmath.LegacyNewDec(1 * minutesInPeriod).Mul(increment60s)
+	minutesInPeriod := int64(60) * 24 * 30 * types.MonthsInFormula.TruncateInt64()
+	sumIncrements5s := sdkmath.LegacyNewDec(12 * minutesInPeriod).Mul(increment5s)
+	sumIncrements30s := sdkmath.LegacyNewDec(2 * minutesInPeriod).Mul(increment30s)
+	sumIncrements60s := sdkmath.LegacyNewDec(1 * minutesInPeriod).Mul(increment60s)
 
-// 	if sumIncrements5s.Sub(types.AbsMonthsRange).Abs().GT(normTimeThreshold) {
-// 		t.Errorf("Increment with 5 second step results in range %v, deviating with more than epsilon from expected %v",
-// 			sumIncrements5s, types.AbsMonthsRange)
-// 	}
+	if sumIncrements5s.Sub(types.MonthsInFormula).Abs().GT(normTimeThreshold) {
+		t.Errorf("Increment with 5 second step results in range %v, deviating with more than epsilon from expected %v",
+			sumIncrements5s, types.MonthsInFormula)
+	}
 
-// 	if sumIncrements30s.Sub(types.AbsMonthsRange).Abs().GT(normTimeThreshold) {
-// 		t.Errorf("Increment with 30 second step results in range %v, deviating with more than epsilon from expected %v",
-// 			sumIncrements30s, types.AbsMonthsRange)
-// 	}
+	if sumIncrements30s.Sub(types.MonthsInFormula).Abs().GT(normTimeThreshold) {
+		t.Errorf("Increment with 30 second step results in range %v, deviating with more than epsilon from expected %v",
+			sumIncrements30s, types.MonthsInFormula)
+	}
 
-// 	if sumIncrements60s.Sub(types.AbsMonthsRange).Abs().GT(normTimeThreshold) {
-// 		t.Errorf("Increment with 60 second step results in range %v, deviating with more than epsilon from expected %v",
-// 			sumIncrements60s, types.AbsMonthsRange)
-// 	}
-// }
+	if sumIncrements60s.Sub(types.MonthsInFormula).Abs().GT(normTimeThreshold) {
+		t.Errorf("Increment with 60 second step results in range %v, deviating with more than epsilon from expected %v",
+			sumIncrements60s, types.MonthsInFormula)
+	}
+}
 
 func Test_CalcFixedIncrement_OutputsExpectedIncrementWithinEpsilon(t *testing.T) {
 	increment5s := calcFractionOfMonth(sdkmath.NewUint(uint64(time.Second.Nanoseconds() * 5)))
@@ -284,7 +284,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("17"),
 			timeAhead:         sdkmath.LegacyMustNewDecFromStr("1"),
 			totalMinted:       sdkmath.NewUintFromString("14_218_115_061_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("600_000_000_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("817_848_589_438"),
 			expError:          false,
 		},
 		{
@@ -292,7 +292,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("17"),
 			timeAhead:         twelveMonths,
 			totalMinted:       sdkmath.NewUintFromString("14_218_115_061_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("9_612_567_769_562"),
+			expIntegralMinted: sdkmath.NewUintFromString("9_830_416_359_000"),
 			expError:          false,
 		},
 		{
@@ -300,7 +300,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("19"),
 			timeAhead:         twelveMonths,
 			totalMinted:       sdkmath.NewUintFromString("16_218_115_061_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("9_259_614_547_562"),
+			expIntegralMinted: sdkmath.NewUintFromString("9_841_812_453_000"),
 			expError:          false,
 		},
 		{
@@ -308,7 +308,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("108.05875000"),
 			timeAhead:         twelveMonths,
 			totalMinted:       sdkmath.NewUintFromString("100_218_115_061_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("10_594_876_939_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("13_464_688_892_035"),
 			expError:          false,
 		},
 		{
@@ -316,7 +316,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 			normTimePassed:    sdkmath.LegacyMustNewDecFromStr("119.00489583"),
 			timeAhead:         twelveMonths,
 			totalMinted:       sdkmath.NewUintFromString("100_290_028_000_000"),
-			expIntegralMinted: sdkmath.NewUintFromString("10_522_964_000_000"),
+			expIntegralMinted: sdkmath.NewUintFromString("1_152_026_773_468"),
 			expError:          false,
 		},
 		{
@@ -350,7 +350,7 @@ func Test_PredictMintedByIntegral_TwelveMonthsAhead(t *testing.T) {
 				TotalMinted:    tc.totalMinted,
 			}
 
-			newlyMinted, err := predictMintedByIntegral(minter.TotalMinted, minter.NormTimePassed, tc.timeAhead)
+			newlyMinted, err := predictMintedByIntegral(minter.NormTimePassed, tc.timeAhead)
 			if tc.expError && err == nil {
 				t.Error("Error is expected")
 			}

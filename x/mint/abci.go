@@ -48,11 +48,14 @@ func calcTokens(blockTime sdkmath.Uint, minter *types.Minter, maxMintableSeconds
 	}
 
 	nsecPassed := calcTimeDifference(blockTime, minter.PrevBlockTimestamp, maxMintableSeconds)
-	newTime := minter.NormTimePassed.Add(calcFractionOfMonth(nsecPassed))
-	if newTime.LT(types.MonthsInFormula) {
+	if minter.NormTimePassed.LT(types.MonthsInFormula) {
+		newTime := minter.NormTimePassed.Add(calcFractionOfMonth(nsecPassed))
+
 		// First 120 months follow the minting formula
-		nextTotal := types.CalcTokensByIntegral(newTime)
-		delta := nextTotal.Sub(minter.TotalMinted)
+		calcWithLastNormTimePassed := types.CalcTokensByIntegral(minter.NormTimePassed)
+		calcWithNewTimePassed := types.CalcTokensByIntegral(newTime)
+
+		delta := calcWithNewTimePassed.Sub(calcWithLastNormTimePassed)
 
 		return updateMinter(minter, blockTime, newTime, delta)
 	} else {
@@ -76,7 +79,7 @@ func updateMinter(minter *types.Minter, blockTime sdkmath.Uint, newTimePassed sd
 
 // Returns the amount of tokens that should be minted by the integral formula
 // for the period between normTimePassed and the timeInFuture.
-func predictMintedByIntegral(totalMinted sdkmath.Uint, timePassed, timeAhead sdkmath.LegacyDec) (sdkmath.Uint, error) {
+func predictMintedByIntegral(timePassed, timeAhead sdkmath.LegacyDec) (sdkmath.Uint, error) {
 	timeAheadNs := timeAhead.Mul(nanoSecondsInMonth).TruncateInt()
 	timeInFuture := timePassed.Add(calcFractionOfMonth(sdkmath.Uint(timeAheadNs)))
 	if timePassed.GT(timeInFuture) {
@@ -92,14 +95,16 @@ func predictMintedByIntegral(totalMinted sdkmath.Uint, timePassed, timeAhead sdk
 		timeInFuture = types.MonthsInFormula
 	}
 
-	return types.CalcTokensByIntegral(timeInFuture).Sub(totalMinted), nil
+	calcTokensTimePassed := types.CalcTokensByIntegral(timePassed)
+
+	return types.CalcTokensByIntegral(timeInFuture).Sub(calcTokensTimePassed), nil
 }
 
 // Returns the amount of tokens that should be minted
 // between the NormTimePassed and the timeAhead
 // timeAhead expects months represented in decimal form.
-func predictTotalMinted(totalMinted sdkmath.Uint, timePassed, timeAhead sdkmath.LegacyDec) sdkmath.Uint {
-	integralAmount, err := predictMintedByIntegral(totalMinted, timePassed, timeAhead)
+func predictTotalMinted(timePassed, timeAhead sdkmath.LegacyDec) sdkmath.Uint {
+	integralAmount, err := predictMintedByIntegral(timePassed, timeAhead)
 	if err != nil {
 		return sdkmath.ZeroUint()
 	}
@@ -121,7 +126,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	}
 
 	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
-	minter.AnnualInflation = predictTotalMinted(minter.TotalMinted, minter.NormTimePassed, twelveMonths)
+	minter.AnnualInflation = predictTotalMinted(minter.NormTimePassed, twelveMonths)
 	c.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 	err := k.SetMinter(ctx, minter)
 	if err != nil {
