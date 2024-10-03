@@ -58,6 +58,7 @@ import (
 
 // FlagRejectConfigDefaults defines a flag to reject some select defaults that override what is in the config file.
 const FlagRejectConfigDefaults = "reject-config-defaults"
+const FlagCustomWasmQueryGasLimit = "wasm-query-gas-limit"
 
 type (
 	// AppBuilder is a method that allows to build an app.
@@ -308,6 +309,10 @@ func initRootCmd(
 
 				// Get flag value for rejecting config defaults
 				rejectConfigDefaults := serverCtx.Viper.GetBool(FlagRejectConfigDefaults)
+				wasmQueryGasLimit := serverCtx.Viper.GetString(FlagCustomWasmQueryGasLimit)
+				if wasmQueryGasLimit != "" {
+					recommendedAppTomlValues[0].Value = wasmQueryGasLimit
+				}
 
 				// overwrite config.toml and app.toml values, if rejectConfigDefaults is false
 				if !rejectConfigDefaults {
@@ -391,6 +396,7 @@ func addModuleInitFlags(startCmd *cobra.Command) {
 	crisis.AddModuleInitFlags(startCmd)
 	wasm.AddModuleInitFlags(startCmd)
 	startCmd.Flags().Bool(FlagRejectConfigDefaults, false, "Reject some select recommended default values from being automatically set in the config.toml and app.toml")
+	startCmd.Flags().String(FlagCustomWasmQueryGasLimit, "", "Set custom default value for wasm query gas limit in app.toml")
 }
 
 func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
