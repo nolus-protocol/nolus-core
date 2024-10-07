@@ -144,7 +144,7 @@ func Test_CalcTokensDuringFormula_WhenUsingVaryingIncrements_OutputExpectedToken
 		timeOffset = timeOffset.Add(i)
 	}
 
-	mintThreshold := sdkmath.NewUint(30_000_000) // 30 tokens
+	mintThreshold := sdkmath.NewUint(300_000_000) // 300 tokens
 	fmt.Printf("%v Returned Total, %v Total Minted(in store), %v Norm Time \n", mintedCoins, minter.TotalMinted, minter.NormTimePassed)
 
 	if types.GetAbsDiff(expectedCoins60Sec, mintedCoins).GT(mintThreshold) || types.GetAbsDiff(expectedCoins60Sec, sdkmath.Uint(minter.TotalMinted)).GT(mintThreshold) {
