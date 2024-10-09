@@ -32,8 +32,8 @@ func CreateUpgradeHandler(
 
 		// Properly register consensus params. In the process, change block max bytes params:
 		defaultConsensusParams := tmtypes.DefaultConsensusParams().ToProto()
-		defaultConsensusParams.Block.MaxBytes = 5000000 // previously 10485760
-		defaultConsensusParams.Block.MaxGas = 300000000 // previously 120000000
+		defaultConsensusParams.Block.MaxBytes = 4000000 // previously 22020096
+		defaultConsensusParams.Block.MaxGas = 100000000 // previously 100000000
 		err = keepers.ConsensusParamsKeeper.ParamsStore.Set(ctx, defaultConsensusParams)
 		if err != nil {
 			return nil, err
