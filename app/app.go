@@ -51,7 +51,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	v065 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v065"
+	v066 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v066"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -67,7 +67,7 @@ const (
 var (
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v065.Upgrade}
+	Upgrades = []upgrades.Upgrade{v066.Upgrade}
 )
 
 var (
