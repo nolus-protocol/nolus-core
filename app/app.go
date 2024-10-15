@@ -11,6 +11,10 @@ import (
 
 	"github.com/spf13/cast"
 
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
+
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
 	"cosmossdk.io/client/v2/autocli"
@@ -487,41 +491,40 @@ func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config)
 	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
 }
 
-// TODO
-// // GetTxConfig implements the TestingApp interface.
-// func (app *App) GetTxConfig() client.TxConfig {
-// 	return app.encodingConfig.TxConfig
-// }
+// GetTxConfig implements the TestingApp interface.
+func (app *App) GetTxConfig() client.TxConfig {
+	return app.encodingConfig.TxConfig
+}
 
-// // GetIBCKeeper implements the TestingApp interface.
-// func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
-// 	return app.IBCKeeper
-// }
+// GetIBCKeeper implements the TestingApp interface.
+func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
 
-// // GetScopedIBCKeeper implements the TestingApp interface.
-// func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
-// 	return app.ScopedIBCKeeper
-// }
+// GetScopedIBCKeeper implements the TestingApp interface.
+func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
 
-// // GetStakingKeeper implements the TestingApp interface.
-// func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
-// 	return app.StakingKeeper
-// }
+// GetStakingKeeper implements the TestingApp interface.
+func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
+	return app.StakingKeeper
+}
 
-// // InitChainer application update at chain initialization.
-// // ONLY FOR TESTING PURPOSES.
-// func (app *App) TestInitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
-// 	var genesisState GenesisState
-// 	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
-// 		panic(err)
-// 	}
+// InitChainer application update at chain initialization.
+// ONLY FOR TESTING PURPOSES.
+func (app *App) TestInitChainer(ctx sdk.Context, req *abci.RequestInitChain) (*abci.ResponseInitChain, error) {
+	var genesisState GenesisState
+	if err := tmjson.Unmarshal(req.AppStateBytes, &genesisState); err != nil {
+		panic(err)
+	}
 
-// 	// manually set consensus params here, cause there is no way to set it using ibctesting stuff for now
-// 	// TODO: app.ConsensusParamsKeeper.Set(ctx, sims.DefaultConsensusParams)
+	// manually set consensus params here, cause there is no way to set it using ibctesting stuff for now
+	// TODO: app.ConsensusParamsKeeper.Set(ctx, sims.DefaultConsensusParams)
 
-// 	err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to set module version map: %w", err)
-// 	}
-// 	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
-// }
+	err := app.UpgradeKeeper.SetModuleVersionMap(ctx, app.mm.GetVersionMap())
+	if err != nil {
+		return nil, fmt.Errorf("failed to set module version map: %w", err)
+	}
+	return app.mm.InitGenesis(ctx, app.appCodec, genesisState)
+}
