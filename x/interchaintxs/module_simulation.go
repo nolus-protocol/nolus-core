@@ -11,7 +11,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
-// avoid unused import issue
+// avoid unused import issue.
 var (
 	_ = interchaintxssimulation.FindAccount
 	_ = sims.StakePerAccount
@@ -19,7 +19,7 @@ var (
 	_ = baseapp.Paramspace
 )
 
-// GenerateGenesisState creates a randomized GenState of the module
+// GenerateGenesisState creates a randomized GenState of the module.
 func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	accs := make([]string, len(simState.Accounts))
 	for i, acc := range simState.Accounts {
@@ -31,12 +31,12 @@ func (AppModule) GenerateGenesisState(simState *module.SimulationState) {
 	simState.GenState[types.ModuleName] = simState.Cdc.MustMarshalJSON(&interchaintxsGenesis)
 }
 
-// ProposalContents doesn't return any content functions for governance proposals
+// ProposalContents doesn't return any content functions for governance proposals.
 func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedProposalMsg {
 	return nil
 }
 
-// RegisterStoreDecoder registers a decoder
+// RegisterStoreDecoder registers a decoder.
 func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
 
 // WeightedOperations returns the all the gov module operations with their respective weights.

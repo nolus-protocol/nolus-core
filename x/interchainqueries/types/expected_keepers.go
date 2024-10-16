@@ -7,7 +7,7 @@ import (
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
 )
 
-// AccountKeeper defines the expected account keeper used for simulations (noalias)
+// AccountKeeper defines the expected account keeper used for simulations (noalias).
 type AccountKeeper interface {
 	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 	// Methods imported from account should be defined here

@@ -5,19 +5,19 @@ import (
 )
 
 const (
-	// ModuleName defines the module name
+	// ModuleName defines the module name.
 	ModuleName = "interchainqueries"
 
-	// StoreKey defines the primary module store key
+	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
 
-	// RouterKey is the message route for slashing
+	// RouterKey is the message route for slashing.
 	RouterKey = ModuleName
 
-	// QuerierRoute defines the module's query routing key
+	// QuerierRoute defines the module's query routing key.
 	QuerierRoute = ModuleName
 
-	// MemStoreKey defines the in-memory store key
+	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_interchainqueries"
 )
 
@@ -38,7 +38,7 @@ var (
 	SubmittedTxKey = []byte{prefixSubmittedTx}
 	// TxQueryToRemoveKey is the store key for TX queries marked to be removed.
 	TxQueryToRemoveKey = []byte{prefixTxQueryToRemove}
-	// ParamsKey is the store key for the module params
+	// ParamsKey is the store key for the module params.
 	ParamsKey = []byte{prefixParamsKey}
 	// LastRegisteredQueryIDKey is the store key for last registered query ID.
 	LastRegisteredQueryIDKey = []byte{0x64}

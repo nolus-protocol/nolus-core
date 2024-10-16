@@ -20,7 +20,7 @@ import (
 	wrappedtypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
-// KeeperTransferWrapper is a wrapper for original ibc keeper to override response for "Transfer" method
+// KeeperTransferWrapper is a wrapper for original ibc keeper to override response for "Transfer" method.
 type KeeperTransferWrapper struct {
 	keeper.Keeper
 	channelKeeper wrappedtypes.ChannelKeeper
@@ -82,7 +82,7 @@ func (k KeeperTransferWrapper) UpdateParams(goCtx context.Context, msg *wrappedt
 	return &wrappedtypes.MsgUpdateParamsResponse{}, nil
 }
 
-// NewKeeper creates a new IBC transfer Keeper(KeeperTransferWrapper) instance
+// NewKeeper creates a new IBC transfer Keeper(KeeperTransferWrapper) instance.
 func NewKeeper(
 	cdc codec.BinaryCodec, key storetypes.StoreKey, paramSpace paramtypes.Subspace,
 	ics4Wrapper porttypes.ICS4Wrapper, channelKeeper wrappedtypes.ChannelKeeper, portKeeper types.PortKeeper,

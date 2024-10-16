@@ -68,7 +68,7 @@ func (msg MsgSubmitQueryResult) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{senderAddr}
 }
 
-// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces
+// UnpackInterfaces implements UnpackInterfacesMessage.UnpackInterfaces.
 func (msg MsgSubmitQueryResult) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var header exported.ClientMessage
 	if err := unpacker.UnpackAny(msg.Result.GetBlock().GetHeader(), &header); err != nil {

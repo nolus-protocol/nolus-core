@@ -1,6 +1,6 @@
 package types
 
-// Contractmanager events
+// Contractmanager events.
 const (
 	// AttributeKeySudoError indicates an attribute containing detailed Sudo call error.
 	AttributeKeySudoError = "error"

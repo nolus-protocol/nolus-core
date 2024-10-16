@@ -17,7 +17,7 @@ const (
 	flagConnectionID = "connection_id"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(_ string) *cobra.Command {
 	// Group interchainqueries queries under a subcommand
 	cmd := &cobra.Command{

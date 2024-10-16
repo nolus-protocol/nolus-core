@@ -1,6 +1,6 @@
 package types
 
-// feerefunder module event types
+// feerefunder module event types.
 const (
 	EventTypeDistributeAcknowledgementFee = "distribute_ack_fee"
 	EventTypeDistributeTimeoutFee         = "distribute_timeout_fee"

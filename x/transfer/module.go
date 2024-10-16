@@ -31,7 +31,7 @@ type IBCModule struct {
 	transfer.IBCModule
 }
 
-// NewIBCModule creates a new IBCModule given the keeper
+// NewIBCModule creates a new IBCModule given the keeper.
 func NewIBCModule(k wrapkeeper.KeeperTransferWrapper, sudoKeeper transfertypes.WasmKeeper) IBCModule {
 	return IBCModule{
 		wrappedKeeper: k,
@@ -76,7 +76,7 @@ type AppModule struct {
 	keeper wrapkeeper.KeeperTransferWrapper
 }
 
-// NewAppModule creates a new 20-transfer module
+// NewAppModule creates a new 20-transfer module.
 func NewAppModule(k wrapkeeper.KeeperTransferWrapper) AppModule {
 	return AppModule{
 		AppModule: transfer.NewAppModule(k.Keeper),
@@ -134,7 +134,7 @@ func (am AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	am.AppModuleBasic.RegisterLegacyAminoCodec(cdc)
 }
 
-// RegisterInterfaces registers the module's interface types
+// RegisterInterfaces registers the module's interface types.
 func (am AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	transfertypes.RegisterInterfaces(reg)
 	am.AppModuleBasic.RegisterInterfaces(reg)
