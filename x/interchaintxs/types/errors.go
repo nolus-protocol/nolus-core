@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/errors"
 )
 
-// x/interchaintxs module sentinel errors
+// x/interchaintxs module sentinel errors.
 var (
 	ErrInvalidICAOwner           = errors.Register(ModuleName, 1100, "invalid interchain account interchainAccountID")
 	ErrInvalidAccountAddress     = errors.Register(ModuleName, 1101, "invalid account address")

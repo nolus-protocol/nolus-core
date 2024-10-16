@@ -7,7 +7,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 )
 
-// AccountKeeper defines the expected account keeper used for simulations (noalias)
+// AccountKeeper defines the expected account keeper used for simulations (noalias).
 type AccountKeeper interface {
 	GetAccount(ctx context.Context, addr sdk.AccAddress) sdk.AccountI
 	// Methods imported from account should be defined here
@@ -22,7 +22,7 @@ type BankKeeper interface {
 	// Methods imported from bank should be defined here
 }
 
-// ChannelKeeper defines the expected IBC channel keeper
+// ChannelKeeper defines the expected IBC channel keeper.
 type ChannelKeeper interface {
 	GetChannel(ctx sdk.Context, srcPort, srcChan string) (channel channeltypes.Channel, found bool)
 }

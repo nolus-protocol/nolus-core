@@ -8,7 +8,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 )
 
-// GetParams get all parameters as types.Params
+// GetParams get all parameters as types.Params.
 func (k Keeper) GetParams(ctx context.Context) (params types.Params) {
 	c := sdk.UnwrapSDKContext(ctx)
 	store := c.KVStore(k.storeKey)
@@ -21,7 +21,7 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params) {
 	return params
 }
 
-// SetParams set the params
+// SetParams set the params.
 func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 	c := sdk.UnwrapSDKContext(ctx)
 	store := c.KVStore(k.storeKey)

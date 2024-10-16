@@ -2,7 +2,6 @@ package cli
 
 import (
 	"fmt"
-	// "strings"
 
 	"github.com/spf13/cobra"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 )
 
-// GetQueryCmd returns the cli query commands for this module
+// GetQueryCmd returns the cli query commands for this module.
 func GetQueryCmd(_ string) *cobra.Command {
 	// Group contractmanager queries under a subcommand
 	cmd := &cobra.Command{

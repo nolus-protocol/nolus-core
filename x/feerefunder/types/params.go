@@ -22,27 +22,27 @@ var (
 	}
 )
 
-// ParamKeyTable the param key table for launch module
+// ParamKeyTable the param key table for launch module.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable(paramtypes.NewParamSetPair(KeyFees, DefaultFees, validateFee))
 }
 
-// NewParams creates a new Params instance
+// NewParams creates a new Params instance.
 func NewParams(minfee Fee) Params {
 	return Params{MinFee: minfee}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(DefaultFees)
 }
 
-// ParamSetPairs get the params.ParamSet
+// ParamSetPairs get the params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{paramtypes.NewParamSetPair(KeyFees, &p.MinFee, validateFee)}
 }
 
-// Validate validates the set of params
+// Validate validates the set of params.
 func (p Params) Validate() error {
 	return p.MinFee.Validate()
 }

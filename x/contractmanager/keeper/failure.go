@@ -57,7 +57,7 @@ func (k Keeper) GetNextFailureIDKey(ctx context.Context, address string) uint64 
 	return 0
 }
 
-// GetAllFailures returns all failures
+// GetAllFailures returns all failures.
 func (k Keeper) GetAllFailures(ctx context.Context) (list []types.Failure) {
 	c := sdk.UnwrapSDKContext(ctx)
 

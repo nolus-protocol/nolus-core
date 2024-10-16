@@ -9,29 +9,29 @@ var _ paramtypes.ParamSet = (*Params)(nil)
 
 const DefaultSudoCallGasLimit = uint64(1_000_000)
 
-// ParamKeyTable the param key table for launch module
+// ParamKeyTable the param key table for launch module.
 func ParamKeyTable() paramtypes.KeyTable {
 	return paramtypes.NewKeyTable().RegisterParamSet(&Params{})
 }
 
-// NewParams creates a new Params instance
+// NewParams creates a new Params instance.
 func NewParams(sudoCallGasLimit uint64) Params {
 	return Params{
 		SudoCallGasLimit: sudoCallGasLimit,
 	}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(DefaultSudoCallGasLimit)
 }
 
-// ParamSetPairs get the params.ParamSet
+// ParamSetPairs get the params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{}
 }
 
-// Validate validates the set of params
+// Validate validates the set of params.
 func (p Params) Validate() error {
 	return nil
 }

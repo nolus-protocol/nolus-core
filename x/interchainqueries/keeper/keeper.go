@@ -110,7 +110,7 @@ func (k Keeper) GetQueryByID(ctx sdk.Context, id uint64) (*types.RegisteredQuery
 	return &query, nil
 }
 
-// GetAllRegisteredQueries returns all registered queries
+// GetAllRegisteredQueries returns all registered queries.
 func (k Keeper) GetAllRegisteredQueries(ctx sdk.Context) []*types.RegisteredQuery {
 	var (
 		store   = prefix.NewStore(ctx.KVStore(k.storeKey), types.RegisteredQueryKey)
@@ -213,7 +213,7 @@ func (k Keeper) CheckTransactionIsAlreadyProcessed(ctx sdk.Context, queryID uint
 	return store.Has(key)
 }
 
-// GetQueryResultByID returns a QueryResult for query with id
+// GetQueryResultByID returns a QueryResult for query with id.
 func (k Keeper) GetQueryResultByID(ctx sdk.Context, id uint64) (*types.QueryResult, error) {
 	store := ctx.KVStore(k.storeKey)
 
@@ -284,7 +284,7 @@ func (k Keeper) updateLastLocalHeight(ctx sdk.Context, query *types.RegisteredQu
 	k.Logger(ctx).Debug("Updated last local height on given query", "queryID", query.Id, "new_local_height", height)
 }
 
-// checkLastRemoteHeight checks whether the given height is greater than the query's remote height
+// checkLastRemoteHeight checks whether the given height is greater than the query's remote height.
 func (k Keeper) checkLastRemoteHeight(_ sdk.Context, query types.RegisteredQuery, height ibcclienttypes.Height) error {
 	if query.LastSubmittedResultRemoteHeight != nil && query.LastSubmittedResultRemoteHeight.GTE(height) {
 		return fmt.Errorf("result's remote height %d is less than or equal to last result's remote height %d", height, query.LastSubmittedResultRemoteHeight)
@@ -313,7 +313,7 @@ func (k Keeper) getRegisteredQueryByID(ctx sdk.Context, queryID uint64) (*types.
 	return &query, nil
 }
 
-// We don't need to store proofs or transactions, so we just remove unnecessary fields
+// We don't need to store proofs or transactions, so we just remove unnecessary fields.
 func clearQueryResult(result *types.QueryResult) types.QueryResult {
 	storageValues := make([]*types.StorageValue, 0, len(result.KvResults))
 	for _, v := range result.KvResults {

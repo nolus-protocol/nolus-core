@@ -4,7 +4,7 @@ import (
 	"cosmossdk.io/errors"
 )
 
-// x/interchainqueries module sentinel errors
+// x/interchainqueries module sentinel errors.
 var (
 	ErrInvalidQueryID             = errors.Register(ModuleName, 1100, "invalid query id")
 	ErrEmptyResult                = errors.Register(ModuleName, 1101, "empty result")

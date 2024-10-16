@@ -17,7 +17,7 @@ func NewPacketID(portID, channelID string, sequence uint64) PacketID {
 	}
 }
 
-// NewFee creates and returns a new Fee struct encapsulating the receive, acknowledgement and timeout fees as sdk.Coins
+// NewFee creates and returns a new Fee struct encapsulating the receive, acknowledgement and timeout fees as sdk.Coins.
 func NewFee(recvFee, ackFee, timeoutFee sdk.Coins) Fee {
 	return Fee{
 		RecvFee:    recvFee,
@@ -26,14 +26,14 @@ func NewFee(recvFee, ackFee, timeoutFee sdk.Coins) Fee {
 	}
 }
 
-// Total returns the total amount for a given Fee
+// Total returns the total amount for a given Fee.
 func (m Fee) Total() sdk.Coins {
 	return m.RecvFee.Add(m.AckFee...).Add(m.TimeoutFee...)
 }
 
 // Validate asserts that each Fee is valid:
 // * RecvFee must be zero;
-// * AckFee and TimeoutFee must be non-zero
+// * AckFee and TimeoutFee must be non-zero.
 func (m Fee) Validate() error {
 	var errFees []string
 	if !m.AckFee.IsValid() {

@@ -24,7 +24,7 @@ const (
 	AttributeKeyConnectionID = "connection_id"
 
 	// AttributeKeyQueryType represents the key for event attribute delivering the query type
-	// identifier (e.g. 'kv' or 'tx')
+	// identifier (e.g. 'kv' or 'tx').
 	AttributeKeyQueryType = "type"
 
 	// AttributeKeyKVQuery represents the keys of the storage we want to get from remote chain for event attribute delivering the keys
@@ -44,7 +44,7 @@ const (
 	// AttributeValueQueryRemoved represents the value for the 'action' event attribute.
 	AttributeValueQueryRemoved = "query_removed"
 
-	// maxTransactionsFilters defines maximum allowed amount of tx filters in msgRegisterInterchainQuery
+	// maxTransactionsFilters defines maximum allowed amount of tx filters in msgRegisterInterchainQuery.
 	maxTransactionsFilters = 32
 )
 
