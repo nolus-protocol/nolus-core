@@ -349,7 +349,7 @@ func (k Keeper) UpdateParams(goCtx context.Context, req *types.MsgUpdateParams) 
 func getEventsQueryUpdated(query *types.RegisteredQuery) sdk.Events {
 	return sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeNeutronMessage,
+			types.EventTypeNolusMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeyAction, types.AttributeValueQueryUpdated),
 			sdk.NewAttribute(types.AttributeKeyQueryID, strconv.FormatUint(query.Id, 10)),
@@ -365,7 +365,7 @@ func getEventsQueryUpdated(query *types.RegisteredQuery) sdk.Events {
 func getEventsQueryRemoved(query *types.RegisteredQuery) sdk.Events {
 	return sdk.Events{
 		sdk.NewEvent(
-			types.EventTypeNeutronMessage,
+			types.EventTypeNolusMessage,
 			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
 			sdk.NewAttribute(sdk.AttributeKeyAction, types.AttributeValueQueryRemoved),
 			sdk.NewAttribute(types.AttributeKeyQueryID, strconv.FormatUint(query.Id, 10)),

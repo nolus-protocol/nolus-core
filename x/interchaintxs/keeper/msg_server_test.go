@@ -30,7 +30,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
-const TestFeeCollectorAddr = "neutron1dua3d89szsmd3vwg0y5a2689ah0g4x68ps8vew"
+const TestFeeCollectorAddr = "nolus1dua3d89szsmd3vwg0y5a2689ah0g4x68ps8vew"
 
 func TestMsgRegisterInterchainAccountValidate(t *testing.T) {
 	icak, ctx := testkeeper.InterchainTxsKeeper(t, nil, nil, nil, nil, nil, nil, func(_ sdk.Context) string {

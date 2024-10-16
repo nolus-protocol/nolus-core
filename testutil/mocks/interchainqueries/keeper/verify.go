@@ -7,14 +7,13 @@ package mock_types
 import (
 	reflect "reflect"
 
-	types "github.com/cosmos/cosmos-sdk/codec/types"
-	types0 "github.com/cosmos/cosmos-sdk/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	types0 "github.com/cosmos/cosmos-sdk/codec/types"
+	types1 "github.com/cosmos/cosmos-sdk/types"
 	keeper "github.com/cosmos/ibc-go/v8/modules/core/02-client/keeper"
 	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	tendermint "github.com/cosmos/ibc-go/v8/modules/light-clients/07-tendermint"
 	gomock "github.com/golang/mock/gomock"
-
-	types1 "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
 )
 
 // MockHeaderVerifier is a mock of HeaderVerifier interface.
@@ -41,7 +40,7 @@ func (m *MockHeaderVerifier) EXPECT() *MockHeaderVerifierMockRecorder {
 }
 
 // UnpackHeader mocks base method.
-func (m *MockHeaderVerifier) UnpackHeader(any *types.Any) (exported.ClientMessage, error) {
+func (m *MockHeaderVerifier) UnpackHeader(any *types0.Any) (exported.ClientMessage, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UnpackHeader", any)
 	ret0, _ := ret[0].(exported.ClientMessage)
@@ -56,7 +55,7 @@ func (mr *MockHeaderVerifierMockRecorder) UnpackHeader(any interface{}) *gomock.
 }
 
 // VerifyHeaders mocks base method.
-func (m *MockHeaderVerifier) VerifyHeaders(ctx types0.Context, cleintkeeper keeper.Keeper, clientID string, header, nextHeader exported.ClientMessage) error {
+func (m *MockHeaderVerifier) VerifyHeaders(ctx types1.Context, cleintkeeper keeper.Keeper, clientID string, header, nextHeader exported.ClientMessage) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyHeaders", ctx, cleintkeeper, clientID, header, nextHeader)
 	ret0, _ := ret[0].(error)
@@ -93,7 +92,7 @@ func (m *MockTransactionVerifier) EXPECT() *MockTransactionVerifierMockRecorder 
 }
 
 // VerifyTransaction mocks base method.
-func (m *MockTransactionVerifier) VerifyTransaction(header, nextHeader *tendermint.Header, tx *types1.TxValue) error {
+func (m *MockTransactionVerifier) VerifyTransaction(header, nextHeader *tendermint.Header, tx *types.TxValue) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "VerifyTransaction", header, nextHeader, tx)
 	ret0, _ := ret[0].(error)

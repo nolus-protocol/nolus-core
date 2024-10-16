@@ -10,7 +10,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
-const TestAddress = "neutron1m9l358xunhhwds0568za49mzhvuxx9ux8xafx2"
+const TestAddress = "nolusn1m9l358xunhhwds0568za49mzhvuxx9ux8xafx2"
 
 func TestMsgRegisterInterchainAccountGetSigners(t *testing.T) {
 	tests := []struct {
