@@ -9,9 +9,9 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 
-	contractmanagertypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	"github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	icatypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	contractmanagertypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	icatypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 func (qp *QueryPlugin) GetInterchainQueryResult(ctx sdk.Context, queryID uint64) (*bindings.QueryRegisteredQueryResultResponse, error) {

@@ -5,9 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
-	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-	icqtypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	transferwrappertypes "github.com/neutron-org/neutron/v4/x/transfer/types"
+	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	icqtypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	transferwrappertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
 // ProtobufAny is a hack-struct to serialize protobuf Any message into JSON object.
