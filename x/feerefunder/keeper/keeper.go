@@ -259,7 +259,7 @@ func (k Keeper) distributeFee(ctx sdk.Context, receiver sdk.AccAddress, fee sdk.
 }
 
 // allowedCoins returns true if one or more coins from `fees` are not present in coins from `params`
-// assumes that `params` is sorted
+// assumes that `params` is sorted.
 func allowedCoins(fees, params sdk.Coins) bool {
 	for _, fee := range fees {
 		if params.AmountOf(fee.Denom).IsZero() {

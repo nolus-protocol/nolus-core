@@ -31,7 +31,7 @@ func deterministicExecTxResult(response *abci.ExecTxResult) *abci.ExecTxResult {
 	}
 }
 
-// checkHeadersOrder do some basic checks to verify that nextHeader is really next for the header
+// checkHeadersOrder do some basic checks to verify that nextHeader is really next for the header.
 func checkHeadersOrder(header, nextHeader *tendermintLightClientTypes.Header) error {
 	if nextHeader.Header.Height != header.Header.Height+1 {
 		return errors.Wrapf(types.ErrInvalidHeader, "nextHeader.Height (%d) is not actually next for a header with height %d", nextHeader.Header.Height, header.Header.Height)
@@ -60,7 +60,7 @@ func checkHeadersOrder(header, nextHeader *tendermintLightClientTypes.Header) er
 type Verifier struct{}
 
 // VerifyHeaders verify that headers are valid tendermint headers, checks them on validity by trying call ibcClient.UpdateClient(header)
-// to update light client's consensus state and checks that they are sequential (tl;dr header.Height + 1 == nextHeader.Height)
+// to update light client's consensus state and checks that they are sequential (tl;dr header.Height + 1 == nextHeader.Height).
 func (v Verifier) VerifyHeaders(ctx sdk.Context, clientKeeper clientkeeper.Keeper, clientID string, header, nextHeader exported.ClientMessage) error {
 	// this IBC handler updates the consensus state and the state root from a provided header.
 	// But more importantly in the current situation, it checks that header is valid.
@@ -164,7 +164,7 @@ type TransactionVerifier struct{}
 // * transaction is included in block - header.DataHash merkle root contains transactions hash;
 // * transactions was executed successfully - transaction's responseDeliveryTx.Code == 0;
 // * transaction's responseDeliveryTx is legitimate - nextHeaderLastResultsDataHash merkle root contains
-// deterministicExecTxResult(ResponseDeliveryTx).Bytes()
+// deterministicExecTxResult(ResponseDeliveryTx).Bytes().
 func (v TransactionVerifier) VerifyTransaction(
 	header *tendermintLightClientTypes.Header,
 	nextHeader *tendermintLightClientTypes.Header,

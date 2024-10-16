@@ -3,16 +3,16 @@ package types
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	// ModuleName defines the module name
+	// ModuleName defines the module name.
 	ModuleName = "feerefunder"
 
-	// StoreKey defines the primary module store key
+	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
 
-	// RouterKey defines the module's message routing key
+	// RouterKey defines the module's message routing key.
 	RouterKey = ModuleName
 
-	// MemStoreKey defines the in-memory store key
+	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_" + ModuleName
 )
 

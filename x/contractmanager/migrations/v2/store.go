@@ -10,7 +10,7 @@ import (
 
 // MigrateStore performs in-place store migrations.
 // The migration rearranges removes all old failures,
-// since they do not have the necessary fields packet and ack for resubmission
+// since they do not have the necessary fields packet and ack for resubmission.
 func MigrateStore(ctx sdk.Context, storeKey storetypes.StoreKey) error {
 	return migrateFailures(ctx, storeKey)
 }

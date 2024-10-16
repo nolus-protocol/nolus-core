@@ -3,16 +3,16 @@ package types
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	// ModuleName defines the module name
+	// ModuleName defines the module name.
 	ModuleName = "contractmanager"
 
-	// StoreKey defines the primary module store key
+	// StoreKey defines the primary module store key.
 	StoreKey = ModuleName
 
-	// RouterKey defines the module's message routing key
+	// RouterKey defines the module's message routing key.
 	RouterKey = ModuleName
 
-	// MemStoreKey defines the in-memory store key
+	// MemStoreKey defines the in-memory store key.
 	MemStoreKey = "mem_" + ModuleName
 )
 
@@ -26,7 +26,7 @@ var (
 	ParamsKey           = []byte{prefixParamsKey}
 )
 
-// GetFailureKeyPrefix returns the store key for the failures of the specific address
+// GetFailureKeyPrefix returns the store key for the failures of the specific address.
 func GetFailureKeyPrefix(
 	address string,
 ) []byte {
@@ -35,7 +35,7 @@ func GetFailureKeyPrefix(
 	return append(key, []byte("/")...)
 }
 
-// GetFailureKey returns the store key to retrieve a Failure from the index fields
+// GetFailureKey returns the store key to retrieve a Failure from the index fields.
 func GetFailureKey(
 	address string,
 	offset uint64,

@@ -18,7 +18,7 @@ type SudoLimitWrapper struct {
 	contractmanagertypes.WasmKeeper
 }
 
-// NewSudoLimitWrapper suppresses an error from a Sudo contract handler and saves it to a store
+// NewSudoLimitWrapper suppresses an error from a Sudo contract handler and saves it to a store.
 func NewSudoLimitWrapper(contractManager contractmanagertypes.ContractManagerKeeper, sudoKeeper contractmanagertypes.WasmKeeper) contractmanagertypes.WasmKeeper {
 	return SudoLimitWrapper{
 		contractManager,
@@ -28,7 +28,7 @@ func NewSudoLimitWrapper(contractManager contractmanagertypes.ContractManagerKee
 
 // Sudo calls underlying Sudo handlers with a limited amount of gas
 // in case of `out of gas` panic it converts the panic into an error and stops `out of gas` panic propagation
-// if error happens during the Sudo call, we store the data that raised the error, and return the error
+// if error happens during the Sudo call, we store the data that raised the error, and return the error.
 func (k SudoLimitWrapper) Sudo(ctx context.Context, contractAddress sdk.AccAddress, msg []byte) (resp []byte, err error) {
 	c := sdk.UnwrapSDKContext(ctx)
 
@@ -67,7 +67,7 @@ func (k SudoLimitWrapper) Logger(ctx sdk.Context) log.Logger {
 }
 
 // outOfGasRecovery converts `out of gas` panic into an error
-// leaving unprocessed any other kinds of panics
+// leaving unprocessed any other kinds of panics.
 func outOfGasRecovery(
 	gasMeter types.GasMeter,
 	err *error,

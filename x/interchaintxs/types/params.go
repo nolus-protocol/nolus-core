@@ -30,7 +30,7 @@ func ParamKeyTable() paramtypes.KeyTable {
 	)
 }
 
-// NewParams creates a new Params instance
+// NewParams creates a new Params instance.
 func NewParams(msgSubmitTxMaxMessages uint64, registerFee sdk.Coins) Params {
 	return Params{
 		MsgSubmitTxMaxMessages: msgSubmitTxMaxMessages,
@@ -38,12 +38,12 @@ func NewParams(msgSubmitTxMaxMessages uint64, registerFee sdk.Coins) Params {
 	}
 }
 
-// DefaultParams returns a default set of parameters
+// DefaultParams returns a default set of parameters.
 func DefaultParams() Params {
 	return NewParams(DefaultMsgSubmitTxMaxMessages, DefaultRegisterFee)
 }
 
-// ParamSetPairs get the params.ParamSet
+// ParamSetPairs get the params.ParamSet.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
 		paramtypes.NewParamSetPair(
@@ -54,7 +54,7 @@ func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	}
 }
 
-// Validate validates the set of params
+// Validate validates the set of params.
 func (p Params) Validate() error {
 	return validateMsgSubmitTxMaxMessages(p.GetMsgSubmitTxMaxMessages())
 }

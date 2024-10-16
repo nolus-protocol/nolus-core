@@ -97,7 +97,7 @@ func (k Keeper) GetAuthority() string {
 	return k.authority
 }
 
-// GetICARegistrationFeeFirstCodeID returns code id, starting from which we charge fee for ICA registration
+// GetICARegistrationFeeFirstCodeID returns code id, starting from which we charge fee for ICA registration.
 func (k Keeper) GetICARegistrationFeeFirstCodeID(ctx sdk.Context) (codeID uint64) {
 	store := ctx.KVStore(k.storeKey)
 	bytes := store.Get(types.ICARegistrationFeeFirstCodeID)
