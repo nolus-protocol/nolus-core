@@ -14,7 +14,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	icqtypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
+	icqtypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 )
 
 func CreateUpgradeHandler(

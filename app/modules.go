@@ -57,15 +57,15 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	"github.com/neutron-org/neutron/v4/x/contractmanager"
-	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	"github.com/neutron-org/neutron/v4/x/feerefunder"
-	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-	"github.com/neutron-org/neutron/v4/x/interchainqueries"
-	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	"github.com/neutron-org/neutron/v4/x/interchaintxs"
-	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
-	transferSudo "github.com/neutron-org/neutron/v4/x/transfer"
+	"github.com/Nolus-Protocol/nolus-core/x/contractmanager"
+	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	"github.com/Nolus-Protocol/nolus-core/x/feerefunder"
+	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries"
+	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs"
+	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
+	transferSudo "github.com/Nolus-Protocol/nolus-core/x/transfer"
 )
 
 // module account permissions.

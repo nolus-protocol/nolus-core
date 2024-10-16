@@ -1,9 +1,9 @@
 syntax = "proto3";
-package neutron.feerefunder;
+package nolus.feerefunder;
 
 import "gogoproto/gogo.proto";
-import "neutron/feerefunder/fee.proto";
-import "neutron/feerefunder/params.proto";
+import "nolus/feerefunder/fee.proto";
+import "nolus/feerefunder/params.proto";
 // this line is used by starport scaffolding # genesis/proto/import
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types";

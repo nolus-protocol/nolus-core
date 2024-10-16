@@ -28,10 +28,10 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	feerefundertypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	feerefundertypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 func (appKeepers *AppKeepers) GenerateKeys() {

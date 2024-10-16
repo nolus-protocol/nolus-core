@@ -53,10 +53,10 @@ import (
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 
-	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
+	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 const SimAppChainID = "nolus-simapp"

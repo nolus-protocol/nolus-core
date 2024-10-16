@@ -1,8 +1,8 @@
 syntax = "proto3";
-package neutron.feerefunder;
+package nolus.feerefunder;
 
 import "gogoproto/gogo.proto";
-import "neutron/feerefunder/fee.proto";
+import "nolus/feerefunder/fee.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types";
 

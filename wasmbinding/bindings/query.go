@@ -3,15 +3,15 @@ package bindings
 import (
 	"encoding/json"
 
-	contractmanagertypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	feerefundertypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
+	contractmanagertypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	feerefundertypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 
 	ibcclienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
 
-	"github.com/neutron-org/neutron/v4/x/interchainqueries/types"
+	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 )
 
 // NeutronQuery contains neutron custom queries.
