@@ -11,7 +11,7 @@ package test
 
 // 	"github.com/stretchr/testify/suite"
 
-// 	ictxtypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+// 	ictxtypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 
 // 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 // 	"github.com/CosmWasm/wasmvm/v2/types"
@@ -23,10 +23,10 @@ package test
 // 	"github.com/Nolus-Protocol/nolus-core/testutil"
 // 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 // 	"github.com/Nolus-Protocol/nolus-core/wasmbinding/bindings"
-// 	contractmanagerkeeper "github.com/neutron-org/neutron/v4/x/contractmanager/keeper"
-// 	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-// 	icqkeeper "github.com/neutron-org/neutron/v4/x/interchainqueries/keeper"
-// 	ictxkeeper "github.com/neutron-org/neutron/v4/x/interchaintxs/keeper"
+// 	contractmanagerkeeper "github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
+// 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+// 	icqkeeper "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/keeper"
+// 	ictxkeeper "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
 // )
 
 // const FeeCollectorAddress = "nolus1vguuxez2h5ekltfj9gjd62fs5k4rl2zy5hfrncasykzw08rezpfsd2rhm7"

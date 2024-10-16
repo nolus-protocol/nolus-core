@@ -58,7 +58,7 @@ func DefaultConfig() network.Config {
 	app.ModuleBasics[genutiltypes.ModuleName] = genutil.AppModuleBasic{}
 	app.ModuleBasics[stakingtypes.ModuleName] = staking.AppModuleBasic{}
 
-	encoding := app.MakeEncodingConfig()
+	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 	chainID := "chain-" + tmrand.NewRand().Str(6)
 	return network.Config{
 		Codec:             encoding.Marshaler,
