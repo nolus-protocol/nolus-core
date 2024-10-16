@@ -255,7 +255,7 @@ func TestGenesisMalformedQueriesInvalidPrefix(t *testing.T) {
 			{
 				Id:        4,
 				QueryType: "kv",
-				Owner:     "neutron18g0avxazu3dkgd5n5ea8h8rtl78de0hytsj9vm",
+				Owner:     "nolus18g0avxazu3dkgd5n5ea8h8rtl78de0hytsj9vm",
 				Keys: []*types.KVKey{
 					{
 						Path: "newpath",

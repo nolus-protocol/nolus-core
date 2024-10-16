@@ -16,7 +16,7 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	wrapkeeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
-	neutrontypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
+	transfertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
 /*
@@ -27,12 +27,12 @@ import (
 type IBCModule struct {
 	wrappedKeeper wrapkeeper.KeeperTransferWrapper
 	keeper        keeper.Keeper
-	sudoKeeper    neutrontypes.WasmKeeper
+	sudoKeeper    transfertypes.WasmKeeper
 	transfer.IBCModule
 }
 
 // NewIBCModule creates a new IBCModule given the keeper
-func NewIBCModule(k wrapkeeper.KeeperTransferWrapper, sudoKeeper neutrontypes.WasmKeeper) IBCModule {
+func NewIBCModule(k wrapkeeper.KeeperTransferWrapper, sudoKeeper transfertypes.WasmKeeper) IBCModule {
 	return IBCModule{
 		wrappedKeeper: k,
 		keeper:        k.Keeper,
@@ -95,9 +95,9 @@ func (am AppModule) IsAppModule() { // marker
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
-	neutrontypes.RegisterMsgServer(cfg.MsgServer(), am.keeper)
+	transfertypes.RegisterMsgServer(cfg.MsgServer(), am.keeper)
 
-	cfg.MsgServer().RegisterService(&neutrontypes.MsgServiceDescOrig, am.keeper)
+	cfg.MsgServer().RegisterService(&transfertypes.MsgServiceDescOrig, am.keeper)
 
 	m := keeper.NewMigrator(am.keeper.Keeper)
 	if err := cfg.RegisterMigration(types.ModuleName, 1, m.MigrateTraces); err != nil {
@@ -126,17 +126,17 @@ func NewAppModuleBasic() AppModuleBasic {
 }
 
 func (AppModuleBasic) RegisterCodec(cdc *codec.LegacyAmino) {
-	neutrontypes.RegisterLegacyAminoCodec(cdc)
+	transfertypes.RegisterLegacyAminoCodec(cdc)
 }
 
 func (am AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
-	neutrontypes.RegisterLegacyAminoCodec(cdc)
+	transfertypes.RegisterLegacyAminoCodec(cdc)
 	am.AppModuleBasic.RegisterLegacyAminoCodec(cdc)
 }
 
 // RegisterInterfaces registers the module's interface types
 func (am AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
-	neutrontypes.RegisterInterfaces(reg)
+	transfertypes.RegisterInterfaces(reg)
 	am.AppModuleBasic.RegisterInterfaces(reg)
 }
 

@@ -45,7 +45,7 @@ func TestFailureQuerySingle(t *testing.T) {
 		{
 			desc: "KeyIsAbsent",
 			request: &types.QueryFailuresRequest{
-				Address: "neutron17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
+				Address: "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
 			},
 			response: &types.QueryFailuresResponse{Failures: []types.Failure{}, Pagination: &query.PageResponse{Total: 0}},
 		},

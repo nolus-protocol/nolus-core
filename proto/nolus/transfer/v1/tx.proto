@@ -1,0 +1,81 @@
+syntax = "proto3";
+
+package nolus.transfer;
+
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos/msg/v1/msg.proto";
+import "gogoproto/gogo.proto";
+import "ibc/applications/transfer/v1/transfer.proto";
+import "ibc/core/client/v1/client.proto";
+import "nolus/feerefunder/fee.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/transfer/types";
+
+// Msg defines the ibc/transfer Msg service.
+service Msg {
+  option (cosmos.msg.v1.service) = true;
+
+  // Transfer defines a rpc handler method for MsgTransfer.
+  rpc Transfer(MsgTransfer) returns (MsgTransferResponse);
+
+  // UpdateParams defines a rpc handler for MsgUpdateParams.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+}
+
+message MsgTransfer {
+  option (gogoproto.equal) = false;
+  option (gogoproto.goproto_getters) = false;
+  option (cosmos.msg.v1.signer) = "sender";
+
+  // the port on which the packet will be sent
+  string source_port = 1 [(gogoproto.moretags) = "yaml:\"source_port\""];
+  // the channel by which the packet will be sent
+  string source_channel = 2 [(gogoproto.moretags) = "yaml:\"source_channel\""];
+  // the tokens to be transferred
+  cosmos.base.v1beta1.Coin token = 3 [(gogoproto.nullable) = false];
+  // the sender address
+  string sender = 4;
+  // the recipient address on the destination chain
+  string receiver = 5;
+  // Timeout height relative to the current block height.
+  // The timeout is disabled when set to 0.
+  ibc.core.client.v1.Height timeout_height = 6 [
+    (gogoproto.moretags) = "yaml:\"timeout_height\"",
+    (gogoproto.nullable) = false
+  ];
+  // Timeout timestamp in absolute nanoseconds since unix epoch.
+  // The timeout is disabled when set to 0.
+  uint64 timeout_timestamp = 7 [(gogoproto.moretags) = "yaml:\"timeout_timestamp\""];
+
+  string memo = 8;
+
+  nolus.feerefunder.Fee fee = 9 [(gogoproto.nullable) = false];
+}
+
+// MsgTransferResponse is the modified response type for
+// ibc-go MsgTransfer.
+message MsgTransferResponse {
+  // channel's sequence_id for outgoing ibc packet. Unique per a channel.
+  uint64 sequence_id = 1;
+  // channel src channel on nolus side transaction was submitted from
+  string channel = 2;
+}
+
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "signer";
+
+  option (gogoproto.goproto_getters) = false;
+
+  // signer address
+  string signer = 1;
+
+  // params defines the transfer parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  ibc.applications.transfer.v1.Params params = 2 [(gogoproto.nullable) = false];
+}
+
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+message MsgUpdateParamsResponse {}

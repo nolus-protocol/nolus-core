@@ -8,11 +8,10 @@ import (
 	context "context"
 	reflect "reflect"
 
-	types "github.com/cosmos/cosmos-sdk/types"
-	types0 "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	types0 "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	gomock "github.com/golang/mock/gomock"
-
-	types1 "github.com/neutron-org/neutron/v4/x/feerefunder/types"
 )
 
 // MockWasmKeeper is a mock of WasmKeeper interface.
@@ -39,7 +38,7 @@ func (m *MockWasmKeeper) EXPECT() *MockWasmKeeperMockRecorder {
 }
 
 // HasContractInfo mocks base method.
-func (m *MockWasmKeeper) HasContractInfo(ctx context.Context, contractAddress types.AccAddress) bool {
+func (m *MockWasmKeeper) HasContractInfo(ctx context.Context, contractAddress types0.AccAddress) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "HasContractInfo", ctx, contractAddress)
 	ret0, _ := ret[0].(bool)
@@ -53,7 +52,7 @@ func (mr *MockWasmKeeperMockRecorder) HasContractInfo(ctx, contractAddress inter
 }
 
 // Sudo mocks base method.
-func (m *MockWasmKeeper) Sudo(ctx context.Context, contractAddress types.AccAddress, msg []byte) ([]byte, error) {
+func (m *MockWasmKeeper) Sudo(ctx context.Context, contractAddress types0.AccAddress, msg []byte) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Sudo", ctx, contractAddress, msg)
 	ret0, _ := ret[0].([]byte)
@@ -91,7 +90,7 @@ func (m *MockFeeRefunderKeeper) EXPECT() *MockFeeRefunderKeeperMockRecorder {
 }
 
 // DistributeAcknowledgementFee mocks base method.
-func (m *MockFeeRefunderKeeper) DistributeAcknowledgementFee(ctx context.Context, receiver types.AccAddress, packetID types1.PacketID) {
+func (m *MockFeeRefunderKeeper) DistributeAcknowledgementFee(ctx context.Context, receiver types0.AccAddress, packetID types.PacketID) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "DistributeAcknowledgementFee", ctx, receiver, packetID)
 }
@@ -103,7 +102,7 @@ func (mr *MockFeeRefunderKeeperMockRecorder) DistributeAcknowledgementFee(ctx, r
 }
 
 // DistributeTimeoutFee mocks base method.
-func (m *MockFeeRefunderKeeper) DistributeTimeoutFee(ctx context.Context, receiver types.AccAddress, packetID types1.PacketID) {
+func (m *MockFeeRefunderKeeper) DistributeTimeoutFee(ctx context.Context, receiver types0.AccAddress, packetID types.PacketID) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "DistributeTimeoutFee", ctx, receiver, packetID)
 }
@@ -115,7 +114,7 @@ func (mr *MockFeeRefunderKeeperMockRecorder) DistributeTimeoutFee(ctx, receiver,
 }
 
 // LockFees mocks base method.
-func (m *MockFeeRefunderKeeper) LockFees(ctx context.Context, payer types.AccAddress, packetID types1.PacketID, fee types1.Fee) error {
+func (m *MockFeeRefunderKeeper) LockFees(ctx context.Context, payer types0.AccAddress, packetID types.PacketID, fee types.Fee) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LockFees", ctx, payer, packetID, fee)
 	ret0, _ := ret[0].(error)
@@ -152,10 +151,10 @@ func (m *MockChannelKeeper) EXPECT() *MockChannelKeeperMockRecorder {
 }
 
 // GetAllChannelsWithPortPrefix mocks base method.
-func (m *MockChannelKeeper) GetAllChannelsWithPortPrefix(ctx types.Context, portPrefix string) []types0.IdentifiedChannel {
+func (m *MockChannelKeeper) GetAllChannelsWithPortPrefix(ctx types0.Context, portPrefix string) []types1.IdentifiedChannel {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAllChannelsWithPortPrefix", ctx, portPrefix)
-	ret0, _ := ret[0].([]types0.IdentifiedChannel)
+	ret0, _ := ret[0].([]types1.IdentifiedChannel)
 	return ret0
 }
 
@@ -166,10 +165,10 @@ func (mr *MockChannelKeeperMockRecorder) GetAllChannelsWithPortPrefix(ctx, portP
 }
 
 // GetChannel mocks base method.
-func (m *MockChannelKeeper) GetChannel(ctx types.Context, srcPort, srcChan string) (types0.Channel, bool) {
+func (m *MockChannelKeeper) GetChannel(ctx types0.Context, srcPort, srcChan string) (types1.Channel, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetChannel", ctx, srcPort, srcChan)
-	ret0, _ := ret[0].(types0.Channel)
+	ret0, _ := ret[0].(types1.Channel)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -181,7 +180,7 @@ func (mr *MockChannelKeeperMockRecorder) GetChannel(ctx, srcPort, srcChan interf
 }
 
 // GetNextSequenceSend mocks base method.
-func (m *MockChannelKeeper) GetNextSequenceSend(ctx types.Context, portID, channelID string) (uint64, bool) {
+func (m *MockChannelKeeper) GetNextSequenceSend(ctx types0.Context, portID, channelID string) (uint64, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNextSequenceSend", ctx, portID, channelID)
 	ret0, _ := ret[0].(uint64)
@@ -219,10 +218,10 @@ func (m *MockAccountKeeper) EXPECT() *MockAccountKeeperMockRecorder {
 }
 
 // GetModuleAccount mocks base method.
-func (m *MockAccountKeeper) GetModuleAccount(ctx context.Context, name string) types.ModuleAccountI {
+func (m *MockAccountKeeper) GetModuleAccount(ctx context.Context, name string) types0.ModuleAccountI {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetModuleAccount", ctx, name)
-	ret0, _ := ret[0].(types.ModuleAccountI)
+	ret0, _ := ret[0].(types0.ModuleAccountI)
 	return ret0
 }
 
@@ -233,10 +232,10 @@ func (mr *MockAccountKeeperMockRecorder) GetModuleAccount(ctx, name interface{})
 }
 
 // GetModuleAddress mocks base method.
-func (m *MockAccountKeeper) GetModuleAddress(name string) types.AccAddress {
+func (m *MockAccountKeeper) GetModuleAddress(name string) types0.AccAddress {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetModuleAddress", name)
-	ret0, _ := ret[0].(types.AccAddress)
+	ret0, _ := ret[0].(types0.AccAddress)
 	return ret0
 }
 

@@ -36,7 +36,7 @@ type KeeperTestSuite struct {
 func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so it's okay to copy locks
 	suite.ConfigureTransferChannel()
 
-	msgSrv := suite.GetNeutronZoneApp(suite.ChainA).TransferKeeper
+	msgSrv := suite.GetNolusZoneApp(suite.ChainA).TransferKeeper
 
 	ctx := suite.ChainA.GetContext()
 	resp, err := msgSrv.Transfer(ctx, &types.MsgTransfer{
@@ -166,7 +166,7 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 
 func (suite *KeeperTestSuite) TopUpWallet(ctx sdktypes.Context, sender, contractAddress sdktypes.AccAddress) {
 	coinsAmnt := sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(int64(1_000_000))))
-	bankKeeper := suite.GetNeutronZoneApp(suite.ChainA).BankKeeper
+	bankKeeper := suite.GetNolusZoneApp(suite.ChainA).BankKeeper
 	err := bankKeeper.SendCoins(ctx, sender, contractAddress, coinsAmnt)
 	suite.Require().NoError(err)
 }

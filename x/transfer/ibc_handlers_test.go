@@ -49,7 +49,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	}
 
 	contractAddress := sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)
-	relayerBech32 := "neutron1fxudpred77a0grgh69u0j7y84yks5ev4n5050z45kecz792jnd6scqu98z"
+	relayerBech32 := "nolus1fxudpred77a0grgh69u0j7y84yks5ev4n5050z45kecz792jnd6scqu98z"
 	relayerAddress := sdk.MustAccAddressFromBech32(relayerBech32)
 
 	err = txModule.HandleAcknowledgement(ctx, channeltypes.Packet{}, nil, relayerAddress)
@@ -120,7 +120,7 @@ func TestHandleTimeout(t *testing.T) {
 	txModule := transfer.NewIBCModule(*txKeeper, wmKeeper)
 	ctx := infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	contractAddress := sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)
-	relayerBech32 := "neutron1fxudpred77a0grgh69u0j7y84yks5ev4n5050z45kecz792jnd6scqu98z"
+	relayerBech32 := "nolus1fxudpred77a0grgh69u0j7y84yks5ev4n5050z45kecz792jnd6scqu98z"
 	relayerAddress := sdk.MustAccAddressFromBech32(relayerBech32)
 	p := channeltypes.Packet{
 		Sequence:      100,

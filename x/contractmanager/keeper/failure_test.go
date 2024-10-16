@@ -102,7 +102,7 @@ func TestAddGetFailure(t *testing.T) {
 	require.Error(t, err)
 
 	// non-existent contract address
-	_, err = k.GetFailure(ctx, sdk.MustAccAddressFromBech32("neutron1nseacn2aqezhj3ssatfg778ctcfjuknm8ucc0l"), failureID)
+	_, err = k.GetFailure(ctx, sdk.MustAccAddressFromBech32("nolus1nseacn2aqezhj3ssatfg778ctcfjuknm8ucc0l"), failureID)
 	require.Error(t, err)
 }
 
