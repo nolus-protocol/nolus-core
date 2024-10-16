@@ -62,7 +62,7 @@ func CmdFailureDetails() *cobra.Command {
 		Short:   "Query the detailed error related to a contract's sudo call failure",
 		Long:    "Query the detailed error related to a contract's sudo call failure based on contract's address and failure ID",
 		Args:    cobra.ExactArgs(2),
-		Example: fmt.Sprintf("%s query failure-details neutron1m0z0kk0qqug74n9u9ul23e28x5fszr628h20xwt6jywjpp64xn4qatgvm0 0", version.AppName),
+		Example: fmt.Sprintf("%s query failure-details nolus1m0z0kk0qqug74n9u9ul23e28x5fszr628h20xwt6jywjpp64xn4qatgvm0 0", version.AppName),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			address := args[0]
 			failureID, err := strconv.ParseUint(args[1], 10, 64)

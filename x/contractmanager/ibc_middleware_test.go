@@ -19,7 +19,7 @@ var (
 	ShouldNotBeWrittenKey = []byte("shouldnotkey")
 	ShouldNotBeWritten    = []byte("should not be written")
 	ShouldBeWritten       = []byte("should be written")
-	TestOwnerAddress      = "neutron17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh"
+	TestOwnerAddress      = "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh"
 )
 
 func ShouldBeWrittenKey(suffix string) []byte {

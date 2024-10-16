@@ -189,7 +189,7 @@ func (suite *KeeperTestSuite) TestUnpackAndVerifyHeaders() {
 				nextHeader, err := suite.Path.EndpointA.Chain.ConstructUpdateTMClientHeader(suite.Path.EndpointA.Counterparty.Chain, suite.Path.EndpointB.ClientID)
 				suite.Require().NoError(err)
 
-				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNeutronZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
+				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNolusZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
 			},
 			"",
 		},
@@ -211,7 +211,7 @@ func (suite *KeeperTestSuite) TestUnpackAndVerifyHeaders() {
 				nextHeader, err := suite.Path.EndpointA.Chain.ConstructUpdateTMClientHeader(suite.Path.EndpointA.Counterparty.Chain, suite.Path.EndpointB.ClientID)
 				suite.Require().NoError(err)
 
-				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNeutronZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
+				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNolusZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
 			},
 			"block.NextBlockHeader is not next for the block.Header",
 		},
@@ -234,7 +234,7 @@ func (suite *KeeperTestSuite) TestUnpackAndVerifyHeaders() {
 				nextHeader, err := suite.Path.EndpointA.Chain.ConstructUpdateTMClientHeader(suite.Path.EndpointA.Counterparty.Chain, suite.Path.EndpointB.ClientID)
 				suite.Require().NoError(err)
 
-				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNeutronZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
+				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNolusZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, header, nextHeader)
 			},
 			"invalid header: untrustedHeader.ValidateBasic failed: commit signs block",
 		},
@@ -265,7 +265,7 @@ func (suite *KeeperTestSuite) TestUnpackAndVerifyHeaders() {
 				oldNextHeader.TrustedHeight = headerWithTrustedHeight.TrustedHeight
 				oldNextHeader.TrustedValidators = headerWithTrustedHeight.TrustedValidators
 
-				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNeutronZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, &oldHeader, &oldNextHeader)
+				return iqkeeper.Verifier{}.VerifyHeaders(suite.ChainA.GetContext(), suite.GetNolusZoneApp(suite.ChainA).IBCKeeper.ClientKeeper, clientID, &oldHeader, &oldNextHeader)
 			},
 			"",
 		},

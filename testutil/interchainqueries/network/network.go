@@ -80,7 +80,7 @@ func DefaultConfig() network.Config {
 		GenesisState:  app.ModuleBasics.DefaultGenesis(encoding.Marshaler),
 		TimeoutCommit: 2 * time.Second,
 		ChainID:       chainID,
-		// Some changes are introduced to make the tests run as if neutron is a standalone chain.
+		// Some changes are introduced to make the tests run as if nolus is a standalone chain.
 		// This will only work if NumValidators is set to 1.
 		NumValidators:   1,
 		BondDenom:       params.DefaultBondDenom,

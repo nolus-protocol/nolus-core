@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgUpdateParams{}, "neutron.feerefunder.MsgUpdateParams", nil)
+	cdc.RegisterConcrete(&MsgUpdateParams{}, "nolus.feerefunder.MsgUpdateParams", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

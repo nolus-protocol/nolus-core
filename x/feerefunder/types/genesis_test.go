@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	TestAddressNeutron         = "neutron13xvjxhkkxxhztcugr6weyt76eedj5ucpt4xluv"
-	TestContractAddressJuno    = "juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q"
-	TestContractAddressNeutron = "neutron14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s5c2epq"
+	TestAddressNolus         = "nolus13xvjxhkkxxhztcugr6weyt76eedj5ucpt4xluv"
+	TestContractAddressJuno  = "juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q"
+	TestContractAddressNolus = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s5c2epq"
 )
 
 func TestGenesisState_Validate(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestContractAddressNeutron,
+					Payer:    TestContractAddressNolus,
 					PacketId: validPacketID,
 					Fee: types.Fee{
 						RecvFee:    validRecvFee,
@@ -82,7 +82,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestAddressNeutron,
+					Payer:    TestAddressNolus,
 					PacketId: validPacketID,
 					Fee: types.Fee{
 						RecvFee:    validRecvFee,
@@ -116,7 +116,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestContractAddressNeutron,
+					Payer:    TestContractAddressNolus,
 					PacketId: types.NewPacketID("*", "channel", 64),
 					Fee: types.Fee{
 						RecvFee:    validRecvFee,
@@ -133,7 +133,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestContractAddressNeutron,
+					Payer:    TestContractAddressNolus,
 					PacketId: types.NewPacketID("port", "*", 64),
 					Fee: types.Fee{
 						RecvFee:    validRecvFee,
@@ -150,7 +150,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestContractAddressNeutron,
+					Payer:    TestContractAddressNolus,
 					PacketId: validPacketID,
 					Fee: types.Fee{
 						RecvFee:    invalidRecvFee,
@@ -167,7 +167,7 @@ func TestGenesisState_Validate(t *testing.T) {
 			genState: &types.GenesisState{
 				Params: types.DefaultParams(),
 				FeeInfos: []types.FeeInfo{{
-					Payer:    TestContractAddressNeutron,
+					Payer:    TestContractAddressNolus,
 					PacketId: validPacketID,
 					Fee: types.Fee{
 						RecvFee:    nil,

@@ -15,7 +15,7 @@ import (
 // const interchainAccountIDLimit = 47
 const interchainAccountIDLimit = 128 -
 	len("icacontroller-") -
-	len("neutron1unyuj8qnmygvzuex3dwmg9yzt9alhvyeat0uu0jedg2wj33efl5qmysp02") - // just a random contract address
+	len("nolus1unyuj8qnmygvzuex3dwmg9yzt9alhvyeat0uu0jedg2wj33efl5qmysp02") - // just a random contract address
 	len(".")
 
 var _ codectypes.UnpackInterfacesMessage = &MsgSubmitTx{}

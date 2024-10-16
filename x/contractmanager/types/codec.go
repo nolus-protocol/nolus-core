@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgUpdateParams{}, "neutron.contractmanager.v1.MsgUpdateParams", nil)
+	cdc.RegisterConcrete(&MsgUpdateParams{}, "nolus.contractmanager.v1.MsgUpdateParams", nil)
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {

@@ -31,7 +31,7 @@ import (
 	tmos "github.com/cometbft/cometbft/libs/os"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
-	ictxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	ictxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 var (

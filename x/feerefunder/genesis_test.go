@@ -16,13 +16,13 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 )
 
-const TestContractAddressNeutron = "neutron14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s5c2epq"
+const TestContractAddressNolus = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s5c2epq"
 
 func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 		FeeInfos: []types.FeeInfo{{
-			Payer:    TestContractAddressNeutron,
+			Payer:    TestContractAddressNolus,
 			PacketId: types.NewPacketID("port", "channel-1", 64),
 			Fee: types.Fee{
 				RecvFee:    sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(0))),

@@ -1,0 +1,17 @@
+syntax = "proto3";
+package nolus.contractmanager;
+
+import "gogoproto/gogo.proto";
+import "nolus/contractmanager/failure.proto";
+import "nolus/contractmanager/params.proto";
+// this line is used by starport scaffolding # genesis/proto/import
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types";
+
+// GenesisState defines the contractmanager module's genesis state.
+message GenesisState {
+  Params params = 1 [(gogoproto.nullable) = false];
+  // List of the contract failures
+  repeated Failure failures_list = 2 [(gogoproto.nullable) = false];
+  // this line is used by starport scaffolding # genesis/proto/state
+}

@@ -22,7 +22,7 @@ func feeRefunderNetwork(t *testing.T, feeInfo types.Fee) *network.Network {
 	state := types.DefaultGenesis()
 	require.NoError(t, cfg.Codec.UnmarshalJSON(cfg.GenesisState[types.ModuleName], state))
 	state.FeeInfos = []types.FeeInfo{{
-		Payer: "neutron17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
+		Payer: "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
 		PacketId: types.PacketID{
 			ChannelId: "channel-0",
 			PortId:    "transfer",
