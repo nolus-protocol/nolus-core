@@ -75,7 +75,7 @@ func (k Keeper) GetRegisteredQueries(ctx sdk.Context, req *types.QueryRegistered
 	return &types.QueryRegisteredQueriesResponse{RegisteredQueries: queries, Pagination: pageRes}, nil
 }
 
-func (k Keeper) QueryResult(goCtx context.Context, request *types.QueryRegisteredQueryResultRequest) (*types.QueryRegisteredQueryResultResponse, error) {
+func (k Keeper) QueryResult(goCtx context.Context, request *types.QueryRegisteredQueryResultRequest) (*types.QueryResultResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	if !k.checkRegisteredQueryExists(ctx, request.QueryId) {
@@ -86,7 +86,7 @@ func (k Keeper) QueryResult(goCtx context.Context, request *types.QueryRegistere
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to get query result by query id: %v", err)
 	}
-	return &types.QueryRegisteredQueryResultResponse{Result: result}, nil
+	return &types.QueryResultResponse{Result: result}, nil
 }
 
 func (k Keeper) LastRemoteHeight(goCtx context.Context, request *types.QueryLastRemoteHeight) (*types.QueryLastRemoteHeightResponse, error) {

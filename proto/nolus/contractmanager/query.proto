@@ -18,12 +18,12 @@ service Query {
   }
 
   // Queries a Failure by contract address and failure ID.
-  rpc AddressFailure(QueryFailureRequest) returns (QueryFailureResponse) {
+  rpc AddressFailure(QueryFailureRequest) returns (QueryAddressFailureResponse) {
     option (google.api.http).get = "/nolus/contractmanager/failures/{address}/{failure_id}";
   }
 
   // Queries Failures by contract address.
-  rpc AddressFailures(QueryFailuresByAddressRequest) returns (QueryFailuresByAddressResponse) {
+  rpc AddressFailures(QueryFailuresByAddressRequest) returns (QueryAddressFailuresResponse) {
     option (google.api.http).get = "/nolus/contractmanager/failures/{address}";
   }
 
@@ -66,8 +66,8 @@ message QueryFailureRequest {
    cosmos.base.query.v1beta1.PageRequest pagination = 3;
 }
 
-// QueryFailureResponse is response type for the Query/Failures/{failure_id} RPC method.
-message QueryFailureResponse {
+// QueryAddressFailureResponse is response type for the Query/Failures/{failure_id} RPC method.
+message QueryAddressFailureResponse {
   repeated Failure failures = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
@@ -79,8 +79,8 @@ message QueryFailuresByAddressRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
-// QueryFailureResponse is response type for the Query/Failures/{address} RPC method.
-message QueryFailuresByAddressResponse {
+// QueryAddressFailuresResponse is response type for the Query/Failures/{address} RPC method.
+message QueryAddressFailuresResponse {
   repeated Failure failures = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
