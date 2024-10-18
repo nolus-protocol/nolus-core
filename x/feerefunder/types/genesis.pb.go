@@ -76,6 +76,7 @@ func (m *GenesisState) GetFeeInfos() []FeeInfo {
 	return nil
 }
 
+// FeeInfo defines the fee information for a fee in the feerefunder module.
 type FeeInfo struct {
 	Payer    string   `protobuf:"bytes,1,opt,name=payer,proto3" json:"payer,omitempty"`
 	PacketId PacketID `protobuf:"bytes,2,opt,name=packet_id,json=packetId,proto3" json:"packet_id"`

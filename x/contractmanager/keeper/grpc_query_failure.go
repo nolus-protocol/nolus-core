@@ -15,10 +15,14 @@ import (
 const FailuresQueryMaxLimit uint64 = query.DefaultLimit
 
 func (k Keeper) Failures(c context.Context, req *types.QueryFailuresRequest) (*types.QueryFailuresResponse, error) {
-	return k.AddressFailures(c, req)
+	failures, err := k.AddressFailures(c, &types.QueryFailuresByAddressRequest{Address: req.Address, Pagination: req.Pagination})
+	if err != nil {
+		return nil, err
+	}
+	return &types.QueryFailuresResponse{Failures: failures.Failures, Pagination: failures.Pagination}, nil
 }
 
-func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresRequest) (*types.QueryFailuresResponse, error) {
+func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresByAddressRequest) (*types.QueryFailuresByAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -56,10 +60,10 @@ func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryFailuresResponse{Failures: failures, Pagination: pageRes}, nil
+	return &types.QueryFailuresByAddressResponse{Failures: failures, Pagination: pageRes}, nil
 }
 
-func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailuresRequest) (*types.QueryFailuresResponse, error) {
+func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailureRequest) (*types.QueryFailureResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request field must not be empty")
 	}
@@ -74,5 +78,5 @@ func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailuresReques
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &types.QueryFailuresResponse{Failures: []types.Failure{*resp}}, nil
+	return &types.QueryFailureResponse{Failures: []types.Failure{*resp}}, nil
 }

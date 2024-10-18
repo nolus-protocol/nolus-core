@@ -15,6 +15,7 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/contractmanager/type
 service Msg {
   option (cosmos.msg.v1.service) = true;
 
+  // UpdateParams updates the x/contractmanager parameters.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
   // this line is used by starport scaffolding # proto/tx/rpc
 }

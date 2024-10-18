@@ -17,13 +17,23 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/ty
 service Msg {
   option (cosmos.msg.v1.service) = true;
 
+  // RegisterInterchainQuery registers a new interchain query.
   rpc RegisterInterchainQuery(MsgRegisterInterchainQuery) returns (MsgRegisterInterchainQueryResponse);
+
+  // SubmitQueryResult submits a result of an interchain query.
   rpc SubmitQueryResult(MsgSubmitQueryResult) returns (MsgSubmitQueryResultResponse);
+
+  // RemoveInterchainQuery removes an interchain query.
   rpc RemoveInterchainQuery(MsgRemoveInterchainQueryRequest) returns (MsgRemoveInterchainQueryResponse);
+
+  // UpdateInterchainQuery updates an interchain query.
   rpc UpdateInterchainQuery(MsgUpdateInterchainQueryRequest) returns (MsgUpdateInterchainQueryResponse);
+
+  // UpdateParams updates the x/interchainqueries parameters.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
+// MsgRegisterInterchainQuery is the MsgRegisterInterchainQuery request type.
 message MsgRegisterInterchainQuery {
   option (cosmos.msg.v1.signer) = "sender";
 
@@ -47,10 +57,12 @@ message MsgRegisterInterchainQuery {
   string sender = 6;
 }
 
+// MsgRegisterInterchainQueryResponse is the MsgRegisterInterchainQuery response type.
 message MsgRegisterInterchainQueryResponse {
   uint64 id = 1;
 }
 
+// MsgSubmitQueryResult is the MsgSubmitQueryResult request type.
 message MsgSubmitQueryResult {
   option (cosmos.msg.v1.signer) = "sender";
 
@@ -63,6 +75,7 @@ message MsgSubmitQueryResult {
   QueryResult result = 4;
 }
 
+// QueryResult is the result of an interchain query.
 message QueryResult {
   repeated StorageValue kv_results = 1;
   Block block = 2;
@@ -71,6 +84,7 @@ message QueryResult {
   bool allow_kv_callbacks = 5;
 }
 
+// StorageValue is the key-value pair for KVStore.
 message StorageValue {
   // is the substore name (acc, staking, etc.)
   string storage_prefix = 1;
@@ -81,11 +95,12 @@ message StorageValue {
   // is the value in IAVL store
   bytes value = 3;
 
-  // is the Merkle Proof which proves existence of key-value pair in IAVL
+  // is the Merkle proof which proves existence of key-value pair in IAVL
   // storage
-  tendermint.crypto.ProofOps Proof = 4;
+  tendermint.crypto.ProofOps proof = 4;
 }
 
+// Block is the block info of the chain needed for the interchainqueries module.
 message Block {
   // We need to know block X+1 to verify response of transaction for block X
   // since LastResultsHash is root hash of all results from the txs from the
@@ -98,6 +113,7 @@ message Block {
   TxValue tx = 3;
 }
 
+// TxValue is the transaction info of the chain needed for the interchainqueries module.
 message TxValue {
   tendermint.abci.ExecTxResult response = 1;
 
@@ -113,15 +129,20 @@ message TxValue {
   bytes data = 4;
 }
 
+// MsgSubmitQueryResultResponse is the MsgSubmitQueryResult response type.
 message MsgSubmitQueryResultResponse {}
 
+// MsgRemoveInterchainQueryRequest is the MsgRemoveInterchainQuery request type.
 message MsgRemoveInterchainQueryRequest {
   option (cosmos.msg.v1.signer) = "sender";
   uint64 query_id = 1;
   string sender = 2; // is the signer of the message
 }
+
+// MsgRemoveInterchainQueryResponse is the MsgRemoveInterchainQuery response type.
 message MsgRemoveInterchainQueryResponse {}
 
+// MsgUpdateInterchainQueryRequest is the MsgUpdateInterchainQuery request type.
 message MsgUpdateInterchainQueryRequest {
   option (cosmos.msg.v1.signer) = "sender";
   uint64 query_id = 1;
@@ -130,6 +151,8 @@ message MsgUpdateInterchainQueryRequest {
   string new_transactions_filter = 4;
   string sender = 5; // is the signer of the message
 }
+
+// MsgUpdateInterchainQueryResponse is the MsgUpdateInterchainQuery response type.
 message MsgUpdateInterchainQueryResponse {}
 
 // MsgUpdateParams is the MsgUpdateParams request type.

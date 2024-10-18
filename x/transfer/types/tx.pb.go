@@ -33,6 +33,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// MsgTransfer defines the payload for the ibc/transfer Msg/Transfer.
 type MsgTransfer struct {
 	// the port on which the packet will be sent
 	SourcePort string `protobuf:"bytes,1,opt,name=source_port,json=sourcePort,proto3" json:"source_port,omitempty" yaml:"source_port"`

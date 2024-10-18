@@ -1,7 +1,6 @@
 syntax = "proto3";
 package nolus.interchaintxs.v1;
 
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "nolus/interchaintxs/v1/params.proto";
@@ -14,6 +13,8 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/nolus/interchaintxs/params";
   }
+
+  // InterchainAccountAddress queries the interchain account address of the owner.
   rpc InterchainAccountAddress(QueryInterchainAccountAddressRequest) returns (QueryInterchainAccountAddressResponse) {
     option (google.api.http).get =
       "/nolus/interchaintxs/{owner_address}/{interchain_account_id}/"
@@ -30,6 +31,7 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// QueryInterchainAccountAddressRequest is the request type for the Query/InterchainAccountAddress RPC method.
 message QueryInterchainAccountAddressRequest {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -45,7 +47,7 @@ message QueryInterchainAccountAddressRequest {
   string connection_id = 3;
 }
 
-// Query response for an interchain account address
+// Query response for an interchain account address.
 message QueryInterchainAccountAddressResponse {
   // The corresponding interchain account address on the host chain
   string interchain_account_address = 1;
