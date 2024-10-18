@@ -24,34 +24,34 @@ func TestFailureQuerySingle(t *testing.T) {
 	msgs := createNFailure(k, ctx, 2, 2)
 	for _, tc := range []struct {
 		desc     string
-		request  *types.QueryFailuresRequest
-		response *types.QueryFailuresResponse
+		request  *types.QueryFailuresByAddressRequest
+		response *types.QueryFailuresByAddressResponse
 		err      error
 	}{
 		{
 			desc: "First",
-			request: &types.QueryFailuresRequest{
+			request: &types.QueryFailuresByAddressRequest{
 				Address: msgs[0][0].Address,
 			},
-			response: &types.QueryFailuresResponse{Failures: msgs[0], Pagination: &query.PageResponse{Total: 2}},
+			response: &types.QueryFailuresByAddressResponse{Failures: msgs[0], Pagination: &query.PageResponse{Total: 2}},
 		},
 		{
 			desc: "Second",
-			request: &types.QueryFailuresRequest{
+			request: &types.QueryFailuresByAddressRequest{
 				Address: msgs[1][0].Address,
 			},
-			response: &types.QueryFailuresResponse{Failures: msgs[1], Pagination: &query.PageResponse{Total: 2}},
+			response: &types.QueryFailuresByAddressResponse{Failures: msgs[1], Pagination: &query.PageResponse{Total: 2}},
 		},
 		{
 			desc: "KeyIsAbsent",
-			request: &types.QueryFailuresRequest{
+			request: &types.QueryFailuresByAddressRequest{
 				Address: "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
 			},
-			response: &types.QueryFailuresResponse{Failures: []types.Failure{}, Pagination: &query.PageResponse{Total: 0}},
+			response: &types.QueryFailuresByAddressResponse{Failures: []types.Failure{}, Pagination: &query.PageResponse{Total: 0}},
 		},
 		{
 			desc: "InvalidAddress",
-			request: &types.QueryFailuresRequest{
+			request: &types.QueryFailuresByAddressRequest{
 				Address: "wrong_address",
 			},
 			err: status.Error(codes.InvalidArgument, "failed to parse address: wrong_address"),

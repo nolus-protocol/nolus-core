@@ -6,8 +6,6 @@ import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
-import "google/api/annotations.proto";
-import "google/api/http.proto";
 import "google/protobuf/any.proto";
 import "nolus/feerefunder/fee.proto";
 import "nolus/interchaintxs/v1/params.proto";
@@ -18,8 +16,13 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 service Msg {
   option (cosmos.msg.v1.service) = true;
 
+  // RegisterInterchainAccount registers an account on a remote chain.
   rpc RegisterInterchainAccount(MsgRegisterInterchainAccount) returns (MsgRegisterInterchainAccountResponse) {}
+
+  // SubmitTx submits a transaction to a remote chain.
   rpc SubmitTx(MsgSubmitTx) returns (MsgSubmitTxResponse) {}
+  
+  // UpdateParams updates the x/interchaintxs parameters.
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
@@ -47,7 +50,7 @@ message MsgRegisterInterchainAccountResponse {
   string port_id = 2;
 }
 
-// MsgSubmitTx defines the payload for Msg/SubmitTx
+// MsgSubmitTx defines the payload for Msg/SubmitTx.
 message MsgSubmitTx {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;
@@ -68,7 +71,7 @@ message MsgSubmitTx {
   nolus.feerefunder.Fee fee = 7 [(gogoproto.nullable) = false];
 }
 
-// MsgSubmitTxResponse defines the response for Msg/SubmitTx
+// MsgSubmitTxResponse defines the response for Msg/SubmitTx.
 message MsgSubmitTxResponse {
   // channel's sequence_id for outgoing ibc packet. Unique per a channel.
   uint64 sequence_id = 1;

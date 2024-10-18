@@ -25,7 +25,7 @@ func (suite *KeeperTestSuite) TestRemoteLastHeight() {
 			"wrong connection id",
 			func() {
 				ctx := suite.ChainA.GetContext()
-				_, err := keeper.Keeper.LastRemoteHeight(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: "test"})
+				_, err := keeper.Keeper.LastRemoteHeight(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: "test"})
 				suite.Require().Error(err)
 			},
 		},
@@ -34,7 +34,7 @@ func (suite *KeeperTestSuite) TestRemoteLastHeight() {
 			func() {
 				ctx := suite.ChainA.GetContext()
 
-				oldHeight, err := keeper.Keeper.LastRemoteHeight(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: suite.Path.EndpointA.ConnectionID})
+				oldHeight, err := keeper.Keeper.LastRemoteHeight(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: suite.Path.EndpointA.ConnectionID})
 				suite.Require().NoError(err)
 				suite.Require().Greater(oldHeight.Height, uint64(0))
 
@@ -44,7 +44,7 @@ func (suite *KeeperTestSuite) TestRemoteLastHeight() {
 					suite.NoError(suite.Path.EndpointA.UpdateClient())
 				}
 
-				updatedHeight, err := keeper.Keeper.LastRemoteHeight(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: suite.Path.EndpointA.ConnectionID})
+				updatedHeight, err := keeper.Keeper.LastRemoteHeight(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx, &iqtypes.QueryLastRemoteHeight{ConnectionId: suite.Path.EndpointA.ConnectionID})
 				suite.Require().Equal(updatedHeight.Height, oldHeight.Height+N) // check that last remote height really equals oldHeight+N
 				suite.Require().NoError(err)
 			},
@@ -491,7 +491,7 @@ func (suite *KeeperTestSuite) TestQueryResult() {
 	senderAddress := suite.ChainA.SenderAccounts[0].SenderAccount.GetAddress()
 	suite.TopUpWallet(ctx, senderAddress, contractAddress)
 
-	msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+	msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 	regQuery1, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 	suite.Require().NoError(err)
 

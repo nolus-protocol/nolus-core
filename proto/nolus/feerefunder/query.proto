@@ -1,7 +1,6 @@
 syntax = "proto3";
 package nolus.feerefunder;
 
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "nolus/feerefunder/genesis.proto";
@@ -16,6 +15,7 @@ service Query {
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/nolus/feerefunder/params";
   }
+  // FeeInfo queries the fee information for a fee in the feerefunder module.
   rpc FeeInfo(FeeInfoRequest) returns (FeeInfoResponse) {
     option (google.api.http).get = "/nolus/feerefunder/info";
   }
@@ -31,12 +31,14 @@ message QueryParamsResponse {
   Params params = 1 [(gogoproto.nullable) = false];
 }
 
+// FeeInfoRequest is the request type for the Query/FeeInfo RPC method.
 message FeeInfoRequest {
   string channel_id = 1;
   string port_id = 2;
   uint64 sequence = 3;
 }
 
+// FeeInfoResponse is the response type for the Query/FeeInfo RPC method.
 message FeeInfoResponse {
   FeeInfo fee_info = 1;
 }

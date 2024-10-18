@@ -25,7 +25,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// Fee defines the ICS29 receive, acknowledgement and timeout fees
+// Fee defines the ICS29 receive, acknowledgement and timeout fees.
 type Fee struct {
 	// the packet receive fee
 	RecvFee github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=recv_fee,json=recvFee,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"recv_fee" yaml:"recv_fee"`
@@ -89,6 +89,7 @@ func (m *Fee) GetTimeoutFee() github_com_cosmos_cosmos_sdk_types.Coins {
 	return nil
 }
 
+// PacketID uniquely identifies a packet by its channel, port and sequence.
 type PacketID struct {
 	ChannelId string `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
 	PortId    string `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
