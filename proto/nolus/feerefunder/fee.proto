@@ -6,7 +6,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types";
 
-// Fee defines the ICS29 receive, acknowledgement and timeout fees
+// Fee defines the ICS29 receive, acknowledgement and timeout fees.
 message Fee {
   // the packet receive fee
   repeated cosmos.base.v1beta1.Coin recv_fee = 1 [
@@ -28,6 +28,7 @@ message Fee {
   ];
 }
 
+// PacketID uniquely identifies a packet by its channel, port and sequence.
 message PacketID {
   string channel_id = 1;
   string port_id = 2;

@@ -26,6 +26,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// RegisteredQuery defines a query that was registered by a user.
 type RegisteredQuery struct {
 	// The unique id of the registered query.
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -170,6 +171,7 @@ func (m *RegisteredQuery) GetRegisteredAtHeight() uint64 {
 	return 0
 }
 
+// KVKey defines a key-value pair for KVStore.
 type KVKey struct {
 	// Path (storage prefix) to the storage where you want to read value by key
 	// (usually name of cosmos-sdk module: 'staking', 'bank', etc.)

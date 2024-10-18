@@ -8,6 +8,7 @@ import "nolus/interchainqueries/params.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types";
 
+// RegisteredQuery defines a query that was registered by a user.
 message RegisteredQuery {
   // The unique id of the registered query.
   uint64 id = 1;
@@ -49,6 +50,7 @@ message RegisteredQuery {
   uint64 registered_at_height = 12;
 }
 
+// KVKey defines a key-value pair for KVStore.
 message KVKey {
   // Path (storage prefix) to the storage where you want to read value by key
   // (usually name of cosmos-sdk module: 'staking', 'bank', etc.)

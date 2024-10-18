@@ -15,6 +15,7 @@ message GenesisState {
   // this line is used by starport scaffolding # genesis/proto/state
 }
 
+// FeeInfo defines the fee information for a fee in the feerefunder module.
 message FeeInfo {
   string payer = 1;
   PacketID packet_id = 2 [(gogoproto.nullable) = false];

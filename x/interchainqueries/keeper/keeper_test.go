@@ -142,7 +142,7 @@ func (suite *KeeperTestSuite) TestRegisterInterchainQuery() {
 			suite.TopUpWallet(ctx, senderAddress, contractAddress)
 		}
 
-		msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+		msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 		res, err := msgSrv.RegisterInterchainQuery(ctx, &msg)
 
@@ -151,7 +151,7 @@ func (suite *KeeperTestSuite) TestRegisterInterchainQuery() {
 			suite.Require().Nil(res)
 		} else {
 			query, _ := keeper.Keeper.RegisteredQuery(
-				suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx,
+				*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper, ctx,
 				&iqtypes.QueryRegisteredQueryRequest{QueryId: 1})
 
 			suite.Require().Equal(iqtypes.DefaultQueryDeposit, query.RegisteredQuery.Deposit)
@@ -421,7 +421,7 @@ func (suite *KeeperTestSuite) TestUpdateInterchainQuery() {
 
 			iqkeeper := suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper
 
-			msgSrv := keeper.NewMsgServerImpl(iqkeeper)
+			msgSrv := keeper.NewMsgServerImpl(*iqkeeper)
 
 			tt.query.Sender = contractAddress.String()
 			resRegister, err := msgSrv.RegisterInterchainQuery(ctx, &tt.query)
@@ -593,7 +593,7 @@ func (suite *KeeperTestSuite) TestRemoveInterchainQuery() {
 			tt.malleate(contractAddress.String())
 			iqkeeper := suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper
 
-			msgSrv := keeper.NewMsgServerImpl(iqkeeper)
+			msgSrv := keeper.NewMsgServerImpl(*iqkeeper)
 			query.Sender = contractAddress.String()
 
 			resRegister, err := msgSrv.RegisterInterchainQuery(ctx, &query)
@@ -802,7 +802,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -853,7 +853,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -908,7 +908,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:             sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -959,7 +959,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1011,7 +1011,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1061,7 +1061,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1113,7 +1113,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1165,7 +1165,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1215,7 +1215,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1266,7 +1266,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1320,7 +1320,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1380,7 +1380,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 					Sender:       sender,
 				}
 
-				msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+				msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 				res, err := msgSrv.RegisterInterchainQuery(ctx, &registerMsg)
 				suite.Require().NoError(err)
@@ -1444,7 +1444,7 @@ func (suite *KeeperTestSuite) TestSubmitInterchainQueryResult() {
 
 			tt.malleate(contractAddress.String(), ctx)
 
-			msgSrv := keeper.NewMsgServerImpl(suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
+			msgSrv := keeper.NewMsgServerImpl(*suite.GetNolusZoneApp(suite.ChainA).InterchainQueriesKeeper)
 
 			res, err := msgSrv.SubmitQueryResult(ctx, &msg)
 
@@ -1572,7 +1572,7 @@ func (suite *KeeperTestSuite) TestTxQueriesCleanup() {
 		iqkeeper.TxQueriesCleanup(ctx)
 
 		// make sure removal and cleanup worked as expected
-		removed, left := suite.txHashesRemovalProgress(ctx, iqkeeper, queryID, txHashes)
+		removed, left := suite.txHashesRemovalProgress(ctx, *iqkeeper, queryID, txHashes)
 		suite.Require().Equalf(limit, removed, "first cleanup removed hashes count should be as many as limit")
 		suite.Require().Equalf(limitOverflow, left, "first cleanup left hashes count should be as many as limitOverflow")
 		suite.Require().Equalf([]uint64{queryID}, iqkeeper.GetTxQueriesToRemove(ctx, 0), "expected to have a TX query to remove after partial cleanup")
@@ -1634,16 +1634,16 @@ func (suite *KeeperTestSuite) TestTxQueriesCleanup() {
 		iqkeeper.TxQueriesCleanup(ctx)
 
 		// make sure removal and cleanup worked as expected
-		removedQ1, leftQ1 := suite.txHashesRemovalProgress(ctx, iqkeeper, queryID1, txHashesQ1)
-		removedQ2, leftQ2 := suite.txHashesRemovalProgress(ctx, iqkeeper, queryID2, txHashesQ2)
+		removedQ1, leftQ1 := suite.txHashesRemovalProgress(ctx, *iqkeeper, queryID1, txHashesQ1)
+		removedQ2, leftQ2 := suite.txHashesRemovalProgress(ctx, *iqkeeper, queryID2, txHashesQ2)
 		suite.Require().Equalf(limit, removedQ1+removedQ2, "first cleanup removed hashes count should be as many as limit")
 		suite.Require().Equalf(limitOverflow, leftQ1+leftQ2, "first cleanup remaining hashes count should be as many as limitOverflow")
 		suite.Require().Equalf([]uint64{queryID2}, iqkeeper.GetTxQueriesToRemove(ctx, 0), "expected to have one TX query to remove after partial cleanup")
 
 		// call cleanup one more time and make sure it worked as expected
 		iqkeeper.TxQueriesCleanup(ctx)
-		removedQ1, leftQ1 = suite.txHashesRemovalProgress(ctx, iqkeeper, queryID1, txHashesQ1)
-		removedQ2, leftQ2 = suite.txHashesRemovalProgress(ctx, iqkeeper, queryID2, txHashesQ2)
+		removedQ1, leftQ1 = suite.txHashesRemovalProgress(ctx, *iqkeeper, queryID1, txHashesQ1)
+		removedQ2, leftQ2 = suite.txHashesRemovalProgress(ctx, *iqkeeper, queryID2, txHashesQ2)
 		suite.Require().Equalf(limit+limitOverflow, removedQ1+removedQ2, "all hashes should be removed after the second cleanup")
 		suite.Require().Equalf(0, leftQ1+leftQ2, "no hashes should left after the second cleanup")
 		suite.Require().Nilf(iqkeeper.GetTxQueriesToRemove(ctx, 0), "expected not to have any TX queries to remove after cleanup")
@@ -1714,7 +1714,7 @@ func (suite *KeeperTestSuite) TestRemoveFreshlyCreatedICQ() {
 	params.QuerySubmitTimeout = 5
 	err := iqkeeper.SetParams(ctx, params)
 	suite.Require().NoError(err)
-	msgSrv := keeper.NewMsgServerImpl(iqkeeper)
+	msgSrv := keeper.NewMsgServerImpl(*iqkeeper)
 
 	resRegister, err := msgSrv.RegisterInterchainQuery(ctx, &iqtypes.MsgRegisterInterchainQuery{
 		QueryType:          string(iqtypes.InterchainQueryTypeKV),

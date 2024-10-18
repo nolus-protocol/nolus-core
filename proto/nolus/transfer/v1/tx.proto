@@ -22,6 +22,7 @@ service Msg {
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
+// MsgTransfer defines the payload for the ibc/transfer Msg/Transfer.
 message MsgTransfer {
   option (gogoproto.equal) = false;
   option (gogoproto.goproto_getters) = false;

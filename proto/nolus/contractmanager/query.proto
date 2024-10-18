@@ -18,12 +18,12 @@ service Query {
   }
 
   // Queries a Failure by contract address and failure ID.
-  rpc AddressFailure(QueryFailuresRequest) returns (QueryFailuresResponse) {
+  rpc AddressFailure(QueryFailureRequest) returns (QueryFailureResponse) {
     option (google.api.http).get = "/nolus/contractmanager/failures/{address}/{failure_id}";
   }
 
   // Queries Failures by contract address.
-  rpc AddressFailures(QueryFailuresRequest) returns (QueryFailuresResponse) {
+  rpc AddressFailures(QueryFailuresByAddressRequest) returns (QueryFailuresByAddressResponse) {
     option (google.api.http).get = "/nolus/contractmanager/failures/{address}";
   }
 
@@ -46,15 +46,41 @@ message QueryParamsResponse {
 
 // QueryFailuresRequest is request type for the Query/Failures RPC method.
 message QueryFailuresRequest {
-  // address of the contract which Sudo call failed.
-  string address = 1;
-  // ID of the failure for the given contract.
-  uint64 failure_id = 2;
-  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+   // address of the contract which Sudo call failed.
+   string address = 1;
+   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 // QueryFailuresResponse is response type for the Query/Failures RPC method.
 message QueryFailuresResponse {
+  repeated Failure failures = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryFailureRequest is request type for the Query/Failures/{address}/{failure_id} RPC method.
+message QueryFailureRequest {
+   // address of the contract which Sudo call failed.
+   string address = 1;
+   // ID of the failure for the given contract.
+   uint64 failure_id = 2;
+   cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+// QueryFailureResponse is response type for the Query/Failures/{failure_id} RPC method.
+message QueryFailureResponse {
+  repeated Failure failures = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+// QueryFailuresByAddressRequest is request type for the Query/Failures/{address} RPC method.
+message QueryFailuresByAddressRequest {
+  // address of the contract which Sudo call failed.
+  string address = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+// QueryFailureResponse is response type for the Query/Failures/{address} RPC method.
+message QueryFailuresByAddressResponse {
   repeated Failure failures = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

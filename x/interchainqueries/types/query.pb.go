@@ -113,6 +113,7 @@ func (m *QueryParamsResponse) GetParams() Params {
 	return Params{}
 }
 
+// QueryRegisteredQueriesRequest is request type for the Query/RegisteredQueries RPC method.
 type QueryRegisteredQueriesRequest struct {
 	Owners       []string           `protobuf:"bytes,1,rep,name=owners,proto3" json:"owners,omitempty"`
 	ConnectionId string             `protobuf:"bytes,2,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
@@ -173,6 +174,7 @@ func (m *QueryRegisteredQueriesRequest) GetPagination() *query.PageRequest {
 	return nil
 }
 
+// QueryRegisteredQueriesResponse is response type for the Query/RegisteredQueries RPC method.
 type QueryRegisteredQueriesResponse struct {
 	RegisteredQueries []RegisteredQuery `protobuf:"bytes,1,rep,name=registered_queries,json=registeredQueries,proto3" json:"registered_queries"`
 	// pagination defines the pagination in the response.
@@ -226,6 +228,7 @@ func (m *QueryRegisteredQueriesResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// QueryRegisteredQueryRequest is request type for the Query/RegisteredQuery RPC method.
 type QueryRegisteredQueryRequest struct {
 	QueryId uint64 `protobuf:"varint,1,opt,name=query_id,json=queryId,proto3" json:"query_id,omitempty"`
 }
@@ -270,6 +273,7 @@ func (m *QueryRegisteredQueryRequest) GetQueryId() uint64 {
 	return 0
 }
 
+// QueryRegisteredQueryResponse is response type for the Query/RegisteredQuery RPC method.
 type QueryRegisteredQueryResponse struct {
 	RegisteredQuery *RegisteredQuery `protobuf:"bytes,1,opt,name=registered_query,json=registeredQuery,proto3" json:"registered_query,omitempty"`
 }
@@ -314,6 +318,7 @@ func (m *QueryRegisteredQueryResponse) GetRegisteredQuery() *RegisteredQuery {
 	return nil
 }
 
+// QueryRegisteredQueryResultRequest is request type for the Query/QueryResult RPC method.
 type QueryRegisteredQueryResultRequest struct {
 	QueryId uint64 `protobuf:"varint,1,opt,name=query_id,json=queryId,proto3" json:"query_id,omitempty"`
 }
@@ -358,6 +363,7 @@ func (m *QueryRegisteredQueryResultRequest) GetQueryId() uint64 {
 	return 0
 }
 
+// QueryRegisteredQueryResultResponse is response type for the Query/QueryResult RPC method.
 type QueryRegisteredQueryResultResponse struct {
 	Result *QueryResult `protobuf:"bytes,1,opt,name=result,proto3" json:"result,omitempty"`
 }
@@ -402,6 +408,7 @@ func (m *QueryRegisteredQueryResultResponse) GetResult() *QueryResult {
 	return nil
 }
 
+// Transaction defines a transaction message for the interchainqueries module.
 type Transaction struct {
 	Id     uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Height uint64 `protobuf:"varint,2,opt,name=height,proto3" json:"height,omitempty"`
@@ -462,6 +469,7 @@ func (m *Transaction) GetData() []byte {
 	return nil
 }
 
+// QueryLastRemoteHeight is request type for the Query/LastRemoteHeight RPC method.
 type QueryLastRemoteHeight struct {
 	ConnectionId string `protobuf:"bytes,1,opt,name=connection_id,json=connectionId,proto3" json:"connection_id,omitempty"`
 }
@@ -506,6 +514,7 @@ func (m *QueryLastRemoteHeight) GetConnectionId() string {
 	return ""
 }
 
+// QueryLastRemoteHeightResponse is response type for the Query/LastRemoteHeight RPC method.
 type QueryLastRemoteHeightResponse struct {
 	Height uint64 `protobuf:"varint,1,opt,name=height,proto3" json:"height,omitempty"`
 }
@@ -634,9 +643,13 @@ const _ = grpc.SupportPackageIsVersion4
 type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
+	// RegisteredQueries queries the registered queries of the module.
 	RegisteredQueries(ctx context.Context, in *QueryRegisteredQueriesRequest, opts ...grpc.CallOption) (*QueryRegisteredQueriesResponse, error)
+	// RegisteredQuery queries the registered query of the module.
 	RegisteredQuery(ctx context.Context, in *QueryRegisteredQueryRequest, opts ...grpc.CallOption) (*QueryRegisteredQueryResponse, error)
+	// QueryResult queries the result of a registered query.
 	QueryResult(ctx context.Context, in *QueryRegisteredQueryResultRequest, opts ...grpc.CallOption) (*QueryRegisteredQueryResultResponse, error)
+	// LastRemoteHeight queries the last remote height of a connection.
 	LastRemoteHeight(ctx context.Context, in *QueryLastRemoteHeight, opts ...grpc.CallOption) (*QueryLastRemoteHeightResponse, error)
 }
 
@@ -697,9 +710,13 @@ func (c *queryClient) LastRemoteHeight(ctx context.Context, in *QueryLastRemoteH
 type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
+	// RegisteredQueries queries the registered queries of the module.
 	RegisteredQueries(context.Context, *QueryRegisteredQueriesRequest) (*QueryRegisteredQueriesResponse, error)
+	// RegisteredQuery queries the registered query of the module.
 	RegisteredQuery(context.Context, *QueryRegisteredQueryRequest) (*QueryRegisteredQueryResponse, error)
+	// QueryResult queries the result of a registered query.
 	QueryResult(context.Context, *QueryRegisteredQueryResultRequest) (*QueryRegisteredQueryResultResponse, error)
+	// LastRemoteHeight queries the last remote height of a connection.
 	LastRemoteHeight(context.Context, *QueryLastRemoteHeight) (*QueryLastRemoteHeightResponse, error)
 }
 

@@ -116,10 +116,8 @@ func (m *QueryParamsResponse) GetParams() Params {
 // QueryFailuresRequest is request type for the Query/Failures RPC method.
 type QueryFailuresRequest struct {
 	// address of the contract which Sudo call failed.
-	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	// ID of the failure for the given contract.
-	FailureId  uint64             `protobuf:"varint,2,opt,name=failure_id,json=failureId,proto3" json:"failure_id,omitempty"`
-	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *QueryFailuresRequest) Reset()         { *m = QueryFailuresRequest{} }
@@ -160,13 +158,6 @@ func (m *QueryFailuresRequest) GetAddress() string {
 		return m.Address
 	}
 	return ""
-}
-
-func (m *QueryFailuresRequest) GetFailureId() uint64 {
-	if m != nil {
-		return m.FailureId
-	}
-	return 0
 }
 
 func (m *QueryFailuresRequest) GetPagination() *query.PageRequest {
@@ -229,51 +220,281 @@ func (m *QueryFailuresResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+// QueryFailureRequest is request type for the Query/Failures/{address}/{failure_id} RPC method.
+type QueryFailureRequest struct {
+	// address of the contract which Sudo call failed.
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	// ID of the failure for the given contract.
+	FailureId  uint64             `protobuf:"varint,2,opt,name=failure_id,json=failureId,proto3" json:"failure_id,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,3,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryFailureRequest) Reset()         { *m = QueryFailureRequest{} }
+func (m *QueryFailureRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryFailureRequest) ProtoMessage()    {}
+func (*QueryFailureRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d27de95b05bba62f, []int{4}
+}
+func (m *QueryFailureRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFailureRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFailureRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFailureRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFailureRequest.Merge(m, src)
+}
+func (m *QueryFailureRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFailureRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFailureRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFailureRequest proto.InternalMessageInfo
+
+func (m *QueryFailureRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *QueryFailureRequest) GetFailureId() uint64 {
+	if m != nil {
+		return m.FailureId
+	}
+	return 0
+}
+
+func (m *QueryFailureRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryFailureResponse is response type for the Query/Failures/{failure_id} RPC method.
+type QueryFailureResponse struct {
+	Failures   []Failure           `protobuf:"bytes,1,rep,name=failures,proto3" json:"failures"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryFailureResponse) Reset()         { *m = QueryFailureResponse{} }
+func (m *QueryFailureResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryFailureResponse) ProtoMessage()    {}
+func (*QueryFailureResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d27de95b05bba62f, []int{5}
+}
+func (m *QueryFailureResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFailureResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFailureResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFailureResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFailureResponse.Merge(m, src)
+}
+func (m *QueryFailureResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFailureResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFailureResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFailureResponse proto.InternalMessageInfo
+
+func (m *QueryFailureResponse) GetFailures() []Failure {
+	if m != nil {
+		return m.Failures
+	}
+	return nil
+}
+
+func (m *QueryFailureResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryFailuresByAddressRequest is request type for the Query/Failures/{address} RPC method.
+type QueryFailuresByAddressRequest struct {
+	// address of the contract which Sudo call failed.
+	Address    string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryFailuresByAddressRequest) Reset()         { *m = QueryFailuresByAddressRequest{} }
+func (m *QueryFailuresByAddressRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryFailuresByAddressRequest) ProtoMessage()    {}
+func (*QueryFailuresByAddressRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d27de95b05bba62f, []int{6}
+}
+func (m *QueryFailuresByAddressRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFailuresByAddressRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFailuresByAddressRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFailuresByAddressRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFailuresByAddressRequest.Merge(m, src)
+}
+func (m *QueryFailuresByAddressRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFailuresByAddressRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFailuresByAddressRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFailuresByAddressRequest proto.InternalMessageInfo
+
+func (m *QueryFailuresByAddressRequest) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+func (m *QueryFailuresByAddressRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+// QueryFailureResponse is response type for the Query/Failures/{address} RPC method.
+type QueryFailuresByAddressResponse struct {
+	Failures   []Failure           `protobuf:"bytes,1,rep,name=failures,proto3" json:"failures"`
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryFailuresByAddressResponse) Reset()         { *m = QueryFailuresByAddressResponse{} }
+func (m *QueryFailuresByAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryFailuresByAddressResponse) ProtoMessage()    {}
+func (*QueryFailuresByAddressResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_d27de95b05bba62f, []int{7}
+}
+func (m *QueryFailuresByAddressResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryFailuresByAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryFailuresByAddressResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryFailuresByAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryFailuresByAddressResponse.Merge(m, src)
+}
+func (m *QueryFailuresByAddressResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryFailuresByAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryFailuresByAddressResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryFailuresByAddressResponse proto.InternalMessageInfo
+
+func (m *QueryFailuresByAddressResponse) GetFailures() []Failure {
+	if m != nil {
+		return m.Failures
+	}
+	return nil
+}
+
+func (m *QueryFailuresByAddressResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "nolus.contractmanager.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "nolus.contractmanager.QueryParamsResponse")
 	proto.RegisterType((*QueryFailuresRequest)(nil), "nolus.contractmanager.QueryFailuresRequest")
 	proto.RegisterType((*QueryFailuresResponse)(nil), "nolus.contractmanager.QueryFailuresResponse")
+	proto.RegisterType((*QueryFailureRequest)(nil), "nolus.contractmanager.QueryFailureRequest")
+	proto.RegisterType((*QueryFailureResponse)(nil), "nolus.contractmanager.QueryFailureResponse")
+	proto.RegisterType((*QueryFailuresByAddressRequest)(nil), "nolus.contractmanager.QueryFailuresByAddressRequest")
+	proto.RegisterType((*QueryFailuresByAddressResponse)(nil), "nolus.contractmanager.QueryFailuresByAddressResponse")
 }
 
 func init() { proto.RegisterFile("nolus/contractmanager/query.proto", fileDescriptor_d27de95b05bba62f) }
 
 var fileDescriptor_d27de95b05bba62f = []byte{
-	// 536 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x94, 0xcf, 0x6b, 0x13, 0x41,
-	0x14, 0xc7, 0x33, 0x69, 0x8c, 0xed, 0x14, 0x14, 0x9e, 0x29, 0x84, 0x60, 0x36, 0xed, 0x8a, 0x36,
-	0x6d, 0xed, 0x0c, 0x89, 0x20, 0x82, 0x22, 0xda, 0x43, 0xc5, 0x8b, 0xc4, 0x3d, 0x78, 0xf0, 0x22,
-	0x93, 0xcd, 0xb8, 0x2e, 0x64, 0x77, 0xb6, 0x3b, 0xb3, 0x62, 0x29, 0xbd, 0x78, 0xf0, 0x28, 0x82,
-	0x07, 0x8f, 0x82, 0x57, 0xff, 0x91, 0x1e, 0x0b, 0x5e, 0x3c, 0x89, 0x24, 0xfe, 0x03, 0xfe, 0x07,
-	0xb2, 0x33, 0x53, 0xdb, 0xa4, 0x69, 0x9a, 0x8b, 0xde, 0x36, 0x2f, 0xef, 0xfb, 0x7d, 0x9f, 0xf7,
-	0x83, 0xc1, 0x2b, 0xb1, 0xe8, 0x67, 0x92, 0xfa, 0x22, 0x56, 0x29, 0xf3, 0x55, 0xc4, 0x62, 0x16,
-	0xf0, 0x94, 0xee, 0x64, 0x3c, 0xdd, 0x25, 0x49, 0x2a, 0x94, 0x80, 0x25, 0x9d, 0x42, 0xc6, 0x52,
-	0x6a, 0xeb, 0xbe, 0x90, 0x91, 0x90, 0xb4, 0xcb, 0x24, 0x37, 0xf9, 0xf4, 0x75, 0xab, 0xcb, 0x15,
-	0x6b, 0xd1, 0x84, 0x05, 0x61, 0xcc, 0x54, 0x28, 0x62, 0x63, 0x51, 0xab, 0x04, 0x22, 0x10, 0xfa,
-	0x93, 0xe6, 0x5f, 0x36, 0x7a, 0x35, 0x10, 0x22, 0xe8, 0x73, 0xca, 0x92, 0x90, 0xb2, 0x38, 0x16,
-	0x4a, 0x4b, 0xa4, 0xfd, 0xf7, 0xda, 0x64, 0xb2, 0x97, 0x2c, 0xec, 0x67, 0x29, 0xb7, 0x49, 0xee,
-	0xe4, 0xa4, 0x84, 0xa5, 0x2c, 0xb2, 0x46, 0x6e, 0x05, 0xc3, 0xd3, 0x1c, 0xaf, 0xa3, 0x83, 0x1e,
-	0xdf, 0xc9, 0xb8, 0x54, 0xae, 0x87, 0xaf, 0x8c, 0x44, 0x65, 0x22, 0x62, 0xc9, 0xe1, 0x2e, 0x2e,
-	0x1b, 0x71, 0x15, 0x2d, 0xa3, 0xe6, 0x62, 0xbb, 0x4e, 0x26, 0x76, 0x4f, 0x8c, 0x6c, 0xab, 0x74,
-	0xf0, 0xa3, 0x51, 0xf0, 0xac, 0xc4, 0xfd, 0x84, 0x70, 0x45, 0x9b, 0x6e, 0x1b, 0xc8, 0xa3, 0x62,
-	0x50, 0xc5, 0x17, 0x59, 0xaf, 0x97, 0x72, 0x69, 0x6c, 0x17, 0xbc, 0xa3, 0x9f, 0x50, 0xc7, 0xd8,
-	0x76, 0xf4, 0x22, 0xec, 0x55, 0x8b, 0xcb, 0xa8, 0x59, 0xf2, 0x16, 0x6c, 0xe4, 0x71, 0x0f, 0xb6,
-	0x31, 0x3e, 0x1e, 0x66, 0x75, 0x4e, 0x23, 0xdd, 0x20, 0x66, 0xf2, 0x24, 0x9f, 0x3c, 0x31, 0x9b,
-	0xb2, 0x93, 0x27, 0x1d, 0x16, 0x70, 0x5b, 0xd4, 0x3b, 0xa1, 0x74, 0xbf, 0x20, 0xbc, 0x34, 0x46,
-	0x66, 0x1b, 0x7e, 0x80, 0xe7, 0x6d, 0xb9, 0x9c, 0x6d, 0xae, 0xb9, 0xd8, 0x76, 0xce, 0x68, 0xd9,
-	0x4a, 0x6d, 0xcf, 0x7f, 0x55, 0xf0, 0x68, 0x84, 0xb1, 0xa8, 0x19, 0x57, 0xcf, 0x65, 0x34, 0xe5,
-	0x4f, 0x42, 0xb6, 0x7f, 0x97, 0xf0, 0x05, 0x0d, 0x09, 0xef, 0x10, 0x2e, 0x9b, 0x09, 0xc3, 0xda,
-	0x19, 0x34, 0xa7, 0x57, 0x5a, 0x5b, 0x9f, 0x25, 0xd5, 0xd4, 0x75, 0xaf, 0xbf, 0xfd, 0xf6, 0xeb,
-	0x63, 0xb1, 0x01, 0x75, 0x3a, 0xed, 0x82, 0xe0, 0x2b, 0xc2, 0x97, 0x1e, 0x9a, 0x55, 0xd9, 0xf6,
-	0x61, 0x63, 0x5a, 0x95, 0xb1, 0xc5, 0xd7, 0x6e, 0xce, 0x96, 0x6c, 0xa1, 0xee, 0x6b, 0xa8, 0x3b,
-	0x70, 0x9b, 0x4e, 0xbd, 0x7d, 0x49, 0xf7, 0xec, 0xf9, 0xec, 0xd3, 0xbd, 0xe3, 0xeb, 0xd9, 0x87,
-	0xcf, 0x08, 0x5f, 0x1e, 0xa5, 0x95, 0xff, 0x12, 0xb7, 0xa5, 0x71, 0x37, 0x60, 0x6d, 0x66, 0x5c,
-	0x78, 0x8f, 0xf0, 0xfc, 0xff, 0x40, 0x5b, 0xd5, 0x68, 0x2b, 0xd0, 0x38, 0x07, 0x6d, 0xeb, 0xd9,
-	0xc1, 0xc0, 0x41, 0x87, 0x03, 0x07, 0xfd, 0x1c, 0x38, 0xe8, 0xc3, 0xd0, 0x29, 0x1c, 0x0e, 0x9d,
-	0xc2, 0xf7, 0xa1, 0x53, 0x78, 0x7e, 0x2f, 0x08, 0xd5, 0xab, 0xac, 0x4b, 0x7c, 0x11, 0xd1, 0x27,
-	0xb9, 0xc9, 0x66, 0x27, 0x7f, 0x4e, 0x7c, 0xd1, 0x37, 0x9e, 0x9b, 0xbe, 0x48, 0x39, 0x7d, 0x73,
-	0xca, 0x5a, 0xed, 0x26, 0x5c, 0x76, 0xcb, 0xfa, 0xed, 0xb9, 0xf5, 0x27, 0x00, 0x00, 0xff, 0xff,
-	0x68, 0x23, 0x2e, 0xd9, 0x60, 0x05, 0x00, 0x00,
+	// 592 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x95, 0x4d, 0x6b, 0x13, 0x41,
+	0x18, 0xc7, 0x33, 0x7d, 0x89, 0xed, 0x14, 0x14, 0xc6, 0x14, 0x42, 0x30, 0x1b, 0xbb, 0xa2, 0x7d,
+	0xb3, 0x3b, 0x24, 0xbe, 0x20, 0x28, 0xa2, 0x39, 0x54, 0xbc, 0x48, 0xdc, 0x83, 0x07, 0x2f, 0x32,
+	0xd9, 0x8c, 0xeb, 0x42, 0xb2, 0xb3, 0xdd, 0xd9, 0x48, 0x43, 0xe9, 0xa1, 0x1e, 0x3c, 0x8a, 0x20,
+	0x78, 0xd7, 0x9b, 0x78, 0xf2, 0x5b, 0xf4, 0x58, 0xf0, 0xe2, 0x49, 0x24, 0xf1, 0x83, 0xc8, 0xce,
+	0x3c, 0x4d, 0xdd, 0xbc, 0xae, 0x1e, 0x4a, 0x6f, 0x9b, 0x27, 0xcf, 0xf3, 0xfc, 0x7f, 0xcf, 0x7f,
+	0xde, 0xf0, 0x8a, 0x2f, 0x9a, 0x6d, 0x49, 0x1d, 0xe1, 0x47, 0x21, 0x73, 0xa2, 0x16, 0xf3, 0x99,
+	0xcb, 0x43, 0xba, 0xd3, 0xe6, 0x61, 0xc7, 0x0a, 0x42, 0x11, 0x09, 0xb2, 0xac, 0x52, 0xac, 0x81,
+	0x94, 0xc2, 0x86, 0x23, 0x64, 0x4b, 0x48, 0x5a, 0x67, 0x92, 0xeb, 0x7c, 0xfa, 0xba, 0x5c, 0xe7,
+	0x11, 0x2b, 0xd3, 0x80, 0xb9, 0x9e, 0xcf, 0x22, 0x4f, 0xf8, 0xba, 0x45, 0x21, 0xe7, 0x0a, 0x57,
+	0xa8, 0x4f, 0x1a, 0x7f, 0x41, 0xf4, 0x92, 0x2b, 0x84, 0xdb, 0xe4, 0x94, 0x05, 0x1e, 0x65, 0xbe,
+	0x2f, 0x22, 0x55, 0x22, 0xe1, 0xdf, 0x2b, 0xa3, 0xc9, 0x5e, 0x32, 0xaf, 0xd9, 0x0e, 0x39, 0x24,
+	0x99, 0xa3, 0x93, 0x02, 0x16, 0xb2, 0x16, 0x34, 0x32, 0x73, 0x98, 0x3c, 0x8d, 0xf1, 0x6a, 0x2a,
+	0x68, 0xf3, 0x9d, 0x36, 0x97, 0x91, 0x69, 0xe3, 0x8b, 0x89, 0xa8, 0x0c, 0x84, 0x2f, 0x39, 0xb9,
+	0x8b, 0xb3, 0xba, 0x38, 0x8f, 0x2e, 0xa3, 0xb5, 0xa5, 0x4a, 0xd1, 0x1a, 0x39, 0xbd, 0xa5, 0xcb,
+	0xaa, 0x73, 0x87, 0x3f, 0x4b, 0x19, 0x1b, 0x4a, 0xcc, 0x5d, 0x9c, 0x53, 0x3d, 0xb7, 0x35, 0xe3,
+	0xb1, 0x16, 0xc9, 0xe3, 0x73, 0xac, 0xd1, 0x08, 0xb9, 0xd4, 0x5d, 0x17, 0xed, 0xe3, 0x9f, 0x64,
+	0x1b, 0xe3, 0x13, 0xb3, 0xf2, 0x33, 0x4a, 0xf2, 0x9a, 0xa5, 0x9d, 0xb5, 0x62, 0x67, 0x2d, 0xbd,
+	0x12, 0xe0, 0xac, 0x55, 0x63, 0x2e, 0x87, 0xae, 0xf6, 0x5f, 0x95, 0xe6, 0x67, 0x84, 0x97, 0x07,
+	0xa4, 0x61, 0xa0, 0x07, 0x78, 0x01, 0x2c, 0x8b, 0xc5, 0x67, 0xd7, 0x96, 0x2a, 0xc6, 0x98, 0x91,
+	0xa0, 0x14, 0x66, 0xea, 0x57, 0x91, 0x47, 0x23, 0x18, 0x57, 0xa7, 0x32, 0x6a, 0xf9, 0x04, 0xe4,
+	0x47, 0x04, 0x9e, 0x83, 0xd2, 0x74, 0x7b, 0x8a, 0x18, 0x03, 0xc6, 0x0b, 0xaf, 0xa1, 0xa4, 0xe7,
+	0xec, 0x45, 0x88, 0x3c, 0x6e, 0x0c, 0xb8, 0x37, 0xfb, 0xdf, 0xee, 0x7d, 0x42, 0xc9, 0x85, 0x3b,
+	0x8b, 0xe6, 0x1d, 0x20, 0x5c, 0x4c, 0xac, 0x70, 0xb5, 0xf3, 0x50, 0xbb, 0x74, 0x7a, 0xbb, 0xec,
+	0x2b, 0xc2, 0xc6, 0x38, 0x86, 0x33, 0xe7, 0x58, 0xe5, 0x60, 0x1e, 0xcf, 0x2b, 0x5a, 0xf2, 0x16,
+	0xe1, 0xac, 0x3e, 0xb0, 0x64, 0x7d, 0x0c, 0xcd, 0xf0, 0x0d, 0x51, 0xd8, 0x48, 0x93, 0xaa, 0x75,
+	0xcd, 0xab, 0x6f, 0xbe, 0xff, 0xfe, 0x30, 0x53, 0x22, 0x45, 0x3a, 0xe9, 0x42, 0x22, 0x5f, 0x10,
+	0x3e, 0x0f, 0x8e, 0xc1, 0xf8, 0x64, 0xa2, 0x4a, 0xf2, 0xa0, 0x14, 0x36, 0x53, 0xe5, 0x02, 0xd2,
+	0x7d, 0x85, 0x74, 0x87, 0xdc, 0xa6, 0x13, 0x2f, 0x52, 0x49, 0xf7, 0x60, 0x9b, 0xec, 0xd3, 0xbd,
+	0x93, 0xc3, 0xb6, 0x4f, 0xbe, 0x21, 0x7c, 0x21, 0xc9, 0x2a, 0xc9, 0xcd, 0x14, 0x00, 0x43, 0x1b,
+	0xb3, 0x70, 0xeb, 0x1f, 0xab, 0x60, 0x80, 0xb2, 0x1a, 0x60, 0x93, 0xac, 0xa7, 0x1e, 0x80, 0xbc,
+	0x43, 0x78, 0xa1, 0x0f, 0x9b, 0xc6, 0xad, 0x3e, 0xe3, 0xf5, 0x74, 0xc9, 0x80, 0xb6, 0xaa, 0xd0,
+	0x56, 0x48, 0x69, 0x0a, 0x5a, 0xf5, 0xd9, 0x61, 0xd7, 0x40, 0x47, 0x5d, 0x03, 0xfd, 0xea, 0x1a,
+	0xe8, 0x7d, 0xcf, 0xc8, 0x1c, 0xf5, 0x8c, 0xcc, 0x8f, 0x9e, 0x91, 0x79, 0x7e, 0xcf, 0xf5, 0xa2,
+	0x57, 0xed, 0xba, 0xe5, 0x88, 0x16, 0x7d, 0x12, 0x37, 0xd9, 0xaa, 0xc5, 0xaf, 0x95, 0x23, 0x9a,
+	0xba, 0xe7, 0x96, 0x23, 0x42, 0x4e, 0x77, 0x87, 0x5a, 0x47, 0x9d, 0x80, 0xcb, 0x7a, 0x56, 0x3d,
+	0x6d, 0x37, 0xfe, 0x04, 0x00, 0x00, 0xff, 0xff, 0xa4, 0x7d, 0x5a, 0x77, 0xbf, 0x07, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -291,9 +512,9 @@ type QueryClient interface {
 	// Parameters queries the parameters of the module.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
 	// Queries a Failure by contract address and failure ID.
-	AddressFailure(ctx context.Context, in *QueryFailuresRequest, opts ...grpc.CallOption) (*QueryFailuresResponse, error)
+	AddressFailure(ctx context.Context, in *QueryFailureRequest, opts ...grpc.CallOption) (*QueryFailureResponse, error)
 	// Queries Failures by contract address.
-	AddressFailures(ctx context.Context, in *QueryFailuresRequest, opts ...grpc.CallOption) (*QueryFailuresResponse, error)
+	AddressFailures(ctx context.Context, in *QueryFailuresByAddressRequest, opts ...grpc.CallOption) (*QueryFailuresByAddressResponse, error)
 	// Queries a list of Failures occurred on the network.
 	Failures(ctx context.Context, in *QueryFailuresRequest, opts ...grpc.CallOption) (*QueryFailuresResponse, error)
 }
@@ -315,8 +536,8 @@ func (c *queryClient) Params(ctx context.Context, in *QueryParamsRequest, opts .
 	return out, nil
 }
 
-func (c *queryClient) AddressFailure(ctx context.Context, in *QueryFailuresRequest, opts ...grpc.CallOption) (*QueryFailuresResponse, error) {
-	out := new(QueryFailuresResponse)
+func (c *queryClient) AddressFailure(ctx context.Context, in *QueryFailureRequest, opts ...grpc.CallOption) (*QueryFailureResponse, error) {
+	out := new(QueryFailureResponse)
 	err := c.cc.Invoke(ctx, "/nolus.contractmanager.Query/AddressFailure", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -324,8 +545,8 @@ func (c *queryClient) AddressFailure(ctx context.Context, in *QueryFailuresReque
 	return out, nil
 }
 
-func (c *queryClient) AddressFailures(ctx context.Context, in *QueryFailuresRequest, opts ...grpc.CallOption) (*QueryFailuresResponse, error) {
-	out := new(QueryFailuresResponse)
+func (c *queryClient) AddressFailures(ctx context.Context, in *QueryFailuresByAddressRequest, opts ...grpc.CallOption) (*QueryFailuresByAddressResponse, error) {
+	out := new(QueryFailuresByAddressResponse)
 	err := c.cc.Invoke(ctx, "/nolus.contractmanager.Query/AddressFailures", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -347,9 +568,9 @@ type QueryServer interface {
 	// Parameters queries the parameters of the module.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
 	// Queries a Failure by contract address and failure ID.
-	AddressFailure(context.Context, *QueryFailuresRequest) (*QueryFailuresResponse, error)
+	AddressFailure(context.Context, *QueryFailureRequest) (*QueryFailureResponse, error)
 	// Queries Failures by contract address.
-	AddressFailures(context.Context, *QueryFailuresRequest) (*QueryFailuresResponse, error)
+	AddressFailures(context.Context, *QueryFailuresByAddressRequest) (*QueryFailuresByAddressResponse, error)
 	// Queries a list of Failures occurred on the network.
 	Failures(context.Context, *QueryFailuresRequest) (*QueryFailuresResponse, error)
 }
@@ -361,10 +582,10 @@ type UnimplementedQueryServer struct {
 func (*UnimplementedQueryServer) Params(ctx context.Context, req *QueryParamsRequest) (*QueryParamsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Params not implemented")
 }
-func (*UnimplementedQueryServer) AddressFailure(ctx context.Context, req *QueryFailuresRequest) (*QueryFailuresResponse, error) {
+func (*UnimplementedQueryServer) AddressFailure(ctx context.Context, req *QueryFailureRequest) (*QueryFailureResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressFailure not implemented")
 }
-func (*UnimplementedQueryServer) AddressFailures(ctx context.Context, req *QueryFailuresRequest) (*QueryFailuresResponse, error) {
+func (*UnimplementedQueryServer) AddressFailures(ctx context.Context, req *QueryFailuresByAddressRequest) (*QueryFailuresByAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressFailures not implemented")
 }
 func (*UnimplementedQueryServer) Failures(ctx context.Context, req *QueryFailuresRequest) (*QueryFailuresResponse, error) {
@@ -394,7 +615,7 @@ func _Query_Params_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _Query_AddressFailure_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryFailuresRequest)
+	in := new(QueryFailureRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -406,13 +627,13 @@ func _Query_AddressFailure_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/nolus.contractmanager.Query/AddressFailure",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AddressFailure(ctx, req.(*QueryFailuresRequest))
+		return srv.(QueryServer).AddressFailure(ctx, req.(*QueryFailureRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _Query_AddressFailures_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryFailuresRequest)
+	in := new(QueryFailuresByAddressRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -424,7 +645,7 @@ func _Query_AddressFailures_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/nolus.contractmanager.Query/AddressFailures",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AddressFailures(ctx, req.(*QueryFailuresRequest))
+		return srv.(QueryServer).AddressFailures(ctx, req.(*QueryFailuresByAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -558,12 +779,7 @@ func (m *QueryFailuresRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
 		i--
-		dAtA[i] = 0x1a
-	}
-	if m.FailureId != 0 {
-		i = encodeVarintQuery(dAtA, i, uint64(m.FailureId))
-		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
@@ -591,6 +807,193 @@ func (m *QueryFailuresResponse) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *QueryFailuresResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Failures) > 0 {
+		for iNdEx := len(m.Failures) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Failures[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFailureRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFailureRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFailureRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.FailureId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.FailureId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFailureResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFailureResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFailureResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Failures) > 0 {
+		for iNdEx := len(m.Failures) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Failures[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFailuresByAddressRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFailuresByAddressRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFailuresByAddressRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryFailuresByAddressResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryFailuresByAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryFailuresByAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -665,6 +1068,42 @@ func (m *QueryFailuresRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryFailuresResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Failures) > 0 {
+		for _, e := range m.Failures {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryFailureRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
 	if m.FailureId != 0 {
 		n += 1 + sovQuery(uint64(m.FailureId))
 	}
@@ -675,7 +1114,43 @@ func (m *QueryFailuresRequest) Size() (n int) {
 	return n
 }
 
-func (m *QueryFailuresResponse) Size() (n int) {
+func (m *QueryFailureResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Failures) > 0 {
+		for _, e := range m.Failures {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryFailuresByAddressRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryFailuresByAddressResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -895,25 +1370,6 @@ func (m *QueryFailuresRequest) Unmarshal(dAtA []byte) error {
 			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field FailureId", wireType)
-			}
-			m.FailureId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.FailureId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
 			}
@@ -997,6 +1453,501 @@ func (m *QueryFailuresResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: QueryFailuresResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Failures", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Failures = append(m.Failures, Failure{})
+			if err := m.Failures[len(m.Failures)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFailureRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFailureRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFailureRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field FailureId", wireType)
+			}
+			m.FailureId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.FailureId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFailureResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFailureResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFailureResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Failures", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Failures = append(m.Failures, Failure{})
+			if err := m.Failures[len(m.Failures)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFailuresByAddressRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFailuresByAddressRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFailuresByAddressRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryFailuresByAddressResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryFailuresByAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryFailuresByAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
