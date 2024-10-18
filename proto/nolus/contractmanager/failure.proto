@@ -1,8 +1,6 @@
 syntax = "proto3";
 package nolus.contractmanager;
 
-import "ibc/core/channel/v1/channel.proto";
-
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types";
 
 // Failure message contains information about ACK failures and can be used to

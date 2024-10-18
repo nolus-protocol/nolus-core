@@ -22,7 +22,7 @@ func (k Keeper) Failures(c context.Context, req *types.QueryFailuresRequest) (*t
 	return &types.QueryFailuresResponse{Failures: failures.Failures, Pagination: failures.Pagination}, nil
 }
 
-func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresByAddressRequest) (*types.QueryFailuresByAddressResponse, error) {
+func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresByAddressRequest) (*types.QueryAddressFailuresResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
@@ -60,10 +60,10 @@ func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresByAdd
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryFailuresByAddressResponse{Failures: failures, Pagination: pageRes}, nil
+	return &types.QueryAddressFailuresResponse{Failures: failures, Pagination: pageRes}, nil
 }
 
-func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailureRequest) (*types.QueryFailureResponse, error) {
+func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailureRequest) (*types.QueryAddressFailureResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "request field must not be empty")
 	}
@@ -78,5 +78,5 @@ func (k Keeper) AddressFailure(c context.Context, req *types.QueryFailureRequest
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	return &types.QueryFailureResponse{Failures: []types.Failure{*resp}}, nil
+	return &types.QueryAddressFailureResponse{Failures: []types.Failure{*resp}}, nil
 }
