@@ -28,7 +28,7 @@ service Query {
   }
 
   // QueryResult queries the result of a registered query.
-  rpc QueryResult(QueryRegisteredQueryResultRequest) returns (QueryRegisteredQueryResultResponse) {
+  rpc QueryResult(QueryRegisteredQueryResultRequest) returns (QueryResultResponse) {
     option (google.api.http).get = "/nolus/interchainqueries/query_result";
   }
 
@@ -77,8 +77,8 @@ message QueryRegisteredQueryResultRequest {
   uint64 query_id = 1;
 }
 
-// QueryRegisteredQueryResultResponse is response type for the Query/QueryResult RPC method.
-message QueryRegisteredQueryResultResponse {
+// QueryResultResponse is response type for the Query/QueryResult RPC method.
+message QueryResultResponse {
   QueryResult result = 1;
 }
 
