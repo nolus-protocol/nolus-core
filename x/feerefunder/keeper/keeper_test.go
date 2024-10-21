@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	TestAddress = "neutron17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh"
+	TestAddress = "nolus1gtfl8h8keepk4366c8hdeuj3kxsvgrutkr46re"
 )
 
 func TestKeeperCheckFees(t *testing.T) {
