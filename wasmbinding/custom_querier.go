@@ -13,9 +13,9 @@ import (
 // CustomQuerier returns a function that is an implementation of custom querier mechanism for specific messages.
 func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
 	return func(ctx sdk.Context, request json.RawMessage) ([]byte, error) {
-		var contractQuery bindings.NeutronQuery
+		var contractQuery bindings.NolusQuery
 		if err := json.Unmarshal(request, &contractQuery); err != nil {
-			return nil, errors.Wrapf(err, "failed to unmarshal neutron query: %v", err)
+			return nil, errors.Wrapf(err, "failed to unmarshal nolus query: %v", err)
 		}
 
 		switch {
@@ -96,7 +96,7 @@ func CustomQuerier(qp *QueryPlugin) func(ctx sdk.Context, request json.RawMessag
 			return bz, nil
 
 		default:
-			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown neutron query type"}
+			return nil, wasmvmtypes.UnsupportedRequest{Kind: "unknown nolus query type"}
 		}
 	}
 }

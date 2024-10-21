@@ -36,7 +36,7 @@ import (
 
 var (
 	// TestOwnerAddress defines a reusable bech32 address for testing purposes.
-	TestOwnerAddress = "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh"
+	TestOwnerAddress = "nolus1ghd753shjuwexxywmgs4xz7x2q732vcnkm6h2pyv9s6ah3hylvrq8welhp"
 
 	TestInterchainID = "owner_id"
 
@@ -92,7 +92,7 @@ func (suite *IBCConnectionTestSuite) SetupTest() {
 
 	suite.Path = NewICAPath(suite.ChainA, suite.ChainB)
 
-	// suite.ConfigureTransferChannel()
+	suite.ConfigureTransferChannel()
 	suite.Coordinator.Setup(suite.Path)
 }
 
@@ -236,6 +236,7 @@ func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		encoding,
 		sims.EmptyAppOptions{},
 		fauxMerkleModeOpt,
+		baseapp.SetChainID("nolus"),
 	)
 
 	ctx := testApp.BaseApp.NewContextLegacy(false, tmproto.Header{Height: 1, ChainID: "testchain-1", Time: time.Now().UTC()})

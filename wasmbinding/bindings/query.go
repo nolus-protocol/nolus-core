@@ -14,8 +14,8 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 )
 
-// NeutronQuery contains neutron custom queries.
-type NeutronQuery struct {
+// NolusQuery contains nolus custom queries.
+type NolusQuery struct {
 	// Registered Interchain Query Result for specified QueryID
 	InterchainQueryResult *QueryRegisteredQueryResultRequest `json:"interchain_query_result,omitempty"`
 	// Interchain account address for specified ConnectionID and OwnerAddress
@@ -42,7 +42,7 @@ type QueryInterchainAccountAddressRequest struct {
 	OwnerAddress string `json:"owner_address,omitempty"`
 	// interchain_account_id is an identifier of your interchain account from which you want to execute msgs
 	InterchainAccountID string `json:"interchain_account_id,omitempty"`
-	// connection_id is an IBC connection identifier between Neutron and remote chain
+	// connection_id is an IBC connection identifier between Nolus and remote chain
 	ConnectionID string `json:"connection_id,omitempty"`
 }
 
