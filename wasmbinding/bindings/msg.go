@@ -16,10 +16,10 @@ type ProtobufAny struct {
 	Value   []byte `json:"value"`
 }
 
-// NeutronMsg is used like a sum type to hold one of custom Neutron messages.
+// NolusMsg is used like a sum type to hold one of custom Nolus messages.
 // Follow https://github.com/neutron-org/neutron/neutron-contracts/tree/main/packages/bindings/src/msg.rs
 // for more information.
-type NeutronMsg struct {
+type NolusMsg struct {
 	SubmitTx                  *SubmitTx                         `json:"submit_tx,omitempty"`
 	RegisterInterchainAccount *RegisterInterchainAccount        `json:"register_interchain_account,omitempty"`
 	RegisterInterchainQuery   *RegisterInterchainQuery          `json:"register_interchain_query,omitempty"`

@@ -52,7 +52,7 @@ var _ wasmkeeper.Messenger = (*CustomMessenger)(nil)
 
 func (m *CustomMessenger) DispatchMsg(ctx sdk.Context, contractAddr sdk.AccAddress, contractIBCPortID string, msg wasmvmtypes.CosmosMsg) ([]sdk.Event, [][]byte, [][]*types.Any, error) {
 	if msg.Custom != nil {
-		var contractMsg bindings.NeutronMsg
+		var contractMsg bindings.NolusMsg
 		if err := json.Unmarshal(msg.Custom, &contractMsg); err != nil {
 			ctx.Logger().Debug("json.Unmarshal: failed to decode incoming custom cosmos message",
 				"from_address", contractAddr.String(),
