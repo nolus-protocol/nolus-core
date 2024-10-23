@@ -12,7 +12,7 @@ import (
 
 const (
 	ICAId        = "id_1"
-	ContractAddr = "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh"
+	ContractAddr = "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 )
 
 func TestICAOwner(t *testing.T) {

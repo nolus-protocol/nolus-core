@@ -12,10 +12,10 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
-// const interchainAccountIDLimit = 47.
+// const interchainAccountIDLimit = 49.
 const interchainAccountIDLimit = 128 -
 	len("icacontroller-") -
-	len("nolus1unyuj8qnmygvzuex3dwmg9yzt9alhvyeat0uu0jedg2wj33efl5qmysp02") - // just a random contract address
+	len("nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz") - // just a random contract address
 	len(".")
 
 var _ codectypes.UnpackInterfacesMessage = &MsgSubmitTx{}

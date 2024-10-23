@@ -1,11 +1,9 @@
 package testutil
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-	"time"
 
 	"cosmossdk.io/log"
 
@@ -16,20 +14,19 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	tmrand "github.com/cometbft/cometbft/libs/rand"
+
 	db2 "github.com/cosmos/cosmos-db"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	"github.com/cosmos/cosmos-sdk/testutil/sims"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
-
-	tmos "github.com/cometbft/cometbft/libs/os"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	ictxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
@@ -90,10 +87,10 @@ func (suite *IBCConnectionTestSuite) SetupTest() {
 	// suite.Require().Equal("connection-0", path.EndpointA.ClientID)
 	// suite.Require().Equal("channel-0", path.EndpointA.ClientID)
 
-	suite.Path = NewICAPath(suite.ChainA, suite.ChainB)
+	// suite.Path = NewICAPath(suite.ChainA, suite.ChainB)
 
 	suite.ConfigureTransferChannel()
-	suite.Coordinator.Setup(suite.Path)
+	// suite.Coordinator.Setup(suite.Path)
 }
 
 func (suite *IBCConnectionTestSuite) ConfigureTransferChannel() {
@@ -220,63 +217,24 @@ func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
 
 // SetupTestingApp initializes the IBC-go testing application.
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
-	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 	db := db2.NewMemDB()
-
-	temp := tempDir()
-
+	encConfig := app.MakeEncodingConfig(app.ModuleBasics)
+	chainID := "nolus-testapp" + tmrand.NewRand().Str(6)
 	testApp := app.New(
 		log.NewNopLogger(),
 		db,
 		nil,
-		false,
+		true,
 		map[int64]bool{},
-		temp,
-		0,
-		encoding,
-		sims.EmptyAppOptions{},
-		fauxMerkleModeOpt,
-		baseapp.SetChainID("nolus"),
+		tempDir(),
+		simcli.FlagPeriodValue,
+		encConfig,
+		simtestutil.EmptyAppOptions{},
+		baseapp.SetChainID(chainID),
+		baseapp.SetMinGasPrices("0unls"),
 	)
 
-	ctx := testApp.BaseApp.NewContextLegacy(false, tmproto.Header{Height: 1, ChainID: "testchain-1", Time: time.Now().UTC()})
-
-	// Manually set validator signing info, otherwise we panic
-	vals, err := testApp.StakingKeeper.GetAllValidators(context.TODO())
-	if err != nil {
-		panic(err)
-	}
-	for _, val := range vals {
-		consAddr, _ := val.GetConsAddr()
-		signingInfo := slashingtypes.NewValidatorSigningInfo(
-			consAddr,
-			ctx.BlockHeight(),
-			0,
-			time.Unix(0, 0),
-			false,
-			0,
-		)
-		err := testApp.SlashingKeeper.SetValidatorSigningInfo(ctx, consAddr, signingInfo)
-		if err != nil {
-			panic(err)
-		}
-	}
-
-	// we need to set up a TestInitChainer where we can redefine MaxBlockGas in ConsensusParamsKeeper
-	testApp.SetInitChainer(testApp.TestInitChainer)
-	// and then we manually init baseapp and load states
-	if err := testApp.LoadLatestVersion(); err != nil {
-		tmos.Exit(err.Error())
-	}
-
-	// Initialize pinned codes in wasmvm as they are not persisted there
-	if err := testApp.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
-		panic(err)
-	}
-
-	genesisState := app.NewDefaultGenesisState(encoding)
-
-	// genesisState := app.NewDefaultGenesisState(encoding)
+	genesisState := app.NewDefaultGenesisState(encConfig)
 
 	return testApp, genesisState
 }
