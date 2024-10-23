@@ -30,7 +30,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
-const TestFeeCollectorAddr = "nolus1dua3d89szsmd3vwg0y5a2689ah0g4x68ps8vew"
+const TestFeeCollectorAddr = "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 
 func TestMsgRegisterInterchainAccountValidate(t *testing.T) {
 	icak, ctx := testkeeper.InterchainTxsKeeper(t, nil, nil, nil, nil, nil, nil, func(_ sdk.Context) string {
@@ -83,7 +83,7 @@ func TestMsgRegisterInterchainAccountValidate(t *testing.T) {
 			types.MsgRegisterInterchainAccount{
 				FromAddress:         testutil.TestOwnerAddress,
 				ConnectionId:        "connection-id",
-				InterchainAccountId: string(make([]byte, 48)),
+				InterchainAccountId: string(make([]byte, 50)),
 			},
 			types.ErrLongInterchainAccountID,
 		},

@@ -15,6 +15,10 @@ import (
 const FailuresQueryMaxLimit uint64 = query.DefaultLimit
 
 func (k Keeper) Failures(c context.Context, req *types.QueryFailuresRequest) (*types.QueryFailuresResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
 	failures, err := k.AddressFailures(c, &types.QueryFailuresByAddressRequest{Address: req.Address, Pagination: req.Pagination})
 	if err != nil {
 		return nil, err
