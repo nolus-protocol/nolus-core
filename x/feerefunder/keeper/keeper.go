@@ -115,7 +115,7 @@ func (k Keeper) DistributeAcknowledgementFee(ctx context.Context, receiver sdk.A
 	// try to return unused timeout fee
 	if err := k.distributeFee(c, sdk.MustAccAddressFromBech32(feeInfo.Payer), feeInfo.Fee.TimeoutFee); err != nil {
 		k.Logger(c).Error("error returning unused timeout fee", "receiver", feeInfo.Payer, "packet", packetID)
-		panic(errors.Wrapf(err, "error distributing unused timeout fee: receiver = %s, packetID=%v", feeInfo.Payer, packetID))
+		panic(errors.Wrapf(err, "error distributing unused timeout fee: receiver = %s, packetID=%v", receiver, packetID))
 	}
 
 	c.EventManager().EmitEvents(sdk.Events{
@@ -153,8 +153,8 @@ func (k Keeper) DistributeTimeoutFee(ctx context.Context, receiver sdk.AccAddres
 
 	// try to return unused ack fee
 	if err := k.distributeFee(c, sdk.MustAccAddressFromBech32(feeInfo.Payer), feeInfo.Fee.AckFee); err != nil {
-		k.Logger(c).Error("error returning unused ack fee", "receiver", feeInfo.Payer, "packet", packetID)
-		panic(errors.Wrapf(err, "error distributing unused ack fee: receiver = %s, packetID=%v", feeInfo.Payer, packetID))
+		k.Logger(c).Error("error returning unused ack fee", "receiver", receiver, "packet", packetID)
+		panic(errors.Wrapf(err, "error distributing unused ack fee: receiver = %s, packetID=%v", receiver, packetID))
 	}
 
 	c.EventManager().EmitEvents(sdk.Events{

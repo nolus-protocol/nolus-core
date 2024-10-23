@@ -29,7 +29,7 @@ func (suite *V2ContractManagerMigrationTestSuite) TestFailuresUpgrade() {
 	)
 
 	addressOne := testutil.TestOwnerAddress
-	addressTwo := "nolus1fxudpred77a0grgh69u0j7y84yks5ev4n5050z45kecz792jnd6scqu98z"
+	addressTwo := "nolus17p9rzwnnfxcjp32un9ug7yhhzgtkhvl9jfksztgw5uh69wac2pgsmc5xhq"
 
 	// Write old state
 	store := ctx.KVStore(storeKey)

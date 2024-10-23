@@ -25,7 +25,7 @@ func TestFailureQuerySingle(t *testing.T) {
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryFailuresByAddressRequest
-		response *types.QueryAddressFailureResponse
+		response *types.QueryAddressFailuresResponse
 		err      error
 	}{
 		{
@@ -33,21 +33,21 @@ func TestFailureQuerySingle(t *testing.T) {
 			request: &types.QueryFailuresByAddressRequest{
 				Address: msgs[0][0].Address,
 			},
-			response: &types.QueryAddressFailureResponse{Failures: msgs[0], Pagination: &query.PageResponse{Total: 2}},
+			response: &types.QueryAddressFailuresResponse{Failures: msgs[0], Pagination: &query.PageResponse{Total: 2}},
 		},
 		{
 			desc: "Second",
 			request: &types.QueryFailuresByAddressRequest{
 				Address: msgs[1][0].Address,
 			},
-			response: &types.QueryAddressFailureResponse{Failures: msgs[1], Pagination: &query.PageResponse{Total: 2}},
+			response: &types.QueryAddressFailuresResponse{Failures: msgs[1], Pagination: &query.PageResponse{Total: 2}},
 		},
 		{
 			desc: "KeyIsAbsent",
 			request: &types.QueryFailuresByAddressRequest{
-				Address: "nolus17dtl0mjt3t77kpuhg2edqzjpszulwhgzcdvagh",
+				Address: "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz",
 			},
-			response: &types.QueryAddressFailureResponse{Failures: []types.Failure{}, Pagination: &query.PageResponse{Total: 0}},
+			response: &types.QueryAddressFailuresResponse{Failures: []types.Failure{}, Pagination: &query.PageResponse{Total: 0}},
 		},
 		{
 			desc: "InvalidAddress",
