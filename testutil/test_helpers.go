@@ -209,12 +209,6 @@ var tempDir = func() string {
 	return dir
 }
 
-// fauxMerkleModeOpt returns a BaseApp option to use a dbStoreAdapter instead of
-// an IAVLStore for faster simulation speed.
-func fauxMerkleModeOpt(bapp *baseapp.BaseApp) {
-	bapp.SetFauxMerkleMode()
-}
-
 // SetupTestingApp initializes the IBC-go testing application.
 func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 	db := db2.NewMemDB()

@@ -6,7 +6,6 @@ import (
 	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	icqtypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 	transferwrappertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
@@ -22,9 +21,6 @@ type ProtobufAny struct {
 type NolusMsg struct {
 	SubmitTx                  *SubmitTx                         `json:"submit_tx,omitempty"`
 	RegisterInterchainAccount *RegisterInterchainAccount        `json:"register_interchain_account,omitempty"`
-	RegisterInterchainQuery   *RegisterInterchainQuery          `json:"register_interchain_query,omitempty"`
-	UpdateInterchainQuery     *UpdateInterchainQuery            `json:"update_interchain_query,omitempty"`
-	RemoveInterchainQuery     *RemoveInterchainQuery            `json:"remove_interchain_query,omitempty"`
 	IBCTransfer               *transferwrappertypes.MsgTransfer `json:"ibc_transfer,omitempty"`
 
 	// Contractmanager types
@@ -55,15 +51,6 @@ type RegisterInterchainAccountResponse struct {
 	PortId    string `json:"port_id"`
 }
 
-// RegisterInterchainQuery creates a query for remote chain.
-type RegisterInterchainQuery struct {
-	QueryType          string            `json:"query_type"`
-	Keys               []*icqtypes.KVKey `json:"keys"`
-	TransactionsFilter string            `json:"transactions_filter"`
-	ConnectionId       string            `json:"connection_id"`
-	UpdatePeriod       uint64            `json:"update_period"`
-}
-
 type ParamChangeProposal struct {
 	Title        string                    `json:"title"`
 	Description  string                    `json:"description"`
@@ -86,26 +73,6 @@ type Plan struct {
 	Height int64  `json:"height"`
 	Info   string `json:"info"`
 }
-
-// RegisterInterchainQueryResponse holds response for RegisterInterchainQuery.
-type RegisterInterchainQueryResponse struct {
-	Id uint64 `json:"id"`
-}
-
-type RemoveInterchainQuery struct {
-	QueryId uint64 `json:"query_id"`
-}
-
-type RemoveInterchainQueryResponse struct{}
-
-type UpdateInterchainQuery struct {
-	QueryId               uint64            `json:"query_id,omitempty"`
-	NewKeys               []*icqtypes.KVKey `json:"new_keys,omitempty"`
-	NewUpdatePeriod       uint64            `json:"new_update_period,omitempty"`
-	NewTransactionsFilter string            `json:"new_transactions_filter,omitempty"`
-}
-
-type UpdateInterchainQueryResponse struct{}
 
 // MsgExecuteContract defined separate from wasmtypes since we can get away with just passing the string into bindings.
 type MsgExecuteContract struct {
