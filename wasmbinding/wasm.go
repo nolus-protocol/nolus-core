@@ -5,7 +5,6 @@ import (
 
 	contractmanagerkeeper "github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
 	feerefunderkeeper "github.com/Nolus-Protocol/nolus-core/x/feerefunder/keeper"
-	interchainqueriesmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/keeper"
 	interchaintransactionsmodulekeeper "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
 	transfer "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
 )
@@ -13,18 +12,17 @@ import (
 // RegisterCustomPlugins returns wasmkeeper.Option that we can use to connect handlers for implemented custom queries and messages to the App.
 func RegisterCustomPlugins(
 	ictxKeeper *interchaintransactionsmodulekeeper.Keeper,
-	icqKeeper *interchainqueriesmodulekeeper.Keeper,
 	transfer transfer.KeeperTransferWrapper,
 	feeRefunderKeeper *feerefunderkeeper.Keeper,
 	contractmanagerKeeper *contractmanagerkeeper.Keeper,
 ) []wasmkeeper.Option {
-	wasmQueryPlugin := NewQueryPlugin(ictxKeeper, icqKeeper, feeRefunderKeeper, contractmanagerKeeper)
+	wasmQueryPlugin := NewQueryPlugin(ictxKeeper, feeRefunderKeeper, contractmanagerKeeper)
 
 	queryPluginOpt := wasmkeeper.WithQueryPlugins(&wasmkeeper.QueryPlugins{
 		Custom: CustomQuerier(wasmQueryPlugin),
 	})
 	messageHandlerDecoratorOpt := wasmkeeper.WithMessageHandlerDecorator(
-		CustomMessageDecorator(ictxKeeper, icqKeeper, transfer, contractmanagerKeeper),
+		CustomMessageDecorator(ictxKeeper, transfer, contractmanagerKeeper),
 	)
 
 	return []wasmkeeper.Option{

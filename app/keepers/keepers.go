@@ -81,9 +81,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/feerefunder"
 	feerefunderkeeper "github.com/Nolus-Protocol/nolus-core/x/feerefunder/keeper"
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries"
-	interchainquerieskeeper "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/keeper"
-	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs"
 	interchaintxskeeper "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
 	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
@@ -130,22 +127,20 @@ type AppKeepers struct {
 	TaxKeeper      *taxkeeper.Keeper
 	VestingsKeeper *vestingskeeper.Keeper
 
-	InterchainTxsKeeper     *interchaintxskeeper.Keeper
-	InterchainQueriesKeeper *interchainquerieskeeper.Keeper
-	ContractManagerKeeper   *contractmanagermodulekeeper.Keeper
+	InterchainTxsKeeper   *interchaintxskeeper.Keeper
+	ContractManagerKeeper *contractmanagermodulekeeper.Keeper
 
 	WasmKeeper wasmkeeper.Keeper
 	WasmConfig wasmtypes.WasmConfig
 
 	// Modules
-	ContractManagerModule   contractmanager.AppModule
-	InterchainTxsModule     interchaintxs.AppModule
-	InterchainQueriesModule interchainqueries.AppModule
-	TransferModule          transferSudo.AppModule
-	FeeRefunderModule       feerefunder.AppModule
-	VestingsModule          vestings.AppModule
-	IcaModule               ica.AppModule
-	AuthzModule             authzmodule.AppModule
+	ContractManagerModule contractmanager.AppModule
+	InterchainTxsModule   interchaintxs.AppModule
+	TransferModule        transferSudo.AppModule
+	FeeRefunderModule     feerefunder.AppModule
+	VestingsModule        vestings.AppModule
+	IcaModule             ica.AppModule
+	AuthzModule           authzmodule.AppModule
 }
 
 func (appKeepers *AppKeepers) NewAppKeepers(
@@ -385,19 +380,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, appKeepers.ICAHostKeeper)
 
-	appKeepers.InterchainQueriesKeeper = interchainquerieskeeper.NewKeeper(
-		appCodec,
-		appKeepers.keys[interchainqueriestypes.StoreKey],
-		appKeepers.keys[interchainqueriestypes.MemStoreKey],
-		appKeepers.IBCKeeper,
-		appKeepers.BankKeeper,
-		appKeepers.ContractManagerKeeper,
-		interchainquerieskeeper.Verifier{},
-		interchainquerieskeeper.TransactionVerifier{},
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	)
-	appKeepers.InterchainQueriesModule = interchainqueries.NewAppModule(appCodec, *appKeepers.InterchainQueriesKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
-
 	appKeepers.InterchainTxsKeeper = interchaintxskeeper.NewKeeper(
 		appCodec,
 		appKeepers.keys[interchaintxstypes.StoreKey],
@@ -426,7 +408,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	supportedFeatures := []string{"iterator", "stargate", "staking", "neutron", "migrate", "upgrade", "cosmwasm_1_1", "cosmwasm_1_2", "cosmwasm_1_3", "cosmwasm_1_4", "cosmwasm_2_0", "cosmwasm_2_1"}
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(
 		appKeepers.InterchainTxsKeeper,
-		appKeepers.InterchainQueriesKeeper,
 		*appKeepers.TransferKeeper,
 		appKeepers.FeeRefunderKeeper,
 		appKeepers.ContractManagerKeeper,
@@ -560,7 +541,6 @@ func initParamsKeeper(
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govv1.ParamKeyTable()) //nolint:staticcheck
 	paramsKeeper.Subspace(feetypes.ModuleName).WithKeyTable(feetypes.ParamKeyTable())
 	paramsKeeper.Subspace(interchaintxstypes.ModuleName).WithKeyTable(interchaintxstypes.ParamKeyTable())
-	paramsKeeper.Subspace(interchainqueriestypes.ModuleName).WithKeyTable(interchainqueriestypes.ParamKeyTable())
 	paramsKeeper.Subspace(vestingstypes.ModuleName)
 
 	return &paramsKeeper

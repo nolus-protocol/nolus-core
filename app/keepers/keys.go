@@ -30,7 +30,6 @@ import (
 
 	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 	feerefundertypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
@@ -58,7 +57,6 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		icacontrollertypes.StoreKey,
 		icahosttypes.StoreKey,
 		capabilitytypes.StoreKey,
-		interchainqueriestypes.StoreKey,
 		contractmanagermoduletypes.StoreKey,
 		interchaintxstypes.StoreKey,
 		wasmtypes.StoreKey,

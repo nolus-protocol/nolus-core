@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	TestAddressNolus         = "nolus13xvjxhkkxxhztcugr6weyt76eedj5ucpt4xluv"
+	TestAddressNolus         = "nolus10pslfpsx0l3rt0cm8rhmgg75exnt3ruqrprs28"
 	TestContractAddressJuno  = "juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q"
-	TestContractAddressNolus = "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s5c2epq"
+	TestContractAddressNolus = "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 )
 
 func TestGenesisState_Validate(t *testing.T) {

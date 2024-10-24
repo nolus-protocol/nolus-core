@@ -273,7 +273,6 @@ __modify_neutron_modules_params() {
     |  jq '.app_state["feerefunder"]["params"]["min_fee"]["ack_fee"][0]["denom"]="'"$native_currency"'"' \
     | jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["amount"]="'"$timeout_fee_amount"'"' \
     |  jq '.app_state["feerefunder"]["params"]["min_fee"]["timeout_fee"][0]["denom"]="'"$native_currency"'"' \
-    | jq '.app_state["interchainqueries"]["params"]["query_deposit"][0]["denom"]="'"$native_currency"'"' \
     | jq '.app_state["interchaintxs"]["params"]["msg_submit_tx_max_messages"]="16"' \
     | jq '.app_state["interchaintxs"]["params"]["register_fee"][0]["amount"]="1"' \
     | jq '.app_state["interchaintxs"]["params"]["register_fee"][0]["denom"]="'"$native_currency"'"' > "$genesis_tmp_file"
