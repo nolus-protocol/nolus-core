@@ -61,8 +61,6 @@ import (
 	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 	"github.com/Nolus-Protocol/nolus-core/x/feerefunder"
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	"github.com/Nolus-Protocol/nolus-core/x/interchainqueries"
-	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs"
 	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 	transferSudo "github.com/Nolus-Protocol/nolus-core/x/transfer"
@@ -70,18 +68,17 @@ import (
 
 // module account permissions.
 var maccPerms = map[string][]string{
-	authtypes.FeeCollectorName:        nil,
-	distrtypes.ModuleName:             nil,
-	minttypes.ModuleName:              {authtypes.Minter},
-	stakingtypes.BondedPoolName:       {authtypes.Burner, authtypes.Staking},
-	stakingtypes.NotBondedPoolName:    {authtypes.Burner, authtypes.Staking},
-	govtypes.ModuleName:               {authtypes.Burner},
-	ibctransfertypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
-	wasmtypes.ModuleName:              {authtypes.Burner},
-	vestingstypes.ModuleName:          nil,
-	icatypes.ModuleName:               nil,
-	interchainqueriestypes.ModuleName: nil,
-	feetypes.ModuleName:               nil,
+	authtypes.FeeCollectorName:     nil,
+	distrtypes.ModuleName:          nil,
+	minttypes.ModuleName:           {authtypes.Minter},
+	stakingtypes.BondedPoolName:    {authtypes.Burner, authtypes.Staking},
+	stakingtypes.NotBondedPoolName: {authtypes.Burner, authtypes.Staking},
+	govtypes.ModuleName:            {authtypes.Burner},
+	ibctransfertypes.ModuleName:    {authtypes.Minter, authtypes.Burner},
+	wasmtypes.ModuleName:           {authtypes.Burner},
+	vestingstypes.ModuleName:       nil,
+	icatypes.ModuleName:            nil,
+	feetypes.ModuleName:            nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -114,7 +111,6 @@ var ModuleBasics = module.NewBasicManager(
 	tax.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	interchaintxs.AppModuleBasic{},
-	interchainqueries.AppModuleBasic{},
 	feerefunder.AppModuleBasic{},
 	contractmanager.AppModuleBasic{},
 	authzmodule.AppModuleBasic{},
@@ -157,7 +153,6 @@ func appModules(
 		app.AppKeepers.TransferModule,
 		app.AppKeepers.VestingsModule,
 		app.AppKeepers.IcaModule,
-		app.AppKeepers.InterchainQueriesModule,
 		app.AppKeepers.InterchainTxsModule,
 		app.AppKeepers.FeeRefunderModule,
 		app.AppKeepers.ContractManagerModule,
@@ -191,7 +186,6 @@ func simulationModules(
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
 		app.AppKeepers.TransferModule,
-		app.AppKeepers.InterchainQueriesModule,
 		app.AppKeepers.InterchainTxsModule,
 	}
 }
@@ -231,7 +225,6 @@ func orderBeginBlockers() []string {
 		govtypes.ModuleName,
 		icatypes.ModuleName,
 		interchaintxstypes.ModuleName,
-		interchainqueriestypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
@@ -262,7 +255,6 @@ func orderEndBlockers() []string {
 		vestingstypes.ModuleName,
 		icatypes.ModuleName,
 		interchaintxstypes.ModuleName,
-		interchainqueriestypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
@@ -300,7 +292,6 @@ func genesisModuleOrder() []string {
 		upgradetypes.ModuleName,
 		ibctransfertypes.ModuleName,
 		icatypes.ModuleName,
-		interchainqueriestypes.ModuleName,
 		interchaintxstypes.ModuleName,
 		contractmanagermoduletypes.ModuleName,
 		// wasm after ibc transfer

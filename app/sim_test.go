@@ -55,7 +55,6 @@ import (
 
 	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	interchainqueriestypes "github.com/Nolus-Protocol/nolus-core/x/interchainqueries/types"
 	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
@@ -321,7 +320,6 @@ func TestAppImportExport(t *testing.T) {
 		{keys[taxmoduletypes.StoreKey], newKeys[taxmoduletypes.StoreKey], [][]byte{}},
 		{keys[interchaintxstypes.StoreKey], newKeys[interchaintxstypes.StoreKey], [][]byte{}},
 		{keys[contractmanagermoduletypes.StoreKey], newKeys[contractmanagermoduletypes.StoreKey], [][]byte{}},
-		{keys[interchainqueriestypes.StoreKey], newKeys[interchainqueriestypes.StoreKey], [][]byte{}},
 		{keys[icacontrollertypes.StoreKey], newKeys[icacontrollertypes.StoreKey], [][]byte{}},
 		{keys[wasmtypes.StoreKey], newKeys[wasmtypes.StoreKey], [][]byte{wasmtypes.TXCounterPrefix}},
 	}

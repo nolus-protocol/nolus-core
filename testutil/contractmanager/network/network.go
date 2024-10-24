@@ -2,7 +2,6 @@ package network
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -44,16 +43,6 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	require.NoError(t, err)
 	t.Cleanup(net.Cleanup)
 	return net
-}
-
-var tempDir = func() string {
-	dir, err := os.MkdirTemp("", "nolusd")
-	if err != nil {
-		panic("failed to create temp dir: " + err.Error())
-	}
-	defer os.RemoveAll(dir)
-
-	return dir
 }
 
 // DefaultConfig will initialize config for the network with custom application,
