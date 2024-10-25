@@ -1,6 +1,8 @@
 module github.com/Nolus-Protocol/nolus-core
 
-go 1.22.4
+go 1.22.6
+
+toolchain go1.22.7
 
 require (
 	github.com/CosmWasm/wasmd v0.53.0
@@ -16,7 +18,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
-	google.golang.org/grpc v1.64.1
+	google.golang.org/grpc v1.65.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -40,6 +42,7 @@ require (
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
 	github.com/hashicorp/go-metrics v0.5.3
+	github.com/neutron-org/neutron/v4 v4.2.4
 	github.com/pkg/errors v0.9.1
 	google.golang.org/genproto/googleapis/api v0.0.0-20240624140628-dc46fd24d27d
 	google.golang.org/protobuf v1.34.2
@@ -61,7 +64,6 @@ require (
 	github.com/99designs/keyring v1.2.2 // indirect
 	github.com/DataDog/datadog-go v3.2.0+incompatible // indirect
 	github.com/DataDog/zstd v1.5.5 // indirect
-	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/aws/aws-sdk-go v1.44.224 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
@@ -180,6 +182,7 @@ require (
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/shamaton/msgpack/v2 v2.2.0 // indirect
+	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/viper v1.19.0 // indirect
