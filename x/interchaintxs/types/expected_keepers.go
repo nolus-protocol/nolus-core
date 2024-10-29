@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -26,7 +25,6 @@ type BankKeeper interface {
 
 type WasmKeeper interface {
 	HasContractInfo(ctx context.Context, contractAddress sdk.AccAddress) bool
-	GetContractInfo(ctx context.Context, contractAddress sdk.AccAddress) *wasmtypes.ContractInfo
 	Sudo(ctx context.Context, contractAddress sdk.AccAddress, msg []byte) ([]byte, error)
 }
 

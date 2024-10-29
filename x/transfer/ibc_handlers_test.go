@@ -17,7 +17,6 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/testutil"
 	mock_types "github.com/Nolus-Protocol/nolus-core/testutil/mocks/transfer/types"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/transfer/keeper"
-	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	ictxtypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 	"github.com/Nolus-Protocol/nolus-core/x/transfer"
 )
@@ -93,7 +92,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	// error during Sudo contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
-	feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
+	// feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("SudoResponse error"))
 	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
 	require.NoError(t, err)
@@ -101,7 +100,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	// success during Sudo contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
-	feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
+	// feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
 	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
 	require.NoError(t, err)
@@ -165,7 +164,7 @@ func TestHandleTimeout(t *testing.T) {
 	// success contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
-	feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
+	// feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msg).Return(nil, nil)
 	err = txModule.HandleTimeout(ctx, p, relayerAddress)
 	require.NoError(t, err)
@@ -173,7 +172,7 @@ func TestHandleTimeout(t *testing.T) {
 	// error during SudoTimeOut contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
-	feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
+	// feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msg).Return(nil, fmt.Errorf("SudoTimeout error"))
 	err = txModule.HandleTimeout(ctx, p, relayerAddress)
 	require.NoError(t, err)
