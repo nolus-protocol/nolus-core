@@ -5,11 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"cosmossdk.io/math"
-
-	"github.com/Nolus-Protocol/nolus-core/app/params"
-
-	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -123,14 +118,6 @@ func TestRegisterInterchainAccount(t *testing.T) {
 	require.ErrorContains(t, err, "is not a contract address")
 	require.Nil(t, resp)
 
-	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	wmKeeper.EXPECT().GetContractInfo(ctx, contractAddress).Return(&wasmtypes.ContractInfo{CodeID: 1})
-	resp, err = icak.RegisterInterchainAccount(ctx, &msgRegAcc)
-	require.ErrorContains(t, err, "failed to charge fees to pay for RegisterInterchainAccount msg")
-	require.Nil(t, resp)
-
-	msgRegAcc.RegisterFee = sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(1_000_000)))
-
 	msgRegICA := &icacontrollertypes.MsgRegisterInterchainAccount{
 		Owner:        icaOwner.String(),
 		ConnectionId: msgRegAcc.ConnectionId,
@@ -139,28 +126,15 @@ func TestRegisterInterchainAccount(t *testing.T) {
 	}
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	wmKeeper.EXPECT().GetContractInfo(ctx, contractAddress).Return(&wasmtypes.ContractInfo{CodeID: 1})
-	bankKeeper.EXPECT().SendCoins(ctx, sdk.MustAccAddressFromBech32(msgRegAcc.FromAddress), sdk.MustAccAddressFromBech32(TestFeeCollectorAddr), msgRegAcc.RegisterFee)
 	icaMsgServer.EXPECT().RegisterInterchainAccount(ctx, msgRegICA).Return(nil, fmt.Errorf("failed to register ica"))
 	resp, err = icak.RegisterInterchainAccount(ctx, &msgRegAcc)
 	require.ErrorContains(t, err, "failed to RegisterInterchainAccount")
-	require.Nil(t, resp)
-
-	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	wmKeeper.EXPECT().GetContractInfo(ctx, contractAddress).Return(&wasmtypes.ContractInfo{CodeID: 1})
-	bankKeeper.EXPECT().
-		SendCoins(ctx, sdk.MustAccAddressFromBech32(msgRegAcc.FromAddress), sdk.MustAccAddressFromBech32(TestFeeCollectorAddr), msgRegAcc.RegisterFee).
-		Return(fmt.Errorf("failed to send coins"))
-	resp, err = icak.RegisterInterchainAccount(ctx, &msgRegAcc)
-	require.ErrorContains(t, err, "failed to charge fees to pay for RegisterInterchainAccount msg")
 	require.Nil(t, resp)
 
 	channelID := "channel-0"
 	portID := "icacontroller-" + testutil.TestOwnerAddress + ICAId
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	wmKeeper.EXPECT().GetContractInfo(ctx, contractAddress).Return(&wasmtypes.ContractInfo{CodeID: 1})
-	bankKeeper.EXPECT().SendCoins(ctx, sdk.MustAccAddressFromBech32(msgRegAcc.FromAddress), sdk.MustAccAddressFromBech32(TestFeeCollectorAddr), msgRegAcc.RegisterFee)
 	icaMsgServer.EXPECT().RegisterInterchainAccount(ctx, msgRegICA).Return(&icacontrollertypes.MsgRegisterInterchainAccountResponse{
 		ChannelId: channelID,
 		PortId:    portID,
@@ -190,96 +164,6 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			"invalid ack fee",
-			types.MsgSubmitTx{
-				FromAddress:         testutil.TestOwnerAddress,
-				ConnectionId:        "connection-id",
-				InterchainAccountId: "1",
-				Msgs:                []*codectypes.Any{&cosmosMsg},
-				Timeout:             1,
-				Fee: feerefundertypes.Fee{
-					RecvFee: nil,
-					AckFee: sdk.Coins{
-						{
-							Denom:  "{}!@#a",
-							Amount: math.NewInt(100),
-						},
-					},
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-				},
-			},
-			sdkerrors.ErrInvalidCoins,
-		},
-		{
-			"invalid timeout fee",
-			types.MsgSubmitTx{
-				FromAddress:         testutil.TestOwnerAddress,
-				ConnectionId:        "connection-id",
-				InterchainAccountId: "1",
-				Msgs:                []*codectypes.Any{&cosmosMsg},
-				Timeout:             1,
-				Fee: feerefundertypes.Fee{
-					RecvFee: nil,
-					AckFee:  sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.Coins{
-						{
-							Denom:  params.DefaultBondDenom,
-							Amount: math.NewInt(-100),
-						},
-					},
-				},
-			},
-			sdkerrors.ErrInvalidCoins,
-		},
-		{
-			"non-zero recv fee",
-			types.MsgSubmitTx{
-				FromAddress:         testutil.TestOwnerAddress,
-				ConnectionId:        "connection-id",
-				InterchainAccountId: "1",
-				Msgs:                []*codectypes.Any{&cosmosMsg},
-				Timeout:             1,
-				Fee: feerefundertypes.Fee{
-					RecvFee:    sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-				},
-			},
-			sdkerrors.ErrInvalidCoins,
-		},
-		{
-			"zero ack fee",
-			types.MsgSubmitTx{
-				FromAddress:         testutil.TestOwnerAddress,
-				ConnectionId:        "connection-id",
-				InterchainAccountId: "1",
-				Msgs:                []*codectypes.Any{&cosmosMsg},
-				Timeout:             1,
-				Fee: feerefundertypes.Fee{
-					RecvFee:    nil,
-					AckFee:     nil,
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-				},
-			},
-			sdkerrors.ErrInvalidCoins,
-		},
-		{
-			"zero timeout fee",
-			types.MsgSubmitTx{
-				FromAddress:         testutil.TestOwnerAddress,
-				ConnectionId:        "connection-id",
-				InterchainAccountId: "1",
-				Msgs:                []*codectypes.Any{&cosmosMsg},
-				Timeout:             1,
-				Fee: feerefundertypes.Fee{
-					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: nil,
-				},
-			},
-			sdkerrors.ErrInvalidCoins,
-		},
-		{
 			"empty connection id",
 			types.MsgSubmitTx{
 				FromAddress:         testutil.TestOwnerAddress,
@@ -289,8 +173,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             1,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			types.ErrEmptyConnectionID,
@@ -305,8 +189,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             1,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			sdkerrors.ErrInvalidAddress,
@@ -321,8 +205,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             1,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			sdkerrors.ErrInvalidAddress,
@@ -337,8 +221,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             1,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			types.ErrEmptyInterchainAccountID,
@@ -353,8 +237,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             1,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			types.ErrNoMessages,
@@ -369,8 +253,8 @@ func TestMsgSubmitTXValidate(t *testing.T) {
 				Timeout:             0,
 				Fee: feerefundertypes.Fee{
 					RecvFee:    nil,
-					AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-					TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
 			types.ErrInvalidTimeout,
@@ -412,9 +296,9 @@ func TestSubmitTx(t *testing.T) {
 		Memo:                "memo",
 		Timeout:             100,
 		Fee: feerefundertypes.Fee{
-			RecvFee:    sdk.NewCoins(),
-			AckFee:     sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-			TimeoutFee: sdk.NewCoins(sdk.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+			RecvFee:    nil,
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	}
 
@@ -456,22 +340,7 @@ func TestSubmitTx(t *testing.T) {
 	// require.Nil(t, resp)
 	// require.ErrorContains(t, err, "only ProtoCodec is supported for receiving messages on the host chain")
 
-	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	icaKeeper.EXPECT().GetActiveChannelID(ctx, "connection-0", portID).Return(activeChannel, true)
-	channelKeeper.EXPECT().GetNextSequenceSend(ctx, portID, activeChannel).Return(uint64(0), false)
-	resp, err = icak.SubmitTx(ctx, &submitMsg)
-	require.Nil(t, resp)
-	require.ErrorContains(t, err, "sequence send not found")
-
 	sequence := uint64(100)
-	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
-	icaKeeper.EXPECT().GetActiveChannelID(ctx, "connection-0", portID).Return(activeChannel, true)
-	channelKeeper.EXPECT().GetNextSequenceSend(ctx, portID, activeChannel).Return(sequence, true)
-	refundKeeper.EXPECT().LockFees(ctx, contractAddress, feerefundertypes.NewPacketID(portID, activeChannel, sequence), submitMsg.Fee).Return(fmt.Errorf("failed to lock fees"))
-	resp, err = icak.SubmitTx(ctx, &submitMsg)
-	require.Nil(t, resp)
-	require.ErrorContains(t, err, "failed to lock fees to pay for SubmitTx msg")
-
 	data, err := keeper.SerializeCosmosTx(icak.Codec, submitMsg.Msgs)
 	require.NoError(t, err)
 	packetData := icatypes.InterchainAccountPacketData{
@@ -489,8 +358,6 @@ func TestSubmitTx(t *testing.T) {
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
 	icaKeeper.EXPECT().GetActiveChannelID(ctx, "connection-0", portID).Return(activeChannel, true)
-	channelKeeper.EXPECT().GetNextSequenceSend(ctx, portID, activeChannel).Return(sequence, true)
-	refundKeeper.EXPECT().LockFees(ctx, contractAddress, feerefundertypes.NewPacketID(portID, activeChannel, sequence), submitMsg.Fee).Return(nil)
 	icaMsgServer.EXPECT().SendTx(ctx, msgSendTx).Return(nil, fmt.Errorf("failed to send tx"))
 	resp, err = icak.SubmitTx(ctx, &submitMsg)
 	require.Nil(t, resp)
@@ -498,8 +365,6 @@ func TestSubmitTx(t *testing.T) {
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
 	icaKeeper.EXPECT().GetActiveChannelID(ctx, "connection-0", portID).Return(activeChannel, true)
-	channelKeeper.EXPECT().GetNextSequenceSend(ctx, portID, activeChannel).Return(sequence, true)
-	refundKeeper.EXPECT().LockFees(ctx, contractAddress, feerefundertypes.NewPacketID(portID, activeChannel, sequence), submitMsg.Fee).Return(nil)
 	icaMsgServer.EXPECT().SendTx(ctx, msgSendTx).Return(&icacontrollertypes.MsgSendTxResponse{Sequence: sequence}, nil)
 	resp, err = icak.SubmitTx(ctx, &submitMsg)
 	require.Equal(t, types.MsgSubmitTxResponse{

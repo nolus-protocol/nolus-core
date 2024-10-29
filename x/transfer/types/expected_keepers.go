@@ -5,8 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
-
-	feerefundertypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 )
 
 type WasmKeeper interface {
@@ -15,9 +13,9 @@ type WasmKeeper interface {
 }
 
 type FeeRefunderKeeper interface {
-	LockFees(ctx context.Context, payer sdk.AccAddress, packetID feerefundertypes.PacketID, fee feerefundertypes.Fee) error
-	DistributeAcknowledgementFee(ctx context.Context, receiver sdk.AccAddress, packetID feerefundertypes.PacketID)
-	DistributeTimeoutFee(ctx context.Context, receiver sdk.AccAddress, packetID feerefundertypes.PacketID)
+	// LockFees(ctx context.Context, payer sdk.AccAddress, packetID feerefundertypes.PacketID, fee feerefundertypes.Fee) error
+	// DistributeAcknowledgementFee(ctx context.Context, receiver sdk.AccAddress, packetID feerefundertypes.PacketID)
+	// DistributeTimeoutFee(ctx context.Context, receiver sdk.AccAddress, packetID feerefundertypes.PacketID)
 }
 
 // ChannelKeeper defines the expected IBC channel keeper.

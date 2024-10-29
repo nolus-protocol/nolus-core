@@ -16,7 +16,6 @@ import (
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
-	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	ictxtypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
@@ -51,13 +50,6 @@ func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.
 	if !k.sudoKeeper.HasContractInfo(ctx, senderAddr) {
 		k.Logger(ctx).Debug("RegisterInterchainAccount: contract not found", "from_address", msg.FromAddress)
 		return nil, errors.Wrapf(ictxtypes.ErrNotContract, "%s is not a contract address", msg.FromAddress)
-	}
-
-	// if contract is stored before [last] upgrade, we're not going charge fees for register ICA
-	if k.sudoKeeper.GetContractInfo(ctx, senderAddr).CodeID >= k.GetICARegistrationFeeFirstCodeID(ctx) {
-		if err := k.ChargeFee(ctx, senderAddr, msg.RegisterFee); err != nil {
-			return nil, errors.Wrapf(err, "failed to charge fees to pay for RegisterInterchainAccount msg: %s", msg)
-		}
 	}
 
 	icaOwner := ictxtypes.NewICAOwnerFromAddress(senderAddr, msg.InterchainAccountId).String()
@@ -146,17 +138,19 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ic
 		Memo: msg.Memo,
 	}
 
-	sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, portID, channelID)
-	if !found {
-		return nil, errors.Wrapf(
-			channeltypes.ErrSequenceSendNotFound,
-			"source port: %s, source channel: %s", portID, channelID,
-		)
-	}
+	// TODO remove feekeeper module
+	// sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, portID, channelID)
+	// if !found {
+	// 	return nil, errors.Wrapf(
+	// 		channeltypes.ErrSequenceSendNotFound,
+	// 		"source port: %s, source channel: %s", portID, channelID,
+	// 	)
+	// }
 
-	if err := k.feeKeeper.LockFees(ctx, senderAddr, feetypes.NewPacketID(portID, channelID, sequence), msg.Fee); err != nil {
-		return nil, errors.Wrapf(err, "failed to lock fees to pay for SubmitTx msg: %s", msg)
-	}
+	// TODO remove feekeeper module
+	// if err := k.feeKeeper.LockFees(ctx, senderAddr, feetypes.NewPacketID(portID, channelID, sequence), msg.Fee); err != nil {
+	// 	return nil, errors.Wrapf(err, "failed to lock fees to pay for SubmitTx msg: %s", msg)
+	// }
 
 	resp, err := k.icaControllerMsgServer.SendTx(ctx, &icacontrollertypes.MsgSendTx{
 		Owner:           icaOwner,
