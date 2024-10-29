@@ -8,7 +8,6 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
-	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
@@ -31,7 +30,8 @@ func (im IBCModule) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.P
 		return nil
 	}
 
-	im.wrappedKeeper.FeeKeeper.DistributeAcknowledgementFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
+	// TODO remove feekeeper module
+	// im.wrappedKeeper.FeeKeeper.DistributeAcknowledgementFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
 
 	msg, err := keeper.PrepareSudoCallbackMessage(packet, &ack)
 	if err != nil {
@@ -68,7 +68,8 @@ func (im IBCModule) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, r
 		return errors.Wrapf(sdkerrors.ErrJSONMarshal, "failed to marshal Packet: %v", err)
 	}
 
-	im.wrappedKeeper.FeeKeeper.DistributeTimeoutFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
+	// TODO remove feekeeper module
+	// im.wrappedKeeper.FeeKeeper.DistributeTimeoutFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
 
 	_, err = im.sudoKeeper.Sudo(ctx, senderAddress, msg)
 	if err != nil {

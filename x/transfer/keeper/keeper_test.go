@@ -9,6 +9,8 @@ import (
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v8/modules/core/02-client/types" //nolint:staticcheck
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v8/modules/core/24-host"
+	ibcerrors "github.com/cosmos/ibc-go/v8/modules/core/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -56,8 +58,8 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 		Fee: feetypes.Fee{
 			RecvFee:    nil,
-			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
-			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	})
 	suite.Nil(resp)
@@ -77,8 +79,8 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 		Fee: feetypes.Fee{
 			RecvFee:    nil,
-			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
-			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	})
 	suite.Nil(resp)
@@ -100,8 +102,8 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 		Fee: feetypes.Fee{
 			RecvFee:    nil,
-			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
-			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	})
 	suite.Equal(types.MsgTransferResponse{
@@ -130,12 +132,12 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 		Fee: feetypes.Fee{
 			RecvFee:    nil,
-			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
-			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	})
 	suite.Nil(resp)
-	suite.ErrorContains(err, "failed to lock fees")
+	suite.ErrorIs(err, errors.ErrInsufficientFunds)
 
 	suite.TopUpWallet(ctx, senderAddress, contractAddress)
 	ctx = suite.ChainA.GetContext()
@@ -151,8 +153,8 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 		Fee: feetypes.Fee{
 			RecvFee:    nil,
-			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
-			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(1000))),
+			AckFee:     nil,
+			TimeoutFee: nil,
 		},
 	})
 	suite.Equal(types.MsgTransferResponse{
@@ -190,398 +192,308 @@ func TestMsgTransferValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			"invalid ack fee",
+			"empty source port",
+			types.MsgTransfer{
+				SourcePort:    "",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source port separator",
+			types.MsgTransfer{
+				SourcePort:    "/transfer",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source port length",
+			types.MsgTransfer{
+				SourcePort:    "t",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source port",
+			types.MsgTransfer{
+				SourcePort:    "nonexistent port",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"empty source channel",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source channel separator",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "/channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source channel length",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: string(make([]byte, host.DefaultMaxCharacterLength+1)),
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid source channel",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel 2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			host.ErrInvalidID,
+		},
+		{
+			"invalid token denom",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token: sdktypes.Coin{
+					Denom:  "{}!@#a",
+					Amount: math.NewInt(100),
+				},
+				Sender:   testutil.TestOwnerAddress,
+				Receiver: TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			ibcerrors.ErrInvalidCoins,
+		},
+		{
+			"nil token amount",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token: sdktypes.Coin{
+					Denom: params.DefaultBondDenom,
+				},
+				Sender:   testutil.TestOwnerAddress,
+				Receiver: TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			ibcerrors.ErrInvalidCoins,
+		},
+		{
+			"negative token amount",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token: sdktypes.Coin{
+					Denom:  params.DefaultBondDenom,
+					Amount: math.NewInt(-100),
+				},
+				Sender:   testutil.TestOwnerAddress,
+				Receiver: TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			ibcerrors.ErrInvalidCoins,
+		},
+		{
+			"empty sender",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        "",
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			errors.ErrInvalidAddress,
+		},
+		{
+			"invalid sender",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        "invalid_sender",
+				Receiver:      TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			errors.ErrInvalidAddress,
+		},
+		{
+			"empty receiver",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      "",
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			ibcerrors.ErrInvalidAddress,
+		},
+		{
+			"long receiver",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
+				Sender:        testutil.TestOwnerAddress,
+				Receiver:      string(make([]byte, transfertypes.MaximumReceiverLength+1)),
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			ibcerrors.ErrInvalidAddress,
+		},
+		{
+			"long memo",
 			types.MsgTransfer{
 				SourcePort:    "transfer",
 				SourceChannel: "channel-2",
 				Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
 				Sender:        testutil.TestOwnerAddress,
 				Receiver:      TestAddress,
+				Memo:          string(make([]byte, transfertypes.MaximumMemoLength+1)),
 				Fee: feetypes.Fee{
-					RecvFee: nil,
-					AckFee: sdktypes.Coins{
-						{
-							Denom:  "{}!@#a",
-							Amount: math.NewInt(100),
-						},
-					},
-					TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
 				},
 			},
-			errors.ErrInvalidCoins,
+			transfertypes.ErrInvalidMemo,
 		},
-		// {
-		// 	"invalid timeout fee",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee: nil,
-		// 			AckFee:  sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.Coins{
-		// 				{
-		// 					Denom:  params.DefaultBondDenom,
-		// 					Amount: math.NewInt(-100),
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"non-zero recv fee",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"zero ack fee",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     nil,
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"zero timeout fee",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: nil,
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"empty source port",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source port separator",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "/transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source port length",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "t",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source port",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "nonexistent port",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"empty source channel",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source channel separator",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "/channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source channel length",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: string(make([]byte, host.DefaultMaxCharacterLength+1)),
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid source channel",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel 2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	host.ErrInvalidID,
-		// },
-		// {
-		// 	"invalid token denom",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token: sdktypes.Coin{
-		// 			Denom:  "{}!@#a",
-		// 			Amount: math.NewInt(100),
-		// 		},
-		// 		Sender:   testutil.TestOwnerAddress,
-		// 		Receiver: TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	ibcerrors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"nil token amount",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token: sdktypes.Coin{
-		// 			Denom: params.DefaultBondDenom,
-		// 		},
-		// 		Sender:   testutil.TestOwnerAddress,
-		// 		Receiver: TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	ibcerrors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"negative token amount",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token: sdktypes.Coin{
-		// 			Denom:  params.DefaultBondDenom,
-		// 			Amount: math.NewInt(-100),
-		// 		},
-		// 		Sender:   testutil.TestOwnerAddress,
-		// 		Receiver: TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	ibcerrors.ErrInvalidCoins,
-		// },
-		// {
-		// 	"empty sender",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        "",
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidAddress,
-		// },
-		// {
-		// 	"invalid sender",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        "invalid_sender",
-		// 		Receiver:      TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	errors.ErrInvalidAddress,
-		// },
-		// {
-		// 	"empty receiver",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      "",
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	ibcerrors.ErrInvalidAddress,
-		// },
-		// {
-		// 	"long receiver",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      string(make([]byte, transfertypes.MaximumReceiverLength+1)),
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	ibcerrors.ErrInvalidAddress,
-		// },
-		// {
-		// 	"long memo",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token:         sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100)),
-		// 		Sender:        testutil.TestOwnerAddress,
-		// 		Receiver:      TestAddress,
-		// 		Memo:          string(make([]byte, transfertypes.MaximumMemoLength+1)),
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	transfertypes.ErrInvalidMemo,
-		// },
-		// {
-		// 	"invalid token denom prefix format",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token: sdktypes.Coin{
-		// 			Denom:  transfertypes.DenomPrefix,
-		// 			Amount: math.NewInt(100),
-		// 		},
-		// 		Sender:   testutil.TestOwnerAddress,
-		// 		Receiver: TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	transfertypes.ErrInvalidDenomForTransfer,
-		// },
-		// {
-		// 	"invalid token denom prefix format with separator",
-		// 	types.MsgTransfer{
-		// 		SourcePort:    "transfer",
-		// 		SourceChannel: "channel-2",
-		// 		Token: sdktypes.Coin{
-		// 			Denom:  transfertypes.DenomPrefix + "/",
-		// 			Amount: math.NewInt(100),
-		// 		},
-		// 		Sender:   testutil.TestOwnerAddress,
-		// 		Receiver: TestAddress,
-		// 		Fee: feetypes.Fee{
-		// 			RecvFee:    nil,
-		// 			AckFee:     sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 			TimeoutFee: sdktypes.NewCoins(sdktypes.NewCoin(params.DefaultBondDenom, math.NewInt(100))),
-		// 		},
-		// 	},
-		// 	transfertypes.ErrInvalidDenomForTransfer,
-		// },
+		{
+			"invalid token denom prefix format",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token: sdktypes.Coin{
+					Denom:  transfertypes.DenomPrefix,
+					Amount: math.NewInt(100),
+				},
+				Sender:   testutil.TestOwnerAddress,
+				Receiver: TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			transfertypes.ErrInvalidDenomForTransfer,
+		},
+		{
+			"invalid token denom prefix format with separator",
+			types.MsgTransfer{
+				SourcePort:    "transfer",
+				SourceChannel: "channel-2",
+				Token: sdktypes.Coin{
+					Denom:  transfertypes.DenomPrefix + "/",
+					Amount: math.NewInt(100),
+				},
+				Sender:   testutil.TestOwnerAddress,
+				Receiver: TestAddress,
+				Fee: feetypes.Fee{
+					RecvFee:    nil,
+					AckFee:     nil,
+					TimeoutFee: nil,
+				},
+			},
+			transfertypes.ErrInvalidDenomForTransfer,
+		},
 	}
 
 	for _, tt := range tests {

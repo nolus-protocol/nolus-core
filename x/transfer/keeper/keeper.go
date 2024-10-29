@@ -16,7 +16,6 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
 
-	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	wrappedtypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
@@ -51,13 +50,14 @@ func (k KeeperTransferWrapper) Transfer(goCtx context.Context, msg *wrappedtypes
 		)
 	}
 
+	// TODO remove feekeeper module
 	// if the sender is a contract, lock fees.
 	// Because contracts are required to pay fees for the acknowledgements
-	if isContract {
-		if err := k.FeeKeeper.LockFees(ctx, senderAddr, feetypes.NewPacketID(msg.SourcePort, msg.SourceChannel, sequence), msg.Fee); err != nil {
-			return nil, errors.Wrapf(err, "failed to lock fees to pay for transfer msg: %v", msg)
-		}
-	}
+	// if isContract {
+	// 	if err := k.FeeKeeper.LockFees(ctx, senderAddr, feetypes.NewPacketID(msg.SourcePort, msg.SourceChannel, sequence), msg.Fee); err != nil {
+	// 		return nil, errors.Wrapf(err, "failed to lock fees to pay for transfer msg: %v", msg)
+	// 	}
+	// }
 
 	transferMsg := types.NewMsgTransfer(msg.SourcePort, msg.SourceChannel, msg.Token, msg.Sender, msg.Receiver, msg.TimeoutHeight, msg.TimeoutTimestamp, msg.Memo)
 	if _, err := k.Keeper.Transfer(goCtx, transferMsg); err != nil {

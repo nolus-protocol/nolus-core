@@ -18,7 +18,6 @@ import (
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/interchaintxs/keeper"
 	mock_types "github.com/Nolus-Protocol/nolus-core/testutil/mocks/interchaintxs/types"
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
-	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 )
 
 const ICAId = ".ica0"
@@ -59,14 +58,12 @@ func TestHandleAcknowledgement(t *testing.T) {
 
 	// success contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
 	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
 	require.NoError(t, err)
 
 	// error contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("error sudoResponse"))
 	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
 	require.NoError(t, err)
@@ -99,14 +96,12 @@ func TestHandleTimeout(t *testing.T) {
 
 	// contract success
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
 	err = icak.HandleTimeout(ctx, p, relayerAddress)
 	require.NoError(t, err)
 
 	// contract error
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("SudoTimeout error"))
 	err = icak.HandleTimeout(ctx, p, relayerAddress)
 	require.NoError(t, err)
