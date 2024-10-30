@@ -17,7 +17,7 @@ env:
 
   # docker images
   CONTAINER_REGISTRY: ghcr.io
-  BUILDER_IMAGE_TAG: "1.22.5"
+  BUILDER_IMAGE_TAG: "1.23.0"
   BUILDER_IMAGE_NAME: "builder"
   BUILDER_DOCKERFILE: ".github/images/builder.Dockerfile"
   PROTOGEN_IMAGE_TAG: "0.2.0"
@@ -98,7 +98,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.23
           cache: false
 
       - uses: actions/checkout@v4
@@ -121,7 +121,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.23
           cache: false
 
       - uses: actions/checkout@v4
@@ -144,7 +144,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.23
           cache: false
 
       - uses: actions/checkout@v4
@@ -172,7 +172,7 @@ jobs:
     needs: [test-unit-coverage, builder-image]
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
-      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.22.5"
+      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.23.0"
       
     steps:
       - uses: actions/checkout@v4
