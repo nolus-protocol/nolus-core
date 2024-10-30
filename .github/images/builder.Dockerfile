@@ -3,7 +3,7 @@
 FROM alpine:3.18
 
 ENV PATH=/usr/local/go/bin:$PATH
-COPY --from=golang:1.22 /usr/local/go /usr/local/go
+COPY --from=golang:1.23 /usr/local/go /usr/local/go
 
 ARG LEDGER_ENABLED
 ENV LEDGER_ENABLED=${LEDGER_ENABLED:-false}
