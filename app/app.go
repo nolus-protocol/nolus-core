@@ -6,8 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"reflect"
-	"strings"
 
 	"github.com/spf13/cast"
 
@@ -60,7 +58,6 @@ import (
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
-	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 const (
@@ -292,31 +289,11 @@ func New(
 		}
 	}
 
-	// for local instances - set storage param for the interchain txs module - IcaRegistrationFeeFirstCodeID
-	app.SetInterchainTxsLocalChain()
-
 	return app
 }
 
 func (app *App) PreBlocker(ctx sdk.Context, _ *abci.RequestFinalizeBlock) (*sdk.ResponsePreBlock, error) {
 	return app.mm.PreBlock(ctx)
-}
-
-func (app *App) SetInterchainTxsLocalChain() {
-	// ChainID gets chainID from private fields of BaseApp
-	chainID := reflect.ValueOf(app.BaseApp).Elem().FieldByName("chainID").String()
-
-	// If chain is not at block 0 or it's not a local chain, we don't set the storage param
-	if app.LastBlockHeight() != 0 || !strings.Contains(chainID, "local") {
-		return
-	}
-	store := app.CommitMultiStore()
-	storeInterchaintxs := store.GetKVStore(app.AppKeepers.GetKey(interchaintxstypes.StoreKey))
-	// set an extremely high number for the first code id that will be taxed with fee for opening an ICA
-	// these bytes are equal to 1684300900 when parsed with sdk.BigEndianToUint64. It's a number that is unlikely to be reached as a code id
-	// if we decide to charge a fee for opening an ICA, we can set this to a lower number in the future
-	bytesIcaRegistrationFirstCode := []byte{0, 0, 0, 0, 100, 100, 100, 100}
-	storeInterchaintxs.Set(interchaintxstypes.ICARegistrationFeeFirstCodeID, bytesIcaRegistrationFirstCode)
 }
 
 func (app *App) setupUpgradeHandlers() {
