@@ -1,8 +1,6 @@
 module github.com/Nolus-Protocol/nolus-core
 
-go 1.22.6
-
-toolchain go1.22.7
+go 1.23.2
 
 require (
 	github.com/CosmWasm/wasmd v0.53.0
