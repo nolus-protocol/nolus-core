@@ -30,9 +30,6 @@ func (im IBCModule) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.P
 		return nil
 	}
 
-	// TODO remove feekeeper module
-	// im.wrappedKeeper.FeeKeeper.DistributeAcknowledgementFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
-
 	msg, err := keeper.PrepareSudoCallbackMessage(packet, &ack)
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrJSONMarshal, "failed to marshal Packet/Acknowledgment: %v", err)
@@ -67,9 +64,6 @@ func (im IBCModule) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, r
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrJSONMarshal, "failed to marshal Packet: %v", err)
 	}
-
-	// TODO remove feekeeper module
-	// im.wrappedKeeper.FeeKeeper.DistributeTimeoutFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
 
 	_, err = im.sudoKeeper.Sudo(ctx, senderAddress, msg)
 	if err != nil {

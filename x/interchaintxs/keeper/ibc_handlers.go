@@ -36,9 +36,6 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.Pack
 		return errors.Wrapf(sdkerrors.ErrJSONMarshal, "failed to marshal Packet/Acknowledgment: %v", err)
 	}
 
-	// TODO remove feekeeper module
-	// k.feeKeeper.DistributeAcknowledgementFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
-
 	// Actually we have only one kind of error returned from acknowledgement
 	// maybe later we'll retrieve actual errors from events
 	_, err = k.sudoKeeper.Sudo(ctx, icaOwner.GetContract(), msg)
@@ -64,9 +61,6 @@ func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, rela
 	if err != nil {
 		return errors.Wrapf(sdkerrors.ErrJSONMarshal, "failed to marshal Packet: %v", err)
 	}
-
-	// TODO remove feekeeper module
-	// k.feeKeeper.DistributeTimeoutFee(ctx, relayer, feetypes.NewPacketID(packet.SourcePort, packet.SourceChannel, packet.Sequence))
 
 	_, err = k.sudoKeeper.Sudo(ctx, icaOwner.GetContract(), msg)
 	if err != nil {
