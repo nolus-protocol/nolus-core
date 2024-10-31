@@ -138,20 +138,6 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ic
 		Memo: msg.Memo,
 	}
 
-	// TODO remove feekeeper module
-	// sequence, found := k.channelKeeper.GetNextSequenceSend(ctx, portID, channelID)
-	// if !found {
-	// 	return nil, errors.Wrapf(
-	// 		channeltypes.ErrSequenceSendNotFound,
-	// 		"source port: %s, source channel: %s", portID, channelID,
-	// 	)
-	// }
-
-	// TODO remove feekeeper module
-	// if err := k.feeKeeper.LockFees(ctx, senderAddr, feetypes.NewPacketID(portID, channelID, sequence), msg.Fee); err != nil {
-	// 	return nil, errors.Wrapf(err, "failed to lock fees to pay for SubmitTx msg: %s", msg)
-	// }
-
 	resp, err := k.icaControllerMsgServer.SendTx(ctx, &icacontrollertypes.MsgSendTx{
 		Owner:           icaOwner,
 		ConnectionId:    msg.ConnectionId,

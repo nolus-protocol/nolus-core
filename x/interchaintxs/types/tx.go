@@ -60,11 +60,6 @@ func (msg *MsgRegisterInterchainAccount) GetSignBytes() []byte {
 //----------------------------------------------------------------
 
 func (msg *MsgSubmitTx) Validate() error {
-	// TODO remove feerefunder module
-	// if err := msg.Fee.Validate(); err != nil {
-	// 	return err
-	// }
-
 	if len(msg.ConnectionId) == 0 {
 		return ErrEmptyConnectionID
 	}
