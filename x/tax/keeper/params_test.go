@@ -43,9 +43,10 @@ func (s *KeeperTestSuite) TestParams() {
 		s.SetupTest(false)
 
 		s.Run(tc.name, func() {
-			expected := s.app.TaxKeeper.GetParams(s.ctx)
+			expected, err := s.app.TaxKeeper.GetParams(s.ctx)
+			s.Require().NoError(err)
 			// TODO expect panic if params are not set
-			err := s.app.TaxKeeper.SetParams(s.ctx, tc.input)
+			err = s.app.TaxKeeper.SetParams(s.ctx, tc.input)
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -53,7 +54,8 @@ func (s *KeeperTestSuite) TestParams() {
 				s.Require().NoError(err)
 			}
 
-			p := s.app.TaxKeeper.GetParams(s.ctx)
+			p, err := s.app.TaxKeeper.GetParams(s.ctx)
+			s.Require().NoError(err)
 			s.Require().Equal(expected, p)
 		})
 	}
@@ -64,7 +66,10 @@ func TestGetParams(t *testing.T) {
 	k, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
 	params := types.DefaultParams()
 
-	require.EqualValues(t, params, k.GetParams(ctx))
+	actualParams, err := k.GetParams(ctx)
+	require.NoError(t, err)
+
+	require.EqualValues(t, params, actualParams)
 	require.EqualValues(t, params.FeeRate, k.FeeRate(ctx))
 	require.EqualValues(t, params.ContractAddress, k.ContractAddress(ctx))
 	require.EqualValues(t, params.BaseDenom, k.BaseDenom(ctx))

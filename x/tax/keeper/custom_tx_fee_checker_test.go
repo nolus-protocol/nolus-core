@@ -29,7 +29,10 @@ func TestCustomTxFeeCheckerSuccessfulInOsmo(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseBytes, nil)
@@ -49,7 +52,10 @@ func TestCustomTxFeeCheckerFailDueToZeroPrices(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseZeroLengthBytes, nil)
@@ -68,7 +74,10 @@ func TestCustomTxFeeCheckerSuccessfulInUsdc(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoAxlUSDCDenom, feeAmount)},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseBytes, nil)
@@ -89,7 +98,10 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoAxlUSDCDenom, int64(1))},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseBytes, nil)
@@ -109,7 +121,10 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, int64(1))},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(queryPricesResponseBytes, nil)
@@ -159,7 +174,9 @@ func TestCustomTxFeeCheckerWithWrongOracleAddr(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
-	wrongParams := taxKeeper.GetParams(ctx)
+	wrongParams, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
 	wrongParams.FeeParams[0].OracleAddress = "wrong"
 	_ = taxKeeper.SetParams(ctx, wrongParams)
 
@@ -178,7 +195,10 @@ func TestCustomTxFeeCheckerPricesQueryReturnsError(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return([]byte{}, errors.New("badQuery"))
@@ -197,7 +217,10 @@ func TestCustomTxFeeCheckerPriceQueryReturnsNoPrices(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return([]byte{}, nil)
@@ -216,9 +239,12 @@ func TestCustomTxFeeCheckerPriceQueryReturnsPricesOnlyForOsmo(t *testing.T) {
 		Fee:  sdk.Coins{sdk.NewInt64Coin(osmoDenom, feeAmount)},
 	}
 
+	params, err := taxKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
 	byteOsmoPrices := []byte(`{"prices":[{"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"4248067","ticker":"USDC"}}]}`)
 
-	oracleAddress, err := sdk.AccAddressFromBech32(taxKeeper.GetParams(ctx).FeeParams[0].OracleAddress)
+	oracleAddress, err := sdk.AccAddressFromBech32(params.FeeParams[0].OracleAddress)
 	require.NoError(t, err)
 
 	mockWasmKeeper.EXPECT().QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`)).Return(byteOsmoPrices, nil)

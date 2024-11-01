@@ -40,8 +40,11 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 			}
 
 			// Base denom is module param, should be "unls"
-			baseDenom := k.GetParams(ctx).BaseDenom
-			minimumFeeRequired := sdk.NewCoin(baseDenom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
+			params, err := k.GetParams(ctx)
+			if err != nil {
+				return nil, 0, errors.Wrap(sdkerrors.ErrNotFound, err.Error())
+			}
+			minimumFeeRequired := sdk.NewCoin(params.BaseDenom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
 
 			// if there are no fees provided
 			if feeCoins.Len() == 0 {
@@ -49,9 +52,9 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 			}
 
 			// if there are no fees paid in the base asset
-			if ok, _ := feeCoins.Find(baseDenom); !ok {
+			if ok, _ := feeCoins.Find(params.BaseDenom); !ok {
 				// Get Fee Param for select dex based on the feeCoins provided
-				feeParam, err := getFeeParamBasedOnDenom(k.GetParams(ctx).FeeParams, feeCoins)
+				feeParam, err := getFeeParamBasedOnDenom(params.FeeParams, feeCoins)
 				if err != nil {
 					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, err.Error()) //nolint:govet
 				}
