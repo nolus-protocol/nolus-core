@@ -66,7 +66,12 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 		// based on the denom which tax is paid in
 		baseDenom := dtd.tk.BaseDenom(ctx)
 		if baseDenom != feeCoin.Denom {
-			feeParam, err := getFeeParamBasedOnDenom(dtd.tk.GetParams(ctx).FeeParams, sdk.NewCoins(feeCoin))
+			params, err := dtd.tk.GetParams(ctx)
+			if err != nil {
+				return ctx, err
+			}
+
+			feeParam, err := getFeeParamBasedOnDenom(params.FeeParams, sdk.NewCoins(feeCoin))
 			if err != nil {
 				return ctx, err
 			}

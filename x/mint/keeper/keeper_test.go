@@ -62,8 +62,9 @@ func (s *KeeperTestSuite) TestParams() {
 		s.SetupTest(false)
 
 		s.Run(tc.name, func() {
-			expected := s.app.MintKeeper.GetParams(s.ctx)
-			err := s.app.MintKeeper.SetParams(s.ctx, tc.input)
+			expected, err := s.app.MintKeeper.GetParams(s.ctx)
+			s.Require().NoError(err)
+			err = s.app.MintKeeper.SetParams(s.ctx, tc.input)
 			if tc.expectErr {
 				s.Require().Error(err)
 			} else {
@@ -71,8 +72,9 @@ func (s *KeeperTestSuite) TestParams() {
 				s.Require().NoError(err)
 			}
 
-			p := s.app.MintKeeper.GetParams(s.ctx)
-			s.Require().Equal(expected, p)
+			params, err := s.app.MintKeeper.GetParams(s.ctx)
+			s.Require().NoError(err)
+			s.Require().Equal(expected, params)
 		})
 	}
 }
@@ -91,7 +93,8 @@ func (s *KeeperTestSuite) TestGetParamsWithDefaultParams() {
 	s.SetupTest(false)
 	minterKeeper := s.app.MintKeeper
 
-	got := minterKeeper.GetParams(s.ctx)
+	got, err := minterKeeper.GetParams(s.ctx)
+	s.Require().Nil(err)
 	s.Require().NotNil(got)
 	s.Require().Equal(types.DefaultParams(), got)
 }
@@ -117,8 +120,11 @@ func (s *KeeperTestSuite) TestAddCollectedFees() {
 	minterKeeper := s.app.MintKeeper
 	sdkctx := sdk.UnwrapSDKContext(s.ctx)
 
-	_ = s.app.TaxKeeper.SetParams(sdkctx, taxtypes.DefaultParams())
-	taxParams := s.app.TaxKeeper.GetParams(sdkctx)
+	err := s.app.TaxKeeper.SetParams(sdkctx, taxtypes.DefaultParams())
+	s.Require().Nil(err)
+	taxParams, err := s.app.TaxKeeper.GetParams(sdkctx)
+	s.Require().Nil(err)
+
 	// create account and fund it with 5000 of base denom
 	accs := s.createTestAccounts(1)
 	addr := accs[0].acc.GetAddress()
@@ -126,7 +132,7 @@ func (s *KeeperTestSuite) TestAddCollectedFees() {
 	s.fundAcc(addr, coins)
 
 	// fund mint's account so it can execute AddCollectedFees successfully
-	err := s.app.BankKeeper.SendCoins(s.ctx, addr, s.app.AccountKeeper.GetModuleAddress(types.ModuleName), sdk.NewCoins(sdk.NewCoin(taxParams.BaseDenom, sdkmath.NewInt(int64(1000)))))
+	err = s.app.BankKeeper.SendCoins(s.ctx, addr, s.app.AccountKeeper.GetModuleAddress(types.ModuleName), sdk.NewCoins(sdk.NewCoin(taxParams.BaseDenom, sdkmath.NewInt(int64(1000)))))
 	s.Require().Nil(err)
 
 	err = minterKeeper.AddCollectedFees(s.ctx, sdk.Coins{sdk.NewCoin(taxParams.BaseDenom, sdkmath.NewInt(int64(200)))})

@@ -119,7 +119,11 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
 
-	params := k.GetParams(ctx)
+	params, err := k.GetParams(ctx)
+	if err != nil {
+		return err
+	}
+
 	blockTime := c.BlockTime().UnixNano()
 	if blockTime < 0 {
 		panic(errNegativeBlockTime)
@@ -128,7 +132,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
 	minter.AnnualInflation = predictTotalMinted(minter.NormTimePassed, twelveMonths)
 	c.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
-	err := k.SetMinter(ctx, minter)
+	err = k.SetMinter(ctx, minter)
 	if err != nil {
 		panic(err)
 	}

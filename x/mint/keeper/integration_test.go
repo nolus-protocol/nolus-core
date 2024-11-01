@@ -30,7 +30,10 @@ func TestSetAndRetrieveParamsAndMinter(t *testing.T) {
 	err = app.MintKeeper.SetMinter(ctx, types.DefaultInitialMinter())
 	require.NoError(t, err)
 
-	require.Equal(t, denom, app.MintKeeper.GetParams(ctx).MintDenom)
-	require.Equal(t, sdkmath.NewUint(maxMintableNanoseconds), app.MintKeeper.GetParams(ctx).MaxMintableNanoseconds)
+	params, err := app.MintKeeper.GetParams(ctx)
+	require.NoError(t, err)
+
+	require.Equal(t, denom, params.MintDenom)
+	require.Equal(t, sdkmath.NewUint(maxMintableNanoseconds), params.MaxMintableNanoseconds)
 	require.Equal(t, types.DefaultInitialMinter(), app.MintKeeper.GetMinter(ctx))
 }

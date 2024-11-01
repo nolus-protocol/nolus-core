@@ -18,7 +18,8 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 	HUNDRED_DEC := sdkmath.LegacyNewDec(100)
 	const rnDenom = "atom"
 	const osmoAllowedDenom = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y"
-	baseDenom := suite.app.TaxKeeper.GetParams(suite.ctx).BaseDenom
+	params, err := suite.app.TaxKeeper.GetParams(suite.ctx)
+	suite.Require().NoError(err)
 
 	testCases := []struct {
 		title     string
@@ -30,7 +31,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 	}{
 		{
 			title:     "successful tax deduction should increase the treasury balance",
-			feeDenoms: []string{baseDenom},
+			feeDenoms: []string{params.BaseDenom},
 			feeAmount: sdkmath.NewInt(100),
 			feeRate:   40,
 			expPass:   true,
@@ -46,7 +47,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		},
 		{
 			title:     "tx with 0 fee rate should not increase the treasury balance",
-			feeDenoms: []string{baseDenom},
+			feeDenoms: []string{params.BaseDenom},
 			feeAmount: sdkmath.NewInt(100),
 			feeRate:   0,
 			expPass:   true,
@@ -54,7 +55,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		},
 		{
 			title:     "tx with tax is less then 1 should not increase the treasury balance",
-			feeDenoms: []string{baseDenom},
+			feeDenoms: []string{params.BaseDenom},
 			feeAmount: sdkmath.NewInt(1),
 			feeRate:   40,
 			expPass:   true,
@@ -70,7 +71,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		},
 		{
 			title:     "pay fees with insufficient funds should fail",
-			feeDenoms: []string{baseDenom},
+			feeDenoms: []string{params.BaseDenom},
 			feeAmount: sdkmath.NewInt(100000),
 			feeRate:   40,
 			expPass:   false,
@@ -94,7 +95,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		},
 		{
 			title:     "pay fees with multiple not allowed denoms should fail",
-			feeDenoms: []string{baseDenom, rnDenom},
+			feeDenoms: []string{params.BaseDenom, rnDenom},
 			feeAmount: sdkmath.NewInt(100),
 			feeRate:   40,
 			expPass:   false,
@@ -102,7 +103,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 		},
 		{
 			title:     "pay fees with multiple denoms where both base and allowed denoms are allowed and sufficient should fail",
-			feeDenoms: []string{baseDenom, osmoDenom},
+			feeDenoms: []string{params.BaseDenom, osmoDenom},
 			feeAmount: sdkmath.NewInt(100),
 			feeRate:   40,
 			expPass:   false,
@@ -123,7 +124,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			priv := accs[0].priv
 
 			var coins sdk.Coins
-			coins = coins.Add(sdk.NewInt64Coin(baseDenom, 500))
+			coins = coins.Add(sdk.NewInt64Coin(params.BaseDenom, 500))
 			coins = coins.Add(sdk.NewInt64Coin(rnDenom, 300))
 			coins = coins.Add(sdk.NewInt64Coin(osmoAllowedDenom, 1500))
 			suite.FundAcc(addr, coins)
@@ -180,7 +181,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			var addressToReceiveTax sdk.AccAddress
 			// if fee is not in base denom, we expect the profit address to receive the tax
 			// otherwise we expect the treasury address to receive the tax
-			if len(tc.feeDenoms) != 0 && tc.feeDenoms[0] != baseDenom && isAllowedDenom(params, tc.feeDenoms[0]) {
+			if len(tc.feeDenoms) != 0 && tc.feeDenoms[0] != params.BaseDenom && isAllowedDenom(params, tc.feeDenoms[0]) {
 				profitAddr, err := sdk.AccAddressFromBech32(params.FeeParams[0].ProfitAddress)
 				suite.Require().NoError(err)
 				addressToReceiveTax = profitAddr

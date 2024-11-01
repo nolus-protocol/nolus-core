@@ -84,33 +84,33 @@ func (k Keeper) SetMinter(ctx context.Context, minter types.Minter) error {
 }
 
 // GetParams returns the current x/mint module parameters.
-func (k Keeper) GetParams(ctx context.Context) types.Params {
+func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) {
 	store := k.storeService.OpenKVStore(ctx)
-
-	b, err := store.Get(types.ParamsKey)
+	bz, err := store.Get(types.ParamsKey)
 	if err != nil {
-		panic("error getting stored minter")
+		return params, err
+	}
+	if bz == nil {
+		return params, nil
 	}
 
-	var params types.Params
-	k.cdc.MustUnmarshal(b, &params)
-	return params
+	err = k.cdc.Unmarshal(bz, &params)
+	return params, err
 }
 
 // SetParams sets the x/mint module parameters.
-func (k Keeper) SetParams(ctx context.Context, p types.Params) error {
-	if err := p.Validate(); err != nil {
+func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
+	if err := params.Validate(); err != nil {
 		return err
 	}
 
 	store := k.storeService.OpenKVStore(ctx)
-	b := k.cdc.MustMarshal(&p)
-
-	if err := store.Set(types.ParamsKey, b); err != nil {
+	bz, err := k.cdc.Marshal(&params)
+	if err != nil {
 		return err
 	}
 
-	return nil
+	return store.Set(types.ParamsKey, bz)
 }
 
 // MintCoins implements an alias call to the underlying supply keeper's

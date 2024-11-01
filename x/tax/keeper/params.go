@@ -7,18 +7,18 @@ import (
 )
 
 // GetParams get all parameters as types.Params.
-func (k Keeper) GetParams(ctx context.Context) types.Params {
+func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) {
 	store := k.storeService.OpenKVStore(ctx)
-
-	var p types.Params
-	b, err := store.Get(types.ParamsKey)
+	bz, err := store.Get(types.ParamsKey)
 	if err != nil {
-		// TODO panic("error getting stored tax params")
-		return p
+		return params, err
+	}
+	if bz == nil {
+		return params, nil
 	}
 
-	k.cdc.MustUnmarshal(b, &p)
-	return p
+	err = k.cdc.Unmarshal(bz, &params)
+	return params, err
 }
 
 // SetParams set the params.
@@ -28,13 +28,12 @@ func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 	}
 
 	store := k.storeService.OpenKVStore(ctx)
-	b := k.cdc.MustMarshal(&params)
-
-	if err := store.Set(types.ParamsKey, b); err != nil {
+	bz, err := k.cdc.Marshal(&params)
+	if err != nil {
 		return err
 	}
 
-	return nil
+	return store.Set(types.ParamsKey, bz)
 }
 
 // FeeRate returns the fee rate.
