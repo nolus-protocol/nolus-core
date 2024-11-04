@@ -118,11 +118,12 @@ func (mr *MockContractManagerKeeperMockRecorder) AddContractFailure(ctx, address
 }
 
 // GetParams mocks base method.
-func (m *MockContractManagerKeeper) GetParams(ctx context.Context) types0.Params {
+func (m *MockContractManagerKeeper) GetParams(ctx context.Context) (types0.Params, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetParams", ctx)
 	ret0, _ := ret[0].(types0.Params)
-	return ret0
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetParams indicates an expected call of GetParams.

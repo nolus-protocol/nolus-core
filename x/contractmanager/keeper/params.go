@@ -3,33 +3,29 @@ package keeper
 import (
 	"context"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 )
 
 // GetParams get all parameters as types.Params.
-func (k Keeper) GetParams(ctx context.Context) (params types.Params) {
-	c := sdk.UnwrapSDKContext(ctx)
-	store := c.KVStore(k.storeKey)
-	bz := store.Get(types.ParamsKey)
-	if bz == nil {
-		return params
+func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return params, err
 	}
-
-	k.cdc.MustUnmarshal(bz, &params)
-	return params
+	if bz == nil {
+		return params, nil
+	}
+	err = k.cdc.Unmarshal(bz, &params)
+	return params, err
 }
 
 // SetParams set the params.
 func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
-	c := sdk.UnwrapSDKContext(ctx)
-	store := c.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	bz, err := k.cdc.Marshal(&params)
 	if err != nil {
 		return err
 	}
-
-	store.Set(types.ParamsKey, bz)
-	return nil
+	return store.Set(types.ParamsKey, bz)
 }
