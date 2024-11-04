@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"strconv"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 	"cosmossdk.io/log"
 
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
@@ -22,8 +24,7 @@ type (
 	Keeper struct {
 		cdc           codec.BinaryCodec
 		bankKeeper    types.BankKeeper
-		storeKey      storetypes.StoreKey
-		memKey        storetypes.StoreKey
+		storeService  store.KVStoreService
 		channelKeeper types.ChannelKeeper
 		authority     string
 	}
@@ -31,16 +32,14 @@ type (
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
+	storeService store.KVStoreService,
 	channelKeeper types.ChannelKeeper,
 	bankKeeper types.BankKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
 		cdc:           cdc,
-		storeKey:      storeKey,
-		memKey:        memKey,
+		storeService:  storeService,
 		channelKeeper: channelKeeper,
 		bankKeeper:    bankKeeper,
 		authority:     authority,
@@ -51,8 +50,9 @@ func (k Keeper) GetAuthority() string {
 	return k.authority
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k Keeper) Logger(ctx context.Context) log.Logger {
+	c := sdk.UnwrapSDKContext(ctx)
+	return c.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
 
 func (k Keeper) LockFees(ctx context.Context, payer sdk.AccAddress, packetID types.PacketID, fee types.Fee) error {
@@ -175,10 +175,14 @@ func (k Keeper) DistributeTimeoutFee(ctx context.Context, receiver sdk.AccAddres
 }
 
 func (k Keeper) GetFeeInfo(ctx sdk.Context, packetID types.PacketID) (*types.FeeInfo, error) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 
 	var feeInfo types.FeeInfo
-	bzFeeInfo := store.Get(types.GetFeePacketKey(packetID))
+	bzFeeInfo, err := store.Get(types.GetFeePacketKey(packetID))
+	if err != nil {
+		panic(err)
+	}
+
 	if bzFeeInfo == nil {
 		return nil, errors.Wrapf(sdkerrors.ErrKeyNotFound, "no fee info for the given channelID = %s, portID = %s and sequence = %d", packetID.ChannelId, packetID.PortId, packetID.Sequence)
 	}
@@ -188,7 +192,7 @@ func (k Keeper) GetFeeInfo(ctx sdk.Context, packetID types.PacketID) (*types.Fee
 }
 
 func (k Keeper) GetAllFeeInfos(ctx sdk.Context) []types.FeeInfo {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.FeeKey)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.FeeKey)
 
 	infos := make([]types.FeeInfo, 0)
 
@@ -205,25 +209,25 @@ func (k Keeper) GetAllFeeInfos(ctx sdk.Context) []types.FeeInfo {
 }
 
 func (k Keeper) StoreFeeInfo(ctx sdk.Context, feeInfo types.FeeInfo) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 
 	bzFeeInfo := k.cdc.MustMarshal(&feeInfo)
 	store.Set(types.GetFeePacketKey(feeInfo.PacketId), bzFeeInfo)
 }
 
 func (k Keeper) GetMinFee(ctx sdk.Context) types.Fee {
-	params := k.GetParams(ctx)
+	params, _ := k.GetParams(ctx)
 	return params.GetMinFee()
 }
 
 func (k Keeper) removeFeeInfo(ctx sdk.Context, packetID types.PacketID) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 
 	store.Delete(types.GetFeePacketKey(packetID))
 }
 
 func (k Keeper) checkFees(ctx sdk.Context, fees types.Fee) error {
-	params := k.GetParams(ctx)
+	params, _ := k.GetParams(ctx)
 
 	if !fees.TimeoutFee.IsAnyGTE(params.MinFee.TimeoutFee) {
 		return errors.Wrapf(sdkerrors.ErrInsufficientFee, "provided timeout fee is less than min governance set timeout fee: %v < %v", fees.TimeoutFee, params.MinFee.TimeoutFee)

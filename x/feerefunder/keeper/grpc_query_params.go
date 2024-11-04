@@ -16,5 +16,10 @@ func (k Keeper) Params(c context.Context, req *types.QueryParamsRequest) (*types
 	}
 	ctx := sdk.UnwrapSDKContext(c)
 
-	return &types.QueryParamsResponse{Params: k.GetParams(ctx)}, nil
+	params, err := k.GetParams(ctx)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	return &types.QueryParamsResponse{Params: params}, err
 }

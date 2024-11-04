@@ -12,6 +12,7 @@ import (
 	db2 "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
@@ -35,8 +36,7 @@ func FeeKeeper(t testing.TB, channelKeeper types.ChannelKeeper, bankKeeper types
 
 	k := keeper.NewKeeper(
 		cdc,
-		storeKey,
-		memStoreKey,
+		runtime.NewKVStoreService(storeKey),
 		channelKeeper,
 		bankKeeper,
 		authtypes.NewModuleAddress(adminmoduletypes.ModuleName).String(),
