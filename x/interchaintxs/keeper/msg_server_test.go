@@ -314,7 +314,8 @@ func TestSubmitTx(t *testing.T) {
 	require.Nil(t, resp)
 	require.ErrorContains(t, err, "is not a contract address")
 
-	params := icak.GetParams(ctx)
+	params, err := icak.GetParams(ctx)
+	require.NoError(t, err)
 	maxMsgs := params.GetMsgSubmitTxMaxMessages()
 	submitMsg.Msgs = make([]*codectypes.Any, maxMsgs+1)
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)

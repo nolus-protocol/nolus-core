@@ -314,8 +314,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.FeeRefunderKeeper = feerefunderkeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[feetypes.StoreKey],
-		appKeepers.memKeys[feetypes.MemStoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[feetypes.StoreKey]),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.BankKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
@@ -381,8 +380,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.InterchainTxsKeeper = interchaintxskeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[interchaintxstypes.StoreKey],
-		appKeepers.memKeys[interchaintxstypes.MemStoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[interchaintxstypes.StoreKey]),
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.ICAControllerKeeper,
 		icacontrollerkeeper.NewMsgServerImpl(appKeepers.ICAControllerKeeper),

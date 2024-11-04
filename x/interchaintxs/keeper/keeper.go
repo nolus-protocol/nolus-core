@@ -3,9 +3,9 @@ package keeper
 import (
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
 
-	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -23,8 +23,7 @@ const (
 type (
 	Keeper struct {
 		Codec                  codec.BinaryCodec
-		storeKey               storetypes.StoreKey
-		memKey                 storetypes.StoreKey
+		storeService           store.KVStoreService
 		channelKeeper          types.ChannelKeeper
 		feeKeeper              types.FeeRefunderKeeper
 		icaControllerKeeper    types.ICAControllerKeeper
@@ -38,8 +37,7 @@ type (
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
+	storeService store.KVStoreService,
 	channelKeeper types.ChannelKeeper,
 	icaControllerKeeper types.ICAControllerKeeper,
 	icaControllerMsgServer types.ICAControllerMsgServer,
@@ -51,8 +49,7 @@ func NewKeeper(
 ) *Keeper {
 	return &Keeper{
 		Codec:                  cdc,
-		storeKey:               storeKey,
-		memKey:                 memKey,
+		storeService:           storeService,
 		channelKeeper:          channelKeeper,
 		icaControllerKeeper:    icaControllerKeeper,
 		icaControllerMsgServer: icaControllerMsgServer,
