@@ -40,7 +40,7 @@ func TestSudo(t *testing.T) {
 
 	//  success during Sudo
 	ctx := infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000})
+	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000}, nil)
 	wmKeeper.EXPECT().Sudo(gomock.AssignableToTypeOf(ctx), contractAddress, msg).Do(func(cachedCtx sdk.Context, _ sdk.AccAddress, _ []byte) {
 		st := cachedCtx.KVStore(storeKey)
 		st.Set(ShouldBeWrittenKey("sudo"), ShouldBeWritten)
@@ -51,7 +51,7 @@ func TestSudo(t *testing.T) {
 
 	//  error during Sudo
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000})
+	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000}, nil)
 	cmKeeper.EXPECT().AddContractFailure(ctx, contractAddress.String(), msg, contractmanagerkeeper.RedactError(wasmtypes.ErrExecuteFailed).Error())
 	wmKeeper.EXPECT().Sudo(gomock.AssignableToTypeOf(ctx), contractAddress, msg).Do(func(cachedCtx sdk.Context, _ sdk.AccAddress, _ []byte) {
 		st := cachedCtx.KVStore(storeKey)
@@ -63,7 +63,7 @@ func TestSudo(t *testing.T) {
 
 	// ou of gas during Sudo
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
-	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000})
+	cmKeeper.EXPECT().GetParams(ctx).Return(types.Params{SudoCallGasLimit: 10000}, nil)
 	cmKeeper.EXPECT().AddContractFailure(ctx, contractAddress.String(), msg, contractmanagerkeeper.RedactError(types.ErrSudoOutOfGas).Error())
 	wmKeeper.EXPECT().Sudo(gomock.AssignableToTypeOf(ctx), contractAddress, msg).Do(func(cachedCtx sdk.Context, _ sdk.AccAddress, _ []byte) {
 		st := cachedCtx.KVStore(storeKey)
