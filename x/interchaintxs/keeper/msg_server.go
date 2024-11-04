@@ -98,7 +98,7 @@ func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ic
 		return nil, errors.Wrapf(ictxtypes.ErrNotContract, "%s is not a contract address", msg.FromAddress)
 	}
 
-	params := k.GetParams(ctx)
+	params, _ := k.GetParams(ctx)
 	if uint64(len(msg.Msgs)) > params.GetMsgSubmitTxMaxMessages() {
 		k.Logger(ctx).Debug("SubmitTx: provided MsgSubmitTx contains more messages than allowed",
 			"msg", msg,

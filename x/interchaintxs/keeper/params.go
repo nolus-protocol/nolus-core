@@ -7,20 +7,23 @@ import (
 )
 
 // GetParams get all parameters as types.Params.
-func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.ParamsKey)
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return params, err
+	}
 	if bz == nil {
-		return params
+		return params, nil
 	}
 
-	k.Codec.MustUnmarshal(bz, &params)
-	return params
+	err = k.Codec.Unmarshal(bz, &params)
+	return params, err
 }
 
 // SetParams set the params.
 func (k Keeper) SetParams(ctx sdk.Context, params types.Params) error {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	bz, err := k.Codec.Marshal(&params)
 	if err != nil {
 		return err
