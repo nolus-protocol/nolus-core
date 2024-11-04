@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"cosmossdk.io/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
@@ -39,16 +40,16 @@ func (k Keeper) AddressFailures(c context.Context, req *types.QueryFailuresByAdd
 	var failures []types.Failure
 	ctx := sdk.UnwrapSDKContext(c)
 
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 
 	var failureStore prefix.Store
 	if req.Address != "" {
 		if _, err := sdk.AccAddressFromBech32(req.Address); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "failed to parse address: %s", req.Address)
 		}
-		failureStore = prefix.NewStore(store, types.GetFailureKeyPrefix(req.Address))
+		failureStore = prefix.NewStore(runtime.KVStoreAdapter(store), types.GetFailureKeyPrefix(req.Address))
 	} else {
-		failureStore = prefix.NewStore(store, types.ContractFailuresKey)
+		failureStore = prefix.NewStore(runtime.KVStoreAdapter(store), types.ContractFailuresKey)
 	}
 
 	pageRes, err := query.Paginate(failureStore, req.Pagination, func(_, value []byte) error {

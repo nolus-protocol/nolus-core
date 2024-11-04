@@ -305,8 +305,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	appKeepers.ContractManagerKeeper = contractmanagermodulekeeper.NewKeeper(
 		appCodec,
-		appKeepers.keys[contractmanagermoduletypes.StoreKey],
-		appKeepers.keys[contractmanagermoduletypes.MemStoreKey],
+		runtime.NewKVStoreService(appKeepers.keys[contractmanagermoduletypes.StoreKey]),
 		appKeepers.WasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)

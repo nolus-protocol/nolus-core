@@ -8,11 +8,10 @@ import (
 	context "context"
 	reflect "reflect"
 
-	types "github.com/CosmWasm/wasmd/x/wasm/types"
-	types0 "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
-	types1 "github.com/cosmos/cosmos-sdk/types"
-	types2 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
-	types3 "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	types0 "github.com/cosmos/cosmos-sdk/types"
+	types1 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
+	types2 "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -41,10 +40,10 @@ func (m *MockAccountKeeper) EXPECT() *MockAccountKeeperMockRecorder {
 }
 
 // GetAccount mocks base method.
-func (m *MockAccountKeeper) GetAccount(ctx context.Context, addr types1.AccAddress) types1.AccountI {
+func (m *MockAccountKeeper) GetAccount(ctx context.Context, addr types0.AccAddress) types0.AccountI {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccount", ctx, addr)
-	ret0, _ := ret[0].(types1.AccountI)
+	ret0, _ := ret[0].(types0.AccountI)
 	return ret0
 }
 
@@ -78,7 +77,7 @@ func (m *MockBankKeeper) EXPECT() *MockBankKeeperMockRecorder {
 }
 
 // SendCoins mocks base method.
-func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr types1.AccAddress, amt types1.Coins) error {
+func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr types0.AccAddress, amt types0.Coins) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendCoins", ctx, fromAddr, toAddr, amt)
 	ret0, _ := ret[0].(error)
@@ -92,10 +91,10 @@ func (mr *MockBankKeeperMockRecorder) SendCoins(ctx, fromAddr, toAddr, amt inter
 }
 
 // SpendableCoins mocks base method.
-func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr types1.AccAddress) types1.Coins {
+func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr types0.AccAddress) types0.Coins {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SpendableCoins", ctx, addr)
-	ret0, _ := ret[0].(types1.Coins)
+	ret0, _ := ret[0].(types0.Coins)
 	return ret0
 }
 
@@ -128,22 +127,8 @@ func (m *MockWasmKeeper) EXPECT() *MockWasmKeeperMockRecorder {
 	return m.recorder
 }
 
-// GetContractInfo mocks base method.
-func (m *MockWasmKeeper) GetContractInfo(ctx context.Context, contractAddress types1.AccAddress) *types.ContractInfo {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetContractInfo", ctx, contractAddress)
-	ret0, _ := ret[0].(*types.ContractInfo)
-	return ret0
-}
-
-// GetContractInfo indicates an expected call of GetContractInfo.
-func (mr *MockWasmKeeperMockRecorder) GetContractInfo(ctx, contractAddress interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetContractInfo", reflect.TypeOf((*MockWasmKeeper)(nil).GetContractInfo), ctx, contractAddress)
-}
-
 // HasContractInfo mocks base method.
-func (m *MockWasmKeeper) HasContractInfo(ctx context.Context, contractAddress types1.AccAddress) bool {
+func (m *MockWasmKeeper) HasContractInfo(ctx context.Context, contractAddress types0.AccAddress) bool {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "HasContractInfo", ctx, contractAddress)
 	ret0, _ := ret[0].(bool)
@@ -157,7 +142,7 @@ func (mr *MockWasmKeeperMockRecorder) HasContractInfo(ctx, contractAddress inter
 }
 
 // Sudo mocks base method.
-func (m *MockWasmKeeper) Sudo(ctx context.Context, contractAddress types1.AccAddress, msg []byte) ([]byte, error) {
+func (m *MockWasmKeeper) Sudo(ctx context.Context, contractAddress types0.AccAddress, msg []byte) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Sudo", ctx, contractAddress, msg)
 	ret0, _ := ret[0].([]byte)
@@ -195,7 +180,7 @@ func (m *MockICAControllerKeeper) EXPECT() *MockICAControllerKeeperMockRecorder 
 }
 
 // GetActiveChannelID mocks base method.
-func (m *MockICAControllerKeeper) GetActiveChannelID(ctx types1.Context, connectionID, portID string) (string, bool) {
+func (m *MockICAControllerKeeper) GetActiveChannelID(ctx types0.Context, connectionID, portID string) (string, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetActiveChannelID", ctx, connectionID, portID)
 	ret0, _ := ret[0].(string)
@@ -210,7 +195,7 @@ func (mr *MockICAControllerKeeperMockRecorder) GetActiveChannelID(ctx, connectio
 }
 
 // GetInterchainAccountAddress mocks base method.
-func (m *MockICAControllerKeeper) GetInterchainAccountAddress(ctx types1.Context, connectionID, portID string) (string, bool) {
+func (m *MockICAControllerKeeper) GetInterchainAccountAddress(ctx types0.Context, connectionID, portID string) (string, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetInterchainAccountAddress", ctx, connectionID, portID)
 	ret0, _ := ret[0].(string)
@@ -225,7 +210,7 @@ func (mr *MockICAControllerKeeperMockRecorder) GetInterchainAccountAddress(ctx, 
 }
 
 // SetMiddlewareEnabled mocks base method.
-func (m *MockICAControllerKeeper) SetMiddlewareEnabled(ctx types1.Context, portID, connectionID string) {
+func (m *MockICAControllerKeeper) SetMiddlewareEnabled(ctx types0.Context, portID, connectionID string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "SetMiddlewareEnabled", ctx, portID, connectionID)
 }
@@ -260,10 +245,10 @@ func (m *MockICAControllerMsgServer) EXPECT() *MockICAControllerMsgServerMockRec
 }
 
 // RegisterInterchainAccount mocks base method.
-func (m *MockICAControllerMsgServer) RegisterInterchainAccount(arg0 context.Context, arg1 *types2.MsgRegisterInterchainAccount) (*types2.MsgRegisterInterchainAccountResponse, error) {
+func (m *MockICAControllerMsgServer) RegisterInterchainAccount(arg0 context.Context, arg1 *types1.MsgRegisterInterchainAccount) (*types1.MsgRegisterInterchainAccountResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "RegisterInterchainAccount", arg0, arg1)
-	ret0, _ := ret[0].(*types2.MsgRegisterInterchainAccountResponse)
+	ret0, _ := ret[0].(*types1.MsgRegisterInterchainAccountResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -275,10 +260,10 @@ func (mr *MockICAControllerMsgServerMockRecorder) RegisterInterchainAccount(arg0
 }
 
 // SendTx mocks base method.
-func (m *MockICAControllerMsgServer) SendTx(arg0 context.Context, arg1 *types2.MsgSendTx) (*types2.MsgSendTxResponse, error) {
+func (m *MockICAControllerMsgServer) SendTx(arg0 context.Context, arg1 *types1.MsgSendTx) (*types1.MsgSendTxResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SendTx", arg0, arg1)
-	ret0, _ := ret[0].(*types2.MsgSendTxResponse)
+	ret0, _ := ret[0].(*types1.MsgSendTxResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -313,7 +298,7 @@ func (m *MockFeeRefunderKeeper) EXPECT() *MockFeeRefunderKeeperMockRecorder {
 }
 
 // DistributeAcknowledgementFee mocks base method.
-func (m *MockFeeRefunderKeeper) DistributeAcknowledgementFee(ctx context.Context, receiver types1.AccAddress, packetID types0.PacketID) {
+func (m *MockFeeRefunderKeeper) DistributeAcknowledgementFee(ctx context.Context, receiver types0.AccAddress, packetID types.PacketID) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "DistributeAcknowledgementFee", ctx, receiver, packetID)
 }
@@ -325,7 +310,7 @@ func (mr *MockFeeRefunderKeeperMockRecorder) DistributeAcknowledgementFee(ctx, r
 }
 
 // DistributeTimeoutFee mocks base method.
-func (m *MockFeeRefunderKeeper) DistributeTimeoutFee(ctx context.Context, receiver types1.AccAddress, packetID types0.PacketID) {
+func (m *MockFeeRefunderKeeper) DistributeTimeoutFee(ctx context.Context, receiver types0.AccAddress, packetID types.PacketID) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "DistributeTimeoutFee", ctx, receiver, packetID)
 }
@@ -337,7 +322,7 @@ func (mr *MockFeeRefunderKeeperMockRecorder) DistributeTimeoutFee(ctx, receiver,
 }
 
 // LockFees mocks base method.
-func (m *MockFeeRefunderKeeper) LockFees(ctx context.Context, payer types1.AccAddress, packetID types0.PacketID, fee types0.Fee) error {
+func (m *MockFeeRefunderKeeper) LockFees(ctx context.Context, payer types0.AccAddress, packetID types.PacketID, fee types.Fee) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "LockFees", ctx, payer, packetID, fee)
 	ret0, _ := ret[0].(error)
@@ -374,10 +359,10 @@ func (m *MockChannelKeeper) EXPECT() *MockChannelKeeperMockRecorder {
 }
 
 // GetChannel mocks base method.
-func (m *MockChannelKeeper) GetChannel(ctx types1.Context, srcPort, srcChan string) (types3.Channel, bool) {
+func (m *MockChannelKeeper) GetChannel(ctx types0.Context, srcPort, srcChan string) (types2.Channel, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetChannel", ctx, srcPort, srcChan)
-	ret0, _ := ret[0].(types3.Channel)
+	ret0, _ := ret[0].(types2.Channel)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -389,7 +374,7 @@ func (mr *MockChannelKeeperMockRecorder) GetChannel(ctx, srcPort, srcChan interf
 }
 
 // GetConnection mocks base method.
-func (m *MockChannelKeeper) GetConnection(ctx types1.Context, connectionID string) (exported.ConnectionI, error) {
+func (m *MockChannelKeeper) GetConnection(ctx types0.Context, connectionID string) (exported.ConnectionI, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetConnection", ctx, connectionID)
 	ret0, _ := ret[0].(exported.ConnectionI)
@@ -404,7 +389,7 @@ func (mr *MockChannelKeeperMockRecorder) GetConnection(ctx, connectionID interfa
 }
 
 // GetNextSequenceSend mocks base method.
-func (m *MockChannelKeeper) GetNextSequenceSend(ctx types1.Context, portID, channelID string) (uint64, bool) {
+func (m *MockChannelKeeper) GetNextSequenceSend(ctx types0.Context, portID, channelID string) (uint64, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNextSequenceSend", ctx, portID, channelID)
 	ret0, _ := ret[0].(uint64)

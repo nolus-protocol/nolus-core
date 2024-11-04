@@ -1,10 +1,12 @@
 package keeper
 
 import (
+	"context"
 	"fmt"
 
+	"cosmossdk.io/core/store"
 	"cosmossdk.io/log"
-	storetypes "cosmossdk.io/store/types"
+
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -13,27 +15,24 @@ import (
 
 type (
 	Keeper struct {
-		cdc        codec.BinaryCodec
-		storeKey   storetypes.StoreKey
-		memKey     storetypes.StoreKey
-		wasmKeeper types.WasmKeeper
-		authority  string
+		cdc          codec.BinaryCodec
+		storeService store.KVStoreService
+		wasmKeeper   types.WasmKeeper
+		authority    string
 	}
 )
 
 func NewKeeper(
 	cdc codec.BinaryCodec,
-	storeKey,
-	memKey storetypes.StoreKey,
+	storeService store.KVStoreService,
 	wasmKeeper types.WasmKeeper,
 	authority string,
 ) *Keeper {
 	return &Keeper{
-		cdc:        cdc,
-		storeKey:   storeKey,
-		memKey:     memKey,
-		wasmKeeper: wasmKeeper,
-		authority:  authority,
+		cdc:          cdc,
+		storeService: storeService,
+		wasmKeeper:   wasmKeeper,
+		authority:    authority,
 	}
 }
 
@@ -41,6 +40,7 @@ func (k Keeper) GetAuthority() string {
 	return k.authority
 }
 
-func (k Keeper) Logger(ctx sdk.Context) log.Logger {
-	return ctx.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
+func (k Keeper) Logger(ctx context.Context) log.Logger {
+	c := sdk.UnwrapSDKContext(ctx)
+	return c.Logger().With("module", fmt.Sprintf("x/%s", types.ModuleName))
 }
