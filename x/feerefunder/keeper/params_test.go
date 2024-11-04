@@ -19,5 +19,9 @@ func TestGetParams(t *testing.T) {
 		panic(err)
 	}
 
-	require.EqualValues(t, params, k.GetParams(ctx))
+	keeperParams, err := k.GetParams(ctx)
+	if err != nil {
+		panic(err)
+	}
+	require.EqualValues(t, params, keeperParams)
 }
