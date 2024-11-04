@@ -7,6 +7,7 @@ import (
 	metrics2 "cosmossdk.io/store/metrics"
 	adminmoduletypes "github.com/cosmos/admin-module/v2/x/adminmodule/types"
 	db2 "github.com/cosmos/cosmos-db"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"cosmossdk.io/store"
@@ -45,8 +46,7 @@ func InterchainTxsKeeper(
 
 	k := keeper.NewKeeper(
 		cdc,
-		storeKey,
-		memStoreKey,
+		runtime.NewKVStoreService(storeKey),
 		channelKeeper,
 		icaControllerKeeper,
 		icaControllerMsgServer,
