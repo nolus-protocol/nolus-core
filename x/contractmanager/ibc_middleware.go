@@ -31,8 +31,13 @@ func NewSudoLimitWrapper(contractManager contractmanagertypes.ContractManagerKee
 // if error happens during the Sudo call, we store the data that raised the error, and return the error.
 func (k SudoLimitWrapper) Sudo(ctx context.Context, contractAddress sdk.AccAddress, msg []byte) (resp []byte, err error) {
 	c := sdk.UnwrapSDKContext(ctx)
+	params, err := k.contractManager.GetParams(ctx)
+	if err != nil {
+		// Default Sudo gas limit is set to 1_000_000
+		params = contractmanagertypes.DefaultParams()
+	}
 
-	cacheCtx, writeFn := createCachedContext(c, k.contractManager.GetParams(ctx).SudoCallGasLimit)
+	cacheCtx, writeFn := createCachedContext(c, params.SudoCallGasLimit)
 	func() {
 		defer outOfGasRecovery(cacheCtx.GasMeter(), &err)
 		// Actually we have only one kind of error returned from acknowledgement

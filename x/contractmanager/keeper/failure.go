@@ -8,6 +8,7 @@ import (
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	wasmvmtypes "github.com/CosmWasm/wasmvm/v2/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -24,8 +25,6 @@ import (
 // https://github.com/neutron-org/neutron/blob/eb8b5ae50907439ff9af0527a42ef0cb448a78b5/x/contractmanager/ibc_middleware.go#L42.
 // Another good way could be passing here some constant value.
 func (k Keeper) AddContractFailure(ctx context.Context, address string, sudoPayload []byte, errMsg string) types.Failure {
-	c := sdk.UnwrapSDKContext(ctx)
-
 	failure := types.Failure{
 		Address:     address,
 		SudoPayload: sudoPayload,
@@ -34,16 +33,16 @@ func (k Keeper) AddContractFailure(ctx context.Context, address string, sudoPayl
 	nextFailureID := k.GetNextFailureIDKey(ctx, failure.GetAddress())
 	failure.Id = nextFailureID
 
-	store := c.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	bz := k.cdc.MustMarshal(&failure)
-	store.Set(types.GetFailureKey(failure.GetAddress(), nextFailureID), bz)
+
+	_ = store.Set(types.GetFailureKey(failure.GetAddress(), nextFailureID), bz)
+
 	return failure
 }
 
 func (k Keeper) GetNextFailureIDKey(ctx context.Context, address string) uint64 {
-	c := sdk.UnwrapSDKContext(ctx)
-
-	store := prefix.NewStore(c.KVStore(k.storeKey), types.GetFailureKeyPrefix(address))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.GetFailureKeyPrefix(address))
 	iterator := storetypes.KVStoreReversePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
@@ -59,9 +58,7 @@ func (k Keeper) GetNextFailureIDKey(ctx context.Context, address string) uint64 
 
 // GetAllFailures returns all failures.
 func (k Keeper) GetAllFailures(ctx context.Context) (list []types.Failure) {
-	c := sdk.UnwrapSDKContext(ctx)
-
-	store := prefix.NewStore(c.KVStore(k.storeKey), types.ContractFailuresKey)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.ContractFailuresKey)
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 	defer iterator.Close()
 
@@ -75,16 +72,20 @@ func (k Keeper) GetAllFailures(ctx context.Context) (list []types.Failure) {
 }
 
 func (k Keeper) GetFailure(ctx sdk.Context, contractAddr sdk.AccAddress, id uint64) (*types.Failure, error) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	key := types.GetFailureKey(contractAddr.String(), id)
 
-	bz := store.Get(key)
+	bz, err := store.Get(key)
+	if err != nil {
+		panic(err)
+	}
+
 	if bz == nil {
 		return nil, errorsmod.Wrapf(sdkerrors.ErrKeyNotFound, "no failure found for contractAddress = %s and failureId = %d", contractAddr.String(), id)
 	}
+
 	var res types.Failure
 	k.cdc.MustUnmarshal(bz, &res)
-
 	return &res, nil
 }
 
@@ -105,9 +106,9 @@ func (k Keeper) ResubmitFailure(ctx sdk.Context, contractAddr sdk.AccAddress, fa
 }
 
 func (k Keeper) removeFailure(ctx sdk.Context, contractAddr sdk.AccAddress, id uint64) {
-	store := ctx.KVStore(k.storeKey)
+	store := k.storeService.OpenKVStore(ctx)
 	failureKey := types.GetFailureKey(contractAddr.String(), id)
-	store.Delete(failureKey)
+	_ = store.Delete(failureKey)
 }
 
 // RedactError removes non-determenistic details from the error returning just codespace and core

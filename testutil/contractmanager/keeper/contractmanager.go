@@ -6,6 +6,7 @@ import (
 	"cosmossdk.io/log"
 	metrics2 "cosmossdk.io/store/metrics"
 	db2 "github.com/cosmos/cosmos-db"
+	"github.com/cosmos/cosmos-sdk/runtime"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"cosmossdk.io/store"
@@ -36,8 +37,7 @@ func ContractManagerKeeper(t testing.TB, wasmKeeper types.WasmKeeper) (*keeper.K
 
 	k := keeper.NewKeeper(
 		cdc,
-		storeKey,
-		memStoreKey,
+		runtime.NewKVStoreService(storeKey),
 		wasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)

@@ -3,6 +3,7 @@ package v2_test
 import (
 	"testing"
 
+	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/suite"
 
@@ -32,7 +33,8 @@ func (suite *V2ContractManagerMigrationTestSuite) TestFailuresUpgrade() {
 	addressTwo := "nolus17p9rzwnnfxcjp32un9ug7yhhzgtkhvl9jfksztgw5uh69wac2pgsmc5xhq"
 
 	// Write old state
-	store := ctx.KVStore(storeKey)
+	storeService := runtime.NewKVStoreService(storeKey)
+	store := storeService.OpenKVStore(ctx)
 	var i uint64
 	for i = 0; i < 4; i++ {
 		var addr string
@@ -52,7 +54,7 @@ func (suite *V2ContractManagerMigrationTestSuite) TestFailuresUpgrade() {
 	}
 
 	// Run migration
-	suite.NoError(v2.MigrateStore(ctx, storeKey))
+	suite.NoError(v2.MigrateStore(ctx, storeService))
 
 	// Check elements should be empty
 	expected := app.ContractManagerKeeper.GetAllFailures(ctx)
