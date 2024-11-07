@@ -212,7 +212,7 @@ func (k Keeper) StoreFeeInfo(ctx sdk.Context, feeInfo types.FeeInfo) {
 	store := k.storeService.OpenKVStore(ctx)
 
 	bzFeeInfo := k.cdc.MustMarshal(&feeInfo)
-	store.Set(types.GetFeePacketKey(feeInfo.PacketId), bzFeeInfo)
+	_ = store.Set(types.GetFeePacketKey(feeInfo.PacketId), bzFeeInfo)
 }
 
 func (k Keeper) GetMinFee(ctx sdk.Context) types.Fee {
@@ -223,7 +223,7 @@ func (k Keeper) GetMinFee(ctx sdk.Context) types.Fee {
 func (k Keeper) removeFeeInfo(ctx sdk.Context, packetID types.PacketID) {
 	store := k.storeService.OpenKVStore(ctx)
 
-	store.Delete(types.GetFeePacketKey(packetID))
+	_ = store.Delete(types.GetFeePacketKey(packetID))
 }
 
 func (k Keeper) checkFees(ctx sdk.Context, fees types.Fee) error {
