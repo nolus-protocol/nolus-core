@@ -4,9 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"time"
 
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
 	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
 	ibctesting "github.com/cosmos/ibc-go/v8/testing"
@@ -27,8 +31,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
-
-	ictxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 var (
@@ -37,7 +39,7 @@ var (
 
 	TestInterchainID = "owner_id"
 
-	Connection = "connection-0"
+	Connection = "connection-1"
 
 	// TestVersion defines a reusable interchainaccounts version string for testing purposes.
 	TestVersion = string(icatypes.ModuleCdc.MustMarshalJSON(&icatypes.Metadata{
@@ -65,7 +67,7 @@ type IBCConnectionTestSuite struct {
 	ChainA *ibctesting.TestChain
 	ChainB *ibctesting.TestChain
 
-	Path         *ibctesting.Path
+	// Path         *ibctesting.Path
 	TransferPath *ibctesting.Path
 }
 
@@ -77,20 +79,7 @@ func (suite *IBCConnectionTestSuite) SetupTest() {
 	suite.ChainA = suite.Coordinator.GetChain(ibctesting.GetChainID(1))
 	suite.ChainB = suite.Coordinator.GetChain(ibctesting.GetChainID(2))
 
-	// move chains to the next block
-	suite.ChainA.NextBlock()
-	suite.ChainB.NextBlock()
-
-	// path := ibctesting.NewPath(suite.ChainA, suite.ChainB) // clientID, connectionID, channelID empty
-	// suite.Coordinator.Setup(path)                          // clientID, connectionID, channelID filled
-	// suite.Require().Equal("07-tendermint-0", path.EndpointA.ClientID)
-	// suite.Require().Equal("connection-0", path.EndpointA.ClientID)
-	// suite.Require().Equal("channel-0", path.EndpointA.ClientID)
-
-	// suite.Path = NewICAPath(suite.ChainA, suite.ChainB)
-
 	suite.ConfigureTransferChannel()
-	// suite.Coordinator.Setup(suite.Path)
 }
 
 func (suite *IBCConnectionTestSuite) ConfigureTransferChannel() {
@@ -130,28 +119,42 @@ func (suite *IBCConnectionTestSuite) InstantiateTestContract(ctx sdk.Context, fu
 	return addr
 }
 
-func NewICAPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
+func calculateTrustPeriod(unbondingPeriod time.Duration, defaultTrustPeriodFraction string) (time.Duration, error) {
+	trustDec, err := math.LegacyNewDecFromStr(defaultTrustPeriodFraction)
+	if err != nil {
+		return time.Duration(0), err
+	}
+	trustPeriod := time.Duration(trustDec.MulInt64(unbondingPeriod.Nanoseconds()).TruncateInt64())
+
+	return trustPeriod, nil
+}
+
+func NewICAPath(chainA, chainB *ibctesting.TestChain, icaowner string) *ibctesting.Path {
 	path := ibctesting.NewPath(chainA, chainB)
 	path.EndpointA.Counterparty = path.EndpointB
 	path.EndpointB.Counterparty = path.EndpointA
 
-	path.EndpointA.ChannelConfig.PortID = icatypes.HostPortID
+	path.EndpointA.ChannelConfig.PortID = icatypes.ControllerPortPrefix + icaowner
 	path.EndpointB.ChannelConfig.PortID = icatypes.HostPortID
-	path.EndpointA.ChannelConfig.Order = channeltypes.ORDERED
-	path.EndpointB.ChannelConfig.Order = channeltypes.ORDERED
+	path.EndpointA.ChannelConfig.Order = channeltypes.UNORDERED
+	path.EndpointB.ChannelConfig.Order = channeltypes.UNORDERED
 	path.EndpointA.ChannelConfig.Version = TestVersion
 	path.EndpointB.ChannelConfig.Version = TestVersion
 
-	path.EndpointA.ClientConfig.(*ibctesting.TendermintConfig).UnbondingPeriod = 3600000000000
-	path.EndpointA.ClientConfig.(*ibctesting.TendermintConfig).TrustingPeriod = 1200000000000
+	unbondingPeriodA := time.Duration(3600000000000)
+	unbondingPeriodB := time.Duration(3600000000000)
+	trustingPeriodFraction := "0.1"
 
-	path.EndpointB.ClientConfig.(*ibctesting.TendermintConfig).UnbondingPeriod = 3600000000000
-	path.EndpointB.ClientConfig.(*ibctesting.TendermintConfig).TrustingPeriod = 1200000000000
+	path.EndpointA.ClientConfig.(*ibctesting.TendermintConfig).UnbondingPeriod = unbondingPeriodA
+	path.EndpointA.ClientConfig.(*ibctesting.TendermintConfig).TrustingPeriod, _ = calculateTrustPeriod(unbondingPeriodA, trustingPeriodFraction)
+
+	path.EndpointB.ClientConfig.(*ibctesting.TendermintConfig).UnbondingPeriod = unbondingPeriodB
+	path.EndpointB.ClientConfig.(*ibctesting.TendermintConfig).TrustingPeriod, _ = calculateTrustPeriod(unbondingPeriodB, trustingPeriodFraction)
 	return path
 }
 
 // SetupICAPath invokes the InterchainAccounts entrypoint and subsequent channel handshake handlers.
-func SetupICAPath(path *ibctesting.Path, owner string) error {
+func (suite *IBCConnectionTestSuite) SetupICAPath(path *ibctesting.Path, owner string) error {
 	if err := RegisterInterchainAccount(path.EndpointA, owner); err != nil {
 		return err
 	}
@@ -169,32 +172,35 @@ func SetupICAPath(path *ibctesting.Path, owner string) error {
 
 // RegisterInterchainAccount is a helper function for starting the channel handshake.
 func RegisterInterchainAccount(endpoint *ibctesting.Endpoint, owner string) error {
-	icaOwner, _ := ictxstypes.NewICAOwner(owner, TestInterchainID)
-	portID, err := icatypes.NewControllerPortID(icaOwner.String())
+	portID, err := icatypes.NewControllerPortID(owner)
 	if err != nil {
 		return err
 	}
 
-	ctx := endpoint.Chain.GetContext()
-
-	channelSequence := endpoint.Chain.App.GetIBCKeeper().ChannelKeeper.GetNextChannelSequence(ctx)
+	channelSequence := endpoint.Chain.App.GetIBCKeeper().ChannelKeeper.GetNextChannelSequence(endpoint.Chain.GetContext())
 
 	a, ok := endpoint.Chain.App.(*app.App)
 	if !ok {
-		return fmt.Errorf("not NolusZoneApp")
+		return fmt.Errorf("not NolusApp")
 	}
 
-	// TODO(pr0n00gler): are we sure it's okay?
-	if err := a.ICAControllerKeeper.RegisterInterchainAccount(ctx, endpoint.ConnectionID, icaOwner.String(), ""); err != nil {
+	icaMsgServer := icacontrollerkeeper.NewMsgServerImpl(a.ICAControllerKeeper)
+	_, err = icaMsgServer.RegisterInterchainAccount(endpoint.Chain.GetContext(), &icacontrollertypes.MsgRegisterInterchainAccount{
+		Owner:        owner,
+		ConnectionId: endpoint.ConnectionID,
+		Version:      TestVersion,
+		Ordering:     channeltypes.UNORDERED,
+	})
+	if err != nil {
 		return err
 	}
-
 	// commit state changes for proof verification
 	endpoint.Chain.NextBlock()
 
 	// update port/channel ids
 	endpoint.ChannelID = channeltypes.FormatChannelIdentifier(channelSequence)
 	endpoint.ChannelConfig.PortID = portID
+	endpoint.ChannelConfig.Version = TestVersion
 
 	return nil
 }
