@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package nolus.transfer;
 
+import "amino/amino.proto";
 import "cosmos/base/v1beta1/coin.proto";
 import "cosmos/msg/v1/msg.proto";
 import "gogoproto/gogo.proto";
@@ -32,8 +33,8 @@ message MsgTransfer {
   string source_port = 1 [(gogoproto.moretags) = "yaml:\"source_port\""];
   // the channel by which the packet will be sent
   string source_channel = 2 [(gogoproto.moretags) = "yaml:\"source_channel\""];
-  // the tokens to be transferred
-  cosmos.base.v1beta1.Coin token = 3 [(gogoproto.nullable) = false];
+  // the token to be transferred. this field has been replaced by the tokens field.
+  cosmos.base.v1beta1.Coin token = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, deprecated = true];
   // the sender address
   string sender = 4;
   // the recipient address on the destination chain
@@ -50,7 +51,11 @@ message MsgTransfer {
 
   string memo = 8;
 
-  nolus.feerefunder.Fee fee = 9 [(gogoproto.nullable) = false];
+  nolus.feerefunder.Fee fee = 9 [(gogoproto.nullable) = false, deprecated = true];
+  // tokens to be transferred
+  repeated cosmos.base.v1beta1.Coin tokens = 10 [(gogoproto.nullable) = false];
+  // optional forwarding information
+  ibc.applications.transfer.v1.Forwarding forwarding = 11;
 }
 
 // MsgTransferResponse is the modified response type for

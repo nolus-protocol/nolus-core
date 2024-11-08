@@ -10,9 +10,9 @@ import (
 
 	types "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	types0 "github.com/cosmos/cosmos-sdk/types"
-	types1 "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
-	types2 "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
-	exported "github.com/cosmos/ibc-go/v8/modules/core/exported"
+	types1 "github.com/cosmos/ibc-go/v9/modules/apps/27-interchain-accounts/controller/types"
+	types2 "github.com/cosmos/ibc-go/v9/modules/core/04-channel/types"
+	exported "github.com/cosmos/ibc-go/v9/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
 )
 

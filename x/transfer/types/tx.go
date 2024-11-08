@@ -3,7 +3,7 @@ package types
 import (
 	"context"
 
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	"github.com/cosmos/ibc-go/v9/modules/apps/transfer/types"
 	"google.golang.org/grpc"
 
 	feerefundertypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
@@ -12,7 +12,7 @@ import (
 )
 
 func (msg *MsgTransfer) Validate(isContract bool) error {
-	sdkMsg := types.NewMsgTransfer(msg.SourcePort, msg.SourceChannel, msg.Token, msg.Sender, msg.Receiver, msg.TimeoutHeight, msg.TimeoutTimestamp, msg.Memo)
+	sdkMsg := types.NewMsgTransfer(msg.SourcePort, msg.SourceChannel, msg.Tokens, msg.Sender, msg.Receiver, msg.TimeoutHeight, msg.TimeoutTimestamp, msg.Memo, msg.Forwarding)
 	return sdkMsg.ValidateBasic()
 }
 

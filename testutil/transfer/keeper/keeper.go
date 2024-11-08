@@ -17,7 +17,7 @@ import (
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 
-	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v9/modules/apps/transfer/types"
 
 	keeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/transfer/types"

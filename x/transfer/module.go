@@ -10,10 +10,10 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	"github.com/cosmos/ibc-go/v9/modules/apps/transfer"
+	"github.com/cosmos/ibc-go/v9/modules/apps/transfer/keeper"
+	"github.com/cosmos/ibc-go/v9/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v9/modules/core/04-channel/types"
 
 	wrapkeeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
 	transfertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
@@ -49,7 +49,7 @@ func (im IBCModule) OnAcknowledgementPacket(
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
-	err := im.IBCModule.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer)
+	err := im.IBCModule.OnAcknowledgementPacket(ctx, channelVersion, packet, acknowledgement, relayer)
 	if err != nil {
 		return errors.Wrap(err, "failed to process original OnAcknowledgementPacket")
 	}
@@ -59,10 +59,11 @@ func (im IBCModule) OnAcknowledgementPacket(
 // OnTimeoutPacket implements the IBCModule interface.
 func (im IBCModule) OnTimeoutPacket(
 	ctx sdk.Context,
+	channelVersion string,
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {
-	err := im.IBCModule.OnTimeoutPacket(ctx, packet, relayer)
+	err := im.IBCModule.OnTimeoutPacket(ctx, channelVersion, packet, relayer)
 	if err != nil {
 		return errors.Wrap(err, "failed to process original OnTimeoutPacket")
 	}
