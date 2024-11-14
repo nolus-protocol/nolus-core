@@ -369,10 +369,10 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.AccountKeeper,
 		appKeepers.ScopedICAHostKeeper,
 		msgServiceRouter,
+		grpcQueryRouter,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.ICAHostKeeper = &icaHostKeeper
-	appKeepers.ICAHostKeeper.WithQueryRouter(grpcQueryRouter)
 
 	appKeepers.IcaModule = ica.NewAppModule(appKeepers.ICAControllerKeeper, appKeepers.ICAHostKeeper)
 
@@ -408,6 +408,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.ContractManagerKeeper,
 	), wasmOpts...)
 
+	// TODO: upgrade wasm when new version is available (with ibc-go v9)
 	appKeepers.WasmKeeper = wasmkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[wasmtypes.StoreKey]),
@@ -482,7 +483,8 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	var icaControllerStack ibcporttypes.IBCModule
 
 	icaControllerStack = interchaintxs.NewIBCModule(*appKeepers.InterchainTxsKeeper)
-	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, *appKeepers.ICAControllerKeeper)
+	// TODO: review how other chains apply the changes here
+	icaControllerStack = icacontroller.NewIBCMiddleware(*appKeepers.ICAControllerKeeper)
 
 	icaHostIBCModule := icahost.NewIBCModule(*appKeepers.ICAHostKeeper)
 

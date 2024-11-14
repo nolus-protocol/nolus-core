@@ -47,10 +47,11 @@ func TestHandleAcknowledgement(t *testing.T) {
 	relayerBech32 := "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 	relayerAddress := sdk.MustAccAddressFromBech32(relayerBech32)
 
-	err = icak.HandleAcknowledgement(ctx, channeltypes.Packet{}, nil, relayerAddress)
+	// TODO: review if TestVersion is sufficient version for this test of HandleAcknowledgement
+	err = icak.HandleAcknowledgement(ctx, testutil.TestVersion, channeltypes.Packet{}, nil, relayerAddress)
 	require.ErrorContains(t, err, "failed to get ica owner from port")
 
-	err = icak.HandleAcknowledgement(ctx, p, nil, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, testutil.TestVersion, p, nil, relayerAddress)
 	require.ErrorContains(t, err, "cannot unmarshal ICS-27 packet acknowledgement")
 
 	msgAck, err := keeper.PrepareSudoCallbackMessage(p, &resACK)
@@ -59,13 +60,13 @@ func TestHandleAcknowledgement(t *testing.T) {
 	// success contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
-	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, testutil.TestVersion, p, resAckData, relayerAddress)
 	require.NoError(t, err)
 
 	// error contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("error sudoResponse"))
-	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, testutil.TestVersion, p, resAckData, relayerAddress)
 	require.NoError(t, err)
 }
 
@@ -91,19 +92,19 @@ func TestHandleTimeout(t *testing.T) {
 	msgAck, err := keeper.PrepareSudoCallbackMessage(p, nil)
 	require.NoError(t, err)
 
-	err = icak.HandleTimeout(ctx, channeltypes.Packet{}, relayerAddress)
+	err = icak.HandleTimeout(ctx, testutil.TestVersion, channeltypes.Packet{}, relayerAddress)
 	require.ErrorContains(t, err, "failed to get ica owner from port")
 
 	// contract success
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
-	err = icak.HandleTimeout(ctx, p, relayerAddress)
+	err = icak.HandleTimeout(ctx, testutil.TestVersion, p, relayerAddress)
 	require.NoError(t, err)
 
 	// contract error
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("SudoTimeout error"))
-	err = icak.HandleTimeout(ctx, p, relayerAddress)
+	err = icak.HandleTimeout(ctx, testutil.TestVersion, p, relayerAddress)
 	require.NoError(t, err)
 }
 
