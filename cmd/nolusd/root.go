@@ -108,7 +108,7 @@ var (
 		{
 			Section: "wasm",
 			Key:     "query_gas_limit",
-			Value:   "2000000",
+			Value:   "5000000",
 		},
 	}
 
