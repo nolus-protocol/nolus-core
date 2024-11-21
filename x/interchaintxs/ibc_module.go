@@ -12,7 +12,10 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
 )
 
-var _ porttypes.IBCModule = IBCModule{}
+var (
+	_ porttypes.IBCModule        = IBCModule{}
+	_ porttypes.UpgradableModule = IBCModule{} // implements the upgradableModule interface to allow channel upgrades
+)
 
 // IBCModule implements the ICS26 interface for interchain accounts controller chains.
 type IBCModule struct {
@@ -24,6 +27,49 @@ func NewIBCModule(k keeper.Keeper) IBCModule {
 	return IBCModule{
 		keeper: k,
 	}
+}
+
+// OnChanUpgradeInit implements the IBCModule interface. We don't need to implement this handler.
+func (im IBCModule) OnChanUpgradeInit(
+	ctx sdk.Context,
+	portID, channelID string,
+	proposedOrder channeltypes.Order,
+	proposedConnectionHops []string,
+	proposedVersion string,
+) (string, error) {
+	return proposedVersion, nil
+}
+
+// OnChanUpgradeTry implements the IBCModule interface. We don't need to implement this handler.
+func (im IBCModule) OnChanUpgradeTry(
+	ctx sdk.Context,
+	portID, channelID string,
+	proposedOrder channeltypes.Order,
+	proposedConnectionHops []string,
+	counterpartyVersion string,
+) (string, error) {
+	return counterpartyVersion, nil
+}
+
+// OnChanUpgradeAck implements the IBCModule interface. We don't need to implement this handler.
+func (im IBCModule) OnChanUpgradeAck(
+	ctx sdk.Context,
+	portID,
+	channelID,
+	counterpartyVersion string,
+) error {
+	return nil
+}
+
+// OnChanUpgradeOpen implements the IBCModule interface. We don't need to implement this handler.
+func (im IBCModule) OnChanUpgradeOpen(
+	ctx sdk.Context,
+	portID,
+	channelID string,
+	proposedOrder channeltypes.Order,
+	proposedConnectionHops []string,
+	proposedVersion string,
+) {
 }
 
 // OnChanOpenInit implements the IBCModule interface. We don't need to implement this handler.
