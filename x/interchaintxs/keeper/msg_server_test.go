@@ -122,7 +122,7 @@ func TestRegisterInterchainAccount(t *testing.T) {
 		Owner:        icaOwner.String(),
 		ConnectionId: msgRegAcc.ConnectionId,
 		Version:      "",
-		Ordering:     channeltypes.UNORDERED,
+		Ordering:     channeltypes.ORDERED,
 	}
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, contractAddress).Return(true)
