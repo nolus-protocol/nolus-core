@@ -5,6 +5,7 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
 
+// Params defines the v2 parameters for the module.
 message Params {
   option (gogoproto.goproto_stringer) = false;
 
@@ -20,6 +21,7 @@ message DexFeeParams {
   repeated DenomPrice accepted_denoms_min_prices = 2;
 }
 
+// DenomPrice will be used to define accepted denoms, their min prices and their ticker.
 message DenomPrice {
   string denom = 1;
   // ticker will only be used for a more readable format for the users

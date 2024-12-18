@@ -24,6 +24,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Params defines the v2 parameters for the module.
 type Params struct {
 	FeeRate         int32           `protobuf:"varint,1,opt,name=fee_rate,json=feeRate,proto3" json:"fee_rate,omitempty"`
 	BaseDenom       string          `protobuf:"bytes,2,opt,name=base_denom,json=baseDenom,proto3" json:"base_denom,omitempty"`
@@ -144,6 +145,7 @@ func (m *DexFeeParams) GetAcceptedDenomsMinPrices() []*DenomPrice {
 	return nil
 }
 
+// DenomPrice will be used to define accepted denoms, their min prices and their ticker.
 type DenomPrice struct {
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 	// ticker will only be used for a more readable format for the users
