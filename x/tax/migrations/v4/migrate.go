@@ -66,7 +66,7 @@ func Migrate(
 	if bz == nil {
 		return nil
 	}
-	var currentParams legacytypes.Params
+	var currentParams legacytypes.Params // nolint:staticcheck
 	err = cdc.Unmarshal(bz, &currentParams)
 	if err != nil {
 		return err
