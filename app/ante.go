@@ -13,7 +13,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // HandlerOptions are the options required for constructing a default SDK AnteHandler.

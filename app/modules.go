@@ -50,7 +50,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
-	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 

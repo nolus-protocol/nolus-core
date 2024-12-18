@@ -6,7 +6,7 @@ import (
 	keepertest "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -18,7 +18,7 @@ func TestGenesis(t *testing.T) {
 		Params: types.DefaultParams(),
 	}
 
-	k, ctx, _ := keepertest.TaxKeeper(t, false, sdk.DecCoins{})
+	k, ctx := keepertest.TaxKeeper(t, false, sdk.DecCoins{}, types.DefaultParams())
 	tax.InitGenesis(ctx, *k, genesisState)
 	got := tax.ExportGenesis(ctx, *k)
 	require.NotNil(t, got)

@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"math/rand"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	legacytypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
@@ -14,7 +15,7 @@ import (
 // on the simulation.
 func ParamChanges(r *rand.Rand) []simtypes.LegacyParamChange {
 	return []simtypes.LegacyParamChange{
-		simulation.NewSimLegacyParamChange(types.ModuleName, string(types.KeyFeeRate),
+		simulation.NewSimLegacyParamChange(types.ModuleName, string(legacytypes.KeyFeeRate),
 			func(r *rand.Rand) string {
 				return fmt.Sprint(GenRandomFeeRate(r))
 			},

@@ -23,7 +23,7 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
 
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"

@@ -1,0 +1,29 @@
+syntax = "proto3";
+package nolus.tax.v2;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
+
+message Params {
+  option (gogoproto.goproto_stringer) = false;
+
+  int32 fee_rate = 1;
+  string base_denom = 2;
+  repeated DexFeeParams dex_fee_params = 3; 
+  string treasury_address = 4;
+}
+
+// Defines the accepted fees with corresponding min prices and profit addresses
+message DexFeeParams {
+  string profit_address = 1;
+  repeated DenomPrice accepted_denoms_min_prices = 2;
+}
+
+message DenomPrice {
+  string denom = 1;
+  // ticker will only be used for a more readable format for the users
+  string ticker = 2;
+  float min_price = 3;
+}
+

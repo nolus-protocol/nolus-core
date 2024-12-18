@@ -15,7 +15,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // TestAccount represents a client Account that can be used in unit tests.

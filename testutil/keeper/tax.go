@@ -3,7 +3,6 @@ package keeper
 import (
 	"testing"
 
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
 	protov2 "google.golang.org/protobuf/proto"
@@ -24,12 +23,11 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	mock_types "github.com/Nolus-Protocol/nolus-core/testutil/mocks/tax/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
-func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Keeper, sdk.Context, *mock_types.MockWasmKeeper) {
+func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins, params types.Params) (*keeper.Keeper, sdk.Context) {
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
@@ -40,23 +38,19 @@ func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins) (*keeper.Ke
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 
-	ctrl := gomock.NewController(t)
-	mockWasmKeeper := mock_types.NewMockWasmKeeper(ctrl)
-
 	k := keeper.NewKeeper(
 		cdc,
 		runtime.NewKVStoreService(storeKey),
-		mockWasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	ctx := sdk.NewContext(stateStore, tmproto.Header{}, isCheckTx, log.NewNopLogger()).WithMinGasPrices(gasPrices)
 
 	// Initialize params
-	err := k.SetParams(ctx, types.DefaultParams())
+	err := k.SetParams(ctx, params)
 	require.NoError(t, err)
 
-	return &k, ctx, mockWasmKeeper
+	return &k, ctx
 }
 
 type MockFeeTx struct {

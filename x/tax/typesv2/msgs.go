@@ -1,4 +1,4 @@
-package types
+package typesv2
 
 import (
 	"cosmossdk.io/errors"

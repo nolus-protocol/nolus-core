@@ -5,7 +5,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -44,7 +44,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 	}
 
 	// Ensures the module treasury address has been set
-	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.ContractAddress(ctx))
+	treasuryAddr, err := sdk.AccAddressFromBech32(dtd.tk.TreasuryAddress(ctx))
 	if err != nil {
 		return ctx, errorsmod.Wrap(sdkerrors.ErrUnknownAddress, fmt.Sprintf("invalid treasury smart contract address: %s", err.Error()))
 	}
@@ -71,7 +71,7 @@ func (dtd DeductTaxDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bo
 				return ctx, err
 			}
 
-			feeParam, err := getFeeParamBasedOnDenom(params.FeeParams, sdk.NewCoins(feeCoin))
+			feeParam, err := getFeeParamBasedOnDenom(params.DexFeeParams, sdk.NewCoins(feeCoin))
 			if err != nil {
 				return ctx, err
 			}

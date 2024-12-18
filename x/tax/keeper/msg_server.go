@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/errors"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
