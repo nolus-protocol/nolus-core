@@ -1,10 +1,10 @@
-package types_test
+package typesv2_test
 
 import (
 	"testing"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,7 +22,7 @@ func TestGenesisState_Validate(t *testing.T) {
 		},
 		{
 			desc:     "valid genesis state",
-			genState: &types.GenesisState{Params: types.NewParams(types.DefaultFeeRate, types.DefaultContractAddress, types.DefaultBaseDenom)},
+			genState: &types.GenesisState{Params: types.NewParams(types.DefaultFeeRate, types.DefaultTreasuryAddress, types.DefaultBaseDenom)},
 			valid:    true,
 		},
 		{

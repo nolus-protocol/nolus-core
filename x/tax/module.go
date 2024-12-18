@@ -23,11 +23,11 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/tax/exported"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // ConsensusVersion defines the current x/tax module consensus version.
-const ConsensusVersion = 3
+const ConsensusVersion = 4
 
 var (
 	_ module.AppModuleBasic      = (*AppModule)(nil)
@@ -155,7 +155,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	m := keeper.NewMigrator(am.keeper, am.legacySubspace)
 
-	if err := cfg.RegisterMigration(types.ModuleName, 2, m.Migrate2to3); err != nil {
+	if err := cfg.RegisterMigration(types.ModuleName, 3, m.Migrate3to4); err != nil {
 		panic(fmt.Sprintf("failed to migrate x/%s from version 2 to 3: %v", types.ModuleName, err))
 	}
 }

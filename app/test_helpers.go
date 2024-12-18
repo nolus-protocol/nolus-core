@@ -12,7 +12,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // returns context and app with params set on account keeper.

@@ -1,111 +1,43 @@
 package types
 
 import (
-	"strconv"
 	"strings"
 
-	"cosmossdk.io/errors"
-	sdkmath "cosmossdk.io/math"
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
+// TODO always use the base-price query for all protocols, example : {"base_price": { "currency": "OSMO"}}  ( base price of a protocol is the lpn ticker)
+//  := amount * (float64(QuoteAmountAsInt) / float64(AmountAsInt)) should be sufficient for all cases
+// lets say fee is paid in OSMO and we use the osmosis protocl with base price usdc-noble -> 2 queries for the price of OSMO ( {"base_price": { "currency": "OSMO"}}) and then for the price of our l1 base asset NLS ( {"base_price": { "currency": "NLS"}})
+// {"data":{"amount":{"amount":"20000000000000000000000000","ticker":"NLS"},"amount_quote":{"amount":"266989135256384142681063","ticker":"USDC_NOBLE"}}}
+// {"data":{"amount":{"amount":"204636307898908853530883789062500000","ticker":"OSMO"},"amount_quote":{"amount":"140267298255822741431020268016499489","ticker":"USDC_NOBLE"}}}
+// 2 calculations; 1 for osmo to protocol's base price and 1 for unls to protocol's base price
+// := osmo * (usdc_noble/osmo) ?
+// := unls * (usdc_noble/unls) ?
+
+// lets say fee is paid in USDC_NOBLE
+// {"data":{"amount":{"amount":"1","ticker":"USDC_NOBLE"},"amount_quote":{"amount":"1","ticker":"USDC_NOBLE"}}}
+// {"data":{"amount":{"amount":"20000000000000000000000000","ticker":"NLS"},"amount_quote":{"amount":"266989135256384142681063","ticker":"USDC_NOBLE"}}}
+// := usdc * (usdc_noble/usdc_noble) ?
+// := unls * (usdc_noble/unls) ?
+
+// lets say we use a short protocol st_atom with base price st_atom and fee is paid in OSMO
+// {"data":{"amount":{"amount":"17462298274040222167968750000000000000","ticker":"OSMO"},"amount_quote":{"amount":"898204223623089861470521043125424927","ticker":"ST_ATOM"}}}
+// {"data":{"amount":{"amount":"198523347012726641969138086096791084855","ticker":"NLS"},"amount_quote":{"amount":"199016001066004468121070185771025592","ticker":"ST_ATOM"}}}
+// := osmo * (st_atom/osmo) ?
+// := unls * (st_atom/unls) ?
+
+// lets say we use a short protocol st_atom with base price st_atom and fee is paid in ST_ATOM
+// {"data":{"amount":{"amount":"1","ticker":"ST_ATOM"},"amount_quote":{"amount":"1","ticker":"ST_ATOM"}}}
+// := st_atom * (st_atom/st_atom) ?
+// := unls * (st_atom/unls) ?
+
+// PROBLEM: how to ensure tickers for queries are correct if we don't have them in the tax params? We have to keep an up-to date map inside the l1 which could also be updated through a gov prop for easier migration
+// but we will still have the dependency of keeping the map up-to-date in the l1
+
 var baseAssetTicker = strings.ToUpper(params.HumanCoinUnit)
-
-// OracleData is the struct we use to unmarshal the oracle's response for prices.
-type OracleData struct {
-	Prices []Price `json:"prices"`
-}
-
-// Price is inner the struct we use to unmarshal the oracle's response for prices.
-type Price struct {
-	Amount      PriceFeed `json:"amount"`
-	AmountQuote PriceFeed `json:"amount_quote"`
-}
 
 type PriceFeed struct {
 	Amount string `json:"amount"`
 	Ticker string `json:"ticker"`
-}
-
-func (prices OracleData) CalculateValueInBaseAsset(ticker, stableTicker string, amount float64, requiredFees sdkmath.Int) (float64, float64, error) {
-	var err error
-	baseAssetAmountAsInt := 0
-	baseAssetQuoteAmountAsInt := 0
-
-	for _, price := range prices.Prices {
-		if price.Amount.Ticker == baseAssetTicker {
-			baseAssetAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
-			if err != nil {
-				return 0, 0, err
-			}
-
-			baseAssetQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
-			if err != nil {
-				return 0, 0, err
-			}
-		}
-	}
-
-	if baseAssetAmountAsInt == 0 || baseAssetQuoteAmountAsInt == 0 {
-		return 0, 0, errors.Wrapf(ErrNoPrices, "no prices found for nls")
-	}
-
-	if ticker == stableTicker {
-		return calculateForStableToken(baseAssetAmountAsInt, baseAssetQuoteAmountAsInt, amount, requiredFees)
-	} else {
-		return calculateForVolatileToken(baseAssetAmountAsInt, baseAssetQuoteAmountAsInt, prices, ticker, amount, requiredFees)
-	}
-}
-
-func calculateForStableToken(baseAssetAmountAsInt, baseAssetQuoteAmountAsInt int, amount float64, requiredFees sdkmath.Int) (float64, float64, error) {
-	// {"amount":{"amount":"200000000","ticker":"NLS"},"amount_quote":{"amount":"12386383","ticker":"USDC"}}}
-
-	// fee amount in stables * (price of 1 stable token in base asset)
-	// 2 000 000uusdc        *  	16,146763749
-	fullFeeAmountInBaseAsset := amount * (float64(baseAssetAmountAsInt) / float64(baseAssetQuoteAmountAsInt))
-
-	// requiredFees is always in base asset, we calculate the value of the minimum required base asset in the paid denom
-	// requiredFees * (price of 1 unit of base asset in usdc) * (price of 1 uusdc in unit of denom)
-	// 2500unls        *   			0,027027027        *   			5,010046396
-	requiredFeesInStable := float64(requiredFees.Int64()) * (float64(baseAssetQuoteAmountAsInt) / float64(baseAssetAmountAsInt))
-
-	return fullFeeAmountInBaseAsset, requiredFeesInStable, nil
-}
-
-func calculateForVolatileToken(baseAssetAmountAsInt, baseAssetQuoteAmountAsInt int, prices OracleData, ticker string, amount float64, requiredFees sdkmath.Int) (float64, float64, error) {
-	var err error
-	denomAmountAsInt := 0
-	denomQuoteAmountAsInt := 0
-
-	for _, price := range prices.Prices {
-		if price.Amount.Ticker == ticker {
-			denomAmountAsInt, err = strconv.Atoi(price.Amount.Amount)
-			if err != nil {
-				return 0, 0, err
-			}
-
-			denomQuoteAmountAsInt, err = strconv.Atoi(price.AmountQuote.Amount)
-			if err != nil {
-				return 0, 0, err
-			}
-		}
-	}
-
-	if denomAmountAsInt == 0 || denomQuoteAmountAsInt == 0 {
-		return 0, 0, errors.Wrapf(ErrNoPrices, "no prices found for %s", ticker)
-	}
-
-	// fee amount * (price of 1 unit of denom in usdc) * (price of 1 uusdc in unit of base asset)
-	// 200uosmo        *   			0.6491066072588383usdc 			 	*  21.45123159028491unls
-	fullFeeAmountInBaseAsset := amount * (float64(denomQuoteAmountAsInt) / float64(denomAmountAsInt)) * (float64(baseAssetAmountAsInt) / float64(baseAssetQuoteAmountAsInt))
-
-	// {"amount":{"amount":"20000000","ticker":"OSMO"},"amount_quote":{"amount":"3991979","ticker":"USDC"}}
-	// {"amount":{"amount":"1000000000000000000","ticker":"NLS"},"amount_quote":{"amount":"27027027027027027","ticker":"USDC"}}
-
-	// requiredFees is always in base asset, we calculate the value of the minimum required base asset in the paid denom
-	// requiredFees * (price of 1 base asset in uusdc) * (price of 1 uusdc in unit ofdenom)
-	// 2500unls        *   			0,027027027        *   			5,010046396
-	requiredFeesInPaidDenom := float64(requiredFees.Int64()) * (float64(baseAssetQuoteAmountAsInt) / float64(baseAssetAmountAsInt)) * (float64(denomAmountAsInt) / float64(denomQuoteAmountAsInt))
-
-	return fullFeeAmountInBaseAsset, requiredFeesInPaidDenom, nil
 }

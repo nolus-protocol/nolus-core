@@ -8,7 +8,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // Simulation operation weights constants.
@@ -36,7 +36,7 @@ func SimulateMsgUpdateParams(r *rand.Rand, _ sdk.Context, _ []simtypes.Account) 
 
 	params := types.DefaultParams()
 	params.BaseDenom = simtypes.RandStringOfLength(r, 10)
-	params.ContractAddress = simtypes.RandomAccounts(r, 1)[0].Address.String()
+	params.TreasuryAddress = simtypes.RandomAccounts(r, 1)[0].Address.String()
 	params.FeeRate = GenRandomFeeRate(r)
 
 	return &types.MsgUpdateParams{

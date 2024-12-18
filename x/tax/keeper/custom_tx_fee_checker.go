@@ -1,12 +1,11 @@
 package keeper
 
 import (
-	"encoding/json"
 	"math"
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -39,70 +38,42 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
 			}
 
-			// Base denom is module param, should be "unls"
-			params, err := k.GetParams(ctx)
-			if err != nil {
-				return nil, 0, errors.Wrap(sdkerrors.ErrNotFound, err.Error())
-			}
-			minimumFeeRequired := sdk.NewCoin(params.BaseDenom, minGasPrices[0].Amount.Mul(glDec).Ceil().RoundInt())
-
 			// if there are no fees provided
 			if feeCoins.Len() == 0 {
 				return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
 			}
 
+			params, err := k.GetParams(ctx)
+			if err != nil {
+				return nil, 0, errors.Wrap(sdkerrors.ErrNotFound, err.Error())
+			}
+
 			// if there are no fees paid in the base asset
 			if ok, _ := feeCoins.Find(params.BaseDenom); !ok {
 				// Get Fee Param for select dex based on the feeCoins provided
-				feeParam, err := getFeeParamBasedOnDenom(params.FeeParams, feeCoins)
+				feeParam, err := getFeeParamBasedOnDenom(params.DexFeeParams, feeCoins)
 				if err != nil {
 					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, err.Error()) //nolint:govet
 				}
 
-				// get the oracle address
-				oracleAddress, err := sdk.AccAddressFromBech32(feeParam.OracleAddress)
-				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidAddress, "failed to convert treasury, bech32 to AccAddress: %s: %s", feeParam.OracleAddress, err.Error())
-				}
-
-				// query the oracle for all available prices from this dex
-				pricesBytes, err := k.wasmKeeper.QuerySmart(ctx, oracleAddress, []byte(`{"prices":{}}`))
-				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to query oracle: %s", err.Error())
-				}
-
-				// unmarshal pricesBytes in an appropriate struct
-				var prices types.OracleData
-				err = json.Unmarshal(pricesBytes, &prices)
-				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrJSONUnmarshal, "failed to unmarshal oracle data: %s", err.Error())
-				}
-
+				var minGasPrice float64
 				// go through every fee provided
 				for _, fee := range feeCoins {
-					denomTicker, err := isValidFeeDenom(fee.Denom, *feeParam)
+					minGasPrice, err = denomMinPrice(fee.Denom, *feeParam)
 					if err != nil {
 						return nil, 0, err
 					}
 
-					if len(prices.Prices) == 0 {
-						return nil, 0, errors.Wrapf(types.ErrNoPrices, "no prices found for oracle: %s", feeParam.OracleAddress)
-					}
+					// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
+					gasLimitDec := sdkmath.LegacyNewDec(int64(gas))
+					minimumFeeRequiredInPaidDenom := minGasPrice * gasLimitDec.MustFloat64()
 
-					// AmountQuote.Ticker should be the same for every price in the prices array fetched from an oracle so we just get the first price and use the stableTicker.
-					// Each oracle could have different stableTicker.
-					stableTicker := prices.Prices[0].AmountQuote.Ticker
-					providedFeeAmountInBaseAsset, requiredFeesInPaidDenom, err := prices.CalculateValueInBaseAsset(denomTicker, stableTicker, fee.Amount.ToLegacyDec().MustFloat64(), requiredFees[0].Amount)
-					if err != nil {
-						return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, "failed to calculate fee denom(%s) price in base asset: %s", fee.Denom, err.Error())
-					}
-
-					// if the fee calculated in nls is greater than the required fee in nls, then fee is valid
-					if providedFeeAmountInBaseAsset > minimumFeeRequired.Amount.ToLegacyDec().MustFloat64() {
+					// if the fee provided is greater than the minimum fee required in the paid denom, then it is accepted
+					if fee.Amount.ToLegacyDec().MustFloat64() > minimumFeeRequiredInPaidDenom {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
 					} else {
-						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().MustFloat64(), fee.Denom, requiredFeesInPaidDenom, fee.Denom)
+						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().MustFloat64(), fee.Denom, minimumFeeRequiredInPaidDenom, fee.Denom)
 					}
 				}
 			}
@@ -116,12 +87,12 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 	return feeCoins, priority, nil
 }
 
-func getFeeParamBasedOnDenom(feeParams []*types.FeeParam, feeCoins sdk.Coins) (*types.FeeParam, error) {
-	var correctFeeParam *types.FeeParam
-	// check if there is an accepted_denom in feeParams matching any of the feeCoins' denom
+func getFeeParamBasedOnDenom(feeParams []*types.DexFeeParams, feeCoins sdk.Coins) (*types.DexFeeParams, error) {
+	var correctFeeParam *types.DexFeeParams
+	// check if there is an accepted_denom in feeParams matching any of the paid fees' denom
 	for _, feeParam := range feeParams {
 		correctFeeParam = findDenom(*feeParam, feeCoins)
-		// if there is a match then we ensure this feeParam with correct oracle and profit
+		// if there is a match then we ensure this feeParam with correct profit
 		// smart contrat addresses will be used. This is in case of multiple supported DEXes.
 		if isFeeParamValid(correctFeeParam) {
 			return correctFeeParam, nil
@@ -131,19 +102,19 @@ func getFeeParamBasedOnDenom(feeParams []*types.FeeParam, feeCoins sdk.Coins) (*
 	return nil, errors.Wrapf(types.ErrInvalidFeeDenom, "no fee param found for denoms: %s", feeCoins)
 }
 
-func isFeeParamValid(feeParam *types.FeeParam) bool {
+func isFeeParamValid(feeParam *types.DexFeeParams) bool {
 	if feeParam == nil {
 		return false
 	}
-	if feeParam.OracleAddress == "" || feeParam.ProfitAddress == "" {
+	if feeParam.ProfitAddress == "" || feeParam.AcceptedDenomsMinPrices == nil {
 		return false
 	}
 	return true
 }
 
-func findDenom(feeParam types.FeeParam, feeCoins sdk.Coins) *types.FeeParam {
-	for _, denomReadable := range feeParam.AcceptedDenoms {
-		if ok, _ := feeCoins.Find(denomReadable.Denom); ok {
+func findDenom(feeParam types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeeParams {
+	for _, denom := range feeParam.AcceptedDenomsMinPrices {
+		if ok, _ := feeCoins.Find(denom.Denom); ok {
 			// fees should be sorted(biggest to smallest), so on the first match, we conclude that this is the current dex's fee param
 			// We need this check since denoms for the same token but from different dexes are different (because the channel differs)
 			//
@@ -156,20 +127,16 @@ func findDenom(feeParam types.FeeParam, feeCoins sdk.Coins) *types.FeeParam {
 	return nil
 }
 
-func isValidFeeDenom(denom string, feeParam types.FeeParam) (string, error) {
-	ticker := ""
-	for _, acceptedDenoms := range feeParam.AcceptedDenoms {
+func denomMinPrice(denom string, feeParam types.DexFeeParams) (float64, error) {
+	var price float64
+	for _, acceptedDenoms := range feeParam.AcceptedDenomsMinPrices {
 		if acceptedDenoms.Denom == denom {
-			ticker = acceptedDenoms.Ticker
-			return ticker, nil
+			price = float64(acceptedDenoms.MinPrice)
+			return price, nil
 		}
 	}
 
-	if ticker == "" {
-		return "", errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
-	}
-
-	return ticker, nil
+	return price, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
 }
 
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the gas price

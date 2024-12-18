@@ -1,26 +1,23 @@
 syntax = "proto3";
-package nolus.tax.v1beta1;
+package nolus.tax.v2;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "nolus/tax/v1beta1/params.proto";
+import "nolus/tax/v2/params.proto";
 
-option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/types";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
 
 // Query defines the gRPC querier service.
 service Query {
-  // Deprecated: please use the Params query from v2.
   // Parameters queries the parameters of the module.
   rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/nolus/tax/v1beta1/params";
+    option (google.api.http).get = "/nolus/tax/v2/params";
   }
 }
 
-// Deprecated: please use the QueryParamsRequest message from v2.
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
-// Deprecated: please use the QueryParamsResponse message from v2.
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
   // params holds all the parameters of this module.

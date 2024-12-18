@@ -10,13 +10,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 type Keeper struct {
 	cdc          codec.BinaryCodec
 	storeService store.KVStoreService
-	wasmKeeper   types.WasmKeeper
 
 	// the address capable of executing a MsgUpdateParams message. Typically, this
 	// should be the x/gov module account.
@@ -26,13 +25,11 @@ type Keeper struct {
 func NewKeeper(
 	cdc codec.BinaryCodec,
 	storeService store.KVStoreService,
-	wasmKeeper types.WasmKeeper,
 	authority string,
 ) Keeper {
 	return Keeper{
 		cdc:          cdc,
 		storeService: storeService,
-		wasmKeeper:   wasmKeeper,
 		authority:    authority,
 	}
 }

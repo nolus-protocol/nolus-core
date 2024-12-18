@@ -14,7 +14,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // TestRandomizedGenState tests the normal scenario of applying RandomizedGenState.
@@ -44,7 +44,7 @@ func TestRandomizedGenState(t *testing.T) {
 	require.Equal(t, "unls", taxGenesis.Params.BaseDenom)
 	require.GreaterOrEqual(t, taxGenesis.Params.FeeRate, int32(1))
 	require.GreaterOrEqual(t, int32(100), taxGenesis.Params.FeeRate)
-	require.Equal(t, "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz", taxGenesis.Params.ContractAddress)
+	require.Equal(t, "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz", taxGenesis.Params.TreasuryAddress)
 }
 
 // TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.

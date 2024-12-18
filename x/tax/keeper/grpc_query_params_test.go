@@ -5,14 +5,14 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 )
 
 func TestParamsQuery(t *testing.T) {
 	params.GetDefaultConfig()
-	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
+	keeper, ctx := testkeeper.TaxKeeper(t, false, sdk.DecCoins{}, types.DefaultParams())
 	params := types.DefaultParams()
 	_ = keeper.SetParams(ctx, params)
 
@@ -22,7 +22,7 @@ func TestParamsQuery(t *testing.T) {
 }
 
 func TestParamsQueryNilRequest(t *testing.T) {
-	keeper, ctx, _ := testkeeper.TaxKeeper(t, false, sdk.DecCoins{})
+	keeper, ctx := testkeeper.TaxKeeper(t, false, sdk.DecCoins{}, types.DefaultParams())
 	params := types.DefaultParams()
 	_ = keeper.SetParams(ctx, params)
 

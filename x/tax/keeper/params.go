@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 // GetParams get all parameters as types.Params.
@@ -50,8 +50,8 @@ func (k Keeper) FeeRate(ctx context.Context) int32 {
 	return p.FeeRate
 }
 
-// ContractAddress returns the contract address.
-func (k Keeper) ContractAddress(ctx context.Context) string {
+// TreasuryAddress returns the contract address.
+func (k Keeper) TreasuryAddress(ctx context.Context) string {
 	store := k.storeService.OpenKVStore(ctx)
 
 	b, err := store.Get(types.ParamsKey)
@@ -61,7 +61,7 @@ func (k Keeper) ContractAddress(ctx context.Context) string {
 
 	var p types.Params
 	k.cdc.MustUnmarshal(b, &p)
-	return p.ContractAddress
+	return p.TreasuryAddress
 }
 
 // BseDenom returns the base denom.

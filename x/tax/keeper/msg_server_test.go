@@ -1,7 +1,7 @@
 package keeper_test
 
 import (
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 func (s *KeeperTestSuite) TestUpdateParams() {
@@ -23,7 +23,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 				Authority: s.app.TaxKeeper.GetAuthority(),
 				Params: types.Params{
 					FeeRate:         0,
-					ContractAddress: "",
+					TreasuryAddress: "",
 					BaseDenom:       "",
 				},
 			},
@@ -35,7 +35,7 @@ func (s *KeeperTestSuite) TestUpdateParams() {
 				Authority: s.app.TaxKeeper.GetAuthority(),
 				Params: types.Params{
 					FeeRate:         1,
-					ContractAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
+					TreasuryAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
 					BaseDenom:       "nolus",
 				},
 			},

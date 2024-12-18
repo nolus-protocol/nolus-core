@@ -2,7 +2,7 @@ package tax
 
 import (
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 

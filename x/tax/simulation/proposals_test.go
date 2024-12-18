@@ -12,7 +12,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 
 	"github.com/Nolus-Protocol/nolus-core/x/tax/simulation"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 func TestProposalMsgs(t *testing.T) {
@@ -39,6 +39,6 @@ func TestProposalMsgs(t *testing.T) {
 
 	assert.Equal(t, sdk.AccAddress(address.Module("gov")).String(), msgUpdateParams.Authority)
 	assert.Equal(t, "GqiQWIXnku", msgUpdateParams.Params.BaseDenom)
-	assert.Equal(t, "nolus1tc8zyzm07gw9kty8kl65m493lt0mya8znkjpcs", msgUpdateParams.Params.ContractAddress)
+	assert.Equal(t, "nolus1tc8zyzm07gw9kty8kl65m493lt0mya8znkjpcs", msgUpdateParams.Params.TreasuryAddress)
 	assert.Equal(t, int32(49), msgUpdateParams.Params.FeeRate)
 }

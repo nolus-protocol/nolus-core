@@ -1,0 +1,10 @@
+syntax = "proto3";
+package nolus.tax.v2;
+
+import "gogoproto/gogo.proto";
+import "nolus/tax/v2/params.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
+
+// GenesisState defines the tax module's genesis state.
+message GenesisState { Params params = 1 [ (gogoproto.nullable) = false ]; }

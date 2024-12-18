@@ -5,25 +5,31 @@ import "gogoproto/gogo.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/types";
 
+// Deprecated: please use the Params  message from v2.
 // Params defines the parameters for the module.
 message Params {
+  option deprecated = true;
   option (gogoproto.goproto_stringer) = false;
 
   int32 fee_rate = 1;
   string contract_address = 2;
   string base_denom = 3;
-  repeated FeeParam fee_params = 4;
+  repeated FeeParam fee_params = 4; 
 }
 
+// Deprecated: please use the message from v2.
 // Defines the accepted fees with corresponding oracle and profit addresses
 message FeeParam {
+  option deprecated = true;
   string oracle_address = 1;
   string profit_address = 2;
   repeated DenomTicker accepted_denoms = 3;
 }
 
+// Deprecated: please use the message from v2.
 // DenomTicker will be used to define accepted denoms and their ticker
 message DenomTicker {
+  option deprecated = true;
   string denom = 1;
   string ticker = 2;
 }

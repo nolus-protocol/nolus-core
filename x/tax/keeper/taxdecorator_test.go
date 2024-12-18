@@ -9,7 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	"github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
 
 func (suite *KeeperTestSuite) TestTaxDecorator() {
@@ -156,7 +156,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			anteHandler := sdk.ChainAnteDecorators(dfd, dtd)
 
 			// retrieve treasury address
-			treasuryAddr, err := sdk.AccAddressFromBech32(params.ContractAddress)
+			treasuryAddr, err := sdk.AccAddressFromBech32(params.TreasuryAddress)
 			suite.Require().NoError(err)
 
 			// add coins to pay the tax
@@ -182,7 +182,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			// if fee is not in base denom, we expect the profit address to receive the tax
 			// otherwise we expect the treasury address to receive the tax
 			if len(tc.feeDenoms) != 0 && tc.feeDenoms[0] != params.BaseDenom && isAllowedDenom(params, tc.feeDenoms[0]) {
-				profitAddr, err := sdk.AccAddressFromBech32(params.FeeParams[0].ProfitAddress)
+				profitAddr, err := sdk.AccAddressFromBech32(params.DexFeeParams[0].ProfitAddress)
 				suite.Require().NoError(err)
 				addressToReceiveTax = profitAddr
 			} else {
@@ -191,6 +191,7 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 
 			expCoins := sdk.Coins{} // empty treasury
 			coinsInAddressToReceiveTax := suite.app.BankKeeper.GetAllBalances(suite.ctx, addressToReceiveTax)
+
 			feeRate := sdkmath.LegacyNewDec(int64(tc.feeRate))
 			tax := feeRate.MulInt(tc.feeAmount).Quo(HUNDRED_DEC).TruncateInt()
 
@@ -210,8 +211,8 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 }
 
 func isAllowedDenom(params types.Params, denom string) bool {
-	for _, feeParam := range params.FeeParams {
-		for _, allowedDenom := range feeParam.AcceptedDenoms {
+	for _, feeParam := range params.DexFeeParams {
+		for _, allowedDenom := range feeParam.AcceptedDenomsMinPrices {
 			if allowedDenom.Denom == denom {
 				return true
 			}

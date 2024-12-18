@@ -1,4 +1,4 @@
-package types
+package typesv2
 
 const (
 	// ModuleName defines the module name.

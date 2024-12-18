@@ -51,7 +51,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 
 	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"

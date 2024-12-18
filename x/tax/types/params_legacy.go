@@ -28,8 +28,8 @@ func ParamKeyTable() paramtypes.KeyTable {
 // NOTE: Deprecated.
 func (p *Params) ParamSetPairs() paramtypes.ParamSetPairs {
 	return paramtypes.ParamSetPairs{
-		paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
-		paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
-		paramtypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
+		// paramtypes.NewParamSetPair(KeyFeeRate, &p.FeeRate, validateFeeRate),
+		// paramtypes.NewParamSetPair(KeyContractAddress, &p.ContractAddress, validateContractAddress),
+		// paramtypes.NewParamSetPair(KeyBaseDenom, &p.BaseDenom, validateBaseDenom),
 	}
 }

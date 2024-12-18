@@ -1,4 +1,4 @@
-package types
+package typesv2
 
 // DefaultIndex is the default capability global index.
 const DefaultIndex uint64 = 1

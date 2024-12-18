@@ -1,10 +1,10 @@
 syntax = "proto3";
-package nolus.tax.v1beta1;
+package nolus.tax.v2;
 
-option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/types";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
 
 import "cosmos/msg/v1/msg.proto";
-import "nolus/tax/v1beta1/params.proto";
+import "nolus/tax/v2/params.proto";
 
 import "gogoproto/gogo.proto";
 import "cosmos_proto/cosmos.proto";
@@ -12,7 +12,6 @@ import "cosmos_proto/cosmos.proto";
 // Msg defines the x/tax Msg service.
 service Msg {
   option (cosmos.msg.v1.service) = true;
-  // Deprecated: please use the alternative UpdateParams message from v2.
   // UpdateParams defines a governance operation for updating the x/tax module
   // parameters. The authority is hard-coded to the x/gov module account.
   //
@@ -20,12 +19,10 @@ service Msg {
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 }
 
-// Deprecated: please use the alternative MsgUpdateParams message from v2.
 // MsgUpdateParams is the Msg/UpdateParams request type.
 //
 // Since: cosmos-sdk 0.47
 message MsgUpdateParams {
-  option deprecated = true;
   option (cosmos.msg.v1.signer) = "authority";
 
   // authority is the address of the governance account.
@@ -37,7 +34,6 @@ message MsgUpdateParams {
   Params params = 2 [ (gogoproto.nullable) = false ];
 }
 
-// Deprecated: please use the alternative MsgUpdateParamsResponse message from v2.
 // MsgUpdateParamsResponse defines the response structure for executing a
 // MsgUpdateParams message.
 //

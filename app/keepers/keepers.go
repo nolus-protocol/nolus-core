@@ -70,7 +70,7 @@ import (
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
-	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
+	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
 	vestingskeeper "github.com/Nolus-Protocol/nolus-core/x/vestings/keeper"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
@@ -387,7 +387,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 		appKeepers.FeeRefunderKeeper,
 		appKeepers.BankKeeper,
-		func(ctx sdk.Context) string { return appKeepers.TaxKeeper.ContractAddress(ctx) },
+		func(ctx sdk.Context) string { return appKeepers.TaxKeeper.TreasuryAddress(ctx) },
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
@@ -463,7 +463,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	taxKeeper := taxkeeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(appKeepers.keys[taxtypes.StoreKey]),
-		appKeepers.WasmKeeper,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.TaxKeeper = &taxKeeper
@@ -519,7 +518,6 @@ func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
 ) *paramskeeper.Keeper {
 	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
-	paramsKeeper.Subspace(taxtypes.ModuleName).WithKeyTable(taxtypes.ParamKeyTable())
 	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())   //nolint:staticcheck
