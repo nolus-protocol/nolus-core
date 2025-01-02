@@ -22,10 +22,10 @@ import (
 
 	db2 "github.com/cosmos/cosmos-db"
 
+	simcli "cosmossdk.io/x/simulation/client/cli"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 

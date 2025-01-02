@@ -7,10 +7,10 @@ import (
 	sdkmath "cosmossdk.io/math"
 	"github.com/stretchr/testify/suite"
 
+	banktestutil "cosmossdk.io/x/bank/testutil"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdktestutil "github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/testutil/nullify"

@@ -6,10 +6,10 @@ import (
 	"cosmossdk.io/errors"
 	storetypes "cosmossdk.io/store/types"
 
+	paramtypes "cosmossdk.io/x/params/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"

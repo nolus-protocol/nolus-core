@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
+	banktestutil "cosmossdk.io/x/bank/testutil"
 
 	"github.com/cosmos/cosmos-sdk/types/tx/signing"
 

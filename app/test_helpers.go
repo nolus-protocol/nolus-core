@@ -4,11 +4,11 @@ import (
 	"cosmossdk.io/log"
 	db "github.com/cosmos/cosmos-db"
 
+	banktypes "cosmossdk.io/x/bank/types"
+	simcli "cosmossdk.io/x/simulation/client/cli"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"

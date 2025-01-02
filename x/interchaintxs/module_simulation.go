@@ -1,11 +1,11 @@
 package interchaintxs
 
 import (
+	"cosmossdk.io/x/simulation"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	interchaintxssimulation "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/simulation"
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"

@@ -2,8 +2,8 @@
 package bindings
 
 import (
+	paramChange "cosmossdk.io/x/params/types/proposal"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	paramChange "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 
 	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	transferwrappertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"

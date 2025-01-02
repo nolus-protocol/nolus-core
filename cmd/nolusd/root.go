@@ -23,6 +23,11 @@ import (
 
 	db "github.com/cosmos/cosmos-db"
 
+	banktypes "cosmossdk.io/x/bank/types"
+	"cosmossdk.io/x/crisis"
+	"cosmossdk.io/x/genutil"
+	genutilcli "cosmossdk.io/x/genutil/client/cli"
+	genutiltypes "cosmossdk.io/x/genutil/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/config"
@@ -43,11 +48,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	authtxconfig "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
-	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
-	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/x/simulation"
 	legacytypes "github.com/Nolus-Protocol/nolus-core/x/tax/types"
 	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )

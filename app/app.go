@@ -20,6 +20,8 @@ import (
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
+	"cosmossdk.io/x/crisis"
+	paramstypes "cosmossdk.io/x/params/types"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -41,8 +43,6 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"cosmossdk.io/log"
 	abci "github.com/cometbft/cometbft/abci/types"

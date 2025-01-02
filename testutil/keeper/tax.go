@@ -16,12 +16,12 @@ import (
 
 	dbm "github.com/cosmos/cosmos-db"
 
+	govtypes "cosmossdk.io/x/gov/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"

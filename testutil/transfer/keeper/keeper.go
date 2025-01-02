@@ -10,11 +10,11 @@ import (
 
 	"cosmossdk.io/store"
 	storetypes "cosmossdk.io/store/types"
+	typesparams "cosmossdk.io/x/params/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 
 	transfertypes "github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"

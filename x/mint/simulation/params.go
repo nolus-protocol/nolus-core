@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"math/rand"
 
+	"cosmossdk.io/x/simulation"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/x/simulation"
 
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 )

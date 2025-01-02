@@ -6,7 +6,7 @@ require (
 	github.com/CosmWasm/wasmd v0.53.2
 	github.com/CosmWasm/wasmvm/v2 v2.1.4
 	github.com/cometbft/cometbft v0.38.15
-	github.com/cosmos/cosmos-sdk v0.50.11
+	github.com/cosmos/cosmos-sdk v0.52.0-rc.1
 	github.com/cosmos/gogoproto v1.7.0
 	github.com/cosmos/ibc-go/v8 v8.5.1
 	github.com/golang/protobuf v1.5.4
@@ -214,7 +214,7 @@ require (
 )
 
 replace (
-	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
+	// cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.53.2-nolus
@@ -224,7 +224,7 @@ replace (
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
-	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.50.11-nolus
+	// TODO: v0.52 github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.50.11-nolus
 
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0

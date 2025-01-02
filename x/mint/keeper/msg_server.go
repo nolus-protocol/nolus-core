@@ -7,7 +7,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	govtypes "cosmossdk.io/x/gov/types"
 )
 
 var _ types.MsgServer = msgServer{}

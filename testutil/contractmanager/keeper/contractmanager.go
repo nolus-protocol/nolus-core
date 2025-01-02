@@ -11,11 +11,11 @@ import (
 
 	"cosmossdk.io/store"
 	storetypes "cosmossdk.io/store/types"
+	govtypes "cosmossdk.io/x/gov/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
