@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/depinject"
 
 	// this line is used by starport scaffolding # 1.
 
@@ -13,22 +15,29 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
+	modulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/contractmanager/module/v1"
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/client/cli"
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 )
 
 var (
-	_ appmodule.AppModule   = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModuleBasic      = AppModule{}
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasGenesis          = AppModule{}
+
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -140,14 +149,12 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the module's genesis initialization. It returns no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) {
 	var genState types.GenesisState
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 
 	InitGenesis(ctx, am.keeper, genState)
-
-	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the module's exported genesis state as raw JSON bytes.
@@ -160,9 +167,56 @@ func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.Raw
 func (AppModule) ConsensusVersion() uint64 { return types.ConsensusVersion }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block.
-func (am AppModule) BeginBlock(_ sdk.Context) {}
+func (am AppModule) BeginBlock(ctx context.Context) error {
+	return nil
+}
 
 // EndBlock contains the logic that is automatically triggered at the end of each block.
-func (am AppModule) EndBlock(_ sdk.Context) []abci.ValidatorUpdate {
-	return []abci.ValidatorUpdate{}
+func (am AppModule) EndBlock(_ context.Context) error {
+	return nil
+}
+
+// AppModuleSimulation functions
+
+// GenerateGenesisState creates a randomized GenState of the tax module.
+func (AppModule) GenerateGenesisState(_ *module.SimulationState) {
+}
+
+// ProposalContents doesn't return any content functions for governance proposals.
+func (AppModule) ProposalContents(simState module.SimulationState) []simtypes.WeightedProposalMsg {
+	return nil
+}
+
+// RegisterStoreDecoder registers a decoder for tax module's types.
+func (am AppModule) RegisterStoreDecoder(_ simtypes.StoreDecoderRegistry) {}
+
+// WeightedOperations doesn't return any tax module operation.
+func (AppModule) WeightedOperations(_ module.SimulationState) []simtypes.WeightedOperation {
+	return nil
+}
+
+// App Wiring Setup
+func init() {
+	// TODO use correct modulev1 after successfull pulsar generation
+	appmodule.Register(&modulev1.Module{}, appmodule.Provide(ProvideModule))
+}
+
+type ModuleInputs struct {
+	depinject.In
+	ModuleKey    depinject.OwnModuleKey
+	Config       *modulev1.Module
+	Cdc          codec.Codec
+	StoreService store.KVStoreService
+	WasmKeeper   types.WasmKeeper
+}
+type ModuleOutputs struct {
+	depinject.Out
+	MintKeeper keeper.Keeper
+	Module     appmodule.AppModule
+}
+
+func ProvideModule(in ModuleInputs) ModuleOutputs {
+	k := keeper.NewKeeper(in.Cdc, in.StoreService, in.WasmKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	m := NewAppModule(in.Cdc, *k)
+	return ModuleOutputs{MintKeeper: *k, Module: m}
 }

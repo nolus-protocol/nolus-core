@@ -6,16 +6,22 @@ import (
 	"fmt"
 
 	"cosmossdk.io/core/appmodule"
+	"cosmossdk.io/core/store"
+	"cosmossdk.io/depinject"
 
-	abci "github.com/cometbft/cometbft/abci/types"
+	"github.com/gorilla/mux"
+	"github.com/grpc-ecosystem/grpc-gateway/runtime"
+	"github.com/spf13/cobra"
+
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/gorilla/mux"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
-	"github.com/spf13/cobra"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	modulev1 "github.com/Nolus-Protocol/nolus-core/api/nolus/interchaintxs/module/v1"
 
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/client/cli"
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
@@ -23,8 +29,13 @@ import (
 )
 
 var (
-	_ appmodule.AppModule   = AppModule{}
-	_ module.AppModuleBasic = AppModuleBasic{}
+	_ module.AppModuleBasic      = AppModule{}
+	_ module.AppModuleSimulation = AppModule{}
+	_ module.HasGenesis          = AppModule{}
+
+	_ appmodule.AppModule       = AppModule{}
+	_ appmodule.HasBeginBlocker = AppModule{}
+	_ appmodule.HasEndBlocker   = AppModule{}
 )
 
 // ----------------------------------------------------------------------------
@@ -150,14 +161,12 @@ func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
 
 // InitGenesis performs the interchaintxs module's genesis initialization It returns
 // no validator updates.
-func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) []abci.ValidatorUpdate {
+func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, gs json.RawMessage) {
 	var genState types.GenesisState
 	// Initialize global index to index in genesis state
 	cdc.MustUnmarshalJSON(gs, &genState)
 
 	InitGenesis(ctx, am.keeper, genState)
-
-	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the interchaintxs module's exported genesis state as raw JSON bytes.
@@ -176,4 +185,37 @@ func (am AppModule) BeginBlock(_ sdk.Context) {}
 // returns no validator updates.
 func (am AppModule) EndBlock(_ sdk.Context) []abci.ValidatorUpdate {
 	return []abci.ValidatorUpdate{}
+}
+
+// App Wiring Setup
+func init() {
+	// TODO use correct modulev1 after successfull pulsar generation
+	appmodule.Register(&modulev1.Module{}, appmodule.Provide(ProvideModule))
+}
+
+type ModuleInputs struct {
+	depinject.In
+	ModuleKey              depinject.OwnModuleKey
+	Config                 *modulev1.Module
+	Cdc                    codec.Codec
+	StoreService           store.KVStoreService
+	ChannelKeeper          types.ChannelKeeper
+	FeeKeeper              types.FeeRefunderKeeper
+	IcaControllerKeeper    types.ICAControllerKeeper
+	IcaControllerMsgServer types.ICAControllerMsgServer
+	SudoKeeper             types.WasmKeeper
+	BankKeeper             types.BankKeeper
+	GetFeeCollectorAddr    types.GetFeeCollectorAddr
+	AccountKeeper          types.AccountKeeper
+}
+type ModuleOutputs struct {
+	depinject.Out
+	MintKeeper keeper.Keeper
+	Module     appmodule.AppModule
+}
+
+func ProvideModule(in ModuleInputs) ModuleOutputs {
+	k := keeper.NewKeeper(in.Cdc, in.StoreService, in.ChannelKeeper, in.IcaControllerKeeper, in.IcaControllerMsgServer, in.SudoKeeper, in.FeeKeeper, in.BankKeeper, in.GetFeeCollectorAddr, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	m := NewAppModule(in.Cdc, *k, in.AccountKeeper, in.BankKeeper)
+	return ModuleOutputs{MintKeeper: *k, Module: m}
 }

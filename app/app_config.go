@@ -73,10 +73,9 @@ import (
 
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	contractmanagermoduletypes "github.com/neutron-org/neutron/v4/x/contractmanager/types"
-	feetypes "github.com/neutron-org/neutron/v4/x/feerefunder/types"
-	interchainqueriestypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
-	interchaintxstypes "github.com/neutron-org/neutron/v4/x/interchaintxs/types"
+	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
+	feetypes "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
+	interchaintxstypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
 var (
@@ -92,7 +91,6 @@ var (
 		{Account: wasmtypes.ModuleName, Permissions: []string{authtypes.Burner}},
 		{Account: vestingstypes.ModuleName},
 		{Account: icatypes.ModuleName},
-		{Account: interchainqueriestypes.ModuleName},
 		{Account: feetypes.ModuleName},
 	}
 
@@ -145,7 +143,6 @@ var (
 						govtypes.ModuleName,
 						icatypes.ModuleName,
 						interchaintxstypes.ModuleName,
-						interchainqueriestypes.ModuleName,
 						contractmanagermoduletypes.ModuleName,
 						wasmtypes.ModuleName,
 						feetypes.ModuleName,
@@ -172,7 +169,6 @@ var (
 						vestingstypes.ModuleName,
 						icatypes.ModuleName,
 						interchaintxstypes.ModuleName,
-						interchainqueriestypes.ModuleName,
 						contractmanagermoduletypes.ModuleName,
 						wasmtypes.ModuleName,
 						feetypes.ModuleName,
@@ -205,7 +201,6 @@ var (
 						upgradetypes.ModuleName,
 						ibctransfertypes.ModuleName,
 						icatypes.ModuleName,
-						interchainqueriestypes.ModuleName,
 						interchaintxstypes.ModuleName,
 						contractmanagermoduletypes.ModuleName,
 						// wasm after ibc transfer

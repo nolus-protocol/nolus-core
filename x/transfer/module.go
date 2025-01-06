@@ -146,3 +146,32 @@ func (am AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }
+
+// TODO: continue using depinject after a ibc-go release with depinject
+// // App Wiring Setup
+// func init() {
+// 	// TODO use correct modulev1 after successfull pulsar generation
+// 	appmodule.Register(&modulev1.Module{}, appmodule.Provide(ProvideModule))
+// }
+
+// type ModuleInputs struct {
+// 	depinject.In
+// 	ModuleKey    depinject.OwnModuleKey
+// 	Config       *modulev1.Module
+// 	Cdc          codec.Codec
+// 	StoreService store.KVStoreService
+// 	channelKeeper types.ChannelKeeper
+// 	FeeKeeper     types.FeeRefunderKeeper
+// 	SudoKeeper    types.WasmKeeper
+// }
+// type ModuleOutputs struct {
+// 	depinject.Out
+// 	MintKeeper keeper.Keeper
+// 	Module     appmodule.AppModule
+// }
+
+// func ProvideModule(in ModuleInputs) ModuleOutputs {
+// 	k := keeper.NewKeeper(in.Cdc, in.StoreService, in.WasmKeeper, authtypes.NewModuleAddress(govtypes.ModuleName).String())
+// 	m := NewAppModule(in.Cdc, *k)
+// 	return ModuleOutputs{MintKeeper: *k, Module: m}
+// }

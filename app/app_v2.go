@@ -13,6 +13,10 @@ import (
 	"cosmossdk.io/log"
 	storetypes "cosmossdk.io/store/types"
 
+	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibctestingtypes "github.com/cosmos/ibc-go/v8/testing/types"
+
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -163,7 +167,6 @@ func New(
 		&app.TransferKeeper,
 		&app.ICAControllerKeeper,
 		&app.ICAHostKeeper,
-		&app.InterchainQueriesKeeper,
 		&app.InterchainTxsKeeper,
 		&app.ContractManagerKeeper,
 		&app.WasmKeeper,
@@ -352,4 +355,29 @@ func BlockedAddresses() map[string]bool {
 	}
 
 	return result
+}
+
+// Testing APP interface
+
+// GetBaseApp returns the base app of the application.
+func (app *App) GetBaseApp() *baseapp.BaseApp { return app.BaseApp }
+
+// GetIBCKeeper implements the TestingApp interface.
+func (app *App) GetIBCKeeper() *ibckeeper.Keeper {
+	return app.IBCKeeper
+}
+
+// // GetTxConfig implements the TestingApp interface.
+func (app *App) GetTxConfig() client.TxConfig {
+	return app.txConfig
+}
+
+// GetScopedIBCKeeper implements the TestingApp interface.
+func (app *App) GetScopedIBCKeeper() capabilitykeeper.ScopedKeeper {
+	return app.ScopedIBCKeeper
+}
+
+// GetStakingKeeper implements the TestingApp interface.
+func (app *App) GetStakingKeeper() ibctestingtypes.StakingKeeper {
+	return app.StakingKeeper
 }
