@@ -57,8 +57,8 @@ func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.
 	resp, err := k.icaControllerMsgServer.RegisterInterchainAccount(ctx, &icacontrollertypes.MsgRegisterInterchainAccount{
 		Owner:        icaOwner,
 		ConnectionId: msg.ConnectionId,
-		Version:      "",                   // FIXME: empty version string doesn't look good
-		Ordering:     channeltypes.ORDERED, // TODO: make it configurable or use UNORDERED after contracts upgrade
+		Version:      "", // FIXME: empty version string doesn't look good
+		Ordering:     channeltypes.UNORDERED,
 	})
 	if err != nil {
 		k.Logger(ctx).Debug("RegisterInterchainAccount: failed to RegisterInterchainAccount:", "error", err, "owner", icaOwner, "msg", &msg)
