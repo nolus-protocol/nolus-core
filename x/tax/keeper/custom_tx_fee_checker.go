@@ -94,7 +94,7 @@ func getFeeParamBasedOnDenom(feeParams []*types.DexFeeParams, feeCoins sdk.Coins
 		correctFeeParam = findDenom(*feeParam, feeCoins)
 		// if there is a match then we ensure this feeParam with correct profit
 		// smart contrat addresses will be used. This is in case of multiple supported DEXes.
-		if isFeeParamValid(correctFeeParam) {
+		if correctFeeParam != nil {
 			return correctFeeParam, nil
 		}
 	}
@@ -102,18 +102,18 @@ func getFeeParamBasedOnDenom(feeParams []*types.DexFeeParams, feeCoins sdk.Coins
 	return nil, errors.Wrapf(types.ErrInvalidFeeDenom, "no fee param found for denoms: %s", feeCoins)
 }
 
-func isFeeParamValid(feeParam *types.DexFeeParams) bool {
-	if feeParam == nil {
+func validateFeeParam(profitAddress string, pair *types.DenomPrice) bool {
+	if profitAddress == "" {
 		return false
 	}
-	if feeParam.ProfitAddress == "" || feeParam.AcceptedDenomsMinPrices == nil {
+	if pair.Denom == "" || pair.MinPrice <= 0 {
 		return false
 	}
 	return true
 }
 
-func findDenom(feeParam types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeeParams {
-	for _, denom := range feeParam.AcceptedDenomsMinPrices {
+func findDenom(feeParams types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeeParams {
+	for _, denom := range feeParams.AcceptedDenomsMinPrices {
 		if ok, _ := feeCoins.Find(denom.Denom); ok {
 			// fees should be sorted(biggest to smallest), so on the first match, we conclude that this is the current dex's fee param
 			// We need this check since denoms for the same token but from different dexes are different (because the channel differs)
@@ -121,7 +121,9 @@ func findDenom(feeParam types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeePar
 			// * Examples:
 			// Osmo from dex1 would have denom ibc/72...
 			// Osmo from dex2 would have denom ibc/2a...
-			return &feeParam
+			if validateFeeParam(feeParams.ProfitAddress, denom) {
+				return &feeParams
+			}
 		}
 	}
 	return nil
@@ -129,9 +131,9 @@ func findDenom(feeParam types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeePar
 
 func denomMinPrice(denom string, feeParam types.DexFeeParams) (float64, error) {
 	var price float64
-	for _, acceptedDenoms := range feeParam.AcceptedDenomsMinPrices {
-		if acceptedDenoms.Denom == denom {
-			price = float64(acceptedDenoms.MinPrice)
+	for _, denomMinPrice := range feeParam.AcceptedDenomsMinPrices {
+		if denomMinPrice.Denom == denom {
+			price = float64(denomMinPrice.MinPrice)
 			return price, nil
 		}
 	}
