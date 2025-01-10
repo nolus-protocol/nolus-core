@@ -187,8 +187,8 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=0.2.0
-protoImageName=public.ecr.aws/nolus/protogen:$(protoVer)
+protoVer=0.2.1
+protoImageName=ghcr.io/nolus-protocol/nolus-core/protogen:$(protoVer)
 protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user root $(protoImageName)
 
 proto-all: proto-format proto-lint proto-gen
