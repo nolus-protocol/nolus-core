@@ -145,8 +145,12 @@ func validateFeeParams(v interface{}) error {
 	}
 
 	for _, feeParam := range feeParams {
+		err := validateContractAddress(feeParam.ProfitAddress)
+		if err != nil {
+			return errorsmod.Wrap(ErrInvalidFeeParam, err.Error())
+		}
 		if feeParam.ProfitAddress == "" || strings.TrimSpace(feeParam.ProfitAddress) == "" {
-			return ErrInvalidFeeParam
+			return errorsmod.Wrap(ErrInvalidFeeParam, "profit address cannot be blank")
 		}
 		for _, denomPrice := range feeParam.AcceptedDenomsMinPrices {
 			if denomPrice.Denom == "" || strings.TrimSpace(denomPrice.Denom) == "" ||
