@@ -66,13 +66,13 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 
 					// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
 					gasLimitDec := sdkmath.LegacyNewDec(int64(gas))
-					minimumFeeRequiredInPaidDenom := gasLimitDec.Mul(minGasPrice)
+					minimumFeeRequiredInPaidDenom := gasLimitDec.Mul(minGasPrice).RoundInt()
 					// if the fee provided is greater than the minimum fee required in the paid denom, then it is accepted
-					if fee.Amount.GT(minimumFeeRequiredInPaidDenom.Ceil().RoundInt()) {
+					if fee.Amount.GT(minimumFeeRequiredInPaidDenom) {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
 					} else {
-						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().RoundInt(), fee.Denom, minimumFeeRequiredInPaidDenom, fee.Denom)
+						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %d%s required: %d%s", fee.Amount.ToLegacyDec().RoundInt().Int64(), fee.Denom, minimumFeeRequiredInPaidDenom.Int64(), fee.Denom)
 					}
 				}
 			}

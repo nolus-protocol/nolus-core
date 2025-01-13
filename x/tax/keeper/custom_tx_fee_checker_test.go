@@ -106,7 +106,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 
 	_, _, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
-	require.Equal(t, "insufficient fees; got: 1.000000ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11 required: 100029998.779297ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11: insufficient fee", err.Error())
+	require.Equal(t, "insufficient fees; got: 1ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11 required: 100030000ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11: insufficient fee", err.Error())
 }
 
 // Fail to pay fees in ibc/C4C... which represents OSMO. Minimum gas prices set to unls. High gas -> fee amount not enough.
@@ -143,7 +143,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 
 	_, _, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
-	require.Equal(t, "insufficient fees; got: 1.000000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y required: 100025001.525879ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y: insufficient fee", err.Error())
+	require.Equal(t, "insufficient fees; got: 1ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y required: 100025000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y: insufficient fee", err.Error())
 }
 
 // Successfully pay fees in unls which represents NLS. Minimum gas prices set to unls.
