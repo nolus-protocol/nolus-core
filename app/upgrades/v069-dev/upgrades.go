@@ -23,13 +23,13 @@ func CreateUpgradeHandler(
 		ctx := sdk.UnwrapSDKContext(c)
 
 		ctx.Logger().Info("[dev]Deleting proposal 281...")
-		keepers.GovKeeper.DeleteProposal(ctx, 281)
+		_ = keepers.GovKeeper.DeleteProposal(ctx, 281)
 		ctx.Logger().Info("[dev]Deleting proposal 282...")
-		keepers.GovKeeper.DeleteProposal(ctx, 282)
+		_ = keepers.GovKeeper.DeleteProposal(ctx, 282)
 		ctx.Logger().Info("[dev]Deleting proposal 283...")
-		keepers.GovKeeper.DeleteProposal(ctx, 283)
+		_ = keepers.GovKeeper.DeleteProposal(ctx, 283)
 
-		keepers.TaxKeeper.SetParams(ctx, typesv2.DefaultParams())
+		_ = keepers.TaxKeeper.SetParams(ctx, typesv2.DefaultParams())
 
 		ctx.Logger().Info("Starting module migrations...")
 		vm, err := mm.RunMigrations(ctx, configurator, vm) //nolint:contextcheck
