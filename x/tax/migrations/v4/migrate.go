@@ -20,17 +20,17 @@ var DexFeeParams = []*types.DexFeeParams{
 			{
 				Denom:    "ibc/F5FABF52B54E65064B57BF6DBD8E5FAD22CEE9F4B8A57ADBB20CCD0173AA72A4",
 				Ticker:   "USDC_NOBLE",
-				MinPrice: 0.025,
+				MinPrice: "0.025",
 			},
 			{
 				Denom:    "ibc/6CDD4663F2F09CD62285E2D45891FC149A3568E316CE3EBBE201A71A78A69388",
 				Ticker:   "ATOM",
-				MinPrice: 0.0029,
+				MinPrice: "0.0029",
 			},
 			{
 				Denom:    "ibc/ED07A3391A112B175915CD8FAF43A2DA8E4790EDE12566649D0C2F97716B8518",
 				Ticker:   "OSMO",
-				MinPrice: 0.044,
+				MinPrice: "0.044",
 			},
 		},
 	},
@@ -40,12 +40,12 @@ var DexFeeParams = []*types.DexFeeParams{
 			{
 				Denom:    "ibc/18161D8EFBD00FF5B7683EF8E923B8913453567FBE3FB6672D75712B0DEB6682",
 				Ticker:   "USDC_NOBLE",
-				MinPrice: 0.025,
+				MinPrice: "0.025",
 			},
 			{
 				Denom:    "ibc/3D6BC6E049CAEB905AC97031A42800588C58FB471EBDC7A3530FFCD0C3DC9E09",
 				Ticker:   "NTRN",
-				MinPrice: 0.05,
+				MinPrice: "0.05",
 			},
 		},
 	},

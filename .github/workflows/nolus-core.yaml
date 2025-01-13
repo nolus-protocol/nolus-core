@@ -20,7 +20,7 @@ env:
   BUILDER_IMAGE_TAG: "1.23.1"
   BUILDER_IMAGE_NAME: "builder"
   BUILDER_DOCKERFILE: ".github/images/builder.Dockerfile"
-  PROTOGEN_IMAGE_TAG: "0.2.2"
+  PROTOGEN_IMAGE_TAG: "0.2.0"
   PROTOGEN_IMAGE_NAME: "protogen"
   PROTOGEN_DOCKERFILE: ".github/images/protogen.Dockerfile"
 

@@ -2,6 +2,7 @@ syntax = "proto3";
 package nolus.tax.v2;
 
 import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
 
@@ -26,6 +27,6 @@ message DenomPrice {
   string denom = 1;
   // ticker will only be used for a more readable format for the users
   string ticker = 2;
-  float min_price = 3;
+  string min_price = 3 [(cosmos_proto.scalar) = "cosmos.Dec"];
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"cosmossdk.io/errors"
 	sdkmath "cosmossdk.io/math"
+
 	types "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -56,24 +57,22 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, err.Error()) //nolint:govet
 				}
 
-				var minGasPrice float64
 				// go through every fee provided
 				for _, fee := range feeCoins {
-					minGasPrice, err = denomMinPrice(fee.Denom, *feeParam)
+					minGasPrice, err := denomMinPrice(fee.Denom, *feeParam)
 					if err != nil {
 						return nil, 0, err
 					}
 
 					// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
 					gasLimitDec := sdkmath.LegacyNewDec(int64(gas))
-					minimumFeeRequiredInPaidDenom := minGasPrice * gasLimitDec.MustFloat64()
-
+					minimumFeeRequiredInPaidDenom := gasLimitDec.Mul(minGasPrice)
 					// if the fee provided is greater than the minimum fee required in the paid denom, then it is accepted
-					if fee.Amount.ToLegacyDec().MustFloat64() > minimumFeeRequiredInPaidDenom {
+					if fee.Amount.GT(minimumFeeRequiredInPaidDenom.Ceil().RoundInt()) {
 						priority := getTxPriority(feeCoins, int64(gas))
 						return feeCoins, priority, nil
 					} else {
-						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().MustFloat64(), fee.Denom, minimumFeeRequiredInPaidDenom, fee.Denom)
+						return nil, 0, errors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %f%s required: %f%s", fee.Amount.ToLegacyDec().RoundInt(), fee.Denom, minimumFeeRequiredInPaidDenom, fee.Denom)
 					}
 				}
 			}
@@ -106,9 +105,16 @@ func validateFeeParam(profitAddress string, pair *types.DenomPrice) bool {
 	if profitAddress == "" {
 		return false
 	}
-	if pair.Denom == "" || pair.MinPrice <= 0 {
+
+	minPrice, err := sdkmath.LegacyNewDecFromStr(pair.MinPrice)
+	if err != nil {
 		return false
 	}
+
+	if pair.Denom == "" || minPrice.IsZero() {
+		return false
+	}
+
 	return true
 }
 
@@ -129,16 +135,18 @@ func findDenom(feeParams types.DexFeeParams, feeCoins sdk.Coins) *types.DexFeePa
 	return nil
 }
 
-func denomMinPrice(denom string, feeParam types.DexFeeParams) (float64, error) {
-	var price float64
+func denomMinPrice(denom string, feeParam types.DexFeeParams) (sdkmath.LegacyDec, error) {
 	for _, denomMinPrice := range feeParam.AcceptedDenomsMinPrices {
 		if denomMinPrice.Denom == denom {
-			price = float64(denomMinPrice.MinPrice)
-			return price, nil
+			minPrice, err := sdkmath.LegacyNewDecFromStr(denomMinPrice.MinPrice)
+			if err != nil {
+				return sdkmath.LegacyDec{}, errors.Wrapf(types.ErrInvalidFeeDenom, "minPrice(%s) is not a valid decimal", denomMinPrice.MinPrice)
+			}
+			return minPrice, nil
 		}
 	}
 
-	return price, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
+	return sdkmath.LegacyDec{}, errors.Wrapf(types.ErrInvalidFeeDenom, "denom(%s) is not allowed", denom)
 }
 
 // getTxPriority returns a naive tx priority based on the amount of the smallest denomination of the gas price

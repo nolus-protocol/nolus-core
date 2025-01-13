@@ -85,12 +85,12 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 					{
 						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y",
 						Ticker:   "OSMO",
-						MinPrice: 100.025,
+						MinPrice: "100.025",
 					},
 					{
 						Denom:    "ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11",
 						Ticker:   "USDC",
-						MinPrice: 100.030,
+						MinPrice: "100.030",
 					},
 				},
 			},
@@ -122,12 +122,12 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 					{
 						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y",
 						Ticker:   "OSMO",
-						MinPrice: 100.025,
+						MinPrice: "100.025",
 					},
 					{
 						Denom:    "ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11",
 						Ticker:   "USDC",
-						MinPrice: 100.030,
+						MinPrice: "100.030",
 					},
 				},
 			},
