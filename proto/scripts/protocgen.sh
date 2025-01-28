@@ -5,7 +5,7 @@ go mod tidy
 
 echo "Generating gogo proto code"
 cd proto
-buf mod update
+buf dep update
 buf generate
 cd ..
 
