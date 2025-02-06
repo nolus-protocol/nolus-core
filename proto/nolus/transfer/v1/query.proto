@@ -9,16 +9,6 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/transfer/types";
 
 // Query provides defines the gRPC querier service.
 service Query {
-  // DenomTrace queries a denomination trace information.
-  rpc DenomTrace(ibc.applications.transfer.v1.QueryDenomTraceRequest) returns (ibc.applications.transfer.v1.QueryDenomTraceResponse) {
-    option (google.api.http).get = "/ibc/apps/transfer/v1/denom_traces/{hash}";
-  }
-
-  // DenomTraces queries all denomination traces.
-  rpc DenomTraces(ibc.applications.transfer.v1.QueryDenomTracesRequest) returns (ibc.applications.transfer.v1.QueryDenomTracesResponse) {
-    option (google.api.http).get = "/ibc/apps/transfer/v1/denom_traces";
-  }
-
   // Params queries all parameters of the ibc-transfer module.
   rpc Params(ibc.applications.transfer.v1.QueryParamsRequest) returns (ibc.applications.transfer.v1.QueryParamsResponse) {
     option (google.api.http).get = "/ibc/apps/transfer/v1/params";
