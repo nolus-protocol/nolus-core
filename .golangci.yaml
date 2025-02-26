@@ -2,10 +2,6 @@ run:
   tests: false
   concurrency: 4
   timeout: 5m
-  skip-dirs:
-    - build # docker files
-    - .cicd #
-    - doc
 
 linters:
   disable-all: true
@@ -43,3 +39,7 @@ issues:
   # Set to 0 to disable.
   # Default: 3
   max-same-issues: 0
+  exclude-dirs:
+  - build # docker files
+  - .cicd #
+  - doc

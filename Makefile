@@ -148,7 +148,7 @@ go.sum: go.mod
 .PHONY: lint
 
 lint:
-	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.61.0
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.64.0
 	golangci-lint run --verbose
 
 ###############################################################################
