@@ -6,9 +6,9 @@ require (
 	github.com/CosmWasm/wasmd v0.53.2
 	github.com/CosmWasm/wasmvm/v2 v2.1.4
 	github.com/cometbft/cometbft v0.38.17
-	github.com/cosmos/cosmos-sdk v0.50.12
+	github.com/cosmos/cosmos-sdk v0.50.13
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/ibc-go/v8 v8.6.1
+	github.com/cosmos/ibc-go/v8 v8.7.0
 	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -224,7 +224,7 @@ replace (
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
-	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.50.12-nolus
+	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.50.13-nolus
 
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0

@@ -364,10 +364,8 @@ github.com/cosmos/ibc-go/modules/apps/callbacks v0.2.1-0.20231113120333-342c00b0
 github.com/cosmos/ibc-go/modules/apps/callbacks v0.2.1-0.20231113120333-342c00b0f8bd/go.mod h1:JWfpWVKJKiKtd53/KbRoKfxWl8FsT2GPcNezTOk0o5Q=
 github.com/cosmos/ibc-go/modules/capability v1.0.1 h1:ibwhrpJ3SftEEZRxCRkH0fQZ9svjthrX2+oXdZvzgGI=
 github.com/cosmos/ibc-go/modules/capability v1.0.1/go.mod h1:rquyOV262nGJplkumH+/LeYs04P3eV8oB7ZM4Ygqk4E=
-github.com/cosmos/ibc-go/v8 v8.6.0 h1:mU0cztvIraZ2OWZMNKDrOos63D5OHTIYlTGlEwugqPw=
-github.com/cosmos/ibc-go/v8 v8.6.0/go.mod h1:6fe2axQco2tSBvBIi7ExRQJ2BVrWL3QAxQDguLcmw1g=
-github.com/cosmos/ibc-go/v8 v8.6.1 h1:35JQ9HttSDNLjy4J/ZxmmFbzw0cRVjoCRKkc3ngDZms=
-github.com/cosmos/ibc-go/v8 v8.6.1/go.mod h1:Hd3kDFNOhQ/EnYt8qb84/r78tA/lOYC3IkLMbpurs3I=
+github.com/cosmos/ibc-go/v8 v8.7.0 h1:HqhVOkO8bDpClXE81DFQgFjroQcTvtpm0tCS7SQVKVY=
+github.com/cosmos/ibc-go/v8 v8.7.0/go.mod h1:G2z+Q6ZQSMcyHI2+BVcJdvfOupb09M2h/tgpXOEdY6k=
 github.com/cosmos/ics23/go v0.11.0 h1:jk5skjT0TqX5e5QJbEnwXIS2yI2vnmLOgpQPeM5RtnU=
 github.com/cosmos/ics23/go v0.11.0/go.mod h1:A8OjxPE67hHST4Icw94hOxxFEJMBG031xIGF/JHNIY0=
 github.com/cosmos/keyring v1.2.0 h1:8C1lBP9xhImmIabyXW4c3vFjjLiBdGCmfLUfeZlV1Yo=
@@ -806,8 +804,8 @@ github.com/neutron-org/admin-module/v2 v2.0.0/go.mod h1:RfOyabXsdJ5btcOKyKPZDYiZ
 github.com/neutron-org/neutron/v4 v4.2.4 h1:TFEjTS5Z55VGJ6J6CIekLO/rYlkTRzIXBOfe8m82Vt0=
 github.com/neutron-org/neutron/v4 v4.2.4/go.mod h1:+xZHLFEjkpHyg8xaRVQfPAdsmFmPx7HicPBqeXESgUE=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/nolus-protocol/cosmos-sdk v0.50.12-nolus h1:LqHFtlRJqN4OBBxolwAgxJKNkn5iIfr1KHerqaPUxg8=
-github.com/nolus-protocol/cosmos-sdk v0.50.12-nolus/go.mod h1:hrWEFMU1eoXqLJeE6VVESpJDQH67FS1nnMrQIjO2daw=
+github.com/nolus-protocol/cosmos-sdk v0.50.13-nolus h1:qYC4tIf0hwTadFdRBne2Zy0zggJDu/JHpOzHR+NZNpc=
+github.com/nolus-protocol/cosmos-sdk v0.50.13-nolus/go.mod h1:hrWEFMU1eoXqLJeE6VVESpJDQH67FS1nnMrQIjO2daw=
 github.com/nolus-protocol/wasmd v0.53.2-nolus h1:mUPN7ZNkntGN9uv8hxrpxjYkpZvgkRxLnArULAYOtuE=
 github.com/nolus-protocol/wasmd v0.53.2-nolus/go.mod h1:gP10E56tuToU5rsZR7vZLBL5ssW2mie6KN/WrQLG7/I=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
