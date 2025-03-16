@@ -47,7 +47,7 @@ func TestRandomizedGenState(t *testing.T) {
 	require.Equal(t, "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz", taxGenesis.Params.TreasuryAddress)
 }
 
-// TestRandomizedGenState tests abnormal scenarios of applying RandomizedGenState.
+// TestRandomizedGenStateAbnormal tests abnormal scenarios of applying RandomizedGenState.
 func TestRandomizedGenStateAbnormal(t *testing.T) {
 	interfaceRegistry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(interfaceRegistry)

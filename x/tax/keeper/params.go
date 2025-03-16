@@ -64,7 +64,7 @@ func (k Keeper) TreasuryAddress(ctx context.Context) string {
 	return p.TreasuryAddress
 }
 
-// BseDenom returns the base denom.
+// BaseDenom returns the base denom.
 func (k Keeper) BaseDenom(ctx context.Context) string {
 	store := k.storeService.OpenKVStore(ctx)
 
