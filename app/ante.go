@@ -22,7 +22,7 @@ type HandlerOptions struct {
 	BankKeeper            taxtypes.BankKeeper
 	TaxKeeper             taxkeeper.Keeper
 	TxCounterStoreService corestoretypes.KVStoreService
-	WasmConfig            *wasmTypes.WasmConfig
+	WasmConfig            *wasmTypes.NodeConfig
 	IBCKeeper             *keeper.Keeper
 }
 
@@ -36,7 +36,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 	}
 
 	if options.WasmConfig == nil {
-		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "wasm config is required for ante builder")
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "wasm node config is required for ante builder")
 	}
 
 	if options.SignModeHandler == nil {

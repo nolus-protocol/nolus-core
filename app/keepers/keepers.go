@@ -131,7 +131,7 @@ type AppKeepers struct {
 	ContractManagerKeeper *contractmanagermodulekeeper.Keeper
 
 	WasmKeeper wasmkeeper.Keeper
-	WasmConfig wasmtypes.WasmConfig
+	WasmConfig wasmtypes.NodeConfig
 
 	// Modules
 	ContractManagerModule contractmanager.AppModule
@@ -393,7 +393,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.InterchainTxsModule = interchaintxs.NewAppModule(appCodec, *appKeepers.InterchainTxsKeeper, appKeepers.AccountKeeper, appKeepers.BankKeeper)
 
 	wasmDir := filepath.Join(homePath, "wasm")
-	wasmConfig, err := wasm.ReadWasmConfig(appOpts)
+	wasmConfig, err := wasm.ReadNodeConfig(appOpts)
 	if err != nil {
 		panic("error while reading wasm config: " + err.Error())
 	}
@@ -426,6 +426,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		grpcQueryRouter,
 		wasmDir,
 		wasmConfig,
+		wasmtypes.VMConfig{},
 		supportedFeatures,
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
