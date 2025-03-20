@@ -390,7 +390,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appCodec,
 		appKeepers.keys[ibctransfertypes.StoreKey],
 		appKeepers.GetSubspace(ibctransfertypes.ModuleName),
-		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
 		appKeepers.IBCKeeper.ChannelKeeper,
 		appKeepers.IBCKeeper.PortKeeper,
 		appKeepers.AccountKeeper,
@@ -513,13 +513,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(*appKeepers.IBCTransferKeeper)
 	// TODO - we can use the contract keeper to limit the gas and set it on MaxUint64 here, or just set a specific limit here
-	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, nil, appKeepers.ContractKeeper, math.MaxUint64)
+	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.ContractKeeper, math.MaxUint64)
 
 	// ICA stack
 	var icaControllerStack ibcporttypes.IBCModule
 	icaControllerStack = icacontroller.NewIBCMiddleware(icaControllerStack, *appKeepers.ICAControllerKeeper)
 	// TODO - we can use the contract keeper to limit the gas and set it on MaxUint64 here, or just set a specific limit here
-	icaControllerStack = ibccallbacks.NewIBCMiddleware(icaControllerStack, nil, appKeepers.ContractKeeper, math.MaxUint64)
+	icaControllerStack = ibccallbacks.NewIBCMiddleware(icaControllerStack, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.ContractKeeper, math.MaxUint64)
 	appKeepers.ICAControllerKeeper.WithICS4Wrapper(icaControllerStack.(ibcporttypes.ICS4Wrapper))
 
 	icaHostIBCModule := icahost.NewIBCModule(*appKeepers.ICAHostKeeper)
