@@ -1,6 +1,7 @@
 package keepers
 
 import (
+	"math"
 	"path/filepath"
 
 	"cosmossdk.io/log"
@@ -47,6 +48,7 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	ibccallbacks "github.com/cosmos/ibc-go/modules/apps/callbacks"
 	ica "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts"
 	icacontroller "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller"
 	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
@@ -477,10 +479,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	)
 	appKeepers.VestingsModule = vestings.NewAppModule(appCodec, *appKeepers.VestingsKeeper)
 
-	transferIBCModule := transferSudo.NewIBCModule(
+	var transferStack ibcporttypes.IBCModule
+	transferStack = transferSudo.NewIBCModule(
 		*appKeepers.TransferKeeper,
 		contractmanager.NewSudoLimitWrapper(appKeepers.ContractManagerKeeper, &appKeepers.WasmKeeper),
 	)
+	// TODO - we can use the contract keeper to limit the gas and set it on MaxUint64 here, or just set a specific limit here
+	transferStack = ibccallbacks.NewIBCMiddleware(transferStack, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.TransferKeeper, math.MaxUint64)
 
 	var icaControllerStack ibcporttypes.IBCModule
 
@@ -493,7 +498,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	ibcRouter := ibcporttypes.NewRouter()
 	ibcRouter.AddRoute(icacontrollertypes.SubModuleName, icaControllerStack).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
-		AddRoute(ibctransfertypes.ModuleName, transferIBCModule).
+		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
 		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)

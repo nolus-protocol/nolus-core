@@ -21,6 +21,10 @@ func (im IBCModule) HandleAcknowledgement(ctx sdk.Context, packet channeltypes.P
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		return errors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
 	}
+	// If the packet has memo field, then it should be handled by native ibc callbacks and not our custom module.
+	if data.Memo != "" {
+		return nil
+	}
 
 	senderAddress, err := sdk.AccAddressFromBech32(data.GetSender())
 	if err != nil {
@@ -50,6 +54,10 @@ func (im IBCModule) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, r
 	var data transfertypes.FungibleTokenPacketData
 	if err := types.ModuleCdc.UnmarshalJSON(packet.GetData(), &data); err != nil {
 		return errors.Wrapf(sdkerrors.ErrUnknownRequest, "cannot unmarshal ICS-20 transfer packet data: %s", err.Error())
+	}
+	// If the packet has memo field, then it should be handled by native ibc callbacks and not our custom module.
+	if data.Memo != "" {
+		return nil
 	}
 
 	senderAddress, err := sdk.AccAddressFromBech32(data.GetSender())

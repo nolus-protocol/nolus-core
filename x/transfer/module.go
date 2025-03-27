@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/keeper"
 	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
+
 	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
 
 	wrapkeeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
