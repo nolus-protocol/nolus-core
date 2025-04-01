@@ -50,11 +50,14 @@ import (
 	tmos "github.com/cometbft/cometbft/libs/os"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	nolusante "github.com/Nolus-Protocol/nolus-core/app/ante"
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
 	v072 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v072"
 	"github.com/Nolus-Protocol/nolus-core/docs"
+
+	evmtypes "github.com/cosmos/evm/types"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -238,20 +241,23 @@ func New(
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetEndBlocker(app.EndBlocker)
 
-	anteHandler, err := NewAnteHandler(
-		HandlerOptions{
-			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
-				FeegrantKeeper:  app.FeegrantKeeper,
-			},
-			BankKeeper:            app.BankKeeper,
-			TaxKeeper:             *app.TaxKeeper,
-			TxCounterStoreService: runtime.NewKVStoreService(app.GetKVStoreKeys()[wasmtypes.StoreKey]),
-			WasmConfig:            &app.WasmConfig,
-			IBCKeeper:             app.IBCKeeper,
+	anteHandler := nolusante.NewAnteHandler(
+		nolusante.HandlerOptions{
+			Cdc:                    appCodec,
+			AccountKeeper:          app.AccountKeeper,
+			SignModeHandler:        encodingConfig.TxConfig.SignModeHandler(),
+			SigGasConsumer:         ante.DefaultSigVerificationGasConsumer,
+			TxFeeChecker:           app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
+			FeegrantKeeper:         app.FeegrantKeeper,
+			BankKeeper:             app.BankKeeper,
+			TaxKeeper:              *app.TaxKeeper,
+			TxCounterStoreService:  runtime.NewKVStoreService(app.GetKVStoreKeys()[wasmtypes.StoreKey]),
+			WasmConfig:             &app.WasmConfig,
+			IBCKeeper:              app.IBCKeeper,
+			FeeMarketKeeper:        app.FeeMarketKeeper,
+			EvmKeeper:              app.EVMKeeper,
+			ExtensionOptionChecker: evmtypes.HasDynamicFeeExtensionOption,
+			MaxTxGasWanted:         6000000, // TODO - make customizable
 		},
 	)
 	if err != nil {

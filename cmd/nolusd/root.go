@@ -32,7 +32,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -52,6 +51,9 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+
+	cosmosevmcmd "github.com/cosmos/evm/client"
+	cosmosevmserver "github.com/cosmos/evm/server"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 )
@@ -232,10 +234,6 @@ func NewRootCmd(
 	if err != nil {
 		panic(err)
 	}
-	autoCliOpts.Keyring, err = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
-	if err != nil {
-		panic(err)
-	}
 	autoCliOpts.ClientCtx = initClientCtx
 
 	if err := autoCliOpts.EnhanceRootCommand(rootCmd); err != nil {
@@ -269,7 +267,7 @@ func initRootCmd(
 			encodingConfig.TxConfig.SigningContext().ValidatorAddressCodec(),
 		),
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
-		addGenesisAccountCmd(app.DefaultNodeHome),
+		// addGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
@@ -277,13 +275,26 @@ func initRootCmd(
 		snapshot.Cmd(a.newApp),
 	)
 
-	// add server commands
-	server.AddCommands(
+	// // add server commands
+	// server.AddCommands(
+	// 	rootCmd,
+	// 	app.DefaultNodeHome,
+	// 	a.newApp,
+	// 	a.appExport,
+	// 	addModuleInitFlags,
+	// )
+
+	// add Cosmos EVM' flavored TM commands to start server, etc.
+	cosmosevmserver.AddCommands(
 		rootCmd,
-		app.DefaultNodeHome,
-		a.newApp,
+		cosmosevmserver.NewDefaultStartOptions(a.newApp, app.DefaultNodeHome),
 		a.appExport,
 		addModuleInitFlags,
+	)
+
+	// add Cosmos EVM key commands
+	rootCmd.AddCommand(
+		cosmosevmcmd.KeyCommands(app.DefaultNodeHome, true),
 	)
 
 	// add keybase, auxiliary RPC, query, and tx child commands

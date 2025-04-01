@@ -57,6 +57,13 @@ import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	"github.com/cosmos/evm/x/erc20"
+	erc20types "github.com/cosmos/evm/x/erc20/types"
+	"github.com/cosmos/evm/x/feemarket"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	"github.com/cosmos/evm/x/vm"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
+
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager"
 	contractmanagermoduletypes "github.com/Nolus-Protocol/nolus-core/x/contractmanager/types"
 	"github.com/Nolus-Protocol/nolus-core/x/feerefunder"
@@ -79,6 +86,10 @@ var maccPerms = map[string][]string{
 	vestingstypes.ModuleName:       nil,
 	icatypes.ModuleName:            nil,
 	feetypes.ModuleName:            nil,
+
+	// Cosmos EVM modules
+	evmtypes.ModuleName:       {authtypes.Minter, authtypes.Burner},
+	feemarkettypes.ModuleName: nil,
 }
 
 // ModuleBasics defines the module BasicManager is in charge of setting up basic,
@@ -116,6 +127,9 @@ var ModuleBasics = module.NewBasicManager(
 	authzmodule.AppModuleBasic{},
 	consensus.AppModuleBasic{},
 	ibctm.AppModuleBasic{},
+	vm.AppModuleBasic{},
+	feemarket.AppModuleBasic{},
+	erc20.AppModuleBasic{},
 )
 
 func appModules(
@@ -157,6 +171,9 @@ func appModules(
 		app.AppKeepers.FeeRefunderModule,
 		app.AppKeepers.ContractManagerModule,
 		consensus.NewAppModule(appCodec, *app.AppKeepers.ConsensusParamsKeeper),
+		vm.NewAppModule(app.EVMKeeper, app.AppKeepers.AccountKeeper, app.GetSubspace(evmtypes.ModuleName)),
+		feemarket.NewAppModule(app.AppKeepers.FeeMarketKeeper, app.GetSubspace(feemarkettypes.ModuleName)),
+		erc20.NewAppModule(app.AppKeepers.Erc20Keeper, *app.AppKeepers.AccountKeeper, app.GetSubspace(erc20types.ModuleName)),
 	}
 }
 
@@ -228,6 +245,9 @@ func orderBeginBlockers() []string {
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
+		evmtypes.ModuleName,
+		feemarkettypes.ModuleName,
+		erc20types.ModuleName,
 	}
 }
 
@@ -258,6 +278,9 @@ func orderEndBlockers() []string {
 		contractmanagermoduletypes.ModuleName,
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
+		evmtypes.ModuleName,
+		feemarkettypes.ModuleName,
+		erc20types.ModuleName,
 	}
 }
 
@@ -298,5 +321,8 @@ func genesisModuleOrder() []string {
 		wasmtypes.ModuleName,
 		feetypes.ModuleName,
 		consensusparamtypes.ModuleName,
+		evmtypes.ModuleName,
+		feemarkettypes.ModuleName,
+		erc20types.ModuleName,
 	}
 }

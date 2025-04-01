@@ -66,6 +66,16 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	srvflags "github.com/cosmos/evm/server/flags"
+	erc20keeper "github.com/cosmos/evm/x/erc20/keeper"
+	erc20types "github.com/cosmos/evm/x/erc20/types"
+	feemarketkeeper "github.com/cosmos/evm/x/feemarket/keeper"
+	feemarkettypes "github.com/cosmos/evm/x/feemarket/types"
+	evmkeeper "github.com/cosmos/evm/x/vm/keeper"
+	evmtypes "github.com/cosmos/evm/x/vm/types"
+
+	"github.com/spf13/cast"
+
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
@@ -132,6 +142,11 @@ type AppKeepers struct {
 
 	WasmKeeper wasmkeeper.Keeper
 	WasmConfig wasmtypes.NodeConfig
+
+	// Cosmos EVM keepers
+	FeeMarketKeeper feemarketkeeper.Keeper
+	EVMKeeper       *evmkeeper.Keeper
+	Erc20Keeper     erc20keeper.Keeper
 
 	// Modules
 	ContractManagerModule contractmanager.AppModule
@@ -346,6 +361,59 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		appKeepers.SlashingKeeper,
 		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
 		runtime.ProvideCometInfoService(),
+	)
+
+	// Cosmos EVM keepers
+	appKeepers.FeeMarketKeeper = feemarketkeeper.NewKeeper(
+		appCodec, authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.keys[feemarkettypes.StoreKey],
+		appKeepers.tkeys[feemarkettypes.TransientKey],
+		appKeepers.GetSubspace(feemarkettypes.ModuleName),
+	)
+
+	// Set up EVM keeper
+	tracer := cast.ToString(appOpts.Get(srvflags.EVMTracer))
+
+	appKeepers.Erc20Keeper = erc20keeper.NewKeeper(
+		appKeepers.keys[erc20types.StoreKey],
+		appCodec,
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.EVMKeeper,
+		appKeepers.StakingKeeper,
+		*appKeepers.AuthzKeeper,
+		appKeepers.TransferKeeper,
+	)
+
+	// NOTE: it's required to set up the EVM keeper before the ERC-20 keeper, because it is used in its instantiation.
+	appKeepers.EVMKeeper = evmkeeper.NewKeeper(
+		// TODO: check why this is not adjusted to use the runtime module methods like SDK native keepers
+		appCodec,
+		appKeepers.keys[evmtypes.StoreKey],
+		appKeepers.tkeys[evmtypes.TransientKey],
+		authtypes.NewModuleAddress(govtypes.ModuleName),
+		appKeepers.AccountKeeper,
+		appKeepers.BankKeeper,
+		appKeepers.StakingKeeper,
+		appKeepers.FeeMarketKeeper,
+		appKeepers.Erc20Keeper,
+		tracer,
+		appKeepers.GetSubspace(evmtypes.ModuleName),
+	)
+
+	// NOTE: we are adding all available Cosmos EVM EVM extensions.
+	// Not all of them need to be enabled, which can be configured on a per-chain basis.
+	appKeepers.EVMKeeper.WithStaticPrecompiles(
+		NewAvailableStaticPrecompiles(
+			*appKeepers.StakingKeeper,
+			*appKeepers.DistrKeeper,
+			*appKeepers.AuthzKeeper,
+			appKeepers.EVMKeeper,
+			*appKeepers.GovKeeper,
+			*appKeepers.SlashingKeeper,
+			*appKeepers.EvidenceKeeper,
+		),
 	)
 
 	icaControllerKeeper := icacontrollerkeeper.NewKeeper(

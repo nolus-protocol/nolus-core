@@ -1,6 +1,8 @@
 package app
 
 import (
+	"google.golang.org/protobuf/reflect/protoreflect"
+
 	"cosmossdk.io/x/tx/signing"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -11,6 +13,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/gogoproto/proto"
+
+	evmtypes "github.com/cosmos/evm/x/vm/types"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
@@ -33,6 +37,9 @@ func makeEncodingConfig() EncodingConfig {
 			},
 			ValidatorAddressCodec: address.Bech32Codec{
 				Bech32Prefix: sdk.GetConfig().GetBech32ValidatorAddrPrefix(),
+			},
+			CustomGetSigners: map[protoreflect.FullName]signing.GetSignersFunc{
+				evmtypes.MsgEthereumTxCustomGetSigner.MsgType: evmtypes.MsgEthereumTxCustomGetSigner.Fn,
 			},
 		},
 	})
