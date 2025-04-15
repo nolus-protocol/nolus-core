@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/spf13/cast"
 
@@ -180,6 +181,7 @@ func New(
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
+		authtypes.ModuleName,
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -235,11 +237,18 @@ func New(
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:   app.AccountKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
-				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
-				FeegrantKeeper:  app.FeegrantKeeper,
+				AccountKeeper:         app.AccountKeeper,
+				SignModeHandler:       encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:        ante.DefaultSigVerificationGasConsumer,
+				TxFeeChecker:          app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
+				FeegrantKeeper:        app.FeegrantKeeper,
+				UnorderedNonceManager: app.AccountKeeper,
+				// The following options are set by default.
+				// If you do not want to change these, you may remove the UnorderedTxOptions field entirely.
+				UnorderedTxOptions: []ante.UnorderedTxDecoratorOptions{
+					ante.WithUnorderedTxGasCost(2240),
+					ante.WithTimeoutDuration(10 * time.Minute),
+				},
 			},
 			BankKeeper:            app.BankKeeper,
 			TaxKeeper:             *app.TaxKeeper,
