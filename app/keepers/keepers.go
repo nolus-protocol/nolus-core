@@ -25,7 +25,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	consensusparamskeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
 	consensusparamstypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	distrkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -93,14 +92,15 @@ type AppKeepers struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper         *authkeeper.AccountKeeper
-	BankKeeper            *bankkeeper.BaseKeeper
-	FeegrantKeeper        *feegrantkeeper.Keeper
-	StakingKeeper         *stakingkeeper.Keeper
-	SlashingKeeper        *slashingkeeper.Keeper
-	DistrKeeper           *distrkeeper.Keeper
-	GovKeeper             *govkeeper.Keeper
-	CrisisKeeper          *crisiskeeper.Keeper
+	AccountKeeper  *authkeeper.AccountKeeper
+	BankKeeper     *bankkeeper.BaseKeeper
+	FeegrantKeeper *feegrantkeeper.Keeper
+	StakingKeeper  *stakingkeeper.Keeper
+	SlashingKeeper *slashingkeeper.Keeper
+	DistrKeeper    *distrkeeper.Keeper
+	GovKeeper      *govkeeper.Keeper
+	// TODO
+	// CrisisKeeper          *crisiskeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
 	ParamsKeeper          *paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -143,7 +143,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	blockedAddress map[string]bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
-	invCheckPeriod uint,
 	appOpts servertypes.AppOptions,
 	bech32Prefix string,
 	msgServiceRouter *baseapp.MsgServiceRouter,
@@ -169,15 +168,16 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 
 	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper.ParamsStore)
 
-	appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-		appCodec,
-		runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
-		invCheckPeriod,
-		appKeepers.BankKeeper,
-		authtypes.FeeCollectorName,
-		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-		address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-	)
+	// TODO
+	// appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
+	// 	appCodec,
+	// 	runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
+	// 	invCheckPeriod,
+	// 	appKeepers.BankKeeper,
+	// 	authtypes.FeeCollectorName,
+	// 	authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	// 	address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
+	// )
 
 	// Add normal keepers
 	accountKeeper := authkeeper.NewAccountKeeper(

@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/spf13/cast"
-
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
@@ -40,7 +38,6 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 
 	"cosmossdk.io/log"
@@ -95,7 +92,6 @@ type App struct {
 	appCodec          codec.Codec
 	interfaceRegistry types.InterfaceRegistry
 	encodingConfig    EncodingConfig
-	invCheckPeriod    uint
 
 	// the module manager
 	mm *module.Manager
@@ -113,7 +109,6 @@ func New(
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
-	invCheckPeriod uint,
 	encodingConfig EncodingConfig,
 	appOpts servertypes.AppOptions,
 	baseAppOptions ...func(*baseapp.BaseApp),
@@ -134,7 +129,6 @@ func New(
 		cdc:               cdc,
 		appCodec:          appCodec,
 		interfaceRegistry: interfaceRegistry,
-		invCheckPeriod:    invCheckPeriod,
 		encodingConfig:    EncodingConfig(encodingConfig),
 	}
 
@@ -148,7 +142,6 @@ func New(
 		app.BlockedAddrs(),
 		skipUpgradeHeights,
 		homePath,
-		invCheckPeriod,
 		appOpts,
 		appparams.Bech32PrefixAccAddr,
 		app.MsgServiceRouter(),
@@ -171,13 +164,12 @@ func New(
 
 	/****  Module Options ****/
 
-	// NOTE: we may consider parsing `appOpts` inside module constructors. For the moment
-	// we prefer to be more strict in what arguments the modules expect.
-	skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
+	// TODO: decide if we should remove with sdk53
+	// skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-	app.mm = module.NewManager(appModules(app, encodingConfig, skipGenesisInvariants)...)
+	app.mm = module.NewManager(appModules(app, encodingConfig)...)
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,
@@ -199,7 +191,8 @@ func New(
 	app.mm.SetOrderInitGenesis(genesisModuleOrder()...)
 	app.mm.SetOrderExportGenesis(genesisModuleOrder()...)
 
-	app.mm.RegisterInvariants(app.CrisisKeeper)
+	// TODO decide if we should remove with sdk53
+	// app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {
@@ -219,7 +212,7 @@ func New(
 	//
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
-	app.sm = module.NewSimulationManager(simulationModules(app, encodingConfig, skipGenesisInvariants)...)
+	app.sm = module.NewSimulationManager(simulationModules(app, encodingConfig)...)
 
 	app.sm.RegisterStoreDecoders()
 
