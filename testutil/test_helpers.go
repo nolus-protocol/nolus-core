@@ -25,7 +25,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
@@ -227,7 +226,6 @@ func SetupTestingApp() (ibctesting.TestingApp, map[string]json.RawMessage) {
 		true,
 		map[int64]bool{},
 		tempDir(),
-		simcli.FlagPeriodValue,
 		encConfig,
 		simtestutil.EmptyAppOptions{},
 		baseapp.SetChainID(chainID),
