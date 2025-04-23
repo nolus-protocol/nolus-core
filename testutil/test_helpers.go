@@ -9,11 +9,11 @@ import (
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 
-	icacontrollerkeeper "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/keeper"
-	icacontrollertypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/controller/types"
-	icatypes "github.com/cosmos/ibc-go/v8/modules/apps/27-interchain-accounts/types"
-	"github.com/cosmos/ibc-go/v8/modules/apps/transfer/types"
-	ibctesting "github.com/cosmos/ibc-go/v8/testing"
+	icacontrollerkeeper "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/keeper"
+	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
+	icatypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/types"
+	"github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
+	ibctesting "github.com/cosmos/ibc-go/v10/testing"
 
 	"github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -26,7 +26,7 @@ import (
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
-	channeltypes "github.com/cosmos/ibc-go/v8/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/Nolus-Protocol/nolus-core/app"

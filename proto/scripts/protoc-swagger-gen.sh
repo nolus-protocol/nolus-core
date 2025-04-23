@@ -8,7 +8,7 @@ mkdir -p tmp_deps
 declare -a deps=(
     "github.com/cosmos/cosmos-sdk"
     "github.com/CosmWasm/wasmd"
-    "github.com/cosmos/ibc-go/v8"
+    "github.com/cosmos/ibc-go/v10"
     "github.com/cometbft/cometbft"
 )
 
