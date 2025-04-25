@@ -40,7 +40,6 @@ import (
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 
 	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
@@ -312,7 +311,6 @@ func TestAppImportExport(t *testing.T) {
 		{keys[paramstypes.StoreKey], newKeys[paramstypes.StoreKey], [][]byte{}},
 		{keys[govtypes.StoreKey], newKeys[govtypes.StoreKey], [][]byte{}},
 		{keys[evidencetypes.StoreKey], newKeys[evidencetypes.StoreKey], [][]byte{}},
-		{keys[capabilitytypes.StoreKey], newKeys[capabilitytypes.StoreKey], [][]byte{}},
 		{keys[ibcexported.StoreKey], newKeys[ibcexported.StoreKey], [][]byte{}},
 		{keys[ibctransfertypes.StoreKey], newKeys[ibctransfertypes.StoreKey], [][]byte{}},
 		{keys[feetypes.StoreKey], newKeys[feetypes.StoreKey], [][]byte{}},

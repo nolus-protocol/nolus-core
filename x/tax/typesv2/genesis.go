@@ -1,6 +1,6 @@
 package typesv2
 
-// DefaultIndex is the default capability global index.
+// DefaultIndex is the default tax global index.
 const DefaultIndex uint64 = 1
 
 // NewGenesisState creates a new GenesisState object.
@@ -10,7 +10,7 @@ func NewGenesisState(params Params) *GenesisState {
 	}
 }
 
-// DefaultGenesis returns the default Capability genesis state.
+// DefaultGenesis returns the default tax genesis state.
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
 		Params: DefaultParams(),

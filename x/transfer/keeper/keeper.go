@@ -23,7 +23,6 @@ import (
 type KeeperTransferWrapper struct {
 	keeper.Keeper
 	channelKeeper wrappedtypes.ChannelKeeper
-	FeeKeeper     wrappedtypes.FeeRefunderKeeper
 	SudoKeeper    wrappedtypes.WasmKeeper
 }
 
@@ -77,14 +76,12 @@ func (k KeeperTransferWrapper) UpdateParams(goCtx context.Context, msg *wrappedt
 func NewKeeper(
 	cdc codec.BinaryCodec, key store.KVStoreService, paramSpace paramtypes.Subspace,
 	ics4Wrapper porttypes.ICS4Wrapper, channelKeeper wrappedtypes.ChannelKeeper, msgServiceRouter *baseapp.MsgServiceRouter,
-	authKeeper types.AccountKeeper, bankKeeper types.BankKeeper, feeKeeper wrappedtypes.FeeRefunderKeeper,
-	sudoKeeper wrappedtypes.WasmKeeper, authority string,
+	authKeeper types.AccountKeeper, bankKeeper types.BankKeeper, sudoKeeper wrappedtypes.WasmKeeper, authority string,
 ) KeeperTransferWrapper {
 	return KeeperTransferWrapper{
 		channelKeeper: channelKeeper,
 		Keeper: keeper.NewKeeper(cdc, key, paramSpace, ics4Wrapper, channelKeeper, msgServiceRouter,
 			authKeeper, bankKeeper, authority),
-		FeeKeeper:  feeKeeper,
 		SudoKeeper: sudoKeeper,
 	}
 }

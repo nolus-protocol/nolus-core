@@ -47,10 +47,10 @@ func TestHandleAcknowledgement(t *testing.T) {
 	relayerBech32 := "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 	relayerAddress := sdk.MustAccAddressFromBech32(relayerBech32)
 
-	err = icak.HandleAcknowledgement(ctx, channeltypes.Packet{}, nil, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, "channel-ver-TODO", channeltypes.Packet{}, nil, relayerAddress)
 	require.ErrorContains(t, err, "failed to get ica owner from port")
 
-	err = icak.HandleAcknowledgement(ctx, p, nil, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, "channel-ver-TODO", p, nil, relayerAddress)
 	require.ErrorContains(t, err, "cannot unmarshal ICS-27 packet acknowledgement")
 
 	msgAck, err := keeper.PrepareSudoCallbackMessage(p, &resACK)
@@ -59,13 +59,13 @@ func TestHandleAcknowledgement(t *testing.T) {
 	// success contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
-	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, "channel-ver-TODO", p, resAckData, relayerAddress)
 	require.NoError(t, err)
 
 	// error contract SudoResponse
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("error sudoResponse"))
-	err = icak.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = icak.HandleAcknowledgement(ctx, "channel-ver-TODO", p, resAckData, relayerAddress)
 	require.NoError(t, err)
 }
 
