@@ -182,7 +182,7 @@ func TestMsgTransferValidate(t *testing.T) {
 	wmKeeper := mock_types.NewMockWasmKeeper(ctrl)
 	// required to initialize keeper
 	authKeeper.EXPECT().GetModuleAddress(transfertypes.ModuleName).Return([]byte("address"))
-	k, ctx, _ := keeper.TransferKeeper(t, wmKeeper, nil, nil, authKeeper)
+	k, ctx, _ := keeper.TransferKeeper(t, wmKeeper, nil, authKeeper)
 
 	wmKeeper.EXPECT().HasContractInfo(ctx, gomock.Any()).Return(true).AnyTimes()
 

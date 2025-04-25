@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
 	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
@@ -13,8 +12,7 @@ import (
 )
 
 var (
-	_ porttypes.IBCModule        = IBCModule{}
-	_ porttypes.UpgradableModule = IBCModule{} // implements the upgradableModule interface to allow channel upgrades
+	_ porttypes.IBCModule = IBCModule{}
 )
 
 // IBCModule implements the ICS26 interface for interchain accounts controller chains.
@@ -29,49 +27,6 @@ func NewIBCModule(k keeper.Keeper) IBCModule {
 	}
 }
 
-// OnChanUpgradeInit implements the IBCModule interface. We don't need to implement this handler.
-func (im IBCModule) OnChanUpgradeInit(
-	ctx sdk.Context,
-	portID, channelID string,
-	proposedOrder channeltypes.Order,
-	proposedConnectionHops []string,
-	proposedVersion string,
-) (string, error) {
-	return proposedVersion, nil
-}
-
-// OnChanUpgradeTry implements the IBCModule interface. We don't need to implement this handler.
-func (im IBCModule) OnChanUpgradeTry(
-	ctx sdk.Context,
-	portID, channelID string,
-	proposedOrder channeltypes.Order,
-	proposedConnectionHops []string,
-	counterpartyVersion string,
-) (string, error) {
-	return counterpartyVersion, nil
-}
-
-// OnChanUpgradeAck implements the IBCModule interface. We don't need to implement this handler.
-func (im IBCModule) OnChanUpgradeAck(
-	ctx sdk.Context,
-	portID,
-	channelID,
-	counterpartyVersion string,
-) error {
-	return nil
-}
-
-// OnChanUpgradeOpen implements the IBCModule interface. We don't need to implement this handler.
-func (im IBCModule) OnChanUpgradeOpen(
-	ctx sdk.Context,
-	portID,
-	channelID string,
-	proposedOrder channeltypes.Order,
-	proposedConnectionHops []string,
-	proposedVersion string,
-) {
-}
-
 // OnChanOpenInit implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenInit(
 	_ sdk.Context,
@@ -79,7 +34,6 @@ func (im IBCModule) OnChanOpenInit(
 	_ []string,
 	_ string,
 	_ string,
-	_ *capabilitytypes.Capability,
 	_ channeltypes.Counterparty,
 	version string,
 ) (string, error) {
@@ -94,7 +48,6 @@ func (im IBCModule) OnChanOpenTry(
 	_ []string,
 	_,
 	_ string,
-	_ *capabilitytypes.Capability,
 	_ channeltypes.Counterparty,
 	_ string,
 ) (string, error) {
@@ -146,6 +99,7 @@ func (im IBCModule) OnChanCloseConfirm(
 // logic returns without error.
 func (im IBCModule) OnRecvPacket(
 	_ sdk.Context,
+	_ string,
 	_ channeltypes.Packet,
 	_ sdk.AccAddress,
 ) ibcexported.Acknowledgement {
@@ -155,16 +109,18 @@ func (im IBCModule) OnRecvPacket(
 // OnAcknowledgementPacket implements the IBCModule interface.
 func (im IBCModule) OnAcknowledgementPacket(
 	ctx sdk.Context,
+	channelVersion string,
 	packet channeltypes.Packet,
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
-	return im.keeper.HandleAcknowledgement(ctx, packet, acknowledgement, relayer)
+	return im.keeper.HandleAcknowledgement(ctx, channelVersion, packet, acknowledgement, relayer)
 }
 
 // OnTimeoutPacket implements the IBCModule interface.
 func (im IBCModule) OnTimeoutPacket(
 	ctx sdk.Context,
+	channelVersion string,
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {

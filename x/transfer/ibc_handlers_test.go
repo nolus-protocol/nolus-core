@@ -27,12 +27,11 @@ func TestHandleAcknowledgement(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	wmKeeper := mock_types.NewMockWasmKeeper(ctrl)
-	feeKeeper := mock_types.NewMockFeeRefunderKeeper(ctrl)
 	chanKeeper := mock_types.NewMockChannelKeeper(ctrl)
 	authKeeper := mock_types.NewMockAccountKeeper(ctrl)
 	// required to initialize keeper
 	authKeeper.EXPECT().GetModuleAddress(transfertypes.ModuleName).Return([]byte("address"))
-	txKeeper, infCtx, _ := testkeeper.TransferKeeper(t, wmKeeper, feeKeeper, chanKeeper, authKeeper)
+	txKeeper, infCtx, _ := testkeeper.TransferKeeper(t, wmKeeper, chanKeeper, authKeeper)
 	txModule := transfer.NewIBCModule(*txKeeper, wmKeeper)
 	ctx := infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 
@@ -51,10 +50,10 @@ func TestHandleAcknowledgement(t *testing.T) {
 	relayerBech32 := "nolus1f6cu6ypvpyh0p8d7pqnps2pduj87hda5t9v4mqrc8ra67xp28uwq4f4ysz"
 	relayerAddress := sdk.MustAccAddressFromBech32(relayerBech32)
 
-	err = txModule.HandleAcknowledgement(ctx, channeltypes.Packet{}, nil, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", channeltypes.Packet{}, nil, relayerAddress)
 	require.ErrorContains(t, err, "cannot unmarshal ICS-20 transfer packet acknowledgement")
 
-	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", p, resAckData, relayerAddress)
 	require.ErrorContains(t, err, "cannot unmarshal ICS-20 transfer packet data")
 
 	token := transfertypes.FungibleTokenPacketData{
@@ -67,7 +66,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	require.NoError(t, err)
 	p.Data = tokenBz
 
-	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", p, resAckData, relayerAddress)
 	require.ErrorContains(t, err, "failed to decode address from bech32")
 
 	token = transfertypes.FungibleTokenPacketData{
@@ -86,7 +85,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	// non contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(false)
-	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", p, resAckData, relayerAddress)
 	require.NoError(t, err)
 
 	// error during Sudo contract
@@ -94,7 +93,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
 	// feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck).Return(nil, fmt.Errorf("SudoResponse error"))
-	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", p, resAckData, relayerAddress)
 	require.NoError(t, err)
 
 	// success during Sudo contract
@@ -102,7 +101,7 @@ func TestHandleAcknowledgement(t *testing.T) {
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
 	// feeKeeper.EXPECT().DistributeAcknowledgementFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msgAck)
-	err = txModule.HandleAcknowledgement(ctx, p, resAckData, relayerAddress)
+	err = txModule.HandleAcknowledgement(ctx, "TODO-channelVersion", p, resAckData, relayerAddress)
 	require.NoError(t, err)
 }
 
@@ -110,12 +109,11 @@ func TestHandleTimeout(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	wmKeeper := mock_types.NewMockWasmKeeper(ctrl)
-	feeKeeper := mock_types.NewMockFeeRefunderKeeper(ctrl)
 	chanKeeper := mock_types.NewMockChannelKeeper(ctrl)
 	authKeeper := mock_types.NewMockAccountKeeper(ctrl)
 	// required to initialize keeper
 	authKeeper.EXPECT().GetModuleAddress(transfertypes.ModuleName).Return([]byte("address"))
-	txKeeper, infCtx, _ := testkeeper.TransferKeeper(t, wmKeeper, feeKeeper, chanKeeper, authKeeper)
+	txKeeper, infCtx, _ := testkeeper.TransferKeeper(t, wmKeeper, chanKeeper, authKeeper)
 	txModule := transfer.NewIBCModule(*txKeeper, wmKeeper)
 	ctx := infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	contractAddress := sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)
@@ -127,7 +125,7 @@ func TestHandleTimeout(t *testing.T) {
 		SourceChannel: "channel-0",
 	}
 
-	err := txModule.HandleTimeout(ctx, channeltypes.Packet{}, relayerAddress)
+	err := txModule.HandleTimeout(ctx, "TODO-channelVersion", channeltypes.Packet{}, relayerAddress)
 	require.ErrorContains(t, err, "cannot unmarshal ICS-20 transfer packet data")
 
 	token := transfertypes.FungibleTokenPacketData{
@@ -139,7 +137,7 @@ func TestHandleTimeout(t *testing.T) {
 	tokenBz, err := ictxtypes.ModuleCdc.MarshalJSON(&token)
 	require.NoError(t, err)
 	p.Data = tokenBz
-	err = txModule.HandleTimeout(ctx, p, relayerAddress)
+	err = txModule.HandleTimeout(ctx, "TODO-channelVersion", p, relayerAddress)
 	require.ErrorContains(t, err, "failed to decode address from bech32")
 
 	token = transfertypes.FungibleTokenPacketData{
@@ -158,7 +156,7 @@ func TestHandleTimeout(t *testing.T) {
 	// success non contract
 	ctx = infCtx.WithGasMeter(types2.NewGasMeter(1_000_000_000_000))
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(false)
-	err = txModule.HandleTimeout(ctx, p, relayerAddress)
+	err = txModule.HandleTimeout(ctx, "TODO-channelVersion", p, relayerAddress)
 	require.NoError(t, err)
 
 	// success contract
@@ -166,7 +164,7 @@ func TestHandleTimeout(t *testing.T) {
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
 	// feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msg).Return(nil, nil)
-	err = txModule.HandleTimeout(ctx, p, relayerAddress)
+	err = txModule.HandleTimeout(ctx, "TODO-channelVersion", p, relayerAddress)
 	require.NoError(t, err)
 
 	// error during SudoTimeOut contract
@@ -174,6 +172,6 @@ func TestHandleTimeout(t *testing.T) {
 	wmKeeper.EXPECT().HasContractInfo(ctx, sdk.MustAccAddressFromBech32(testutil.TestOwnerAddress)).Return(true)
 	// feeKeeper.EXPECT().DistributeTimeoutFee(ctx, relayerAddress, feetypes.NewPacketID(p.SourcePort, p.SourceChannel, p.Sequence))
 	wmKeeper.EXPECT().Sudo(ctx, contractAddress, msg).Return(nil, fmt.Errorf("SudoTimeout error"))
-	err = txModule.HandleTimeout(ctx, p, relayerAddress)
+	err = txModule.HandleTimeout(ctx, "TODO-channelVersion", p, relayerAddress)
 	require.NoError(t, err)
 }
