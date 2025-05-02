@@ -10,7 +10,7 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/transfer/types";
 // Query provides defines the gRPC querier service.
 service Query {
   // Denoms queries all denominations
-  rpc Denoms(ibc.applications.transfer.v1.QueryDenomsRequest) returns (ibc.applications.transfer.v1.QueryDenomsRequest) {
+  rpc Denoms(ibc.applications.transfer.v1.QueryDenomsRequest) returns (ibc.applications.transfer.v1.QueryDenomsResponse) {
     option (google.api.http).get = "/ibc/apps/transfer/v1/denoms";
   }
 
