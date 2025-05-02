@@ -94,8 +94,6 @@ var ModuleBasics = module.NewBasicManager(
 		},
 	),
 	sdkparams.AppModuleBasic{},
-	// TODO
-	// crisis.AppModuleBasic{},
 	slashing.AppModuleBasic{},
 	feegrantmodule.AppModuleBasic{},
 	ibc.AppModuleBasic{},
@@ -118,8 +116,6 @@ var ModuleBasics = module.NewBasicManager(
 func appModules(
 	app *App,
 	encodingConfig EncodingConfig,
-	// TODO
-	// skipGenesisInvariants bool,
 ) []module.AppModule {
 	appCodec := encodingConfig.Marshaler
 
@@ -134,8 +130,6 @@ func appModules(
 		auth.NewAppModule(appCodec, *app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
 		vesting.NewAppModule(*app.AccountKeeper, app.BankKeeper),
 		bank.NewAppModule(appCodec, *app.BankKeeper, *app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
-		// TODO
-		// crisis.NewAppModule(app.CrisisKeeper, skipGenesisInvariants, app.GetSubspace(crisistypes.ModuleName)),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, *app.FeegrantKeeper, app.interfaceRegistry),
 		gov.NewAppModule(appCodec, app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
 		mint.NewAppModule(appCodec, *app.MintKeeper, app.AccountKeeper, app.GetSubspace(minttypes.ModuleName)),
