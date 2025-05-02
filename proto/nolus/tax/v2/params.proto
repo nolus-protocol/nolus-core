@@ -8,7 +8,7 @@ option go_package = "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2";
 
 // Params defines the v2 parameters for the module.
 message Params {
-  option (gogoproto.goproto_stringer) = false;
+  option (gogoproto.goproto_stringer) = true;
 
   int32 fee_rate = 1;
   string base_denom = 2;

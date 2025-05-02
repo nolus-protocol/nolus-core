@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	nativelog "log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -582,7 +583,16 @@ var tempDir = func() string {
 	if err != nil {
 		panic("failed to create temp dir: " + err.Error())
 	}
-	defer os.RemoveAll(dir)
+	defer func() {
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			// Only overwrite return if no previous error
+			if err == nil {
+				err = fmt.Errorf("cleanup failed: %w", removeErr)
+			} else {
+				nativelog.Printf("cleanup failed: %v (original error: %v)", removeErr, err)
+			}
+		}
+	}()
 
 	return dir
 }
@@ -721,7 +731,16 @@ func OverwriteWithCustomConfig(configFilePath string, sectionKeyValues []Section
 	if err != nil {
 		return err
 	}
-	defer file.Close()
+	defer func() {
+		if fileCloseErr := file.Close(); fileCloseErr != nil {
+			// Only overwrite return if no previous error
+			if err == nil {
+				err = fmt.Errorf("file close failed: %w", fileCloseErr)
+			} else {
+				nativelog.Printf("file close failed: %v (original error: %v)", fileCloseErr, err)
+			}
+		}
+	}()
 
 	// Create a map from the sectionKeyValues array
 	// This map will be used to quickly look up the new values for each section and key

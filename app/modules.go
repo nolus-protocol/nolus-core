@@ -140,7 +140,7 @@ func appModules(
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		evidence.NewAppModule(*app.EvidenceKeeper),
 		ibc.NewAppModule(app.IBCKeeper),
-		sdkparams.NewAppModule(*app.ParamsKeeper),
+		sdkparams.NewAppModule(*app.ParamsKeeper), //nolint:staticcheck
 		tax.NewAppModule(appCodec, *app.TaxKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(taxmoduletypes.ModuleName)),
 		app.TransferModule,
 		app.VestingsModule,
@@ -173,12 +173,12 @@ func simulationModules(
 		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
 		distribution.NewAppModule(appCodec, *app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
 		slashing.NewAppModule(appCodec, *app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		sdkparams.NewAppModule(*app.ParamsKeeper),
+		sdkparams.NewAppModule(*app.ParamsKeeper), //nolint:staticcheck
 		evidence.NewAppModule(*app.EvidenceKeeper),
 		wasm.NewAppModule(appCodec, &app.WasmKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.GetSubspace(wasmtypes.ModuleName)),
 		ibc.NewAppModule(app.IBCKeeper),
-		app.AppKeepers.TransferModule,
-		app.AppKeepers.InterchainTxsModule,
+		app.TransferModule,
+		app.InterchainTxsModule,
 	}
 }
 

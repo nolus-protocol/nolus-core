@@ -100,8 +100,8 @@ type AppKeepers struct {
 	DistrKeeper           *distrkeeper.Keeper
 	GovKeeper             *govkeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
-	ParamsKeeper          *paramskeeper.Keeper
-	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ParamsKeeper          *paramskeeper.Keeper //nolint:staticcheck
+	IBCKeeper             *ibckeeper.Keeper    // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
 	ICAControllerKeeper   *icacontrollerkeeper.Keeper
 	ICAHostKeeper         *icahostkeeper.Keeper
 	EvidenceKeeper        *evidencekeeper.Keeper
@@ -478,8 +478,8 @@ func (appKeepers *AppKeepers) GetSubspace(moduleName string) paramstypes.Subspac
 // initParamsKeeper init params keeper and its subspaces.
 func initParamsKeeper(
 	appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino, key, tkey storetypes.StoreKey,
-) *paramskeeper.Keeper {
-	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)
+) *paramskeeper.Keeper { //nolint:staticcheck
+	paramsKeeper := paramskeeper.NewKeeper(appCodec, legacyAmino, key, tkey)                    //nolint:staticcheck
 	paramsKeeper.Subspace(authtypes.ModuleName).WithKeyTable(authtypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(banktypes.ModuleName).WithKeyTable(banktypes.ParamKeyTable())         //nolint:staticcheck
 	paramsKeeper.Subspace(stakingtypes.ModuleName).WithKeyTable(stakingtypes.ParamKeyTable())   //nolint:staticcheck

@@ -31,7 +31,7 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	params.GetDefaultConfig()
 
 	testapp := app
-	ctx := testapp.BaseApp.NewContext(isCheckTx)
+	ctx := testapp.NewContext(isCheckTx)
 	_ = testapp.TaxKeeper.SetParams(ctx, taxtypes.DefaultParams())
 	_ = testapp.MintKeeper.SetParams(ctx, minttypes.DefaultParams())
 
