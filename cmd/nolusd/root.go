@@ -154,7 +154,6 @@ func NewRootCmd(
 		true,
 		nil,
 		tempDir,
-		0,
 		encodingConfig,
 		simtestutil.NewAppOptionsWithFlagHome(tempDir),
 	)
@@ -468,7 +467,6 @@ func (a appCreator) newApp(
 		true,
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
-		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		a.encodingConfig,
 		appOpts,
 		baseapp.SetPruning(pruningOpts),
@@ -512,7 +510,6 @@ func (a appCreator) appExport(
 		height == -1, // -1: no height provided
 		map[int64]bool{},
 		homePath,
-		uint(1),
 		a.encodingConfig,
 		appOpts,
 	)

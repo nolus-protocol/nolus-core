@@ -35,7 +35,6 @@ type Params struct {
 }
 
 func (m *Params) Reset()      { *m = Params{} }
-func (m *Params) String() string { return proto.CompactTextString(m) }
 func (*Params) ProtoMessage() {}
 func (*Params) Descriptor() ([]byte, []int) {
 	return fileDescriptor_149cb69039ffce9f, []int{0}
