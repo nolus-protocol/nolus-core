@@ -163,9 +163,6 @@ func New(
 
 	/****  Module Options ****/
 
-	// TODO: decide if we should remove with sdk53
-	// skipGenesisInvariants := cast.ToBool(appOpts.Get(crisis.FlagSkipGenesisInvariants))
-
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
 	app.mm = module.NewManager(appModules(app, encodingConfig)...)
@@ -190,8 +187,6 @@ func New(
 	app.mm.SetOrderInitGenesis(genesisModuleOrder()...)
 	app.mm.SetOrderExportGenesis(genesisModuleOrder()...)
 
-	// TODO decide if we should remove with sdk53
-	// app.mm.RegisterInvariants(app.CrisisKeeper)
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	err = app.mm.RegisterServices(app.configurator)
 	if err != nil {

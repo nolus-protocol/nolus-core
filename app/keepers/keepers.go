@@ -92,15 +92,13 @@ type AppKeepers struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper  *authkeeper.AccountKeeper
-	BankKeeper     *bankkeeper.BaseKeeper
-	FeegrantKeeper *feegrantkeeper.Keeper
-	StakingKeeper  *stakingkeeper.Keeper
-	SlashingKeeper *slashingkeeper.Keeper
-	DistrKeeper    *distrkeeper.Keeper
-	GovKeeper      *govkeeper.Keeper
-	// TODO
-	// CrisisKeeper          *crisiskeeper.Keeper
+	AccountKeeper         *authkeeper.AccountKeeper
+	BankKeeper            *bankkeeper.BaseKeeper
+	FeegrantKeeper        *feegrantkeeper.Keeper
+	StakingKeeper         *stakingkeeper.Keeper
+	SlashingKeeper        *slashingkeeper.Keeper
+	DistrKeeper           *distrkeeper.Keeper
+	GovKeeper             *govkeeper.Keeper
 	UpgradeKeeper         *upgradekeeper.Keeper
 	ParamsKeeper          *paramskeeper.Keeper
 	IBCKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -167,17 +165,6 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	appKeepers.ConsensusParamsKeeper = &consensusKeeper
 
 	bApp.SetParamStore(appKeepers.ConsensusParamsKeeper.ParamsStore)
-
-	// TODO
-	// appKeepers.CrisisKeeper = crisiskeeper.NewKeeper(
-	// 	appCodec,
-	// 	runtime.NewKVStoreService(appKeepers.keys[crisistypes.StoreKey]),
-	// 	invCheckPeriod,
-	// 	appKeepers.BankKeeper,
-	// 	authtypes.FeeCollectorName,
-	// 	authtypes.NewModuleAddress(govtypes.ModuleName).String(),
-	// 	address.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix()),
-	// )
 
 	// Add normal keepers
 	accountKeeper := authkeeper.NewAccountKeeper(
