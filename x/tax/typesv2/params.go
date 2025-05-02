@@ -10,7 +10,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -85,12 +84,6 @@ func (p Params) Validate() error {
 	}
 
 	return nil
-}
-
-// String implements the Stringer interface.
-func (p Params) String() string {
-	out, _ := yaml.Marshal(p)
-	return string(out)
 }
 
 func validateFeeRate(v interface{}) error {

@@ -1,14 +1,15 @@
+version: "2"
+
 run:
   tests: false
   concurrency: 4
   timeout: 5m
 
 linters:
-  disable-all: true
+  default: none
   enable:
     # Default linters
     - errcheck
-    - gosimple
     - govet
     - ineffassign
     - staticcheck
@@ -18,17 +19,10 @@ linters:
     - bidichk
     - bodyclose
     - godot
-    - gofmt
-    - gofumpt
-    - goimports
     - misspell
     - whitespace
     - unused
     - ineffassign
-
-output:
-  # Sort results by: filepath, line and column.
-  sort-results: true
 
 issues:
   # Maximum issues count per one linter.
@@ -39,7 +33,14 @@ issues:
   # Set to 0 to disable.
   # Default: 3
   max-same-issues: 0
-  exclude-dirs:
-  - build # docker files
-  - .cicd #
-  - doc
+
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    paths:
+      - build # docker files
+      - .cicd #
+      - doc

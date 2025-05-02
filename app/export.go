@@ -52,7 +52,7 @@ func (app *App) ExportAppStateAndValidators(
 		AppState:        appState,
 		Validators:      validators,
 		Height:          height,
-		ConsensusParams: app.BaseApp.GetConsensusParams(ctx),
+		ConsensusParams: app.GetConsensusParams(ctx),
 	}, nil
 }
 
@@ -60,12 +60,8 @@ func (app *App) ExportAppStateAndValidators(
 // NOTE zero height genesis is a temporary feature which will be deprecated
 // in favour of export at a block height.
 func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []string) error {
-	applyAllowedAddrs := false
-
-	// check if there is a allowed address list
-	if len(jailAllowedAddrs) > 0 {
-		applyAllowedAddrs = true
-	}
+	// check if there is an allowed address list
+	applyAllowedAddrs := len(jailAllowedAddrs) > 0
 
 	allowedAddrsMap := make(map[string]bool)
 
@@ -204,7 +200,7 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 
 	// Iterate through validators by power descending, reset bond heights, and
 	// update bond intra-tx counters.
-	store := ctx.KVStore(app.AppKeepers.GetKVStoreKeys()[stakingtypes.StoreKey])
+	store := ctx.KVStore(app.GetKVStoreKeys()[stakingtypes.StoreKey])
 	iter := storetypes.KVStoreReversePrefixIterator(store, stakingtypes.ValidatorsKey)
 	counter := int16(0)
 
@@ -227,7 +223,10 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 		counter++
 	}
 
-	iter.Close()
+	if err := iter.Close(); err != nil {
+		app.Logger().Error("error while closing the key-value store reverse prefix iterator: ", err)
+		return err
+	}
 
 	if _, err := app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx); err != nil {
 		panic(err)

@@ -3,6 +3,7 @@ package testutil
 import (
 	"encoding/json"
 	"fmt"
+	nativelog "log"
 	"os"
 	"time"
 
@@ -209,7 +210,16 @@ var tempDir = func() string {
 	if err != nil {
 		panic("failed to create temp dir: " + err.Error())
 	}
-	defer os.RemoveAll(dir)
+	defer func() {
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			// Only overwrite return if no previous error
+			if err == nil {
+				err = fmt.Errorf("cleanup failed: %w", removeErr)
+			} else {
+				nativelog.Printf("cleanup failed: %v (original error: %v)", removeErr, err)
+			}
+		}
+	}()
 
 	return dir
 }

@@ -16,7 +16,6 @@ import (
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
-	cometbfttypes "github.com/cometbft/cometbft/types"
 
 	pruningtypes "cosmossdk.io/store/pruning/types"
 	db "github.com/cosmos/cosmos-db"
@@ -223,7 +222,7 @@ var defaultConsensusParams = &cmtproto.ConsensusParams{
 	},
 	Validator: &cmtproto.ValidatorParams{
 		PubKeyTypes: []string{
-			cometbfttypes.ABCIPubKeyTypeEd25519,
+			cmttypes.ABCIPubKeyTypeEd25519,
 		},
 	},
 }
