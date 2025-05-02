@@ -19,6 +19,7 @@ import (
 // HandleAcknowledgement passes the acknowledgement data to the appropriate contract via a sudo call.
 func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, packet channeltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) error {
 	// TODO - in order to support v2 check channelVersion here and decide what to do - right now we only use - ibc-gotransfertypes.V1 = "ics20-1" and ibc-goICAtypes.Version = "ics27-1"
+	// So far for the ICA there is only version 1 as far as I can see. For the transfer module there is V2 but it won't be handled here
 	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleAcknowledgment)
 	k.Logger(ctx).Debug("Handling acknowledgement")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
