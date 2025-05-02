@@ -60,7 +60,6 @@ func New(t *testing.T, withDefaultGenesisState bool) *app.App {
 		true,
 		map[int64]bool{},
 		testHomeDir(chainID),
-		0,
 		encoding,
 		sims.EmptyAppOptions{},
 		baseapp.SetChainID(chainID),
@@ -234,7 +233,7 @@ func NewAppConstructor() network.AppConstructor {
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	return func(val network.ValidatorI) servertypes.Application {
-		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir, 0,
+		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir,
 			encoding,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),

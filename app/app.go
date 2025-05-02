@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 
@@ -230,17 +229,15 @@ func New(
 	anteHandler, err := NewAnteHandler(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
-				AccountKeeper:         app.AccountKeeper,
-				SignModeHandler:       encodingConfig.TxConfig.SignModeHandler(),
-				SigGasConsumer:        ante.DefaultSigVerificationGasConsumer,
-				TxFeeChecker:          app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
-				FeegrantKeeper:        app.FeegrantKeeper,
-				UnorderedNonceManager: app.AccountKeeper,
-				// The following options are set by default.
-				// If you do not want to change these, you may remove the UnorderedTxOptions field entirely.
-				UnorderedTxOptions: []ante.UnorderedTxDecoratorOptions{
-					ante.WithUnorderedTxGasCost(2240),
-					ante.WithTimeoutDuration(10 * time.Minute),
+				AccountKeeper:   app.AccountKeeper,
+				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
+				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
+				FeegrantKeeper:  app.FeegrantKeeper,
+				SigVerifyOptions: []ante.SigVerificationDecoratorOption{
+					// change below as needed.
+					ante.WithUnorderedTxGasCost(ante.DefaultUnorderedTxGasCost),
+					ante.WithMaxUnorderedTxTimeoutDuration(ante.DefaultMaxTimeoutDuration),
 				},
 			},
 			BankKeeper:            app.BankKeeper,
