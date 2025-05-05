@@ -21,7 +21,6 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	"github.com/cosmos/cosmos-sdk/x/consensus"
 	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
 	"github.com/cosmos/cosmos-sdk/x/distribution"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
@@ -208,7 +207,6 @@ func orderBeginBlockers() []string {
 		paramstypes.ModuleName,
 		authz.ModuleName,
 		ibctransfertypes.ModuleName,
-		crisistypes.ModuleName,
 		feegrant.ModuleName,
 		taxmoduletypes.ModuleName,
 		vestingstypes.ModuleName,
@@ -223,7 +221,6 @@ func orderBeginBlockers() []string {
 
 func orderEndBlockers() []string {
 	return []string{
-		crisistypes.ModuleName,
 		govtypes.ModuleName,
 		stakingtypes.ModuleName,
 		ibcexported.ModuleName,
@@ -265,7 +262,6 @@ func genesisModuleOrder() []string {
 		slashingtypes.ModuleName,
 		govtypes.ModuleName,
 		minttypes.ModuleName,
-		crisistypes.ModuleName,
 		taxmoduletypes.ModuleName,
 		vestingstypes.ModuleName,
 		ibcexported.ModuleName,
