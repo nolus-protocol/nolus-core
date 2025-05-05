@@ -1342,8 +1342,8 @@ github.com/neutron-org/admin-module/v2 v2.0.0/go.mod h1:RfOyabXsdJ5btcOKyKPZDYiZ
 github.com/neutron-org/neutron/v4 v4.2.4 h1:TFEjTS5Z55VGJ6J6CIekLO/rYlkTRzIXBOfe8m82Vt0=
 github.com/neutron-org/neutron/v4 v4.2.4/go.mod h1:+xZHLFEjkpHyg8xaRVQfPAdsmFmPx7HicPBqeXESgUE=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/nolus-protocol/cosmos-sdk v0.53.0-nolus h1:qVY/uLkaxZZ7lvd02nJSfXQhb5I1c0dXJ2MNtrzd2Lo=
-github.com/nolus-protocol/cosmos-sdk v0.53.0-nolus/go.mod h1:UPcRyFwOUy2PfSFBWxBceO/HTjZOuBVqY583WyazIGs=
+github.com/nolus-protocol/cosmos-sdk v0.53.0-nolus-2 h1:OeJu931mTS05SLRXHdutIjglNoCUlFAqh2gdGlr92Io=
+github.com/nolus-protocol/cosmos-sdk v0.53.0-nolus-2/go.mod h1:UPcRyFwOUy2PfSFBWxBceO/HTjZOuBVqY583WyazIGs=
 github.com/nolus-protocol/wasmd v0.55.0-nolus h1:tD79SVPaGxq5InVocdmvBppzOhP3AAoomYEmgAZGl1E=
 github.com/nolus-protocol/wasmd v0.55.0-nolus/go.mod h1:67K2PzoSF9+NjImaALEYMaAHd3zwaSuWLsQ7iSznUik=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
