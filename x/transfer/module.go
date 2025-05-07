@@ -142,7 +142,7 @@ func (am AppModuleBasic) RegisterInterfaces(reg cdctypes.InterfaceRegistry) {
 	am.AppModuleBasic.RegisterInterfaces(reg)
 }
 
-// Name returns the capability module's name.
+// Name returns the interchaintxs module's name.
 func (am AppModule) Name() string {
 	return am.AppModuleBasic.Name()
 }

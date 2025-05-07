@@ -195,7 +195,6 @@ __set_token_denominations() {
 
   < "$genesis_file" \
     jq '.app_state["staking"]["params"]["bond_denom"]="'"$currency"'"' \
-    | jq '.app_state["crisis"]["constant_fee"]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["deposit_params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["params"]["min_deposit"][0]["denom"]="'"$currency"'"' \
     | jq '.app_state["gov"]["params"]["expedited_min_deposit"][0]["denom"]="'"$currency"'"' \
