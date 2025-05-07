@@ -112,7 +112,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTx() {
 	icaowner := suite.contractAddress.String() + ".0"
 
 	path := testutil.NewICAPath(suite.ChainA, suite.ChainB, icaowner)
-	suite.Coordinator.SetupConnections(path)
+	path.SetupConnections()
 
 	err = suite.SetupICAPath(path, icaowner)
 	suite.Require().NoError(err)
@@ -132,7 +132,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTx() {
 	suite.NoError(err)
 	suite.Nil(events)
 	suite.Equal(uint64(1), response.SequenceId)
-	suite.Equal("channel-1", response.Channel)
+	suite.Equal("channel-2", response.Channel)
 }
 
 func (suite *CustomMessengerTestSuite) TestSubmitTxTooMuchTxs() {
@@ -144,7 +144,7 @@ func (suite *CustomMessengerTestSuite) TestSubmitTxTooMuchTxs() {
 	icaowner := suite.contractAddress.String() + ".0"
 
 	path := testutil.NewICAPath(suite.ChainA, suite.ChainB, icaowner)
-	suite.Coordinator.SetupConnections(path)
+	path.SetupConnections()
 
 	err := suite.SetupICAPath(path, icaowner)
 	suite.Require().NoError(err)

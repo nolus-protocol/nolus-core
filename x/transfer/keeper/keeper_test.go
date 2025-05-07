@@ -5,7 +5,7 @@ import (
 
 	"cosmossdk.io/math"
 	sdktypes "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	clienttypes "github.com/cosmos/ibc-go/v10/modules/core/02-client/types" //nolint:staticcheck
 	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
@@ -43,7 +43,7 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		Sender: "nonbech32",
 	})
 	suite.Nil(resp)
-	suite.ErrorIs(err, errors.ErrInvalidAddress)
+	suite.ErrorIs(err, sdkerrors.ErrInvalidAddress)
 
 	ctx = suite.ChainA.GetContext()
 	resp, err = msgSrv.Transfer(ctx, &types.MsgTransfer{
@@ -84,7 +84,7 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 	})
 	suite.Nil(resp)
-	suite.ErrorIs(err, errors.ErrInsufficientFunds)
+	suite.ErrorIs(err, sdkerrors.ErrInsufficientFunds)
 
 	// sender is a non contract account
 	senderAddress := suite.ChainA.SenderAccounts[0].SenderAccount.GetAddress()
@@ -137,7 +137,7 @@ func (suite KeeperTestSuite) TestTransfer() { //nolint:govet // it's a test so i
 		},
 	})
 	suite.Nil(resp)
-	suite.ErrorIs(err, errors.ErrInsufficientFunds)
+	suite.ErrorIs(err, sdkerrors.ErrInsufficientFunds)
 
 	suite.TopUpWallet(ctx, senderAddress, contractAddress)
 	ctx = suite.ChainA.GetContext()
@@ -389,7 +389,7 @@ func TestMsgTransferValidate(t *testing.T) {
 					TimeoutFee: nil,
 				},
 			},
-			errors.ErrInvalidAddress,
+			sdkerrors.ErrInvalidAddress,
 		},
 		{
 			"invalid sender",
@@ -405,7 +405,7 @@ func TestMsgTransferValidate(t *testing.T) {
 					TimeoutFee: nil,
 				},
 			},
-			errors.ErrInvalidAddress,
+			sdkerrors.ErrInvalidAddress,
 		},
 		{
 			"empty receiver",
@@ -473,7 +473,7 @@ func TestMsgTransferValidate(t *testing.T) {
 					TimeoutFee: nil,
 				},
 			},
-			transfertypes.ErrInvalidDenomForTransfer,
+			ibcerrors.ErrInvalidCoins,
 		},
 		{
 			"invalid token denom prefix format with separator",
@@ -492,7 +492,7 @@ func TestMsgTransferValidate(t *testing.T) {
 					TimeoutFee: nil,
 				},
 			},
-			transfertypes.ErrInvalidDenomForTransfer,
+			ibcerrors.ErrInvalidCoins,
 		},
 	}
 

@@ -84,9 +84,8 @@ func (suite *IBCConnectionTestSuite) SetupTest() {
 
 func (suite *IBCConnectionTestSuite) ConfigureTransferChannel() {
 	suite.TransferPath = NewTransferPath(suite.ChainA, suite.ChainB)
-	suite.Coordinator.SetupConnections(suite.TransferPath)
-	err := SetupTransferPath(suite.TransferPath)
-	suite.Require().NoError(err)
+	suite.TransferPath.SetupConnections()
+	SetupTransferPath(suite.TransferPath)
 }
 
 func (suite *IBCConnectionTestSuite) GetNolusZoneApp(chain *ibctesting.TestChain) *app.App {
@@ -260,25 +259,6 @@ func NewTransferPath(chainA, chainB *ibctesting.TestChain) *ibctesting.Path {
 }
 
 // SetupTransferPath.
-func SetupTransferPath(path *ibctesting.Path) error {
-	channelSequence := path.EndpointA.Chain.App.GetIBCKeeper().ChannelKeeper.GetNextChannelSequence(path.EndpointA.Chain.GetContext())
-	channelSequenceB := path.EndpointB.Chain.App.GetIBCKeeper().ChannelKeeper.GetNextChannelSequence(path.EndpointB.Chain.GetContext())
-
-	// update port/channel ids
-	path.EndpointA.ChannelID = channeltypes.FormatChannelIdentifier(channelSequence)
-	path.EndpointB.ChannelID = channeltypes.FormatChannelIdentifier(channelSequenceB)
-
-	if err := path.EndpointA.ChanOpenInit(); err != nil {
-		return err
-	}
-
-	if err := path.EndpointB.ChanOpenTry(); err != nil {
-		return err
-	}
-
-	if err := path.EndpointA.ChanOpenAck(); err != nil {
-		return err
-	}
-
-	return path.EndpointB.ChanOpenConfirm()
+func SetupTransferPath(path *ibctesting.Path) {
+	path.CreateChannels()
 }
