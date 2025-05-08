@@ -18,3 +18,13 @@ RUN npm install -g swagger2openapi
 COPY --from=golang:1.23-alpine /usr/local/go/ /usr/local/go/
 
 ENV PATH="/usr/local/go/bin:${PATH}"
+
+# Create a non-root user and switch to it
+ARG USERNAME=builder
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+RUN addgroup -g ${USER_GID} ${USERNAME} && \
+    adduser -D -u ${USER_UID} -G ${USERNAME} ${USERNAME}
+
+USER ${USERNAME}
