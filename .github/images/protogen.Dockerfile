@@ -1,4 +1,4 @@
-FROM ghcr.io/cosmos/proto-builder:0.14.0
+FROM ghcr.io/cosmos/proto-builder:0.16.0
 
 USER root
 
