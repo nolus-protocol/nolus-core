@@ -21,8 +21,8 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Create a non-root user and switch to it
 ARG USERNAME=builder
-ARG USER_UID=1000
-ARG USER_GID=1000
+ARG USER_UID=10001
+ARG USER_GID=10001
 
 RUN addgroup -g ${USER_GID} ${USERNAME} && \
     adduser -D -u ${USER_UID} -G ${USERNAME} ${USERNAME}
