@@ -7,6 +7,13 @@ echo "Generating gogo proto code"
 cd proto
 buf dep update
 buf generate
+# Fix buf.lock permissions after generation
+if [ -f buf.lock ]; then
+  echo "Fixing buf.lock permissions"
+  chown $(id -u):$(id -g) buf.lock
+  chmod 644 buf.lock
+fi
+
 cd ..
 
 # move proto files to the right places

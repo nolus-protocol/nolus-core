@@ -6,6 +6,7 @@ deps:
   - buf.build/cosmos/cosmos-sdk
   - buf.build/googleapis/googleapis
   - buf.build/cosmos/ibc
+  - buf.build/protocolbuffers/wellknowntypes
 breaking:
   use:
     - FILE
