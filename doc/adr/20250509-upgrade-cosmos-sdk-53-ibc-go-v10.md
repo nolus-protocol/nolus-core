@@ -5,8 +5,8 @@
 - Date: 2025-05-09
 - Tags: cosmos-sdk, ibc-go, upgrading
 
-Technical Story
-Upgrade to:
+Technical Story - upgrade to:
+
  cosmos-sdk v0.53 -  introducing unordered transactions, performance improvements, and additional modules (not currently in use). [Changelog](https://github.com/cosmos/cosmos-sdk/blob/v0.53.0/UPGRADING.md)
 
  ibc-go v10 – enables v2 transfers, deprecates the 29-fee middleware, improves interchain fee abstraction, and includes a series of quality-of-life updates.
