@@ -11,6 +11,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/gogoproto/proto"
+
+	"github.com/Nolus-Protocol/nolus-core/app/legacycodec"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
@@ -39,6 +41,17 @@ func makeEncodingConfig() EncodingConfig {
 	if err != nil {
 		panic(err)
 	}
+
+	interfaceRegistry.RegisterImplementations(
+		(*sdk.Msg)(nil),
+		&legacycodec.MsgChannelUpgradeInit{},
+		&legacycodec.MsgChannelUpgradeTry{},
+		&legacycodec.MsgChannelUpgradeAck{},
+		&legacycodec.MsgChannelUpgradeConfirm{},
+		&legacycodec.MsgChannelUpgradeOpen{},
+		&legacycodec.MsgChannelUpgradeTimeout{},
+		&legacycodec.MsgChannelUpgradeCancel{},
+	)
 
 	if err := interfaceRegistry.SigningContext().Validate(); err != nil {
 		panic(err)
