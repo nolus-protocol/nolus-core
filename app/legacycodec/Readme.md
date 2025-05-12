@@ -1,0 +1,3 @@
+In this folder are hosted older proto generated files from ibc-go v8. We need those since we have published governance proposals in the past that used message types
+from this very proto files. Those message types are not available in ibc-go v10 and our cosmos-sdk/x/gov module is not happy when you ask it to query past proposals.
+We will host those cropped down proto files and customly register the message types that we require just for querying proposals. Once there is a more reliable solution directly implemented in the cosmos-sdk/x/gov module (to support querying proposals of past message types that are no longer available), we can use that and delete those legacy codec files 
