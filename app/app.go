@@ -48,6 +48,16 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
+	v062 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v062"
+	v063 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v063"
+	v064 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v064"
+	v065 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v065"
+	v066 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v066"
+	v067 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v067"
+	v068 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v068"
+	v069 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v069"
+	v070 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v070"
+	v072 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v072"
 	v080 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v080"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
@@ -63,7 +73,7 @@ const (
 var (
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v080.Upgrade}
+	Upgrades = []upgrades.Upgrade{v062.Upgrade, v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade, v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade}
 )
 
 var (
