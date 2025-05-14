@@ -3,8 +3,6 @@ package v067
 import (
 	store "cosmossdk.io/store/types"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-
-	icqtypes "github.com/neutron-org/neutron/v4/x/interchainqueries/types"
 )
 
 const (
@@ -17,6 +15,6 @@ var Upgrade = upgrades.Upgrade{
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
 		Added:   []string{},
-		Deleted: []string{icqtypes.ModuleName},
+		Deleted: []string{"interchainqueries"},
 	},
 }
