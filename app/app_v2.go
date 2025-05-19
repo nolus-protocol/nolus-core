@@ -37,8 +37,6 @@ import (
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 )
 
-// TODO: upgrade imports to ibc-go v10, follow all the migration guides for 47->50 and 50->53 and apply the depinject changes.
-
 const (
 	Name = "nolus"
 )

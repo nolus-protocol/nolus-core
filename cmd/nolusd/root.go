@@ -173,7 +173,7 @@ func NewRootCmd(
 	); err != nil {
 		panic(err)
 	}
-	
+
 	rootCmd := &cobra.Command{
 		Use:   appName + "d",
 		Short: "Nolus",
@@ -193,7 +193,7 @@ func NewRootCmd(
 				return err
 			}
 
-			// TODO: refer to ProvideClientContext func
+			// TODO: refer to ProvideClientContext func - https://github.com/cosmos/cosmos-sdk/blob/v0.50.13/UPGRADING.md#client
 			// if !clientCtx.Offline {
 			// 	enabledSignModes := append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL)
 			// 	txConfigOpts := tx.ConfigOptions{
