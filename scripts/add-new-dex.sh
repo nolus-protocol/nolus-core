@@ -15,6 +15,7 @@ NOLUS_MONEY_MARKET_DIR="$SCRIPTS_DIR/../../nolus-money-market"
 ACCOUNT_KEY_TO_FEED_HERMES_ADDRESS="reserve"
 DEX_ADMIN_KEY="wasmAdmin"
 STORE_CODE_PRIVILEGED_USER_KEY="storeAdmin"
+LEASE_ADMIN_ADDRESS=""
 WASM_ARTIFACTS_PATH=""
 
 HERMES_CONFIG_DIR_PATH="$HOME/.hermes"
@@ -60,6 +61,7 @@ while [[ $# -gt 0 ]]; do
     [--account-key-to-feed-hermes-address <account_key_to_feed_hermes_address>]
     [--dex-admin-key <dex_admin_key>]
     [--store-code-privileged-user-key <store_code_privileged_user_key>]
+    [--lease-admin-address <lease_admin_address>]
     [--wasm-artifacts-path <wasm_artifacts_path>]
     [--hermes-config-dir-path <config.toml_and_hermes.seed_dir_path>]
     [--hermes-binary-dir-path <hermes_binary_dir_path>]
@@ -125,6 +127,11 @@ while [[ $# -gt 0 ]]; do
 
   --store-code-privileged-user-key)
     STORE_CODE_PRIVILEGED_USER_KEY="$2"
+    shift 2
+    ;;
+
+  --lease-admin-address)
+    LEASE_ADMIN_ADDRESS="$2"
     shift 2
     ;;
 
@@ -288,6 +295,7 @@ verify_dir_exist "$NOLUS_MONEY_MARKET_DIR" "The NOLUS_MONEY_MARKET dir does not 
 DEPLOY_CONTRACTS_SCRIPT="$NOLUS_MONEY_MARKET_DIR/scripts/deploy-protocol.sh"
 
 verify_dir_exist "$WASM_ARTIFACTS_PATH" "The WASM_ARTIFACTS_PATH dir does not exist"
+verify_mandatory "$LEASE_ADMIN_ADDRESS" "lease admin address"
 verify_mandatory "$DEX_NAME" "new DEX name"
 verify_mandatory "$DEX_TYPE_AND_PARAMS" "DEX type and parameters"
 verify_mandatory "$DEX_NETWORK" "new DEX network"
@@ -336,7 +344,7 @@ DEX_CHANNEL_REMOTE=$(echo "$CONNECTION_INFO" | jq -r '.channels[0].counterparty.
 # Deploy contracts
 _=$(
   deploy_contracts "$NOLUS_NET" "$NOLUS_CHAIN_ID" "$NOLUS_HOME_DIR" \
-    "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" \
+    "$DEX_ADMIN_KEY" "$STORE_CODE_PRIVILEGED_USER_KEY" "$LEASE_ADMIN_ADDRESS" \
     "$ADMIN_CONTRACT_ADDRESS" "$WASM_ARTIFACTS_PATH/$DEX_NAME" "$DEX_NETWORK" \
     "$DEX_NAME" "$DEX_TYPE_AND_PARAMS" "$DEX_CONNECTION_ID" \
     "$DEX_CHANNEL_LOCAL" "$DEX_CHANNEL_REMOTE" "$PROTOCOL_CURRENCY" \
