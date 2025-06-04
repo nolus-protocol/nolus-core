@@ -41,7 +41,6 @@ CHAIN_CLOCK_DRIFT_SECS="20"
 CHAIN_MAX_BLOCK_TIME_SECS="10"
 CHAIN_TRUST_THRESHOLD_NUMERATOR="2"
 CHAIN_TRUST_THRESHOLD_DENOMINATOR="3"
-IF_INTERCHAIN_SECURITY="true"
 
 PROTOCOL_CURRENCY=""
 SWAP_TREE=""
@@ -73,7 +72,6 @@ while [[ $# -gt 0 ]]; do
     [--dex-ip-addr-grpc-host <new_dex_chain_ip_addr_grpc_fully_host>]
     [--dex-account-prefix <new_dex_account_prefix>]
     [--dex-trusting-period-secs <new_dex_trusting_period_in_seconds>]
-    [--dex-if-interchain-security <new_dex_if_interchain_security_true/false>]
     [--dex-rpc-timeout-secs <dex_rpc_timeout_in_seconds>]
     [--dex-default-gas <dex_default_gas>]
     [--dex-max-gas <dex_max_gas>]
@@ -245,11 +243,6 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
 
-  --dex-if-interchain-security)
-    IF_INTERCHAIN_SECURITY="$2"
-    shift 2
-    ;;
-
   --protocol-currency)
     PROTOCOL_CURRENCY="$2"
     shift 2
@@ -311,17 +304,12 @@ verify_mandatory "$SWAP_TREE" "new protocol swap_tree"
 verify_file_exist "$DEPLOY_CONTRACTS_SCRIPT" "The script does not exist"
 source "$DEPLOY_CONTRACTS_SCRIPT"
 
- if [[ $IF_INTERCHAIN_SECURITY != "true" && $IF_INTERCHAIN_SECURITY != "false" ]]; then
-    echo >&2 "the dex-if-interchain-security value must be true or false"
-    exit 1
-  fi
-
 # Extend the existing Hermes configuration
 add_new_chain_hermes "$HERMES_CONFIG_DIR_PATH" "$CHAIN_ID" "$CHAIN_IP_ADDR_RPC" "$CHAIN_IP_ADDR_GRPC" \
    "$CHAIN_RPC_TIMEOUT_SECS"  "$CHAIN_ACCOUNT_PREFIX" "$CHAIN_DEFAULT_GAS" "$CHAIN_MAX_GAS" "$CHAIN_GAS_PRICE_PRICE" \
     "$CHAIN_GAS_PRICE_DENOM" "$CHAIN_GAS_MULTIPLIER" "$CHAIN_MAX_MSG_NUM" "$CHAIN_MAX_TX_SIZE" \
     "$CHAIN_CLOCK_DRIFT_SECS" "$CHAIN_MAX_BLOCK_TIME_SECS" "$CHAIN_TRUSTING_PERIOD_SECS" \
-    "$CHAIN_TRUST_THRESHOLD_NUMERATOR" "$CHAIN_TRUST_THRESHOLD_DENOMINATOR" "$IF_INTERCHAIN_SECURITY"
+    "$CHAIN_TRUST_THRESHOLD_NUMERATOR" "$CHAIN_TRUST_THRESHOLD_DENOMINATOR"
 
 # Link the Hermes account to the DEX
 dex_account_setup "$HERMES_BINARY_DIR_PATH" "$CHAIN_ID" "$HERMES_CONFIG_DIR_PATH"/hermes.seed

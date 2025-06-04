@@ -79,7 +79,7 @@ On a live network, a new DEX can be deployed using the following steps.
 ### Аutomated step
 
 ```sh
-./scripts/add-new-dex.sh --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-gas-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>  --dex-if-interchain-security <if_interchain_security_true/false> --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree> --dex-network <dex_network_name> --dex-type-and-params '<dex_specific_field>'
+./scripts/add-new-dex.sh --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-gas-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>  --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree> --dex-network <dex_network_name> --dex-type-and-params '<dex_specific_field>'
 ```
 
 The script takes care of setting up Hermes to work with the new DEX and, for now, deploying DEX-specific contracts (More about deploying contracts on a live network can be found [here](https://github.com/nolus-protocol/nolus-money-market)).

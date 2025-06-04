@@ -24,7 +24,6 @@ add_new_chain_hermes() {
   declare -r chain_trusting_period_secs="${16}"
   declare -r chain_trust_threshold_numerator="${17}"
   declare -r chain_trust_threshold_denumerator="${18}"
-  declare if_interchain_security="${19}"
 
   declare -r chains_count=$(grep -c "\[\[chains\]\]" "$hermes_config_file_path/config.toml")
 
@@ -49,11 +48,6 @@ add_new_chain_hermes() {
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trusting_period"' '"'"$chain_trusting_period_secs"'s"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."trust_threshold"' '{ numerator : '"$chain_trust_threshold_numerator"', denominator : '"$chain_trust_threshold_denumerator"' }'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."event_source"' '{ mode : "push", url : "wss://'"$chain_ip_addr_RPC"'/websocket", batch_delay : "500ms" }'
-
-  if [ "$if_interchain_security" == "true" ]
-  then
-    update_config "$hermes_config_file_path" '.chains['"$chains_count"']."ccv_consumer_chain"' 'true'
-  fi
 }
 
 dex_account_setup() {
