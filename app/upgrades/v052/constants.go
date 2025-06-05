@@ -1,4 +1,4 @@
-package v067
+package v052
 
 import (
 	store "cosmossdk.io/store/types"
@@ -7,14 +7,13 @@ import (
 
 const (
 	// UpgradeName defines the on-chain upgrades name.
-	UpgradeName = "v0.6.7"
+	UpgradeName = "v0.5.2"
 )
 
 var Upgrade = upgrades.Upgrade{
 	UpgradeName:          UpgradeName,
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
-		Added:   []string{},
-		Deleted: []string{"interchainqueries"},
+		Added: []string{},
 	},
 }
