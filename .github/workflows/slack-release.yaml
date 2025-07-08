@@ -7,7 +7,7 @@ on:
 
 jobs:
   notify_slack:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     name: Notify Slack on Release
     steps:
       - name: Notify Slack on Release
