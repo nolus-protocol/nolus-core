@@ -17,7 +17,7 @@ env:
 
   # docker images
   CONTAINER_REGISTRY: ghcr.io
-  BUILDER_IMAGE_TAG: "1.23.2"
+  BUILDER_IMAGE_TAG: "1.23.3"
   BUILDER_IMAGE_NAME: "builder"
   BUILDER_DOCKERFILE: ".github/images/builder.Dockerfile"
   PROTOGEN_IMAGE_TAG: "0.2.1"
@@ -172,7 +172,7 @@ jobs:
     needs: [test-unit-coverage, builder-image]
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
-      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.23.2"
+      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.23.3"
       
     steps:
       - uses: actions/checkout@v4

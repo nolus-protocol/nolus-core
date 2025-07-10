@@ -3,12 +3,12 @@ module github.com/Nolus-Protocol/nolus-core
 go 1.23.8
 
 require (
-	github.com/CosmWasm/wasmd v0.60.1
-	github.com/CosmWasm/wasmvm/v2 v2.2.4
+	github.com/CosmWasm/wasmd v0.61.1
+	github.com/CosmWasm/wasmvm/v3 v3.0.0
 	github.com/cometbft/cometbft v0.38.17
 	github.com/cosmos/cosmos-sdk v0.53.3
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/cosmos/ibc-go/v10 v10.2.0
+	github.com/cosmos/ibc-go/v10 v10.3.0
 	github.com/golang/protobuf v1.5.4
 	github.com/gorilla/mux v1.8.1
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0
@@ -68,7 +68,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.48.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.48.1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
-	github.com/aws/aws-sdk-go v1.44.224 // indirect
+	github.com/aws/aws-sdk-go v1.49.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bgentry/speakeasy v0.2.0 // indirect
@@ -111,7 +111,7 @@ require (
 	github.com/emicklei/dot v1.8.0 // indirect
 	github.com/envoyproxy/go-control-plane/envoy v1.32.4 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
-	github.com/ethereum/go-ethereum v1.15.10 // indirect
+	github.com/ethereum/go-ethereum v1.15.11 // indirect
 	github.com/fatih/color v1.18.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
@@ -175,8 +175,6 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oasisprotocol/curve25519-voi v0.0.0-20230904125328-1f23a7beb09a // indirect
 	github.com/oklog/run v1.1.0 // indirect
-	github.com/onsi/ginkgo v1.16.5 // indirect
-	github.com/onsi/gomega v1.27.10 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/petermattis/goid v0.0.0-20240813172612-4fcff4a6cae7 // indirect
@@ -192,7 +190,7 @@ require (
 	github.com/rs/zerolog v1.34.0 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.5 // indirect
-	github.com/shamaton/msgpack/v2 v2.2.0 // indirect
+	github.com/shamaton/msgpack/v2 v2.2.3 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
 	github.com/spf13/viper v1.20.1 // indirect
@@ -211,7 +209,7 @@ require (
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.35.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.58.0 // indirect
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.58.0 // indirect
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0 // indirect
 	go.opentelemetry.io/otel v1.35.0 // indirect
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.35.0 // indirect
@@ -244,7 +242,7 @@ replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.60.1-nolus
+	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.61.1-nolus
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
