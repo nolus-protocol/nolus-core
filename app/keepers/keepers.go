@@ -372,6 +372,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		distrkeeper.NewQuerier(*appKeepers.DistrKeeper),
 		appKeepers.IBCKeeper.ChannelKeeper, // may be replaced with middleware such as ics29 feerefunder
 		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeperV2,
 		appKeepers.TransferKeeper,
 		msgServiceRouter,
 		grpcQueryRouter,
@@ -446,7 +447,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferStack).
 		AddRoute(interchaintxstypes.ModuleName, icaControllerStack).
-		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.IBCKeeper.ChannelKeeper))
+		AddRoute(wasmtypes.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper, appKeepers.TransferKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
