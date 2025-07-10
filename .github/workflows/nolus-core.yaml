@@ -30,7 +30,7 @@ permissions:
 jobs:
   protogen-image:
     name: Ensure protogen image exists
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     permissions:
       contents: read
       packages: write
@@ -49,7 +49,7 @@ jobs:
 
   proto-lint:
     name: Lint protobuf files
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -62,7 +62,7 @@ jobs:
 
   proto-break-check:
     name: Detect protobuf breaking changes
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v4
 
@@ -75,7 +75,7 @@ jobs:
 
   builder-image:
     name: Ensure builder image exists
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     permissions:
       contents: read
       packages: write
@@ -94,7 +94,7 @@ jobs:
 
   golang-lint:
     name: Lint Go files
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/setup-go@v5
         with:
@@ -116,7 +116,7 @@ jobs:
 
   test-unit:
     name: Run unit tests
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     needs: [golang-lint, builder-image, protogen-image, proto-lint, proto-break-check]
     steps:
       - uses: actions/setup-go@v5
@@ -140,7 +140,7 @@ jobs:
   test-unit-coverage:
     name: Code coverage reports
     needs: test-unit
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/setup-go@v5
         with:
@@ -168,7 +168,7 @@ jobs:
 
   build-binary:
     name: Build binary
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     needs: [test-unit-coverage, builder-image]
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
@@ -208,7 +208,7 @@ jobs:
   # Add metadata for cosmovisor
   add-meta:
     name: Add metadata
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     needs: build-binary
 
     steps:
@@ -237,7 +237,7 @@ jobs:
   release:
     name: Draft release
     if: github.ref_type == 'tag'
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     needs: add-meta
     permissions: write-all
 

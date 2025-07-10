@@ -6,7 +6,7 @@ on:
 jobs:
   nondeterminism:
     name: Test App State Determinism
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/setup-go@v4
         with:
@@ -19,7 +19,7 @@ jobs:
 
   import-export:
     name: Test App Import Export
-    runs-on: [self-hosted, linux]
+    runs-on: "ubuntu-latest"
     steps:
       - uses: actions/setup-go@v4
         with:
