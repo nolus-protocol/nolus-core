@@ -146,7 +146,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 }
 
 // RegisterInvariants registers the interchaintxs module's invariants.
-func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {} // nolint: staticcheck // deprecated interface
 
 // InitGenesis performs the interchaintxs module's genesis initialization It returns
 // no validator updates.

@@ -131,7 +131,7 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 }
 
 // RegisterInvariants registers the vestings module's invariants.
-func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {} // nolint: staticcheck // deprecated interface
 
 // InitGenesis performs the vestings module's genesis initialization It returns
 // no validator updates.

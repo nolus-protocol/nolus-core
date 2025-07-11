@@ -124,7 +124,7 @@ func (AppModule) Name() string {
 }
 
 // RegisterInvariants registers the mint module invariants.
-func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {}
+func (am AppModule) RegisterInvariants(_ sdk.InvariantRegistry) {} // nolint: staticcheck // deprecated interface
 
 // QuerierRoute returns the mint module's querier route name.
 func (AppModule) QuerierRoute() string {
