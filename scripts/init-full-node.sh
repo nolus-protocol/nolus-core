@@ -98,7 +98,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 verify_mandatory "$ARTIFACT_BIN" "Nolus binary actifact"
-verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scipts actifact"
+verify_mandatory "$ARTIFACT_SCRIPTS" "Nolus scripts actifact"
 verify_mandatory "$SSH_USER" "Server ssh user"
 verify_mandatory "$SSH_IP" "Server ip"
 verify_mandatory "$SSH_KEY" "SSH pvt key file path"
