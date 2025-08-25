@@ -16,6 +16,8 @@ import (
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
+	txsigning "cosmossdk.io/x/tx/signing"
+	"cosmossdk.io/x/tx/signing/aminojson"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -65,6 +67,7 @@ import (
 	v072 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v072"
 	v080 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v080"
 	"github.com/Nolus-Protocol/nolus-core/docs"
+	"github.com/Nolus-Protocol/nolus-core/eip191"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -163,9 +166,23 @@ func New(
 	)
 
 	enabledSignModes := append(authtx.DefaultSignModes, sigtypes.SignMode_SIGN_MODE_TEXTUAL)
+	signingOpts, err := authtx.NewDefaultSigningOptions()
+	if err != nil {
+		return nil
+	}
+	signingOpts.FileResolver = appCodec.InterfaceRegistry()
+
+	aminoHandler := aminojson.NewSignModeHandler(aminojson.SignModeHandlerOptions{
+		FileResolver: signingOpts.FileResolver,
+		TypeResolver: signingOpts.TypeResolver,
+	})
+	eip191Handler := eip191.NewSignModeHandler(eip191.SignModeHandlerOptions{
+		AminoJsonSignModeHandler: aminoHandler,
+	})
 	txConfigOpts := authtx.ConfigOptions{
 		EnabledSignModes:           enabledSignModes,
 		TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
+		CustomSignModes:            [](txsigning.SignModeHandler){*eip191Handler},
 	}
 	txConfig, err := authtx.NewTxConfigWithOptions(
 		appCodec,
@@ -240,7 +257,7 @@ func New(
 		HandlerOptions{
 			HandlerOptions: ante.HandlerOptions{
 				AccountKeeper:   app.AccountKeeper,
-				SignModeHandler: encodingConfig.TxConfig.SignModeHandler(),
+				SignModeHandler: app.encodingConfig.TxConfig.SignModeHandler(),
 				SigGasConsumer:  ante.DefaultSigVerificationGasConsumer,
 				TxFeeChecker:    app.TaxKeeper.CustomTxFeeChecker, // when nil is provided NewDeductFeeDecorator uses default checkTxFeeWithValidatorMinGasPrices
 				FeegrantKeeper:  app.FeegrantKeeper,
