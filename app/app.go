@@ -66,6 +66,7 @@ import (
 	v070 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v070"
 	v072 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v072"
 	v080 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v080"
+	v081 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v081"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 	"github.com/Nolus-Protocol/nolus-core/eip191"
 
@@ -81,7 +82,7 @@ const (
 var (
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade, v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade, v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade}
+	Upgrades = []upgrades.Upgrade{v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade, v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade, v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade}
 )
 
 var (
