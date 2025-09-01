@@ -355,7 +355,7 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 	var wasmOpts []wasmkeeper.Option
 	// The last arguments can contain custom message handlers, and custom query handlers,
 	// if we want to allow any custom callbacks
-	supportedFeatures := []string{"iterator", "stargate", "staking", "neutron", "migrate", "upgrade", "cosmwasm_1_1", "cosmwasm_1_2", "cosmwasm_1_3", "cosmwasm_1_4", "cosmwasm_2_0", "cosmwasm_2_1", "cosmwasm_2_2"}
+	supportedFeatures := []string{"iterator", "stargate", "staking", "neutron", "migrate", "upgrade", "cosmwasm_1_1", "cosmwasm_1_2", "cosmwasm_1_3", "cosmwasm_1_4", "cosmwasm_2_0", "cosmwasm_2_1", "cosmwasm_2_2", "cosmwasm_3_0"}
 	wasmOpts = append(wasmbinding.RegisterCustomPlugins(
 		appKeepers.InterchainTxsKeeper,
 		*appKeepers.TransferKeeper,
