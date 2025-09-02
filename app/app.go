@@ -83,8 +83,9 @@ const (
 var (
 	DefaultNodeHome string
 
-	Upgrades = []upgrades.Upgrade{v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade,
-		v062.Upgrade, v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
+	Upgrades = []upgrades.Upgrade{
+		v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade,
+		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
 	}
 )
