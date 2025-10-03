@@ -18,7 +18,7 @@ func TestParamChanges(t *testing.T) {
 		simValue    string
 		subspace    string
 	}{
-		{"tax/FeeRate", "FeeRate", "35", "tax"},
+		{"tax/FeeRate", "FeeRate", "65", "tax"},
 		{"tax/FeeRate", "FeeRate", "100", "tax"},
 	}
 
