@@ -80,15 +80,16 @@ func TestGenRandomFeeRate(t *testing.T) {
 		r               *rand.Rand
 		expectedFeeRate int32
 	}{
-		{rand.New(rand.NewSource(1)), int32(35)},
-		{rand.New(rand.NewSource(0)), int32(6)},
-		{rand.New(rand.NewSource(1241255)), int32(32)},
-		{rand.New(rand.NewSource(14)), int32(50)},
-		{rand.New(rand.NewSource(17)), int32(24)},
-		{rand.New(rand.NewSource(60)), int32(9)},
-		{rand.New(rand.NewSource(22)), int32(48)},
-		{rand.New(rand.NewSource(-2)), int32(28)},
-		{rand.New(rand.NewSource(37)), int32(0)},
+		{rand.New(rand.NewSource(1)), int32(65)},
+		{rand.New(rand.NewSource(0)), int32(11)},
+		{rand.New(rand.NewSource(1241255)), int32(72)},
+		{rand.New(rand.NewSource(14)), int32(15)},
+		{rand.New(rand.NewSource(17)), int32(94)},
+		{rand.New(rand.NewSource(60)), int32(55)},
+		{rand.New(rand.NewSource(22)), int32(84)},
+		{rand.New(rand.NewSource(-2)), int32(51)},
+		{rand.New(rand.NewSource(37)), int32(42)},
+		{rand.New(rand.NewSource(76)), int32(0)},
 	}
 
 	for _, tt := range tests {
