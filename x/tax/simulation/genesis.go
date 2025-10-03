@@ -10,9 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 )
 
-// GenRandomFeeRate generates random FeeRate in range [0-50].
+// GenRandomFeeRate generates random FeeRate in range [0-100].
 func GenRandomFeeRate(r *rand.Rand) int32 {
-	return int32(r.Intn(51))
+	return int32(r.Intn(101))
 }
 
 // RandomizedGenState generates a random GenesisState for tax.

@@ -30,9 +30,27 @@ func (s *KeeperTestSuite) TestParams() {
 		{
 			name: "set full valid params",
 			input: types.Params{
-				FeeRate:         1,
+				FeeRate:         40,
 				TreasuryAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
-				BaseDenom:       "nolus",
+				BaseDenom:       "unls",
+			},
+			expectErr: false,
+		},
+		{
+			name: "set full valid params fee rate 0",
+			input: types.Params{
+				FeeRate:         0,
+				TreasuryAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
+				BaseDenom:       "unls",
+			},
+			expectErr: false,
+		},
+		{
+			name: "set full valid params fee rate 100",
+			input: types.Params{
+				FeeRate:         100,
+				TreasuryAddress: "nolus14hj2tavq8fpesdwxxcu44rty3hh90vhujrvcmstl4zr3txmfvw9s0k0puz",
+				BaseDenom:       "unls",
 			},
 			expectErr: false,
 		},

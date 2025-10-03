@@ -19,6 +19,7 @@ func TestParamChanges(t *testing.T) {
 		subspace    string
 	}{
 		{"tax/FeeRate", "FeeRate", "35", "tax"},
+		{"tax/FeeRate", "FeeRate", "100", "tax"},
 	}
 
 	paramChanges := simulation.ParamChanges(r)

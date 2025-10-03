@@ -38,6 +38,14 @@ func (suite *KeeperTestSuite) TestTaxDecorator() {
 			expErr:    nil,
 		},
 		{
+			title:     "successful tax deduction should increase the treasury balance, fee rate 100%",
+			feeDenoms: []string{params.BaseDenom},
+			feeAmount: sdkmath.NewInt(100),
+			feeRate:   100,
+			expPass:   true,
+			expErr:    nil,
+		},
+		{
 			title:     "successful tax deduction should increase the profit balance since the fee paid is not in base denom",
 			feeDenoms: []string{osmoAllowedDenom},
 			feeAmount: sdkmath.NewInt(1000),
