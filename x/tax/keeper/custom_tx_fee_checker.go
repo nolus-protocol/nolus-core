@@ -54,7 +54,7 @@ func (k Keeper) CustomTxFeeChecker(ctx sdk.Context, tx sdk.Tx) (sdk.Coins, int64
 				// Get Fee Param for select dex based on the feeCoins provided
 				feeParam, err := getFeeParamBasedOnDenom(params.DexFeeParams, feeCoins)
 				if err != nil {
-					return nil, 0, errors.Wrapf(sdkerrors.ErrInvalidRequest, err.Error()) //nolint:govet
+					return nil, 0, errors.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
 				}
 
 				// go through every fee provided

@@ -127,7 +127,7 @@ func deductTax(ctx sdk.Context, taxKeeper Keeper, bankKeeper types.BankKeeper, f
 	// Send tax from fee collector to the treasury smart contract address
 	err := bankKeeper.SendCoinsFromModuleToAccount(ctx, authtypes.FeeCollectorName, treasuryAddr, sdk.Coins{tax})
 	if err != nil {
-		return errorsmod.Wrapf(sdkerrors.ErrInsufficientFunds, err.Error()) //nolint:govet
+		return errorsmod.Wrap(sdkerrors.ErrInsufficientFunds, err.Error())
 	}
 
 	return nil
