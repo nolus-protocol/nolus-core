@@ -12,7 +12,7 @@ FUZZ_BLOCK_SIZE ?= 200
 export GO111MODULE = on
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.23
+REQUIRE_GO_VERSION = 1.24
 
 # Default target executed when no arguments are given to make.
 default_target: all
