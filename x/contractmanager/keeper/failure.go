@@ -44,10 +44,7 @@ func (k Keeper) AddContractFailure(ctx context.Context, address string, sudoPayl
 func (k Keeper) GetNextFailureIDKey(ctx context.Context, address string) uint64 {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.GetFailureKeyPrefix(address))
 	iterator := storetypes.KVStoreReversePrefixIterator(store, []byte{})
-	err := iterator.Close()
-	if err != nil {
-		k.Logger(ctx).Error(err.Error())
-	}
+	defer iterator.Close()
 
 	if iterator.Valid() {
 		var val types.Failure
@@ -63,10 +60,7 @@ func (k Keeper) GetNextFailureIDKey(ctx context.Context, address string) uint64 
 func (k Keeper) GetAllFailures(ctx context.Context) (list []types.Failure) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.ContractFailuresKey)
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-	err := iterator.Close()
-	if err != nil {
-		k.Logger(ctx).Error(err.Error())
-	}
+	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Failure
@@ -83,7 +77,7 @@ func (k Keeper) GetFailure(ctx sdk.Context, contractAddr sdk.AccAddress, id uint
 
 	bz, err := store.Get(key)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if bz == nil {

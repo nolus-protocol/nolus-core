@@ -46,7 +46,7 @@ func (k Keeper) FeeRate(ctx context.Context) int32 {
 	}
 
 	var p types.Params
-	k.cdc.MustUnmarshal(b, &p)
+	k.cdc.Unmarshal(b, &p)
 	return p.FeeRate
 }
 
@@ -60,7 +60,7 @@ func (k Keeper) TreasuryAddress(ctx context.Context) string {
 	}
 
 	var p types.Params
-	k.cdc.MustUnmarshal(b, &p)
+	k.cdc.Unmarshal(b, &p)
 	return p.TreasuryAddress
 }
 
@@ -74,6 +74,6 @@ func (k Keeper) BaseDenom(ctx context.Context) string {
 	}
 
 	var p types.Params
-	k.cdc.MustUnmarshal(b, &p)
+	k.cdc.Unmarshal(b, &p)
 	return p.BaseDenom
 }

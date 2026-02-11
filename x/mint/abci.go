@@ -126,7 +126,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 
 	blockTime := c.BlockTime().UnixNano()
 	if blockTime < 0 {
-		panic(errNegativeBlockTime)
+		return errNegativeBlockTime
 	}
 
 	coinAmount := calcTokens(sdkmath.NewUint(uint64(blockTime)), &minter, params.MaxMintableNanoseconds)
@@ -134,7 +134,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	c.Logger().Debug(fmt.Sprintf("miner: %v total, %v norm time, %v minted", minter.TotalMinted.String(), minter.NormTimePassed.String(), coinAmount.String()))
 	err = k.SetMinter(ctx, minter)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if coinAmount.GT(sdkmath.ZeroUint()) {
@@ -143,13 +143,13 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 
 		err := k.MintCoins(ctx, mintedCoins)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		// send the minted coins to the fee collector account
 		err = k.AddCollectedFees(ctx, mintedCoins)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
