@@ -180,7 +180,7 @@ func (k Keeper) GetFeeInfo(ctx sdk.Context, packetID types.PacketID) (*types.Fee
 	var feeInfo types.FeeInfo
 	bzFeeInfo, err := store.Get(types.GetFeePacketKey(packetID))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	if bzFeeInfo == nil {
@@ -197,10 +197,7 @@ func (k Keeper) GetAllFeeInfos(ctx sdk.Context) []types.FeeInfo {
 	infos := make([]types.FeeInfo, 0)
 
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-	err := iterator.Close()
-	if err != nil {
-		k.Logger(ctx).Error(err.Error())
-	}
+	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		var info types.FeeInfo
