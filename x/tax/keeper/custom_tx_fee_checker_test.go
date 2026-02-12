@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	osmoDenom        = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y"
+	osmoDenom        = "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9"
 	osmoAxlUSDCDenom = "ibc/5DE4FCAF68AE40F81F738C857C0D95F7C1BC47B00FA1026E85C1DD92524D4A11"
 	feeAmount        = int64(1_000_000_000)
 )
@@ -83,7 +83,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithUSDC(t *testing.T) {
 				ProfitAddress: types.DefaultProfitAddress,
 				AcceptedDenomsMinPrices: []*types.DenomPrice{
 					{
-						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y",
+						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
 						Ticker:   "OSMO",
 						MinPrice: "100.025",
 					},
@@ -120,7 +120,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 				ProfitAddress: types.DefaultProfitAddress,
 				AcceptedDenomsMinPrices: []*types.DenomPrice{
 					{
-						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y",
+						Denom:    "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
 						Ticker:   "OSMO",
 						MinPrice: "100.025",
 					},
@@ -143,7 +143,7 @@ func TestCustomTxFeeCheckerFailDueToHighGasPayingWithOSMO(t *testing.T) {
 
 	_, _, err := taxKeeper.CustomTxFeeChecker(ctx, feeTx)
 	require.Error(t, err)
-	require.Equal(t, "insufficient fees; got: 1ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y required: 100025000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9y: insufficient fee", err.Error())
+	require.Equal(t, "insufficient fees; got: 1ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9 required: 100025000ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9: insufficient fee", err.Error())
 }
 
 // Successfully pay fees in unls which represents NLS. Minimum gas prices set to unls.
