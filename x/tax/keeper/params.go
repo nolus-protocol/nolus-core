@@ -38,42 +38,27 @@ func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 
 // FeeRate returns the fee rate.
 func (k Keeper) FeeRate(ctx context.Context) int32 {
-	store := k.storeService.OpenKVStore(ctx)
-
-	b, err := store.Get(types.ParamsKey)
+	p, err := k.GetParams(ctx)
 	if err != nil {
 		return 0
 	}
-
-	var p types.Params
-	k.cdc.Unmarshal(b, &p)
 	return p.FeeRate
 }
 
 // TreasuryAddress returns the contract address.
 func (k Keeper) TreasuryAddress(ctx context.Context) string {
-	store := k.storeService.OpenKVStore(ctx)
-
-	b, err := store.Get(types.ParamsKey)
+	p, err := k.GetParams(ctx)
 	if err != nil {
 		return ""
 	}
-
-	var p types.Params
-	k.cdc.Unmarshal(b, &p)
 	return p.TreasuryAddress
 }
 
 // BaseDenom returns the base denom.
 func (k Keeper) BaseDenom(ctx context.Context) string {
-	store := k.storeService.OpenKVStore(ctx)
-
-	b, err := store.Get(types.ParamsKey)
+	p, err := k.GetParams(ctx)
 	if err != nil {
 		return ""
 	}
-
-	var p types.Params
-	k.cdc.Unmarshal(b, &p)
 	return p.BaseDenom
 }
