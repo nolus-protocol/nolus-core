@@ -197,7 +197,10 @@ func (k Keeper) GetAllFeeInfos(ctx sdk.Context) []types.FeeInfo {
 	infos := make([]types.FeeInfo, 0)
 
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-	defer iterator.Close()
+	err := iterator.Close()
+	if err != nil {
+		k.Logger(ctx).Error(err.Error())
+	}
 
 	for ; iterator.Valid(); iterator.Next() {
 		var info types.FeeInfo
