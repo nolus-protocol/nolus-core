@@ -242,7 +242,6 @@ replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
 	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.61.8-nolus
-	github.com/CosmWasm/wasmvm/v3 => github.com/nolus-protocol/wasmvm/v3 v3.0.3-bulk-memory
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect

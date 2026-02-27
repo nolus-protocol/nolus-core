@@ -655,6 +655,8 @@ github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 h1:L/gRVlceqvL25
 github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161/go.mod h1:xomTg63KZ2rFqZQzSB4Vz2SUXa1BpHTVz9L5PTmPC4E=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
+github.com/CosmWasm/wasmvm/v3 v3.0.3 h1:rg8cZ2qXFj3HwUOqni53OZV/oTvmA2mTVabKA7L0sro=
+github.com/CosmWasm/wasmvm/v3 v3.0.3/go.mod h1:oknpb1bFERvvKcY7vHRp1F/Y/z66xVrsl7n9uWkOAlM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=
 github.com/DataDog/datadog-go v4.8.3+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
@@ -1335,8 +1337,6 @@ github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3 h1:ckAPaI+Ampn3sxAzApfRsfVE
 github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3/go.mod h1:90S054hIbadFB1MlXVZVC5w0QbKfd1P4b79zT+vvJxw=
 github.com/nolus-protocol/wasmd v0.61.8-nolus h1:gcniW7VjjP/+wZgsuc2TFQoJy44UylmKYqE2ifQ1Ius=
 github.com/nolus-protocol/wasmd v0.61.8-nolus/go.mod h1:q1vBZkiZeCa8qDNe61IqFiKZxDLRG4uu9OEUVyj+2oo=
-github.com/nolus-protocol/wasmvm/v3 v3.0.3-bulk-memory h1:Lix/L7N0DbTFVQ4x++1kITBsHqUN1xCULZ9dt0UrQl8=
-github.com/nolus-protocol/wasmvm/v3 v3.0.3-bulk-memory/go.mod h1:oknpb1bFERvvKcY7vHRp1F/Y/z66xVrsl7n9uWkOAlM=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.11 h1:8feyoE3OzPrcshW5/MJ4sGESc5cqmGkGCWlco4l0bqY=
 github.com/nxadm/tail v1.4.11/go.mod h1:OTaG3NK980DZzxbRq6lEuzgU+mug70nY11sMd4JXXHc=

@@ -19,9 +19,9 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
-ARG WASMVM_VERSION="v3.0.3-bulk-memory"
+ARG WASMVM_VERSION="v3.0.3"
 ARG WASMVM_LIB="libwasmvm_muslc.x86_64.a"
-ARG WASMVM_BASE_URL="https://github.com/nolus-protocol/wasmvm/releases/download/$WASMVM_VERSION"
+ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
 ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"
 ARG WASMVM_REL_DIR=".wasmvm"
 ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
