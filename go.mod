@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.10
 
 require (
-	github.com/CosmWasm/wasmd v0.61.1
+	github.com/CosmWasm/wasmd v0.61.8
 	github.com/CosmWasm/wasmvm/v3 v3.0.3
 	github.com/cometbft/cometbft v0.38.21
 	github.com/cosmos/cosmos-sdk v0.53.5
