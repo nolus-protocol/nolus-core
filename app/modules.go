@@ -115,10 +115,10 @@ var ModuleBasics = module.NewBasicManager(
 func appModules(
 	app *App,
 	encodingConfig EncodingConfig,
-) []module.AppModule { //nolint:staticcheck // TODO: migrate to appmodule.AppModule
+) []module.AppModule { //nolint:staticcheck
 	appCodec := encodingConfig.Marshaler
 
-	return []module.AppModule{ //nolint:staticcheck // TODO: migrate to appmodule.AppModule
+	return []module.AppModule{ //nolint:staticcheck
 		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
