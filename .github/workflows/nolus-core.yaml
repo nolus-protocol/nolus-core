@@ -110,8 +110,6 @@ jobs:
           # Optional: if set to true, then all caching functionality will be completely disabled,
           #           takes precedence over all other caching options.
           skip-cache: true
-
-          # Optional: The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
           install-mode: "binary"
 
   test-unit:
