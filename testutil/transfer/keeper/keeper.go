@@ -3,21 +3,20 @@ package keeper
 import (
 	"testing"
 
-	"cosmossdk.io/log"
-	metrics2 "cosmossdk.io/store/metrics"
+	"cosmossdk.io/log/v2"
 	db2 "github.com/cosmos/cosmos-db"
+	addresscodec "github.com/cosmos/cosmos-sdk/codec/address"
 
-	"cosmossdk.io/store"
-	storetypes "cosmossdk.io/store/types"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	"github.com/cosmos/cosmos-sdk/store/v2"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/stretchr/testify/require"
 
-	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
+	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 
 	keeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/transfer/types"
@@ -34,7 +33,7 @@ func TransferKeeper(
 	memStoreKey := storetypes.NewMemoryStoreKey("mem_" + transfertypes.StoreKey)
 
 	db := db2.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics2.NewNoOpMetrics())
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	stateStore.MountStoreWithDB(memStoreKey, storetypes.StoreTypeMemory, nil)
 	require.NoError(t, stateStore.LoadLatestVersion())
@@ -42,21 +41,15 @@ func TransferKeeper(
 	registry := codectypes.NewInterfaceRegistry()
 	cdc := codec.NewProtoCodec(registry)
 
-	paramsSubspace := typesparams.NewSubspace(cdc,
-		types.Amino,
-		storeKey,
-		memStoreKey,
-		"TransferParams",
-	)
+	addrCodec := addresscodec.NewBech32Codec(sdk.GetConfig().GetBech32AccountAddrPrefix())
 	k := keeper.NewKeeper(
 		cdc,
+		addrCodec,
 		storeService,
-		paramsSubspace,
-		nil, // iscwrapper
 		channelKeeper,
-		nil,
+		nil, // msgRouter
 		authKeeper,
-		nil,
+		nil, // bankKeeper
 		managerKeeper,
 		"authority",
 	)

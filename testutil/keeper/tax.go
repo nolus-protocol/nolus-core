@@ -7,10 +7,9 @@ import (
 
 	protov2 "google.golang.org/protobuf/proto"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/store"
-	metrics "cosmossdk.io/store/metrics"
-	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/log/v2"
+	"github.com/cosmos/cosmos-sdk/store/v2"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
@@ -31,7 +30,7 @@ func TaxKeeper(t testing.TB, isCheckTx bool, gasPrices sdk.DecCoins, params type
 	storeKey := storetypes.NewKVStoreKey(types.StoreKey)
 
 	db := dbm.NewMemDB()
-	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger(), metrics.NewNoOpMetrics())
+	stateStore := store.NewCommitMultiStore(db, log.NewNopLogger())
 	stateStore.MountStoreWithDB(storeKey, storetypes.StoreTypeIAVL, db)
 	require.NoError(t, stateStore.LoadLatestVersion())
 

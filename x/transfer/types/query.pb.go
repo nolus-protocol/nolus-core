@@ -6,14 +6,15 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	math "math"
+
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
+	types "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

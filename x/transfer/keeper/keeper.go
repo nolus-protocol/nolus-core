@@ -3,25 +3,23 @@ package transfer
 import (
 	"context"
 
+	"cosmossdk.io/core/address"
 	"cosmossdk.io/core/store"
 	"cosmossdk.io/errors"
 
-	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
+	"github.com/cosmos/ibc-go/v11/modules/apps/transfer/keeper"
+	"github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 
 	wrappedtypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
 )
 
 // KeeperTransferWrapper is a wrapper for original ibc keeper to override response for "Transfer" method.
 type KeeperTransferWrapper struct {
-	keeper.Keeper
+	*keeper.Keeper
 	channelKeeper wrappedtypes.ChannelKeeper
 	SudoKeeper    wrappedtypes.WasmKeeper
 }
@@ -74,13 +72,13 @@ func (k KeeperTransferWrapper) UpdateParams(goCtx context.Context, msg *wrappedt
 
 // NewKeeper creates a new IBC transfer Keeper(KeeperTransferWrapper) instance.
 func NewKeeper(
-	cdc codec.BinaryCodec, key store.KVStoreService, paramSpace paramtypes.Subspace,
-	ics4Wrapper porttypes.ICS4Wrapper, channelKeeper wrappedtypes.ChannelKeeper, msgServiceRouter *baseapp.MsgServiceRouter,
+	cdc codec.BinaryCodec, addressCodec address.Codec, key store.KVStoreService,
+	channelKeeper wrappedtypes.ChannelKeeper, msgRouter types.MessageRouter,
 	authKeeper types.AccountKeeper, bankKeeper types.BankKeeper, sudoKeeper wrappedtypes.WasmKeeper, authority string,
 ) KeeperTransferWrapper {
 	return KeeperTransferWrapper{
 		channelKeeper: channelKeeper,
-		Keeper: keeper.NewKeeper(cdc, key, paramSpace, ics4Wrapper, channelKeeper, msgServiceRouter,
+		Keeper: keeper.NewKeeper(cdc, addressCodec, key, channelKeeper, msgRouter,
 			authKeeper, bankKeeper, authority),
 		SudoKeeper: sudoKeeper,
 	}

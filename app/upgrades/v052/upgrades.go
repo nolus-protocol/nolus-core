@@ -5,9 +5,9 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 
-	upgradetypes "cosmossdk.io/x/upgrade/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 )
 
 func CreateUpgradeHandler(

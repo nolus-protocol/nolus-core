@@ -8,9 +8,9 @@ import (
 	"strconv"
 
 	signingv1beta1 "cosmossdk.io/api/cosmos/tx/signing/v1beta1"
-	"cosmossdk.io/x/tx/signing"
-	"cosmossdk.io/x/tx/signing/aminojson"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing/aminojson"
 )
 
 const EIP191MessagePrefix = "\x19Ethereum Signed Message:\n"

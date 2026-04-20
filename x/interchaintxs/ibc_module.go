@@ -4,9 +4,9 @@ import (
 	"errors"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
-	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
-	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v11/modules/core/05-port/types"
+	ibcexported "github.com/cosmos/ibc-go/v11/modules/core/exported"
 
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/keeper"
 )
@@ -24,6 +24,10 @@ func NewIBCModule(k keeper.Keeper) IBCModule {
 		keeper: k,
 	}
 }
+
+// SetICS4Wrapper implements the IBCModule interface.
+// interchaintxs delegates ICS4 concerns to the ICA controller keeper; no local wrapper needed.
+func (IBCModule) SetICS4Wrapper(_ porttypes.ICS4Wrapper) {}
 
 // OnChanOpenInit implements the IBCModule interface. We don't need to implement this handler.
 func (im IBCModule) OnChanOpenInit(

@@ -6,20 +6,21 @@ package types
 import (
 	context "context"
 	fmt "fmt"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+
 	types2 "github.com/Nolus-Protocol/nolus-core/x/feerefunder/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	types3 "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	types1 "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
+	types3 "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	types1 "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
-	math "math"
-	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

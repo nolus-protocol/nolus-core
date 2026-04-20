@@ -4,20 +4,19 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io"
 	nativelog "log"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/store"
-	"cosmossdk.io/store/snapshots"
-	snapshottypes "cosmossdk.io/store/snapshots/types"
-	storetypes "cosmossdk.io/store/types"
+	"cosmossdk.io/log/v2"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
-	txsigning "cosmossdk.io/x/tx/signing"
-	"cosmossdk.io/x/tx/signing/aminojson"
+	"github.com/cosmos/cosmos-sdk/store/v2"
+	"github.com/cosmos/cosmos-sdk/store/v2/snapshots"
+	snapshottypes "github.com/cosmos/cosmos-sdk/store/v2/snapshots/types"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
+	txsigning "github.com/cosmos/cosmos-sdk/x/tx/signing"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing/aminojson"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
 
@@ -35,7 +34,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/pruning"
 	"github.com/cosmos/cosmos-sdk/client/rpc"
 	"github.com/cosmos/cosmos-sdk/client/snapshot"
-	"github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/server"
 	serverconfig "github.com/cosmos/cosmos-sdk/server/config"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
@@ -67,7 +65,6 @@ type (
 	AppBuilder func(
 		logger log.Logger,
 		database db.DB,
-		traceStore io.Writer,
 		loadLatest bool,
 		skipUpgradeHeights map[int64]bool,
 		homePath string,
@@ -154,7 +151,6 @@ func NewRootCmd(
 	tempApp := app.New(
 		log.NewNopLogger(),
 		db.NewMemDB(),
-		nil,
 		true,
 		nil,
 		tempDir,
@@ -244,10 +240,6 @@ func NewRootCmd(
 
 	autoCliOpts := tempApp.AutoCliOpts()
 	initClientCtx, err := config.ReadDefaultValuesFromDefaultClientConfig(initClientCtx)
-	if err != nil {
-		panic(err)
-	}
-	autoCliOpts.Keyring, err = keyring.NewAutoCLIKeyring(initClientCtx.Keyring)
 	if err != nil {
 		panic(err)
 	}
@@ -429,7 +421,6 @@ func overwriteFlagDefaults(c *cobra.Command, defaults map[string]string) {
 func (a appCreator) newApp(
 	logger log.Logger,
 	database db.DB,
-	traceStore io.Writer,
 	appOpts servertypes.AppOptions,
 ) servertypes.Application {
 	var cache storetypes.MultiStorePersistentCache
@@ -478,7 +469,6 @@ func (a appCreator) newApp(
 	return app.New(
 		logger,
 		database,
-		traceStore,
 		true,
 		skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
@@ -504,7 +494,6 @@ func (a appCreator) newApp(
 func (a appCreator) appExport(
 	logger log.Logger,
 	database db.DB,
-	traceStore io.Writer,
 	height int64,
 	forZeroHeight bool,
 	jailAllowedAddrs []string,
@@ -521,7 +510,6 @@ func (a appCreator) appExport(
 	exportableApp = app.New(
 		logger,
 		database,
-		traceStore,
 		height == -1, // -1: no height provided
 		map[int64]bool{},
 		homePath,

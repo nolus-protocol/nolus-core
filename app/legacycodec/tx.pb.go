@@ -6,18 +6,19 @@ package legacycodec
 import (
 	context "context"
 	fmt "fmt"
+	io "io"
+	math "math"
+	math_bits "math/bits"
+
 	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
-	types "github.com/cosmos/ibc-go/v10/modules/core/02-client/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+	types "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	io "io"
-	math "math"
-	math_bits "math/bits"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -34,9 +35,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // MsgChannelOpenInit defines an sdk.Msg to initialize a channel handshake. It
 // is called by a relayer on Chain A.
 type MsgChannelOpenInit struct {
-	PortId  string  `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	PortId  string               `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
 	Channel channeltypes.Channel `protobuf:"bytes,2,opt,name=channel,proto3" json:"channel"`
-	Signer  string  `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
+	Signer  string               `protobuf:"bytes,3,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgChannelOpenInit) Reset()         { *m = MsgChannelOpenInit{} }
@@ -119,11 +120,11 @@ type MsgChannelOpenTry struct {
 	// Deprecated: this field is unused. Crossing hello's are no longer supported in core IBC.
 	PreviousChannelId string `protobuf:"bytes,2,opt,name=previous_channel_id,json=previousChannelId,proto3" json:"previous_channel_id,omitempty"` // Deprecated: Do not use.
 	// NOTE: the version field within the channel has been deprecated. Its value will be ignored by core IBC.
-	Channel            channeltypes.Channel     `protobuf:"bytes,3,opt,name=channel,proto3" json:"channel"`
-	CounterpartyVersion string       `protobuf:"bytes,4,opt,name=counterparty_version,json=counterpartyVersion,proto3" json:"counterparty_version,omitempty"`
-	ProofInit           []byte       `protobuf:"bytes,5,opt,name=proof_init,json=proofInit,proto3" json:"proof_init,omitempty"`
-	ProofHeight         types.Height `protobuf:"bytes,6,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer              string       `protobuf:"bytes,7,opt,name=signer,proto3" json:"signer,omitempty"`
+	Channel             channeltypes.Channel `protobuf:"bytes,3,opt,name=channel,proto3" json:"channel"`
+	CounterpartyVersion string               `protobuf:"bytes,4,opt,name=counterparty_version,json=counterpartyVersion,proto3" json:"counterparty_version,omitempty"`
+	ProofInit           []byte               `protobuf:"bytes,5,opt,name=proof_init,json=proofInit,proto3" json:"proof_init,omitempty"`
+	ProofHeight         types.Height         `protobuf:"bytes,6,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer              string               `protobuf:"bytes,7,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgChannelOpenTry) Reset()         { *m = MsgChannelOpenTry{} }
@@ -526,10 +527,10 @@ var xxx_messageInfo_MsgChannelCloseConfirmResponse proto.InternalMessageInfo
 
 // MsgRecvPacket receives incoming IBC packet
 type MsgRecvPacket struct {
-	Packet          channeltypes.Packet       `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
-	ProofCommitment []byte       `protobuf:"bytes,2,opt,name=proof_commitment,json=proofCommitment,proto3" json:"proof_commitment,omitempty"`
-	ProofHeight     types.Height `protobuf:"bytes,3,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer          string       `protobuf:"bytes,4,opt,name=signer,proto3" json:"signer,omitempty"`
+	Packet          channeltypes.Packet `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
+	ProofCommitment []byte              `protobuf:"bytes,2,opt,name=proof_commitment,json=proofCommitment,proto3" json:"proof_commitment,omitempty"`
+	ProofHeight     types.Height        `protobuf:"bytes,3,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer          string              `protobuf:"bytes,4,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgRecvPacket) Reset()         { *m = MsgRecvPacket{} }
@@ -605,11 +606,11 @@ var xxx_messageInfo_MsgRecvPacketResponse proto.InternalMessageInfo
 
 // MsgTimeout receives timed-out packet
 type MsgTimeout struct {
-	Packet           channeltypes.Packet       `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
-	ProofUnreceived  []byte       `protobuf:"bytes,2,opt,name=proof_unreceived,json=proofUnreceived,proto3" json:"proof_unreceived,omitempty"`
-	ProofHeight      types.Height `protobuf:"bytes,3,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	NextSequenceRecv uint64       `protobuf:"varint,4,opt,name=next_sequence_recv,json=nextSequenceRecv,proto3" json:"next_sequence_recv,omitempty"`
-	Signer           string       `protobuf:"bytes,5,opt,name=signer,proto3" json:"signer,omitempty"`
+	Packet           channeltypes.Packet `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
+	ProofUnreceived  []byte              `protobuf:"bytes,2,opt,name=proof_unreceived,json=proofUnreceived,proto3" json:"proof_unreceived,omitempty"`
+	ProofHeight      types.Height        `protobuf:"bytes,3,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	NextSequenceRecv uint64              `protobuf:"varint,4,opt,name=next_sequence_recv,json=nextSequenceRecv,proto3" json:"next_sequence_recv,omitempty"`
+	Signer           string              `protobuf:"bytes,5,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgTimeout) Reset()         { *m = MsgTimeout{} }
@@ -685,13 +686,13 @@ var xxx_messageInfo_MsgTimeoutResponse proto.InternalMessageInfo
 
 // MsgTimeoutOnClose timed-out packet upon counterparty channel closure.
 type MsgTimeoutOnClose struct {
-	Packet                      channeltypes.Packet       `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
-	ProofUnreceived             []byte       `protobuf:"bytes,2,opt,name=proof_unreceived,json=proofUnreceived,proto3" json:"proof_unreceived,omitempty"`
-	ProofClose                  []byte       `protobuf:"bytes,3,opt,name=proof_close,json=proofClose,proto3" json:"proof_close,omitempty"`
-	ProofHeight                 types.Height `protobuf:"bytes,4,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	NextSequenceRecv            uint64       `protobuf:"varint,5,opt,name=next_sequence_recv,json=nextSequenceRecv,proto3" json:"next_sequence_recv,omitempty"`
-	Signer                      string       `protobuf:"bytes,6,opt,name=signer,proto3" json:"signer,omitempty"`
-	CounterpartyUpgradeSequence uint64       `protobuf:"varint,7,opt,name=counterparty_upgrade_sequence,json=counterpartyUpgradeSequence,proto3" json:"counterparty_upgrade_sequence,omitempty"`
+	Packet                      channeltypes.Packet `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
+	ProofUnreceived             []byte              `protobuf:"bytes,2,opt,name=proof_unreceived,json=proofUnreceived,proto3" json:"proof_unreceived,omitempty"`
+	ProofClose                  []byte              `protobuf:"bytes,3,opt,name=proof_close,json=proofClose,proto3" json:"proof_close,omitempty"`
+	ProofHeight                 types.Height        `protobuf:"bytes,4,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	NextSequenceRecv            uint64              `protobuf:"varint,5,opt,name=next_sequence_recv,json=nextSequenceRecv,proto3" json:"next_sequence_recv,omitempty"`
+	Signer                      string              `protobuf:"bytes,6,opt,name=signer,proto3" json:"signer,omitempty"`
+	CounterpartyUpgradeSequence uint64              `protobuf:"varint,7,opt,name=counterparty_upgrade_sequence,json=counterpartyUpgradeSequence,proto3" json:"counterparty_upgrade_sequence,omitempty"`
 }
 
 func (m *MsgTimeoutOnClose) Reset()         { *m = MsgTimeoutOnClose{} }
@@ -767,11 +768,11 @@ var xxx_messageInfo_MsgTimeoutOnCloseResponse proto.InternalMessageInfo
 
 // MsgAcknowledgement receives incoming IBC acknowledgement
 type MsgAcknowledgement struct {
-	Packet          channeltypes.Packet       `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
-	Acknowledgement []byte       `protobuf:"bytes,2,opt,name=acknowledgement,proto3" json:"acknowledgement,omitempty"`
-	ProofAcked      []byte       `protobuf:"bytes,3,opt,name=proof_acked,json=proofAcked,proto3" json:"proof_acked,omitempty"`
-	ProofHeight     types.Height `protobuf:"bytes,4,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer          string       `protobuf:"bytes,5,opt,name=signer,proto3" json:"signer,omitempty"`
+	Packet          channeltypes.Packet `protobuf:"bytes,1,opt,name=packet,proto3" json:"packet"`
+	Acknowledgement []byte              `protobuf:"bytes,2,opt,name=acknowledgement,proto3" json:"acknowledgement,omitempty"`
+	ProofAcked      []byte              `protobuf:"bytes,3,opt,name=proof_acked,json=proofAcked,proto3" json:"proof_acked,omitempty"`
+	ProofHeight     types.Height        `protobuf:"bytes,4,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer          string              `protobuf:"bytes,5,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgAcknowledgement) Reset()         { *m = MsgAcknowledgement{} }
@@ -975,8 +976,8 @@ var xxx_messageInfo_MsgChannelUpgradeTry proto.InternalMessageInfo
 
 // MsgChannelUpgradeTryResponse defines the MsgChannelUpgradeTry response type
 type MsgChannelUpgradeTryResponse struct {
-	Upgrade         Upgrade            `protobuf:"bytes,1,opt,name=upgrade,proto3" json:"upgrade"`
-	UpgradeSequence uint64             `protobuf:"varint,2,opt,name=upgrade_sequence,json=upgradeSequence,proto3" json:"upgrade_sequence,omitempty"`
+	Upgrade         Upgrade                         `protobuf:"bytes,1,opt,name=upgrade,proto3" json:"upgrade"`
+	UpgradeSequence uint64                          `protobuf:"varint,2,opt,name=upgrade_sequence,json=upgradeSequence,proto3" json:"upgrade_sequence,omitempty"`
 	Result          channeltypes.ResponseResultType `protobuf:"varint,3,opt,name=result,proto3,enum=ibc.core.channel.v1.ResponseResultType" json:"result,omitempty"`
 }
 
@@ -1097,14 +1098,14 @@ var xxx_messageInfo_MsgChannelUpgradeAckResponse proto.InternalMessageInfo
 
 // MsgChannelUpgradeConfirm defines the request type for the ChannelUpgradeConfirm rpc
 type MsgChannelUpgradeConfirm struct {
-	PortId                   string       `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
-	ChannelId                string       `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
-	CounterpartyChannelState channeltypes.State        `protobuf:"varint,3,opt,name=counterparty_channel_state,json=counterpartyChannelState,proto3,enum=ibc.core.channel.v1.State" json:"counterparty_channel_state,omitempty"`
-	CounterpartyUpgrade      Upgrade      `protobuf:"bytes,4,opt,name=counterparty_upgrade,json=counterpartyUpgrade,proto3" json:"counterparty_upgrade"`
-	ProofChannel             []byte       `protobuf:"bytes,5,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
-	ProofUpgrade             []byte       `protobuf:"bytes,6,opt,name=proof_upgrade,json=proofUpgrade,proto3" json:"proof_upgrade,omitempty"`
-	ProofHeight              types.Height `protobuf:"bytes,7,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer                   string       `protobuf:"bytes,8,opt,name=signer,proto3" json:"signer,omitempty"`
+	PortId                   string             `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	ChannelId                string             `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
+	CounterpartyChannelState channeltypes.State `protobuf:"varint,3,opt,name=counterparty_channel_state,json=counterpartyChannelState,proto3,enum=ibc.core.channel.v1.State" json:"counterparty_channel_state,omitempty"`
+	CounterpartyUpgrade      Upgrade            `protobuf:"bytes,4,opt,name=counterparty_upgrade,json=counterpartyUpgrade,proto3" json:"counterparty_upgrade"`
+	ProofChannel             []byte             `protobuf:"bytes,5,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
+	ProofUpgrade             []byte             `protobuf:"bytes,6,opt,name=proof_upgrade,json=proofUpgrade,proto3" json:"proof_upgrade,omitempty"`
+	ProofHeight              types.Height       `protobuf:"bytes,7,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer                   string             `protobuf:"bytes,8,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgChannelUpgradeConfirm) Reset()         { *m = MsgChannelUpgradeConfirm{} }
@@ -1180,13 +1181,13 @@ var xxx_messageInfo_MsgChannelUpgradeConfirmResponse proto.InternalMessageInfo
 
 // MsgChannelUpgradeOpen defines the request type for the ChannelUpgradeOpen rpc
 type MsgChannelUpgradeOpen struct {
-	PortId                      string       `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
-	ChannelId                   string       `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
-	CounterpartyChannelState    channeltypes.State        `protobuf:"varint,3,opt,name=counterparty_channel_state,json=counterpartyChannelState,proto3,enum=ibc.core.channel.v1.State" json:"counterparty_channel_state,omitempty"`
-	CounterpartyUpgradeSequence uint64       `protobuf:"varint,4,opt,name=counterparty_upgrade_sequence,json=counterpartyUpgradeSequence,proto3" json:"counterparty_upgrade_sequence,omitempty"`
-	ProofChannel                []byte       `protobuf:"bytes,5,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
-	ProofHeight                 types.Height `protobuf:"bytes,6,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer                      string       `protobuf:"bytes,7,opt,name=signer,proto3" json:"signer,omitempty"`
+	PortId                      string             `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	ChannelId                   string             `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
+	CounterpartyChannelState    channeltypes.State `protobuf:"varint,3,opt,name=counterparty_channel_state,json=counterpartyChannelState,proto3,enum=ibc.core.channel.v1.State" json:"counterparty_channel_state,omitempty"`
+	CounterpartyUpgradeSequence uint64             `protobuf:"varint,4,opt,name=counterparty_upgrade_sequence,json=counterpartyUpgradeSequence,proto3" json:"counterparty_upgrade_sequence,omitempty"`
+	ProofChannel                []byte             `protobuf:"bytes,5,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
+	ProofHeight                 types.Height       `protobuf:"bytes,6,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer                      string             `protobuf:"bytes,7,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgChannelUpgradeOpen) Reset()         { *m = MsgChannelUpgradeOpen{} }
@@ -1261,12 +1262,12 @@ var xxx_messageInfo_MsgChannelUpgradeOpenResponse proto.InternalMessageInfo
 
 // MsgChannelUpgradeTimeout defines the request type for the ChannelUpgradeTimeout rpc
 type MsgChannelUpgradeTimeout struct {
-	PortId              string       `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
-	ChannelId           string       `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
-	CounterpartyChannel channeltypes.Channel     `protobuf:"bytes,3,opt,name=counterparty_channel,json=counterpartyChannel,proto3" json:"counterparty_channel"`
-	ProofChannel        []byte       `protobuf:"bytes,4,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
-	ProofHeight         types.Height `protobuf:"bytes,5,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
-	Signer              string       `protobuf:"bytes,6,opt,name=signer,proto3" json:"signer,omitempty"`
+	PortId              string               `protobuf:"bytes,1,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	ChannelId           string               `protobuf:"bytes,2,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
+	CounterpartyChannel channeltypes.Channel `protobuf:"bytes,3,opt,name=counterparty_channel,json=counterpartyChannel,proto3" json:"counterparty_channel"`
+	ProofChannel        []byte               `protobuf:"bytes,4,opt,name=proof_channel,json=proofChannel,proto3" json:"proof_channel,omitempty"`
+	ProofHeight         types.Height         `protobuf:"bytes,5,opt,name=proof_height,json=proofHeight,proto3" json:"proof_height"`
+	Signer              string               `protobuf:"bytes,6,opt,name=signer,proto3" json:"signer,omitempty"`
 }
 
 func (m *MsgChannelUpgradeTimeout) Reset()         { *m = MsgChannelUpgradeTimeout{} }

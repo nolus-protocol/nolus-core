@@ -1,4 +1,4 @@
-package v066
+package v054
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 
-	tmtypes "github.com/cometbft/cometbft/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -29,15 +28,6 @@ func CreateUpgradeHandler(
 		}
 
 		ctx.Logger().Info(fmt.Sprintf("Migration {%s} applied", UpgradeName))
-
-		// Properly register consensus params. In the process, change block max bytes params:
-		defaultConsensusParams := tmtypes.DefaultConsensusParams().ToProto()
-		defaultConsensusParams.Block.MaxBytes = 4000000 // previously 22020096
-		defaultConsensusParams.Block.MaxGas = 100000000 // previously 100000000
-		err = keepers.ConsensusParamsKeeper.ParamsStore.Set(ctx, defaultConsensusParams)
-		if err != nil {
-			return nil, err
-		}
 		return vm, nil
 	}
 }

@@ -4,7 +4,8 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
+	porttypes "github.com/cosmos/ibc-go/v11/modules/core/05-port/types"
 )
 
 type WasmKeeper interface {
@@ -19,7 +20,9 @@ type FeeRefunderKeeper interface {
 }
 
 // ChannelKeeper defines the expected IBC channel keeper.
+// Embeds ICS4Wrapper to match ibc-go v11 transfer.ChannelKeeper contract.
 type ChannelKeeper interface {
+	porttypes.ICS4Wrapper
 	GetChannel(ctx sdk.Context, srcPort, srcChan string) (channel channeltypes.Channel, found bool)
 	GetNextSequenceSend(ctx sdk.Context, portID, channelID string) (uint64, bool)
 	GetAllChannelsWithPortPrefix(ctx sdk.Context, portPrefix string) []channeltypes.IdentifiedChannel

@@ -1,10 +1,8 @@
 package v080
 
 import (
-	store "cosmossdk.io/store/types"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
-	capabilitytypes "github.com/cosmos/ibc-go/modules/capability/types"
+	store "github.com/cosmos/cosmos-sdk/store/v2/types"
 )
 
 const (
@@ -17,6 +15,6 @@ var Upgrade = upgrades.Upgrade{
 	CreateUpgradeHandler: CreateUpgradeHandler,
 	StoreUpgrades: store.StoreUpgrades{
 		Added:   []string{},
-		Deleted: []string{crisistypes.ModuleName, capabilitytypes.ModuleName},
+		Deleted: []string{"crisis", "capability"},
 	},
 }

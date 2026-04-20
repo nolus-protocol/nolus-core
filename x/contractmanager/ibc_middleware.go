@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"cosmossdk.io/log"
-	"cosmossdk.io/store/types"
+	"cosmossdk.io/log/v2"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	"github.com/cosmos/cosmos-sdk/store/v2/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	contractmanagerkeeper "github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"

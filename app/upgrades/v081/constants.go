@@ -1,8 +1,8 @@
 package v081
 
 import (
-	store "cosmossdk.io/store/types"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
+	store "github.com/cosmos/cosmos-sdk/store/v2/types"
 )
 
 const (
