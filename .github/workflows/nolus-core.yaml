@@ -106,13 +106,9 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.1.5
-          # Optional: if set to true, then all caching functionality will be completely disabled,
-          #           takes precedence over all other caching options.
+          version: v2.11.4
           skip-cache: true
-
-          # Optional: The mode to install golangci-lint. It can be 'binary' or 'goinstall'.
-          install-mode: "goinstall"
+          install-mode: "binary"
 
   test-unit:
     name: Run unit tests
