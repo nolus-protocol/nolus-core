@@ -60,13 +60,13 @@ func (k msgServer) CreateVestingAccount(ctx context.Context, msg *types.MsgCreat
 	ak.SetAccount(ctx, acc)
 
 	defer func() {
-		telemetry.IncrCounter(1, "new", "account")
+		telemetry.IncrCounter(1, "new", "account") //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 		for _, a := range msg.Amount {
 			if a.Amount.IsInt64() {
 				var ls []metrics.Label
-				ls = append(ls, telemetry.NewLabel("denom", a.Denom))
-				telemetry.SetGaugeWithLabels(
+				ls = append(ls, telemetry.NewLabel("denom", a.Denom)) //nolint:staticcheck // TODO: switch to OpenTelemetry
+				telemetry.SetGaugeWithLabels(                         //nolint:staticcheck // TODO: switch to OpenTelemetry
 					[]string{"tx", "msg", "create_vesting_account"},
 					float32(a.Amount.Int64()),
 					ls,

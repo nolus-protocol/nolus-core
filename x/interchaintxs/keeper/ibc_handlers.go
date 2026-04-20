@@ -20,7 +20,7 @@ import (
 func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, packet channeltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) error {
 	// TODO - in order to support v2 check channelVersion here and decide what to do - right now we only use - ibc-gotransfertypes.V1 = "ics20-1" and ibc-goICAtypes.Version = "ics27-1"
 	// So far for the ICA there is only version 1 as far as I can see. For the transfer module there is V2 but it won't be handled here
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleAcknowledgment)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleAcknowledgment) //nolint:staticcheck // TODO: switch to OpenTelemetry
 	k.Logger(ctx).Debug("Handling acknowledgement")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
@@ -51,7 +51,7 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, p
 // HandleTimeout passes the timeout data to the appropriate contract via a sudo call.
 // Since all ICA channels are ORDERED, a single timeout shuts down a channel.
 func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, relayer sdk.AccAddress) error {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleTimeout)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleTimeout) //nolint:staticcheck // TODO: switch to OpenTelemetry
 	k.Logger(ctx).Debug("HandleTimeout")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
@@ -83,7 +83,7 @@ func (k *Keeper) HandleChanOpenAck(
 	counterpartyChannelID,
 	counterpartyVersion string,
 ) error {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelLabelHandleChanOpenAck)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelLabelHandleChanOpenAck) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	k.Logger(ctx).Debug("HandleChanOpenAck", "port_id", portID, "channel_id", channelID, "counterparty_channel_id", counterpartyChannelID, "counterparty_version", counterpartyVersion)
 	icaOwner, err := types.ICAOwnerFromPort(portID)
