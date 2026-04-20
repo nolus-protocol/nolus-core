@@ -60,9 +60,3 @@ func (msg MsgCreateVestingAccount) ValidateBasic() error {
 
 	return nil
 }
-
-// GetSignBytes returns the bytes all expected signers must sign over for a
-// MsgCreateVestingAccount.
-func (msg MsgCreateVestingAccount) GetSignBytes() []byte {
-	return sdk.MustSortJSON(amino.MustMarshalJSON(&msg))
-}

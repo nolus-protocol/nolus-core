@@ -117,7 +117,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	c := sdk.UnwrapSDKContext(ctx)
 	minter := k.GetMinter(ctx)
 
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker)
+	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	params, err := k.GetParams(ctx)
 	if err != nil {
@@ -152,7 +152,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 			return err
 		}
 
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens")
+		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens") //nolint:staticcheck // TODO: switch to OpenTelemetry
 	}
 
 	c.EventManager().EmitEvent(

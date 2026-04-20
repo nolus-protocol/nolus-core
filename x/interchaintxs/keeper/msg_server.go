@@ -32,7 +32,7 @@ func NewMsgServerImpl(keeper Keeper) ictxtypes.MsgServer {
 }
 
 func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.MsgRegisterInterchainAccount) (*ictxtypes.MsgRegisterInterchainAccountResponse, error) {
-	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelRegisterInterchainAccount)
+	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelRegisterInterchainAccount) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	if err := msg.Validate(); err != nil {
 		return nil, errors.Wrap(err, "failed to validate MsgRegisterInterchainAccount")
@@ -74,7 +74,7 @@ func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.
 }
 
 func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ictxtypes.MsgSubmitTxResponse, error) {
-	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelSubmitTx)
+	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelSubmitTx) //nolint:staticcheck // TODO: switch to OpenTelemetry
 
 	if msg == nil {
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidRequest, "nil msg is prohibited")
