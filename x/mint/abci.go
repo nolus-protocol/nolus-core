@@ -6,14 +6,33 @@ import (
 	"fmt"
 	"time"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
+
 	sdkmath "cosmossdk.io/math"
 
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/mint/types"
 )
+
+var (
+	mintMeter    = otel.Meter("github.com/Nolus-Protocol/nolus-core/x/mint")
+	mintedTokens metric.Float64Counter
+)
+
+func init() {
+	var err error
+	mintedTokens, err = mintMeter.Float64Counter(
+		"minted_tokens",
+		metric.WithDescription("Cumulative tokens minted by the mint module"),
+		metric.WithUnit("{token}"),
+	)
+	if err != nil {
+		panic(err)
+	}
+}
 
 var (
 	nanoSecondsInMonth = sdkmath.LegacyNewDec(time.Hour.Nanoseconds() * 24 * 30)
@@ -117,8 +136,6 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 	c := sdk.UnwrapSDKContext(ctx)
 	minter := k.GetMinter(ctx)
 
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), telemetry.MetricKeyBeginBlocker) //nolint:staticcheck // TODO: switch to OpenTelemetry
-
 	params, err := k.GetParams(ctx)
 	if err != nil {
 		return err
@@ -152,7 +169,7 @@ func BeginBlocker(ctx context.Context, k keeper.Keeper) error {
 			return err
 		}
 
-		defer telemetry.ModuleSetGauge(types.ModuleName, float32(coinAmount.Uint64()), "minted_tokens") //nolint:staticcheck // TODO: switch to OpenTelemetry
+		mintedTokens.Add(ctx, float64(coinAmount.Uint64()))
 	}
 
 	c.EventManager().EmitEvent(
