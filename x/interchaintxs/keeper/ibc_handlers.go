@@ -3,11 +3,13 @@ package keeper
 import (
 	"time"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
+
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
 
 	"cosmossdk.io/errors"
 
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
@@ -16,11 +18,47 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
 
+var (
+	ibcMeter                  = otel.Meter("github.com/Nolus-Protocol/nolus-core/x/interchaintxs")
+	handleAckDuration         metric.Float64Histogram
+	handleTimeoutDuration     metric.Float64Histogram
+	handleChanOpenAckDuration metric.Float64Histogram
+)
+
+func init() {
+	var err error
+	handleAckDuration, err = ibcMeter.Float64Histogram(
+		LabelHandleAcknowledgment,
+		metric.WithDescription("Duration of IBC acknowledgement handling including CosmWasm sudo call"),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	handleTimeoutDuration, err = ibcMeter.Float64Histogram(
+		LabelHandleTimeout,
+		metric.WithDescription("Duration of IBC timeout handling including CosmWasm sudo call"),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	handleChanOpenAckDuration, err = ibcMeter.Float64Histogram(
+		LabelLabelHandleChanOpenAck,
+		metric.WithDescription("Duration of IBC channel open ack handling including CosmWasm sudo call"),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		panic(err)
+	}
+}
+
 // HandleAcknowledgement passes the acknowledgement data to the appropriate contract via a sudo call.
 func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, packet channeltypes.Packet, acknowledgement []byte, relayer sdk.AccAddress) error {
 	// TODO - in order to support v2 check channelVersion here and decide what to do - right now we only use - ibc-gotransfertypes.V1 = "ics20-1" and ibc-goICAtypes.Version = "ics27-1"
 	// So far for the ICA there is only version 1 as far as I can see. For the transfer module there is V2 but it won't be handled here
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleAcknowledgment) //nolint:staticcheck // TODO: switch to OpenTelemetry
+	start := time.Now()
+	defer func() { handleAckDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
 	k.Logger(ctx).Debug("Handling acknowledgement")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
@@ -51,7 +89,8 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, p
 // HandleTimeout passes the timeout data to the appropriate contract via a sudo call.
 // Since all ICA channels are ORDERED, a single timeout shuts down a channel.
 func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, relayer sdk.AccAddress) error {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelHandleTimeout) //nolint:staticcheck // TODO: switch to OpenTelemetry
+	start := time.Now()
+	defer func() { handleTimeoutDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
 	k.Logger(ctx).Debug("HandleTimeout")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
@@ -83,8 +122,8 @@ func (k *Keeper) HandleChanOpenAck(
 	counterpartyChannelID,
 	counterpartyVersion string,
 ) error {
-	defer telemetry.ModuleMeasureSince(types.ModuleName, time.Now(), LabelLabelHandleChanOpenAck) //nolint:staticcheck // TODO: switch to OpenTelemetry
-
+	start := time.Now()
+	defer func() { handleChanOpenAckDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
 	k.Logger(ctx).Debug("HandleChanOpenAck", "port_id", portID, "channel_id", channelID, "counterparty_channel_id", counterpartyChannelID, "counterparty_version", counterpartyVersion)
 	icaOwner, err := types.ICAOwnerFromPort(portID)
 	if err != nil {

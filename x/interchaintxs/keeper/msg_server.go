@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
+
 	"cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/codec"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
-
-	"github.com/cosmos/cosmos-sdk/telemetry"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	icacontrollertypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/controller/types"
@@ -18,6 +19,32 @@ import (
 
 	ictxtypes "github.com/Nolus-Protocol/nolus-core/x/interchaintxs/types"
 )
+
+var (
+	msgMeter                          = otel.Meter("github.com/Nolus-Protocol/nolus-core/x/interchaintxs")
+	registerInterchainAccountDuration metric.Float64Histogram
+	submitTxDuration                  metric.Float64Histogram
+)
+
+func init() {
+	var err error
+	registerInterchainAccountDuration, err = msgMeter.Float64Histogram(
+		LabelRegisterInterchainAccount,
+		metric.WithDescription("Duration of RegisterInterchainAccount message handling"),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		panic(err)
+	}
+	submitTxDuration, err = msgMeter.Float64Histogram(
+		LabelSubmitTx,
+		metric.WithDescription("Duration of SubmitTx message handling"),
+		metric.WithUnit("s"),
+	)
+	if err != nil {
+		panic(err)
+	}
+}
 
 type msgServer struct {
 	Keeper
@@ -32,8 +59,8 @@ func NewMsgServerImpl(keeper Keeper) ictxtypes.MsgServer {
 }
 
 func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.MsgRegisterInterchainAccount) (*ictxtypes.MsgRegisterInterchainAccountResponse, error) {
-	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelRegisterInterchainAccount) //nolint:staticcheck // TODO: switch to OpenTelemetry
-
+	start := time.Now()
+	defer func() { registerInterchainAccountDuration.Record(goCtx, time.Since(start).Seconds()) }()
 	if err := msg.Validate(); err != nil {
 		return nil, errors.Wrap(err, "failed to validate MsgRegisterInterchainAccount")
 	}
@@ -74,8 +101,8 @@ func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.
 }
 
 func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ictxtypes.MsgSubmitTxResponse, error) {
-	defer telemetry.ModuleMeasureSince(ictxtypes.ModuleName, time.Now(), LabelSubmitTx) //nolint:staticcheck // TODO: switch to OpenTelemetry
-
+	start := time.Now()
+	defer func() { submitTxDuration.Record(goCtx, time.Since(start).Seconds()) }()
 	if msg == nil {
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidRequest, "nil msg is prohibited")
 	}
