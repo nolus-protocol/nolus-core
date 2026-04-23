@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
@@ -58,13 +59,19 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, p
 	// TODO - in order to support v2 check channelVersion here and decide what to do - right now we only use - ibc-gotransfertypes.V1 = "ics20-1" and ibc-goICAtypes.Version = "ics27-1"
 	// So far for the ICA there is only version 1 as far as I can see. For the transfer module there is V2 but it won't be handled here
 	start := time.Now()
-	defer func() { handleAckDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
+	var contract string
+	defer func() {
+		handleAckDuration.Record(ctx.Context(), time.Since(start).Seconds(),
+			metric.WithAttributes(attribute.String("contract", contract)),
+		)
+	}()
 	k.Logger(ctx).Debug("Handling acknowledgement")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
 		k.Logger(ctx).Error("HandleAcknowledgement: failed to get ica owner from source port", "error", err)
 		return errors.Wrap(err, "failed to get ica owner from port")
 	}
+	contract = icaOwner.GetContract().String()
 
 	var ack channeltypes.Acknowledgement
 	if err := channeltypes.SubModuleCdc.UnmarshalJSON(acknowledgement, &ack); err != nil {
@@ -90,13 +97,19 @@ func (k *Keeper) HandleAcknowledgement(ctx sdk.Context, channelVersion string, p
 // Since all ICA channels are ORDERED, a single timeout shuts down a channel.
 func (k *Keeper) HandleTimeout(ctx sdk.Context, packet channeltypes.Packet, relayer sdk.AccAddress) error {
 	start := time.Now()
-	defer func() { handleTimeoutDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
+	var contract string
+	defer func() {
+		handleTimeoutDuration.Record(ctx.Context(), time.Since(start).Seconds(),
+			metric.WithAttributes(attribute.String("contract", contract)),
+		)
+	}()
 	k.Logger(ctx).Debug("HandleTimeout")
 	icaOwner, err := types.ICAOwnerFromPort(packet.SourcePort)
 	if err != nil {
 		k.Logger(ctx).Error("HandleTimeout: failed to get ica owner from source port", "error", err)
 		return errors.Wrap(err, "failed to get ica owner from port")
 	}
+	contract = icaOwner.GetContract().String()
 
 	msg, err := keeper.PrepareSudoCallbackMessage(packet, nil)
 	if err != nil {
@@ -123,13 +136,19 @@ func (k *Keeper) HandleChanOpenAck(
 	counterpartyVersion string,
 ) error {
 	start := time.Now()
-	defer func() { handleChanOpenAckDuration.Record(ctx.Context(), time.Since(start).Seconds()) }()
+	var contract string
+	defer func() {
+		handleChanOpenAckDuration.Record(ctx.Context(), time.Since(start).Seconds(),
+			metric.WithAttributes(attribute.String("contract", contract)),
+		)
+	}()
 	k.Logger(ctx).Debug("HandleChanOpenAck", "port_id", portID, "channel_id", channelID, "counterparty_channel_id", counterpartyChannelID, "counterparty_version", counterpartyVersion)
 	icaOwner, err := types.ICAOwnerFromPort(portID)
 	if err != nil {
 		k.Logger(ctx).Error("HandleChanOpenAck: failed to get ica owner from source port", "error", err)
 		return errors.Wrap(err, "failed to get ica owner from port")
 	}
+	contract = icaOwner.GetContract().String()
 
 	payload, err := keeper.PrepareOpenAckCallbackMessage(contractmanagertypes.OpenAckDetails{
 		PortID:                portID,

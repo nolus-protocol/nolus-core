@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 
 	"cosmossdk.io/errors"
@@ -60,7 +61,11 @@ func NewMsgServerImpl(keeper Keeper) ictxtypes.MsgServer {
 
 func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.MsgRegisterInterchainAccount) (*ictxtypes.MsgRegisterInterchainAccountResponse, error) {
 	start := time.Now()
-	defer func() { registerInterchainAccountDuration.Record(goCtx, time.Since(start).Seconds()) }()
+	defer func() {
+		registerInterchainAccountDuration.Record(goCtx, time.Since(start).Seconds(),
+			metric.WithAttributes(attribute.String("contract", msg.FromAddress)),
+		)
+	}()
 	if err := msg.Validate(); err != nil {
 		return nil, errors.Wrap(err, "failed to validate MsgRegisterInterchainAccount")
 	}
@@ -102,7 +107,15 @@ func (k Keeper) RegisterInterchainAccount(goCtx context.Context, msg *ictxtypes.
 
 func (k Keeper) SubmitTx(goCtx context.Context, msg *ictxtypes.MsgSubmitTx) (*ictxtypes.MsgSubmitTxResponse, error) {
 	start := time.Now()
-	defer func() { submitTxDuration.Record(goCtx, time.Since(start).Seconds()) }()
+	var contract string
+	if msg != nil {
+		contract = msg.FromAddress
+	}
+	defer func() {
+		submitTxDuration.Record(goCtx, time.Since(start).Seconds(),
+			metric.WithAttributes(attribute.String("contract", contract)),
+		)
+	}()
 	if msg == nil {
 		return nil, errors.Wrapf(sdkerrors.ErrInvalidRequest, "nil msg is prohibited")
 	}
