@@ -4,7 +4,7 @@ go 1.25.9
 
 require (
 	github.com/CosmWasm/wasmd v0.61.8
-	github.com/CosmWasm/wasmvm/v3 v3.0.3
+	github.com/CosmWasm/wasmvm/v3 v3.0.4
 	github.com/cometbft/cometbft v0.39.1
 	github.com/cosmos/cosmos-sdk v0.54.2
 	github.com/cosmos/cosmos-sdk/store/v2 v2.0.0
@@ -34,8 +34,9 @@ require (
 	github.com/cosmos/cosmos-proto v1.0.0-beta.5
 	github.com/gogo/protobuf v1.3.3
 	github.com/golang/mock v1.6.0
-	github.com/hashicorp/go-metrics v0.5.4
 	github.com/pkg/errors v0.9.1
+	go.opentelemetry.io/otel v1.43.0
+	go.opentelemetry.io/otel/metric v1.43.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260414002931-afd174a4e478
 	google.golang.org/protobuf v1.36.11
 	gotest.tools/v3 v3.5.2
@@ -111,8 +112,8 @@ require (
 	github.com/cosmos/iavl v1.2.8 // indirect
 	github.com/cosmos/ics23/go v0.11.0 // indirect
 	github.com/cosmos/ledger-cosmos-go v1.0.0 // indirect
-	github.com/creachadair/atomicfile v0.3.7 // indirect
-	github.com/creachadair/tomledit v0.0.27 // indirect
+	github.com/creachadair/atomicfile v0.3.8 // indirect
+	github.com/creachadair/tomledit v0.0.29 // indirect
 	github.com/danieljoos/wincred v1.2.3 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/davidlazar/go-crypto v0.0.0-20200604182044-b73af7476f6c // indirect
@@ -164,6 +165,7 @@ require (
 	github.com/hashicorp/go-getter v1.8.6 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
+	github.com/hashicorp/go-metrics v0.5.4 // indirect
 	github.com/hashicorp/go-plugin v1.7.0 // indirect
 	github.com/hashicorp/go-version v1.9.0 // indirect
 	github.com/hashicorp/golang-lru v1.0.2 // indirect
@@ -195,7 +197,7 @@ require (
 	github.com/libp2p/go-reuseport v0.4.0 // indirect
 	github.com/libp2p/go-yamux/v5 v5.0.1 // indirect
 	github.com/linxGnu/grocksdb v1.10.7 // indirect
-	github.com/lufia/plan9stats v0.0.0-20260216142805-b3301c5f2a88 // indirect
+	github.com/lufia/plan9stats v0.0.0-20260324052639-156f7da3f749 // indirect
 	github.com/manifoldco/promptui v0.9.0 // indirect
 	github.com/marten-seemann/tcp v0.0.0-20210406111302-dfbc87cc63fd // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
@@ -226,7 +228,7 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pbnjay/memory v0.0.0-20210728143218-7b4eea64cf58 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
-	github.com/petermattis/goid v0.0.0-20260113132338-7c7de50cc741 // indirect
+	github.com/petermattis/goid v0.0.0-20260226131333-17d1149c6ac6 // indirect
 	github.com/pion/datachannel v1.5.10 // indirect
 	github.com/pion/dtls/v2 v2.2.12 // indirect
 	github.com/pion/dtls/v3 v3.1.2 // indirect
@@ -263,7 +265,7 @@ require (
 	github.com/rs/cors v1.11.1 // indirect
 	github.com/rs/zerolog v1.35.0 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
-	github.com/sasha-s/go-deadlock v0.3.7 // indirect
+	github.com/sasha-s/go-deadlock v0.3.9 // indirect
 	github.com/shamaton/msgpack/v2 v2.2.3 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.3 // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
@@ -299,7 +301,6 @@ require (
 	go.opentelemetry.io/contrib/propagators/b3 v1.42.0 // indirect
 	go.opentelemetry.io/contrib/propagators/jaeger v1.42.0 // indirect
 	go.opentelemetry.io/contrib/propagators/ot v1.42.0 // indirect
-	go.opentelemetry.io/otel v1.43.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.18.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.18.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc v1.42.0 // indirect
@@ -312,7 +313,6 @@ require (
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.43.0 // indirect
 	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.42.0 // indirect
 	go.opentelemetry.io/otel/log v0.19.0 // indirect
-	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.43.0 // indirect
 	go.opentelemetry.io/otel/sdk/log v0.18.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.43.0 // indirect
@@ -352,18 +352,18 @@ require (
 replace (
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	// wasmd nolus fork — local path while SDK v0.54 changes are pending upstream release
-	github.com/CosmWasm/wasmd => /home/denislavivanov/go/github/wasmd-nolus-fork/wasmd
+	// wasmd nolus fork
+	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.70.0-nolus
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork: adds --validate flag on gov submit-proposal + eip-191 signing
-	github.com/cosmos/cosmos-sdk => /home/denislavivanov/go/github/cosmos-sdk-nolus-fork/cosmos-sdk
-	// store/v2 is a separate module within the same repo
-	github.com/cosmos/cosmos-sdk/store/v2 => /home/denislavivanov/go/github/cosmos-sdk-nolus-fork/cosmos-sdk/store
-	// pin iavl to v1.2.8 — v1.2.8 defines its own Logger interface (not cosmossdk.io/log v1) so it's compatible with log/v2
+	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.54.2-nolus
+	// TODO: iavl pin — v1.2.8 defines its own Logger interface compatible with cosmossdk.io/log/v2;
+	// verify whether v1.3.x resolves both the interface and the corestore.KVStoreWithBatch dependency
+	// before upgrading. Track: https://github.com/cosmos/iavl/releases
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.8
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
