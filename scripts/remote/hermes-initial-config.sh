@@ -78,6 +78,7 @@ update_config "$hermes_config_dir" '.mode.packets."enabled"' "true"
 
 # Add Nolus chain configuration
 update_config "$hermes_config_dir" '.chains[0]."id"' '"'"$chain1_id"'"'
+update_config "$hermes_config_dir" '.chains[0]."compat_mode"' '"0.37"'  # TODO: update to 0.39 when available
 update_config "$hermes_config_dir" '.chains[0]."rpc_addr"' '"http://'"$chain1_ip_addr"':'"$chain1_rpc_port"'"'
 update_config "$hermes_config_dir" '.chains[0]."grpc_addr"' '"http://'"$chain1_ip_addr"':'"$chain1_grpc_port"'"'
 update_config "$hermes_config_dir" '.chains[0]."rpc_timeout"' '"'"$chain1_rpc_timeout_secs"'s"'

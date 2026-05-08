@@ -30,6 +30,7 @@ add_new_chain_hermes() {
   declare -r chain_key_name="hermes-$chain_id"
 
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."id"' '"'"$chain_id"'"'
+  update_config "$hermes_config_file_path" '.chains['"$chains_count"']."compat_mode"' '"0.37"'  # TODO: update to 0.39 when available
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."rpc_addr"' '"https://'"$chain_ip_addr_RPC"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."grpc_addr"' '"https://'"$chain_ip_addr_gRPC"'"'
   update_config "$hermes_config_file_path" '.chains['"$chains_count"']."rpc_timeout"' '"'"$chain_rpc_timeout_secs"'s"'
