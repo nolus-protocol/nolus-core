@@ -2,12 +2,11 @@ package app
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v11/modules/core/keeper"
 
 	autocliv1 "cosmossdk.io/api/cosmos/autocli/v1"
 	reflectionv1 "cosmossdk.io/api/cosmos/reflection/v1"
@@ -16,9 +15,6 @@ import (
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
-	txsigning "cosmossdk.io/x/tx/signing"
-	"cosmossdk.io/x/tx/signing/aminojson"
-	upgradetypes "cosmossdk.io/x/upgrade/types"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -40,12 +36,14 @@ import (
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	txsigning "github.com/cosmos/cosmos-sdk/x/tx/signing"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing/aminojson"
+	upgradetypes "github.com/cosmos/cosmos-sdk/x/upgrade/types"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmjson "github.com/cometbft/cometbft/libs/json"
 	tmos "github.com/cometbft/cometbft/libs/os"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
@@ -55,6 +53,7 @@ import (
 	v042 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v042"
 	v052 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v052"
 	v053 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v053"
+	v054 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v054"
 	v062 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v062"
 	v063 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v063"
 	v064 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v064"
@@ -87,6 +86,7 @@ var (
 		v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade,
 		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
+		v054.Upgrade,
 	}
 )
 
@@ -128,7 +128,6 @@ type App struct {
 func New(
 	logger log.Logger,
 	db db.DB,
-	traceStore io.Writer,
 	loadLatest bool,
 	skipUpgradeHeights map[int64]bool,
 	homePath string,
@@ -141,7 +140,6 @@ func New(
 	interfaceRegistry := encodingConfig.InterfaceRegistry
 
 	bApp := baseapp.NewBaseApp(Name, logger, db, encodingConfig.TxConfig.TxDecoder(), baseAppOptions...)
-	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetVersion(version.Version)
 	bApp.SetInterfaceRegistry(interfaceRegistry)
 	bApp.SetTxEncoder(encodingConfig.TxConfig.TxEncoder())
@@ -308,7 +306,7 @@ func New(
 			tmos.Exit(err.Error())
 		}
 
-		ctx := app.NewUncachedContext(true, tmproto.Header{})
+		ctx := app.NewContext(true)
 		// Initialize pinned codes in wasmvm as they are not persisted there
 		if err := app.WasmKeeper.InitializePinnedCodes(ctx); err != nil {
 			panic(err)
@@ -491,7 +489,9 @@ func GetMaccPerms() map[string][]string {
 }
 
 func (app *App) RegisterNodeService(clientCtx client.Context, cfg config.Config) {
-	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg)
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter(), cfg, func() int64 {
+		return app.CommitMultiStore().EarliestVersion()
+	})
 }
 
 // GetTxConfig implements the TestingApp interface.

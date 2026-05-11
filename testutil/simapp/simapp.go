@@ -10,20 +10,20 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/json"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	cmttypes "github.com/cometbft/cometbft/types"
 
-	pruningtypes "cosmossdk.io/store/pruning/types"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/v2/pruning/types"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -55,7 +55,6 @@ func New(t *testing.T, withDefaultGenesisState bool) *app.App {
 	a := app.New(
 		log.NewNopLogger(),
 		database,
-		nil,
 		true,
 		map[int64]bool{},
 		testHomeDir(chainID),
@@ -232,7 +231,7 @@ func NewAppConstructor() network.AppConstructor {
 	encoding := app.MakeEncodingConfig(app.ModuleBasics)
 
 	return func(val network.ValidatorI) servertypes.Application {
-		return app.New(val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir,
+		return app.New(val.GetCtx().Logger, db.NewMemDB(), true, map[int64]bool{}, val.GetCtx().Config.RootDir,
 			encoding,
 			sims.EmptyAppOptions{},
 			baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),

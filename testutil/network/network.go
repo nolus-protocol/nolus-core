@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	pruningtypes "cosmossdk.io/store/pruning/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/v2/pruning/types"
 
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 
@@ -63,7 +63,7 @@ func DefaultConfig() network.Config {
 		AccountRetriever:  authtypes.AccountRetriever{},
 		AppConstructor: func(val network.ValidatorI) servertypes.Application {
 			return app.New(
-				val.GetCtx().Logger, db.NewMemDB(), nil, true, map[int64]bool{}, val.GetCtx().Config.RootDir,
+				val.GetCtx().Logger, db.NewMemDB(), true, map[int64]bool{}, val.GetCtx().Config.RootDir,
 				encoding,
 				sims.EmptyAppOptions{},
 				baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),

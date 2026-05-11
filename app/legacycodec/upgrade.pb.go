@@ -5,12 +5,13 @@ package legacycodec
 
 import (
 	fmt "fmt"
-	_ "github.com/cosmos/gogoproto/gogoproto"
-	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
 	math "math"
 	math_bits "math/bits"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+
+	_ "github.com/cosmos/gogoproto/gogoproto"
+	proto "github.com/cosmos/gogoproto/proto"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -30,9 +31,9 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 // which allows the counterparty to efficiently know the highest sequence it has received.
 // The next sequence send is used for pruning and upgrading from unordered to ordered channels.
 type Upgrade struct {
-	Fields           UpgradeFields `protobuf:"bytes,1,opt,name=fields,proto3" json:"fields"`
-	Timeout          channeltypes.Timeout       `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout"`
-	NextSequenceSend uint64        `protobuf:"varint,3,opt,name=next_sequence_send,json=nextSequenceSend,proto3" json:"next_sequence_send,omitempty"`
+	Fields           UpgradeFields        `protobuf:"bytes,1,opt,name=fields,proto3" json:"fields"`
+	Timeout          channeltypes.Timeout `protobuf:"bytes,2,opt,name=timeout,proto3" json:"timeout"`
+	NextSequenceSend uint64               `protobuf:"varint,3,opt,name=next_sequence_send,json=nextSequenceSend,proto3" json:"next_sequence_send,omitempty"`
 }
 
 func (m *Upgrade) Reset()         { *m = Upgrade{} }
@@ -71,9 +72,9 @@ var xxx_messageInfo_Upgrade proto.InternalMessageInfo
 // UpgradeFields are the fields in a channel end which may be changed
 // during a channel upgrade.
 type UpgradeFields struct {
-	Ordering       channeltypes.Order    `protobuf:"varint,1,opt,name=ordering,proto3,enum=ibc.core.channel.v1.Order" json:"ordering,omitempty"`
-	ConnectionHops []string `protobuf:"bytes,2,rep,name=connection_hops,json=connectionHops,proto3" json:"connection_hops,omitempty"`
-	Version        string   `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
+	Ordering       channeltypes.Order `protobuf:"varint,1,opt,name=ordering,proto3,enum=ibc.core.channel.v1.Order" json:"ordering,omitempty"`
+	ConnectionHops []string           `protobuf:"bytes,2,rep,name=connection_hops,json=connectionHops,proto3" json:"connection_hops,omitempty"`
+	Version        string             `protobuf:"bytes,3,opt,name=version,proto3" json:"version,omitempty"`
 }
 
 func (m *UpgradeFields) Reset()         { *m = UpgradeFields{} }

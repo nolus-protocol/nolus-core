@@ -9,7 +9,9 @@ import (
 	reflect "reflect"
 
 	types "github.com/cosmos/cosmos-sdk/types"
-	types0 "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+	clienttypes "github.com/cosmos/ibc-go/v11/modules/core/02-client/types"
+	types0 "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
+	exported "github.com/cosmos/ibc-go/v11/modules/core/exported"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -167,6 +169,50 @@ func (m *MockChannelKeeper) HasChannel(ctx types.Context, portID, channelID stri
 func (mr *MockChannelKeeperMockRecorder) HasChannel(ctx, portID, channelID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HasChannel", reflect.TypeOf((*MockChannelKeeper)(nil).HasChannel), ctx, portID, channelID)
+}
+
+// SendPacket mocks base method.
+func (m *MockChannelKeeper) SendPacket(ctx types.Context, sourcePort, sourceChannel string, timeoutHeight clienttypes.Height, timeoutTimestamp uint64, data []byte) (uint64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendPacket", ctx, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
+	ret0, _ := ret[0].(uint64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SendPacket indicates an expected call of SendPacket.
+func (mr *MockChannelKeeperMockRecorder) SendPacket(ctx, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendPacket", reflect.TypeOf((*MockChannelKeeper)(nil).SendPacket), ctx, sourcePort, sourceChannel, timeoutHeight, timeoutTimestamp, data)
+}
+
+// WriteAcknowledgement mocks base method.
+func (m *MockChannelKeeper) WriteAcknowledgement(ctx types.Context, packet exported.PacketI, ack exported.Acknowledgement) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "WriteAcknowledgement", ctx, packet, ack)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// WriteAcknowledgement indicates an expected call of WriteAcknowledgement.
+func (mr *MockChannelKeeperMockRecorder) WriteAcknowledgement(ctx, packet, ack interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteAcknowledgement", reflect.TypeOf((*MockChannelKeeper)(nil).WriteAcknowledgement), ctx, packet, ack)
+}
+
+// GetAppVersion mocks base method.
+func (m *MockChannelKeeper) GetAppVersion(ctx types.Context, portID, channelID string) (string, bool) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAppVersion", ctx, portID, channelID)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(bool)
+	return ret0, ret1
+}
+
+// GetAppVersion indicates an expected call of GetAppVersion.
+func (mr *MockChannelKeeperMockRecorder) GetAppVersion(ctx, portID, channelID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppVersion", reflect.TypeOf((*MockChannelKeeper)(nil).GetAppVersion), ctx, portID, channelID)
 }
 
 // MockAccountKeeper is a mock of AccountKeeper interface.

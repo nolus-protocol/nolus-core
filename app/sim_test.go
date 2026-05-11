@@ -18,14 +18,13 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	tmrand "github.com/cometbft/cometbft/libs/rand"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	dbm "github.com/cosmos/cosmos-db"
 
-	storetypes "cosmossdk.io/store/types"
-	evidencetypes "cosmossdk.io/x/evidence/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
@@ -33,6 +32,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
 	govsim "github.com/cosmos/cosmos-sdk/x/gov/simulation"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
@@ -41,9 +41,9 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	icacontrollertypes "github.com/cosmos/ibc-go/v10/modules/apps/27-interchain-accounts/controller/types"
-	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
+	icacontrollertypes "github.com/cosmos/ibc-go/v11/modules/apps/27-interchain-accounts/controller/types"
+	ibctransfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	ibcexported "github.com/cosmos/ibc-go/v11/modules/core/exported"
 
 	wasmsim "github.com/CosmWasm/wasmd/x/wasm/simulation"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -136,7 +136,6 @@ func TestAppStateDeterminism(t *testing.T) {
 			newApp := New(
 				logger,
 				db,
-				nil,
 				true,
 				map[int64]bool{},
 				testHomeDir(config.ChainID),
@@ -203,7 +202,6 @@ func TestAppImportExport(t *testing.T) {
 	nolusApp := New(
 		logger,
 		db,
-		nil,
 		true,
 		map[int64]bool{},
 		testHomeDir(config.ChainID),
@@ -255,7 +253,6 @@ func TestAppImportExport(t *testing.T) {
 	newNolusApp := New(
 		log.NewNopLogger(),
 		newDB,
-		nil,
 		true,
 		map[int64]bool{},
 		testHomeDir(config.ChainID),

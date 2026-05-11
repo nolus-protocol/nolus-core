@@ -1,7 +1,7 @@
 package app
 
 import (
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	db "github.com/cosmos/cosmos-db"
 
 	"github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -20,7 +20,6 @@ func CreateTestApp(isCheckTx bool, tempDir string) (*App, sdk.Context) {
 	app := New(
 		log.NewNopLogger(),
 		db.NewMemDB(),
-		nil,
 		true,
 		map[int64]bool{},
 		tempDir,

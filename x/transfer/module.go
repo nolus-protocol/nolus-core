@@ -10,10 +10,10 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer/keeper"
-	"github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+	"github.com/cosmos/ibc-go/v11/modules/apps/transfer"
+	ibctransferkeeper "github.com/cosmos/ibc-go/v11/modules/apps/transfer/keeper"
+	"github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 
 	wrapkeeper "github.com/Nolus-Protocol/nolus-core/x/transfer/keeper"
 	transfertypes "github.com/Nolus-Protocol/nolus-core/x/transfer/types"
@@ -26,7 +26,7 @@ import (
 
 type IBCModule struct {
 	wrappedKeeper wrapkeeper.KeeperTransferWrapper
-	keeper        keeper.Keeper
+	keeper        *ibctransferkeeper.Keeper
 	sudoKeeper    transfertypes.WasmKeeper
 	transfer.IBCModule
 }
@@ -37,7 +37,7 @@ func NewIBCModule(k wrapkeeper.KeeperTransferWrapper, sudoKeeper transfertypes.W
 		wrappedKeeper: k,
 		keeper:        k.Keeper,
 		sudoKeeper:    sudoKeeper,
-		IBCModule:     transfer.NewIBCModule(k.Keeper),
+		IBCModule:     *transfer.NewIBCModule(k.Keeper),
 	}
 }
 
@@ -101,13 +101,9 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 
 	cfg.MsgServer().RegisterService(&transfertypes.MsgServiceDescOrig, am.keeper)
 
-	m := keeper.NewMigrator(am.keeper.Keeper)
+	m := ibctransferkeeper.NewMigrator(*am.keeper.Keeper)
 	if err := cfg.RegisterMigration(types.ModuleName, 2, m.MigrateTotalEscrowForDenom); err != nil {
 		panic(fmt.Sprintf("failed to migrate transfer app from version 2 to 3: %v", err))
-	}
-
-	if err := cfg.RegisterMigration(types.ModuleName, 3, m.MigrateParams); err != nil {
-		panic(fmt.Sprintf("failed to migrate transfer app version 3 to 4: %v", err))
 	}
 
 	if err := cfg.RegisterMigration(types.ModuleName, 4, m.MigrateDenomMetadata); err != nil {

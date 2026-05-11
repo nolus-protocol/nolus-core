@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	types2 "cosmossdk.io/store/types"
+	types2 "github.com/cosmos/cosmos-sdk/store/v2/types"
 
 	"github.com/Nolus-Protocol/nolus-core/x/contractmanager/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	transfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
-	channeltypes "github.com/cosmos/ibc-go/v10/modules/core/04-channel/types"
+	transfertypes "github.com/cosmos/ibc-go/v11/modules/apps/transfer/types"
+	channeltypes "github.com/cosmos/ibc-go/v11/modules/core/04-channel/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 
