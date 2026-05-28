@@ -181,6 +181,13 @@ func NewRootCmd(
 	rootCmd := &cobra.Command{
 		Use:   appName + "d",
 		Short: "Nolus",
+		Long: `Nolus blockchain node daemon.
+
+For a reference of every Nolus smart-contract operation (queries and
+executes for admin, leaser, lease, lpp, oracle, treasury) with JSON
+templates and example invocations, run:
+
+  nolusd contract-help`,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs
 			cmd.SetOut(cmd.OutOrStdout())
@@ -286,6 +293,7 @@ func initRootCmd(
 		genutilcli.ValidateGenesisCmd(app.ModuleBasics),
 		addGenesisAccountCmd(app.DefaultNodeHome),
 		tmcli.NewCompletionCmd(rootCmd, true),
+		contractHelpCmd(),
 		debug.Cmd(),
 		confixcmd.ConfigCommand(),
 		pruning.Cmd(a.newApp, app.DefaultNodeHome),
