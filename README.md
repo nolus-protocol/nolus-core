@@ -12,6 +12,23 @@
 **Nolus** is a blockchain built using Cosmos SDK and CometBFT.
 </div>
 
+## Repository layout
+
+The chain binary is `nolusd` (built from `cmd/`); app wiring lives in `app/`.
+The custom state-machine logic is in `x/` — each module has its own README:
+
+| Module | Purpose |
+|--------|---------|
+| [`x/mint`](x/mint/README.md) | Time-based NLS inflation (custom minting formula). |
+| [`x/tax`](x/tax/README.md) | Fees in foreign denoms + tax routed to treasury / DEX profit addresses. |
+| [`x/vestings`](x/vestings/README.md) | Create vesting accounts with a custom start time. |
+| [`x/interchaintxs`](x/interchaintxs/README.md) | Interchain Accounts (ICA) controller for contracts. |
+| [`x/transfer`](x/transfer/README.md) | IBC transfer with contract sudo callbacks. |
+| [`x/feerefunder`](x/feerefunder/README.md) | Escrow / refund of IBC relayer fees. |
+| [`x/contractmanager`](x/contractmanager/README.md) | Gas-limited contract sudo callbacks + failure recording. |
+
+Architecture decisions are recorded as ADRs under [`doc/adr/`](doc/adr/index.md).
+
 ## Prerequisites
 
 Install [golang](https://golang.org/), [tomlq](https://tomlq.readthedocs.io/en/latest/installation.html) and [jq](https://stedolan.github.io/jq/).
@@ -76,7 +93,7 @@ On a live network, a new DEX can be deployed using the following steps.
 
 * start hermes
 
-### Аutomated step
+### Automated step
 
 ```sh
 ./scripts/add-new-dex.sh --wasm-artifacts-path <wasm_artifacts_dir_path> --dex-name <dex_name> --dex-chain-id <new_dex_chain_id> --dex-ip-addr-rpc-host <new_dex_ip_addr_rpc_host_part> --dex-ip-addr-grpc-host <new_dex_ip_addr_grpc_host_part> --dex-account-prefix <new_dex_account_prefix> --dex-gas-price-denom <new_dex_price_denom> --dex-trusting-period-secs <new_dex_trusting_period_in_seconds>  --protocol-currency <new_protocol_currency> --protocol-swap-tree <new_protocol_swap_tree> --dex-network <dex_network_name> --dex-type-and-params '<dex_specific_field>'
@@ -97,7 +114,7 @@ The script takes care of setting up Hermes to work with the new DEX and, for now
 By default, `make build` generates a dynamically linked binary. In case someone would like to reproduce the way the binary is built in the pipeline then the command to achieve it locally is:
 
 ```sh
-docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with_the latest_tag> make build -C /code
+docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with_the_latest_tag> make build -C /code
 ```
 
 ## Upgrade wasmvm
