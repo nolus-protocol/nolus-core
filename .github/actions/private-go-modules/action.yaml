@@ -18,7 +18,7 @@ runs:
   using: "composite"
   steps:
     - name: Point git and go at the private repository
-      shell: bash
+      shell: sh
       env:
         TOKEN: ${{ inputs.token }}
         REPO: ${{ inputs.repository }}
