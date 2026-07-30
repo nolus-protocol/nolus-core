@@ -20,6 +20,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
+      - uses: "./.github/actions/private-go-modules"
+        with:
+          token: ${{ secrets.IBC_GO_TOKEN }}
+
       - name: Create a file with all core Cosmos SDK pkgs
         run: |
           go mod download
@@ -79,6 +83,11 @@ jobs:
         with:
           name: "${{ github.sha }}-${{ matrix.part }}"
 
+      - uses: "./.github/actions/private-go-modules"
+        if: env.GIT_DIFF
+        with:
+          token: ${{ secrets.IBC_GO_TOKEN }}
+
       - name: test
         if: env.GIT_DIFF
         run: |
@@ -104,6 +113,11 @@ jobs:
             **/go.sum
             **/Makefile
             Makefile
+
+      - uses: "./.github/actions/private-go-modules"
+        if: env.GIT_DIFF
+        with:
+          token: ${{ secrets.IBC_GO_TOKEN }}
 
       - name: test-sim-nondeterminism
         if: env.GIT_DIFF

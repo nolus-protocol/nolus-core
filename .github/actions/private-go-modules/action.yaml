@@ -1,0 +1,34 @@
+name: "Private Go modules"
+description:
+  "Points git and the go toolchain at the private nolus-protocol repository
+  serving Go modules. Must run after actions/checkout and before any go command."
+
+inputs:
+  token:
+    description: "Read-only token with access to the private repository"
+    required: true
+    default: ""
+
+  repository:
+    description: "Private nolus-protocol repository serving Go modules"
+    required: true
+    default: "ibc-go"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Point git and go at the private repository
+      shell: bash
+      env:
+        TOKEN: ${{ inputs.token }}
+        REPO: ${{ inputs.repository }}
+      run: |-
+        if [ -z "${TOKEN}" ]; then
+          echo "::error::token input is empty; check the secret exists and is visible to this repository"
+          exit 1
+        fi
+
+        git config --global \
+          url."https://x-access-token:${TOKEN}@github.com/nolus-protocol/${REPO}".insteadOf \
+          "https://github.com/nolus-protocol/${REPO}"
+        echo "GOPRIVATE=github.com/nolus-protocol/${REPO}" >> $GITHUB_ENV
