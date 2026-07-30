@@ -14,11 +14,11 @@ jobs:
   split-test-files:
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.25
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: "./.github/actions/private-go-modules"
         with:
@@ -64,8 +64,8 @@ jobs:
         part: ["00", "01", "02", "03"]
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.25
 
@@ -97,10 +97,10 @@ jobs:
     runs-on: "ubuntu-latest"
 
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
         with:
-          go-version: 
+          go-version: 1.25
 
       - uses: technote-space/get-diff-action@v6.1.2
         id: git_diff

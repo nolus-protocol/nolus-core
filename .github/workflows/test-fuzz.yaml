@@ -3,16 +3,19 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
+permissions:
+  contents: read
+
 jobs:
   nondeterminism:
     name: Test App State Determinism
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.25
       
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: "./.github/actions/private-go-modules"
         with:
@@ -25,11 +28,11 @@ jobs:
     name: Test App Import Export
     runs-on: "ubuntu-latest"
     steps:
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v5
         with:
           go-version: 1.25
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: "./.github/actions/private-go-modules"
         with:
