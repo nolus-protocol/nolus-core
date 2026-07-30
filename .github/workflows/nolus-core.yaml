@@ -255,7 +255,8 @@ jobs:
     if: github.ref_type == 'tag'
     runs-on: "ubuntu-latest"
     needs: add-meta
-    permissions: write-all
+    permissions:
+      contents: write
 
     steps:
       - name: Download artifacts
