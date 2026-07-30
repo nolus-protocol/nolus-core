@@ -267,6 +267,9 @@ replace (
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0
 
+	// ibc-go fork adds a Solana light client. The fork is a private repository, so building requires read access to it.
+	github.com/cosmos/ibc-go/v10 => github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus
+
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
 	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.7.7
