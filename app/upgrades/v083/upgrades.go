@@ -7,6 +7,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 
 	upgradetypes "cosmossdk.io/x/upgrade/types"
+	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -21,8 +22,15 @@ func CreateUpgradeHandler(
 	return func(c context.Context, _ upgradetypes.Plan, vm module.VersionMap) (module.VersionMap, error) {
 		ctx := sdk.UnwrapSDKContext(c)
 
+		ctx.Logger().Info("Migrating x/wasm ContractInfo records off the wasmd v0.61.1 field numbering...")
+		rewritten, err := MigrateContractInfoIBC2PortID(ctx, keepers.GetKey(wasmtypes.StoreKey), codec)
+		if err != nil {
+			return vm, err
+		}
+		ctx.Logger().Info(fmt.Sprintf("Rewrote %d x/wasm ContractInfo records", rewritten))
+
 		ctx.Logger().Info("Starting module migrations...")
-		vm, err := mm.RunMigrations(ctx, configurator, vm) //nolint:contextcheck
+		vm, err = mm.RunMigrations(ctx, configurator, vm) //nolint:contextcheck
 		if err != nil {
 			return vm, err
 		}
