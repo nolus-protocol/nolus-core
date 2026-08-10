@@ -50,6 +50,7 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 	appparams "github.com/Nolus-Protocol/nolus-core/app/params"
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
+	"github.com/Nolus-Protocol/nolus-core/app/upgrades/lcrepairproof"
 	v04 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v04"
 	v041 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v041"
 	v042 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v042"
@@ -89,6 +90,7 @@ var (
 		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
 		v083.Upgrade,
+		lcrepairproof.DriftUpgrade, lcrepairproof.RepairUpgrade,
 	}
 )
 
