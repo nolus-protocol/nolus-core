@@ -268,7 +268,7 @@ replace (
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0
 
 	// ibc-go fork adds a Solana light client. The fork is a private repository, so building requires read access to it.
-	github.com/cosmos/ibc-go/v10 => github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus
+	github.com/cosmos/ibc-go/v10 => github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-1
 
 	// Fix upstream GHSA-h395-qcrw-5vmq vulnerability.
 	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
