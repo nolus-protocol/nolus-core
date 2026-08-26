@@ -60,7 +60,7 @@ func NewSignModeHandler(options SignModeHandlerOptions) *SignModeHandler {
 }
 
 func (s SignModeHandler) Mode() signingv1beta1.SignMode {
-	return signingv1beta1.SignMode(193)
+	return signingv1beta1.SignMode_SIGN_MODE_SOLANA_TX_CARRIER
 }
 
 // GetSignBytes carries the Solana legacy message from the transaction's

@@ -56,8 +56,6 @@ const (
 // maxCarriedLen is the Solana packet cap the carried message must fit in.
 const maxCarriedLen = 1232
 
-const signModeSolanaTxCarrier = signingv1beta1.SignMode(193)
-
 func mustDecodeHex(t *testing.T, s string) []byte {
 	t.Helper()
 	bz, err := hex.DecodeString(s)
@@ -170,7 +168,7 @@ func signBytesFor(t *testing.T, pubKey cryptotypes.PubKey, extensions ...*codect
 }
 
 func TestModeIsSolanaTxCarrier(t *testing.T) {
-	require.Equal(t, signModeSolanaTxCarrier, newHandler(t).Mode())
+	require.Equal(t, signingv1beta1.SignMode_SIGN_MODE_SOLANA_TX_CARRIER, newHandler(t).Mode())
 }
 
 func TestGetSignBytesReturnsPhantomCarriedMessageVerbatim(t *testing.T) {

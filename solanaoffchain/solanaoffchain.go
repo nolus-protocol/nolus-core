@@ -35,7 +35,7 @@ type SignModeHandlerOptions struct {
 }
 
 func (s SignModeHandler) Mode() signingv1beta1.SignMode {
-	return signingv1beta1.SignMode(192)
+	return signingv1beta1.SignMode_SIGN_MODE_SOLANA_OFFCHAIN
 }
 
 func NewSignModeHandler(options SignModeHandlerOptions) *SignModeHandler {

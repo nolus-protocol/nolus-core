@@ -61,8 +61,6 @@ const (
 	maxContentLen = 1232 - envelopePreambleLen
 )
 
-const signModeSolanaOffchain = signingv1beta1.SignMode(192)
-
 func mustDecodeHex(t *testing.T, s string) []byte {
 	t.Helper()
 	bz, err := hex.DecodeString(s)
@@ -157,7 +155,7 @@ func aminoContentLen(t *testing.T, memo string) int {
 }
 
 func TestModeIsSolanaOffchain(t *testing.T) {
-	require.Equal(t, signModeSolanaOffchain, newHandler(t).Mode())
+	require.Equal(t, signingv1beta1.SignMode_SIGN_MODE_SOLANA_OFFCHAIN, newHandler(t).Mode())
 }
 
 func TestGetSignBytesMatchesSolflareEnvelopeFixture(t *testing.T) {
