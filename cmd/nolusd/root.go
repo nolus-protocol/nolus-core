@@ -16,7 +16,6 @@ import (
 	snapshottypes "cosmossdk.io/store/snapshots/types"
 	storetypes "cosmossdk.io/store/types"
 	confixcmd "cosmossdk.io/tools/confix/cmd"
-	txsigning "cosmossdk.io/x/tx/signing"
 	"cosmossdk.io/x/tx/signing/aminojson"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
@@ -56,7 +55,6 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/Nolus-Protocol/nolus-core/app"
-	"github.com/Nolus-Protocol/nolus-core/eip191"
 )
 
 // FlagRejectConfigDefaults defines a flag to reject some select defaults that override what is in the config file.
@@ -214,14 +212,11 @@ templates and example invocations, run:
 					FileResolver: signingOpts.FileResolver,
 					TypeResolver: signingOpts.TypeResolver,
 				})
-				eip191Handler := eip191.NewSignModeHandler(eip191.SignModeHandlerOptions{
-					AminoJsonSignModeHandler: aminoHandler,
-				})
 				enabledSignModes := append(tx.DefaultSignModes, signing.SignMode_SIGN_MODE_TEXTUAL)
 				txConfigOpts := tx.ConfigOptions{
 					EnabledSignModes:           enabledSignModes,
 					TextualCoinMetadataQueryFn: authtxconfig.NewGRPCCoinMetadataQueryFn(initClientCtx),
-					CustomSignModes:            [](txsigning.SignModeHandler){*eip191Handler},
+					CustomSignModes:            app.CustomSignModeHandlers(aminoHandler),
 				}
 				txConfig, err := tx.NewTxConfigWithOptions(
 					initClientCtx.Codec,

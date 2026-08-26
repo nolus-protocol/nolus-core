@@ -263,7 +263,8 @@ replace (
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
-	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3
+	// TODO(#233): local fork worktree (branch v0.53.3-nolus-4) while developing sign modes 192/193; restore to github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-4 before merging
+	github.com/cosmos/cosmos-sdk => ../cosmos-sdk-nolus-4
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0
 

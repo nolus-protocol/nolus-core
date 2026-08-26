@@ -16,7 +16,6 @@ import (
 
 	runtimeservices "github.com/cosmos/cosmos-sdk/runtime/services"
 
-	txsigning "cosmossdk.io/x/tx/signing"
 	"cosmossdk.io/x/tx/signing/aminojson"
 	upgradetypes "cosmossdk.io/x/upgrade/types"
 	db "github.com/cosmos/cosmos-db"
@@ -70,8 +69,8 @@ import (
 	v082 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v082"
 	v083 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v083"
 	v084 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v084"
+	v085 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v085"
 	"github.com/Nolus-Protocol/nolus-core/docs"
-	"github.com/Nolus-Protocol/nolus-core/eip191"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
@@ -89,7 +88,7 @@ var (
 		v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade,
 		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
-		v083.Upgrade, v084.Upgrade,
+		v083.Upgrade, v084.Upgrade, v085.Upgrade,
 	}
 )
 
@@ -185,13 +184,10 @@ func New(
 		FileResolver: signingOpts.FileResolver,
 		TypeResolver: signingOpts.TypeResolver,
 	})
-	eip191Handler := eip191.NewSignModeHandler(eip191.SignModeHandlerOptions{
-		AminoJsonSignModeHandler: aminoHandler,
-	})
 	txConfigOpts := authtx.ConfigOptions{
 		EnabledSignModes:           enabledSignModes,
 		TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
-		CustomSignModes:            [](txsigning.SignModeHandler){*eip191Handler},
+		CustomSignModes:            CustomSignModeHandlers(aminoHandler),
 	}
 	txConfig, err := authtx.NewTxConfigWithOptions(
 		appCodec,
@@ -281,6 +277,7 @@ func New(
 			TxCounterStoreService: runtime.NewKVStoreService(app.GetKVStoreKeys()[wasmtypes.StoreKey]),
 			WasmConfig:            &app.WasmConfig,
 			IBCKeeper:             app.IBCKeeper,
+			UpgradeKeeper:         app.UpgradeKeeper,
 		},
 	)
 	if err != nil {
