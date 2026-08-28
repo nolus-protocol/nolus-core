@@ -16,7 +16,7 @@ import (
 
 const (
 	// SolanaCarrierTypeURL is the Any type URL of the carried Solana message.
-	SolanaCarrierTypeURL = "/nolus.tx.v1.SolanaCarrier"
+	SolanaCarrierTypeURL = "/nolus.solanacarrier.v1.SolanaCarrier"
 
 	ed25519PubKeyTypeURL = "/cosmos.crypto.ed25519.PubKey"
 

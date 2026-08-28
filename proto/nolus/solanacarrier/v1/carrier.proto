@@ -1,5 +1,5 @@
 syntax = "proto3";
-package nolus.tx.v1;
+package nolus.solanacarrier.v1;
 
 option go_package = "github.com/Nolus-Protocol/nolus-core/solanacarrier";
 
