@@ -253,6 +253,8 @@ require (
 )
 
 replace (
+	// the fork declares the Solana sign modes in signing.proto and regenerates cosmossdk.io/api; both modules are tagged together
+	cosmossdk.io/api => github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
@@ -263,7 +265,7 @@ replace (
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
-	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3
+	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-4
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0
 

@@ -3,6 +3,7 @@ package app
 import (
 	corestoretypes "cosmossdk.io/core/store"
 	errorsmod "cosmossdk.io/errors"
+	upgradekeeper "cosmossdk.io/x/upgrade/keeper"
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmTypes "github.com/CosmWasm/wasmd/x/wasm/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,6 +13,7 @@ import (
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
+	v085 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v085"
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 )
@@ -24,6 +26,7 @@ type HandlerOptions struct {
 	TxCounterStoreService corestoretypes.KVStoreService
 	WasmConfig            *wasmTypes.NodeConfig
 	IBCKeeper             *keeper.Keeper
+	UpgradeKeeper         *upgradekeeper.Keeper
 }
 
 func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
@@ -41,6 +44,10 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 
 	if options.SignModeHandler == nil {
 		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "sign mode handler is required for ante builder")
+	}
+
+	if options.UpgradeKeeper == nil {
+		return nil, errorsmod.Wrap(sdkerrors.ErrLogic, "upgrade keeper is required for ante builder")
 	}
 
 	sigGasConsumer := options.SigGasConsumer
@@ -64,6 +71,7 @@ func NewAnteHandler(options HandlerOptions) (sdk.AnteHandler, error) {
 		ante.NewSetPubKeyDecorator(options.AccountKeeper), // SetPubKeyDecorator must be called before all signature verification decorators
 		ante.NewValidateSigCountDecorator(options.AccountKeeper),
 		ante.NewSigGasConsumeDecorator(options.AccountKeeper, sigGasConsumer),
+		NewSolanaSignModeGateDecorator(options.UpgradeKeeper, v085.UpgradeName), // reject Solana sign modes until the v0.8.5 upgrade activates them
 		ante.NewSigVerificationDecorator(options.AccountKeeper, options.SignModeHandler, options.SigVerifyOptions...),
 		ante.NewIncrementSequenceDecorator(options.AccountKeeper),
 		ibcante.NewRedundantRelayDecorator(options.IBCKeeper),

@@ -18,4 +18,5 @@ cd ..
 
 # move proto files to the right places
 cp -r ./github.com/Nolus-Protocol/nolus-core/x/* x/  
+cp -r ./github.com/Nolus-Protocol/nolus-core/solanacarrier/* solanacarrier/
 rm -rf ./github.com

@@ -9,10 +9,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/std"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	sdktx "github.com/cosmos/cosmos-sdk/types/tx"
 	"github.com/cosmos/cosmos-sdk/x/auth/tx"
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/Nolus-Protocol/nolus-core/app/legacycodec"
+	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
@@ -75,5 +77,12 @@ func MakeEncodingConfig(moduleBasics module.BasicManager) EncodingConfig {
 	std.RegisterInterfaces(encodingConfig.InterfaceRegistry)
 	moduleBasics.RegisterLegacyAminoCodec(encodingConfig.Amino)
 	moduleBasics.RegisterInterfaces(encodingConfig.InterfaceRegistry)
+	// The SOLANA_TX_CARRIER sign mode carries a Solana message as a non-critical
+	// tx extension option; register it so transactions bearing it decode and its
+	// Any type URL resolves during amino JSON unknown-field checking.
+	encodingConfig.InterfaceRegistry.RegisterImplementations(
+		(*sdktx.TxExtensionOptionI)(nil),
+		&solanacarrier.SolanaCarrier{},
+	)
 	return encodingConfig
 }

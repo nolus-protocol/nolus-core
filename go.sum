@@ -22,8 +22,6 @@ cloud.google.com/go/storage v1.61.3 h1:VS//ZfBuPGDvakfD9xyPW1RGF1Vy3BWUoVZXgW1KM
 cloud.google.com/go/storage v1.61.3/go.mod h1:JtqK8BBB7TWv0HVGHubtUdzYYrakOQIsMLffZ2Z/HWk=
 cloud.google.com/go/trace v1.11.7 h1:kDNDX8JkaAG3R2nq1lIdkb7FCSi1rCmsEtKVsty7p+U=
 cloud.google.com/go/trace v1.11.7/go.mod h1:TNn9d5V3fQVf6s4SCveVMIBS2LJUqo73GACmq/Tky0s=
-cosmossdk.io/api v0.9.2 h1:9i9ptOBdmoIEVEVWLtYYHjxZonlF/aOVODLFaxpmNtg=
-cosmossdk.io/api v0.9.2/go.mod h1:CWt31nVohvoPMTlPv+mMNCtC0a7BqRdESjCsstHcTkU=
 cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79 h1:Hr1t0fCq1nbFC7hLs0Xvy9WAiH7Iti5iVLXMM5C37F0=
 cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79/go.mod h1:8pN6LSVReNnIxrC2QGcvuIJ/m1pJN6FNYn2kAYtYftI=
 cosmossdk.io/collections v1.3.1 h1:09e+DUId2brWsNOQ4nrk+bprVmMUaDH9xvtZkeqIjVw=
@@ -630,8 +628,10 @@ github.com/nats-io/nuid v1.0.1/go.mod h1:19wcPz3Ph3q0Jbyiqsd0kePYG7A95tJPxeL+1OS
 github.com/neutron-org/admin-module/v2 v2.0.0 h1:MlkSc1821sQ+G5/cYOajuqZ5/lM53xTbixpTtXnHh0A=
 github.com/neutron-org/admin-module/v2 v2.0.0/go.mod h1:RfOyabXsdJ5btcOKyKPZDYiZhtuKFubbJMOb8EJZtvA=
 github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e/go.mod h1:zD1mROLANZcx1PVRCS0qkT7pwLkGfwJo4zjcN/Tysno=
-github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3 h1:ckAPaI+Ampn3sxAzApfRsfVEK0MWmgg0tSNXY81vK2A=
-github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-3/go.mod h1:90S054hIbadFB1MlXVZVC5w0QbKfd1P4b79zT+vvJxw=
+github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-4 h1:160IPNOcvQvW3n8K+K6a7igW6uiCabbjQP9ycLi7F/s=
+github.com/nolus-protocol/cosmos-sdk v0.53.3-nolus-4/go.mod h1:KSq/8Euwx/3cYVWzYdmBYgk2P4X/IqfCjQLHzoersJI=
+github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4 h1:AvTCpEzR8dHPoye2UlpOyoItKsiUqM/MS9z+6nmo1v4=
+github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4/go.mod h1:VIH3FLXQ2KWCkzkqXSThA9npvg0LgSBxBRzVSRoJWeg=
 github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-1 h1:JOHHP2M6VbMbKcaYqJB9YZrOGxp0ND/zWicjt6e0R0M=
 github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-1/go.mod h1:a74pAPUSJ7NewvmvELU74hUClJhwnmm5MGbEaiTw/kE=
 github.com/nolus-protocol/wasmd v0.61.8-nolus h1:gcniW7VjjP/+wZgsuc2TFQoJy44UylmKYqE2ifQ1Ius=

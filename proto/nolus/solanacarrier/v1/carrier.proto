@@ -1,0 +1,14 @@
+syntax = "proto3";
+package nolus.solanacarrier.v1;
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/solanacarrier";
+
+// SolanaCarrier transports a canonical Solana legacy message through a Cosmos
+// transaction's non-critical extension options so it can be bound to the
+// transaction and signed under SIGN_MODE_SOLANA_TX_CARRIER. It implements the
+// cosmos.tx.v1beta1.TxExtensionOptionI marker (an empty interface) and is
+// registered centrally by the application, not by this package.
+message SolanaCarrier {
+  // message is the raw canonical Solana legacy message the wallet signs over.
+  bytes message = 1;
+}
