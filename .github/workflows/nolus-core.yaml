@@ -13,7 +13,6 @@ env:
   VERSION_TAG: ${{ github.ref_name }}
   ARTIFACT_BIN: "nolus.tar.gz"
   CHECKSUM_FILE: "sha256sum.txt"
-  METADATA_FILE: "${{ github.ref_name }}_binaries.json"
 
   # docker images
   CONTAINER_REGISTRY: ghcr.io
@@ -209,16 +208,20 @@ jobs:
         run: |
           tar -C target/release/ -czvf $ARTIFACT_BIN .
 
+      # Artifact names must not contain '/', which branch refs like feat/x do
+      - name: Sanitize version tag
+        run: echo "SAFE_VERSION_TAG=$(echo "$VERSION_TAG" | tr '/' '-')" >> "$GITHUB_ENV"
+
       - name: Upload binary tar
         uses: actions/upload-artifact@v7
         with:
-          name: nolusd-tar-${{ env.VERSION_TAG }}
+          name: nolusd-tar-${{ env.SAFE_VERSION_TAG }}
           path: ${{ env.ARTIFACT_BIN }}
 
       - name: Upload binary
         uses: actions/upload-artifact@v7
         with:
-          name: nolusd-${{ env.VERSION_TAG }}
+          name: nolusd-${{ env.SAFE_VERSION_TAG }}
           path: target/release/nolusd
 
   # Add metadata for cosmovisor
@@ -233,11 +236,14 @@ jobs:
 
       - name: Get binary checksum
         run: |
-          CHECKSUM=$(shasum -a 256 nolusd-"${VERSION_TAG}"/nolusd)
+          SAFE_VERSION_TAG=$(echo "$VERSION_TAG" | tr '/' '-')
+          METADATA_FILE="${SAFE_VERSION_TAG}_binaries.json"
+          echo "METADATA_FILE=$METADATA_FILE" >> "$GITHUB_ENV"
+          CHECKSUM=$(shasum -a 256 nolusd-"${SAFE_VERSION_TAG}"/nolusd)
           echo "$CHECKSUM" > $CHECKSUM_FILE
           HASH=$(echo "$CHECKSUM" | cut -d' ' -f1)
           JSON="{\"binaries\": {\"linux/amd64\": \"https://github.com/nolus-protocol/nolus-core/releases/download/${VERSION_TAG}/nolusd?checksum=sha256:$HASH\"}}"
-          echo $JSON > $METADATA_FILE
+          echo $JSON > "$METADATA_FILE"
 
       - name: Upload metadata
         uses: actions/upload-artifact@v7
@@ -265,6 +271,9 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
 
+      - name: Sanitize version tag
+        run: echo "SAFE_VERSION_TAG=$(echo "$VERSION_TAG" | tr '/' '-')" >> "$GITHUB_ENV"
+
       # temporary using commit as version until it is merged. Updates node version v12 -> v16
       - uses: "marvinpinto/action-automatic-releases@6273874b61ebc8c71f1a61b2d98e234cf389b303"
         with:
@@ -272,6 +281,6 @@ jobs:
           prerelease: false
           draft: true
           files: |
-            nolusd-tar-${{ env.VERSION_TAG }}
-            nolusd-${{ env.VERSION_TAG }}
+            nolusd-tar-${{ env.SAFE_VERSION_TAG }}
+            nolusd-${{ env.SAFE_VERSION_TAG }}
             metadata
