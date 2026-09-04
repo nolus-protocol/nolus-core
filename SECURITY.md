@@ -14,7 +14,7 @@ Covers the Nolus blockchain, smart contracts, and webapp. The bounty program foc
 - Unauthorized access to restricted pages
 - Deletion or tampering with user data
 
-Program details: https://hub.nolus.io/en/articles/9680739-security
+Audit reports and the full policy: https://docs.nolus.io/docs/protocol/security
 
 ## What to include in your report
 
