@@ -1,0 +1,17 @@
+syntax = "proto3";
+package nolus.solanacarrier.v1;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/Nolus-Protocol/nolus-core/solanacarrier";
+
+// Params defines the parameters of the solanacarrier module.
+message Params {
+  option (gogoproto.goproto_stringer) = true;
+
+  // fee_payer is the 32-byte Solana account key every carrier must place at
+  // account index 0. It is an off-curve address with no private key, so the
+  // fee-payer signature a broadcastable Solana transaction would need can never
+  // be produced.
+  bytes fee_payer = 1;
+}
