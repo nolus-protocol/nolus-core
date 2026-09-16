@@ -278,7 +278,6 @@ func New(
 			TxCounterStoreService: runtime.NewKVStoreService(app.GetKVStoreKeys()[wasmtypes.StoreKey]),
 			WasmConfig:            &app.WasmConfig,
 			IBCKeeper:             app.IBCKeeper,
-			UpgradeKeeper:         app.UpgradeKeeper,
 		},
 	)
 	if err != nil {

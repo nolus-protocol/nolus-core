@@ -15,10 +15,7 @@ import (
 // CreateUpgradeHandler for v0.8.5 carries no state migration: the release adds
 // the SOLANA_OFFCHAIN and SOLANA_TX_CARRIER custom sign modes, which live in the
 // binary and are wired at app construction. The handler exists so the
-// software-upgrade plan named "v0.8.5" resolves and so its recorded done-height
-// is the deterministic activation signal for those sign modes (the ante gate in
-// SolanaSignModeGateDecorator rejects them until this upgrade has been applied,
-// which keeps an early-swapped binary in consensus with un-upgraded nodes).
+// software-upgrade plan named "v0.8.5" resolves and its application is recorded.
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
