@@ -13,7 +13,11 @@ import (
 // config over the given amino JSON handler. It is the single source shared by
 // the app's TxConfig (app.go) and the client TxConfig (cmd/nolusd/root.go) so
 // the two registration sites cannot drift apart.
-func CustomSignModeHandlers(aminoHandler *aminojson.SignModeHandler) []txsigning.SignModeHandler {
+//
+// feePayerSource supplies the on-chain fee payer the carrier sign mode pins
+// account index 0 to. The client path has no keeper and passes nil, which makes
+// SIGN_MODE_SOLANA_TX_CARRIER sign-byte production fail closed there.
+func CustomSignModeHandlers(aminoHandler *aminojson.SignModeHandler, feePayerSource solanacarrier.FeePayerSource) []txsigning.SignModeHandler {
 	eip191Handler := eip191.NewSignModeHandler(eip191.SignModeHandlerOptions{
 		AminoJsonSignModeHandler: aminoHandler,
 	})
@@ -22,6 +26,7 @@ func CustomSignModeHandlers(aminoHandler *aminojson.SignModeHandler) []txsigning
 	})
 	solanaCarrierHandler := solanacarrier.NewSignModeHandler(solanacarrier.SignModeHandlerOptions{
 		AminoJsonSignModeHandler: aminoHandler,
+		FeePayerSource:           feePayerSource,
 	})
 	return []txsigning.SignModeHandler{
 		*eip191Handler,

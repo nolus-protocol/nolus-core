@@ -62,9 +62,11 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	solanacarrierkeeper "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
@@ -109,9 +111,10 @@ type AppKeepers struct {
 	ConsensusParamsKeeper *consensusparamskeeper.Keeper
 	AuthzKeeper           *authzkeeper.Keeper
 
-	MintKeeper     *mintkeeper.Keeper
-	TaxKeeper      *taxkeeper.Keeper
-	VestingsKeeper *vestingskeeper.Keeper
+	MintKeeper          *mintkeeper.Keeper
+	TaxKeeper           *taxkeeper.Keeper
+	SolanaCarrierKeeper *solanacarrierkeeper.Keeper
+	VestingsKeeper      *vestingskeeper.Keeper
 
 	InterchainTxsKeeper   *interchaintxskeeper.Keeper
 	ContractManagerKeeper *contractmanagermodulekeeper.Keeper
@@ -418,6 +421,13 @@ func (appKeepers *AppKeepers) NewAppKeepers(
 		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	appKeepers.TaxKeeper = &taxKeeper
+
+	solanaCarrierKeeper := solanacarrierkeeper.NewKeeper(
+		appCodec,
+		runtime.NewKVStoreService(appKeepers.keys[solanacarriertypes.StoreKey]),
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+	)
+	appKeepers.SolanaCarrierKeeper = &solanaCarrierKeeper
 
 	appKeepers.VestingsKeeper = vestingskeeper.NewKeeper(
 		appCodec,

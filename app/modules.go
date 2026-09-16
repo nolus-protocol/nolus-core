@@ -43,8 +43,10 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
@@ -103,6 +105,7 @@ var ModuleBasics = module.NewBasicManager(
 	wasm.AppModuleBasic{},
 	vestings.AppModuleBasic{},
 	tax.AppModuleBasic{},
+	solanacarrier.AppModuleBasic{},
 	ica.AppModuleBasic{},
 	interchaintxs.AppModuleBasic{},
 	feerefunder.AppModuleBasic{},
@@ -141,6 +144,7 @@ func appModules(
 		ibc.NewAppModule(app.IBCKeeper),
 		sdkparams.NewAppModule(*app.ParamsKeeper), //nolint:staticcheck
 		tax.NewAppModule(appCodec, *app.TaxKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(taxmoduletypes.ModuleName)),
+		solanacarrier.NewAppModule(appCodec, *app.SolanaCarrierKeeper),
 		app.TransferModule,
 		app.VestingsModule,
 		app.IcaModule,
@@ -263,6 +267,7 @@ func genesisModuleOrder() []string {
 		govtypes.ModuleName,
 		minttypes.ModuleName,
 		taxmoduletypes.ModuleName,
+		solanacarriertypes.ModuleName,
 		vestingstypes.ModuleName,
 		ibcexported.ModuleName,
 		genutiltypes.ModuleName,

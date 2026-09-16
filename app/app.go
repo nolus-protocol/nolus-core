@@ -70,6 +70,7 @@ import (
 	v083 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v083"
 	v084 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v084"
 	v085 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v085"
+	v086 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v086"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -88,7 +89,7 @@ var (
 		v04.Upgrade, v041.Upgrade, v042.Upgrade, v052.Upgrade, v053.Upgrade, v062.Upgrade,
 		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
-		v083.Upgrade, v084.Upgrade, v085.Upgrade,
+		v083.Upgrade, v084.Upgrade, v085.Upgrade, v086.Upgrade,
 	}
 )
 
@@ -187,7 +188,7 @@ func New(
 	txConfigOpts := authtx.ConfigOptions{
 		EnabledSignModes:           enabledSignModes,
 		TextualCoinMetadataQueryFn: txmodule.NewBankKeeperCoinMetadataQueryFn(app.BankKeeper),
-		CustomSignModes:            CustomSignModeHandlers(aminoHandler),
+		CustomSignModes:            CustomSignModeHandlers(aminoHandler, app.SolanaCarrierKeeper),
 	}
 	txConfig, err := authtx.NewTxConfigWithOptions(
 		appCodec,
