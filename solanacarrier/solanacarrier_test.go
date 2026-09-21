@@ -3,8 +3,8 @@ package solanacarrier_test
 import (
 	"bytes"
 	"context"
-	"crypto/ed25519"
 	"encoding/hex"
+	"errors"
 	"testing"
 
 	signingv1beta1 "cosmossdk.io/api/cosmos/tx/signing/v1beta1"
@@ -29,13 +29,14 @@ import (
 
 // Carrier captured 2026-08-25 from Phantom + Ledger. Phantom injected two
 // ComputeBudget instructions before signing, so the chain sees four instructions
-// where the client built two; see .claude/spike/fixtures-solflare-ocms.md.
+// where the client built two; see .claude/spike/fixtures-solflare-ocms.md. The
+// capture predates both the fee-payer parameter and the instruction allowlist:
+// its fee payer is 48ab05fd… and it pairs the memo with a System transfer, so it
+// now serves only as a negative fixture.
 const (
 	phantomPubKeyHex = "54a18bb661d66d5a01e0fa06f3588ec0b12c81c3cc39263748fa2e9ff99acf4a"
 
 	phantomCarrierMessageHex = "0200030548ab05fd4f9c5a20ee631f7f45e8ac8ecf133b2ab59b247b452b6ea5dd5bf94854a18bb661d66d5a01e0fa06f3588ec0b12c81c3cc39263748fa2e9ff99acf4a00000000000000000000000000000000000000000000000000000000000000000306466fe5211732ffecadba72c39be7bc8ce5bbc5f7126b2c439b3a40000000054a535a992921064d24e87160da387c7c35b5ddbc92bb81e41fa8404105448dd3266180b58ab52ad71ace42190f053f25dd7e4b74dba3a6c07aa8f7ec52201c04030009031cd604000000000003000502529c0300020201010c020000000000000000000000040101ef037b226163636f756e745f6e756d626572223a22313834343637222c22636861696e5f6964223a226e6f6c75732d31222c22666565223a7b22616d6f756e74223a5b7b22616d6f756e74223a2233303030222c2264656e6f6d223a22756e6c73227d5d2c22676173223a22353030303030227d2c226d656d6f223a22222c226d736773223a5b7b2274797065223a227761736d2f4d736745786563757465436f6e7472616374222c2276616c7565223a7b22636f6e7472616374223a226e6f6c757331776e36323573346a636d766b30737a706c3835726a35617a6b6663367375797666373571367672646473636a6470687476653873356767343266222c2266756e6473223a5b7b22616d6f756e74223a22313530303030303030222c2264656e6f6d223a226962632f46344237433146314537423143423031384545304642413539394130413438413030383131433044314442314542434538324430423034423445343045344545227d5d2c226d7367223a7b226f70656e5f6c65617365223a7b2263757272656e6379223a22534f4c222c226d61785f6c7464223a3630307d7d2c2273656e646572223a226e6f6c7573313064303779323635676d6d757674347a30773961773838306a6e73723730306a766a7236356b227d7d5d2c2273657175656e6365223a223432227d"
-
-	phantomSignatureHex = "29f29a96b74c440b4218c15f81be386170686fc84bd687a1d5e2e6fc34420fc575320402eccdda167e18c60a1a385b6d20506fbcc4413d189225184261d35d0f"
 )
 
 // The Nolus transaction the carrier's memo is bound to.
@@ -55,6 +56,28 @@ const (
 
 // maxCarriedLen is the Solana packet cap the carried message must fit in.
 const maxCarriedLen = 1232
+
+// maxComputeBudgetInstructions is the number of ComputeBudget instructions the
+// allowlist tolerates alongside the bound memo, one per ComputeBudget
+// instruction kind.
+const maxComputeBudgetInstructions = 4
+
+// fixedFeePayer is a FeePayerSource serving one key, standing in for the
+// x/solanacarrier keeper's parameter read.
+type fixedFeePayer []byte
+
+func (f fixedFeePayer) FeePayer(_ context.Context) ([]byte, error) {
+	return bytes.Clone(f), nil
+}
+
+// failingFeePayer is a FeePayerSource whose read never succeeds.
+type failingFeePayer struct {
+	err error
+}
+
+func (f failingFeePayer) FeePayer(_ context.Context) ([]byte, error) {
+	return nil, f.err
+}
 
 func mustDecodeHex(t *testing.T, s string) []byte {
 	t.Helper()
@@ -81,11 +104,17 @@ func newAminoHandler(t *testing.T) *aminojson.SignModeHandler {
 	})
 }
 
-func newHandler(t *testing.T) *solanacarrier.SignModeHandler {
+func newHandlerWithSource(t *testing.T, source solanacarrier.FeePayerSource) *solanacarrier.SignModeHandler {
 	t.Helper()
 	return solanacarrier.NewSignModeHandler(solanacarrier.SignModeHandlerOptions{
 		AminoJsonSignModeHandler: newAminoHandler(t),
+		FeePayerSource:           source,
 	})
+}
+
+func newHandler(t *testing.T) *solanacarrier.SignModeHandler {
+	t.Helper()
+	return newHandlerWithSource(t, fixedFeePayer(paramFeePayerKey))
 }
 
 func leaseOpenMsg() sdk.Msg {
@@ -158,36 +187,22 @@ func boundAminoJSON(t *testing.T) []byte {
 	return content
 }
 
-func signBytesFor(t *testing.T, pubKey cryptotypes.PubKey, extensions ...*codectypes.Any) ([]byte, error) {
+func signBytesForWithSource(t *testing.T, source solanacarrier.FeePayerSource, pubKey cryptotypes.PubKey, extensions ...*codectypes.Any) ([]byte, error) {
 	t.Helper()
-	return newHandler(t).GetSignBytes(
+	return newHandlerWithSource(t, source).GetSignBytes(
 		context.Background(),
 		signerDataFor(t, pubKey),
 		txDataWithExtensions(t, extensions...),
 	)
 }
 
+func signBytesFor(t *testing.T, pubKey cryptotypes.PubKey, extensions ...*codectypes.Any) ([]byte, error) {
+	t.Helper()
+	return signBytesForWithSource(t, fixedFeePayer(paramFeePayerKey), pubKey, extensions...)
+}
+
 func TestModeIsSolanaTxCarrier(t *testing.T) {
 	require.Equal(t, signingv1beta1.SignMode_SIGN_MODE_SOLANA_TX_CARRIER, newHandler(t).Mode())
-}
-
-func TestGetSignBytesReturnsPhantomCarriedMessageVerbatim(t *testing.T) {
-	carried := mustDecodeHex(t, phantomCarrierMessageHex)
-
-	got, err := signBytesFor(t, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
-	require.NoError(t, err)
-	require.Equal(t, carried, got)
-}
-
-func TestPhantomFixtureSignatureVerifiesOverSignBytes(t *testing.T) {
-	pubKey := ed25519PubKeyFromHex(t, phantomPubKeyHex)
-
-	got, err := signBytesFor(t, pubKey, carrierExtension(t, mustDecodeHex(t, phantomCarrierMessageHex)))
-	require.NoError(t, err)
-	require.True(t,
-		ed25519.Verify(ed25519.PublicKey(pubKey.Bytes()), got, mustDecodeHex(t, phantomSignatureHex)),
-		"the signature Phantom produced must verify over the sign bytes the chain returns",
-	)
 }
 
 func TestGetSignBytesAcceptsHandBuiltCarrierMessage(t *testing.T) {
@@ -199,18 +214,200 @@ func TestGetSignBytesAcceptsHandBuiltCarrierMessage(t *testing.T) {
 	require.Equal(t, carried, got)
 }
 
-func TestGetSignBytesToleratesUnrecognisedInstructions(t *testing.T) {
+func TestGetSignBytesAcceptsAllowlistedInstructionLayouts(t *testing.T) {
 	signerKey := mustDecodeHex(t, phantomPubKeyHex)
-	message := carrierMessage(signerKey, boundAminoJSON(t))
-	message.instructions = append(message.instructions, solanaInstruction{
-		programIDIndex: systemProgramIndex,
-		data:           []byte("an instruction the chain knows nothing about"),
-	})
-	carried := message.encode()
 
-	got, err := signBytesFor(t, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
-	require.NoError(t, err)
-	require.Equal(t, carried, got)
+	tests := []struct {
+		name         string
+		instructions func(memo []byte) []testInstruction
+	}{
+		{
+			name: "memo alone",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{memoInstruction(memo)}
+			},
+		},
+		{
+			name: "one compute budget before the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{computeBudgetInstruction(0x03, 0x09, 0x00), memoInstruction(memo)}
+			},
+		},
+		{
+			name: "one compute budget after the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{memoInstruction(memo), computeBudgetInstruction(0x02, 0x52, 0x9c)}
+			},
+		},
+		{
+			name: "compute budget on both sides of the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{
+					computeBudgetInstruction(0x03, 0x09, 0x00),
+					memoInstruction(memo),
+					computeBudgetInstruction(0x02, 0x52, 0x9c),
+				}
+			},
+		},
+		{
+			name: "three compute budget instructions before the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{
+					computeBudgetInstruction(0x01),
+					computeBudgetInstruction(0x02),
+					computeBudgetInstruction(0x03),
+					memoInstruction(memo),
+				}
+			},
+		},
+		{
+			name: "three compute budget instructions after the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{
+					memoInstruction(memo),
+					computeBudgetInstruction(0x01),
+					computeBudgetInstruction(0x02),
+					computeBudgetInstruction(0x03),
+				}
+			},
+		},
+		{
+			name: "four compute budget instructions around the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{
+					computeBudgetInstruction(0x01),
+					computeBudgetInstruction(0x02),
+					memoInstruction(memo),
+					computeBudgetInstruction(0x03),
+					computeBudgetInstruction(0x04),
+				}
+			},
+		},
+		{
+			name: "four compute budget instructions before the memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{
+					computeBudgetInstruction(0x01),
+					computeBudgetInstruction(0x02),
+					computeBudgetInstruction(0x03),
+					computeBudgetInstruction(0x04),
+					memoInstruction(memo),
+				}
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			carried := buildMessage(paramFeePayerKey, signerKey, tc.instructions(boundAminoJSON(t))...).encode()
+
+			got, err := signBytesFor(t, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+			require.NoError(t, err)
+			require.Equal(t, carried, got)
+		})
+	}
+}
+
+func TestGetSignBytesRejectsInstructionsOutsideTheAllowlist(t *testing.T) {
+	signerKey := mustDecodeHex(t, phantomPubKeyHex)
+
+	tests := []struct {
+		name         string
+		contains     string
+		instructions func(memo []byte) []testInstruction
+	}{
+		{
+			name:     "system transfer alongside the memo",
+			contains: "allowlist",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{systemTransferInstruction(), memoInstruction(memo)}
+			},
+		},
+		{
+			name:     "unknown program alongside the memo",
+			contains: "allowlist",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{memoInstruction(memo), unknownProgramInstruction([]byte{0x01})}
+			},
+		},
+		{
+			name:     "one compute budget instruction past the cap",
+			contains: "allowlist",
+			instructions: func(memo []byte) []testInstruction {
+				instructions := []testInstruction{memoInstruction(memo)}
+				for i := 0; i <= maxComputeBudgetInstructions; i++ {
+					instructions = append(instructions, computeBudgetInstruction(byte(i)))
+				}
+				return instructions
+			},
+		},
+		{
+			name:     "a second memo carrying other data",
+			contains: "exactly one memo",
+			instructions: func(memo []byte) []testInstruction {
+				return []testInstruction{memoInstruction(memo), memoInstruction([]byte("not the bound payload"))}
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			carried := buildMessage(paramFeePayerKey, signerKey, tc.instructions(boundAminoJSON(t))...).encode()
+
+			_, err := signBytesFor(t, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+			require.ErrorContains(t, err, tc.contains)
+		})
+	}
+}
+
+func TestGetSignBytesRejectsFeePayerOtherThanTheParameter(t *testing.T) {
+	signerKey := mustDecodeHex(t, phantomPubKeyHex)
+	carried := buildMessage(captureFeePayerKey, signerKey, memoInstruction(boundAminoJSON(t))).encode()
+
+	_, err := signBytesFor(t, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+	require.ErrorContains(t, err, "fee payer")
+}
+
+func TestGetSignBytesRejectsPhantomLedgerCapture(t *testing.T) {
+	carried := mustDecodeHex(t, phantomCarrierMessageHex)
+
+	tests := []struct {
+		name   string
+		source solanacarrier.FeePayerSource
+	}{
+		{
+			name:   "fee payer source serves the parameter's sentinel",
+			source: fixedFeePayer(paramFeePayerKey),
+		},
+		{
+			name:   "fee payer source serves the capture's own fee payer",
+			source: fixedFeePayer(captureFeePayerKey),
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := signBytesForWithSource(t, tc.source, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+			require.Error(t, err, "the capture pairs its memo with a System transfer and pins a fee payer the parameter does not name")
+		})
+	}
+}
+
+func TestGetSignBytesRequiresAFeePayerSource(t *testing.T) {
+	signerKey := mustDecodeHex(t, phantomPubKeyHex)
+	carried := carrierMessage(signerKey, boundAminoJSON(t)).encode()
+
+	_, err := signBytesForWithSource(t, nil, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+	require.ErrorContains(t, err, "fee payer source")
+}
+
+func TestGetSignBytesPropagatesFeePayerSourceFailure(t *testing.T) {
+	signerKey := mustDecodeHex(t, phantomPubKeyHex)
+	carried := carrierMessage(signerKey, boundAminoJSON(t)).encode()
+	source := failingFeePayer{err: errors.New("fee payer parameter is unreadable")}
+
+	_, err := signBytesForWithSource(t, source, ed25519PubKeyFromHex(t, phantomPubKeyHex), carrierExtension(t, carried))
+	require.ErrorContains(t, err, "fee payer parameter is unreadable")
 }
 
 func TestGetSignBytesAcceptsMessageAtPacketCap(t *testing.T) {

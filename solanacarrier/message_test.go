@@ -10,30 +10,38 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
 )
 
-// Account layout the client builds the carrier with: a funded sentinel fee payer
-// whose signature is never produced, the user, and the two invoked programs.
+// Account keys the carrier is laid out with: the governance-pinned fee payer at
+// index 0 whose signature is never produced, the user, and the invoked programs.
 const (
-	sentinelFeePayerKeyHex = "48ab05fd4f9c5a20ee631f7f45e8ac8ecf133b2ab59b247b452b6ea5dd5bf948"
+	// EvysLTsKMWc2A9kNUBaeJF99kvZvPLjfbow2Yk4gQYXZ, the off-curve sentinel the
+	// x/solanacarrier fee-payer parameter is seeded with.
+	paramFeePayerKeyHex = "cefc037c11436dc85b6943b43c94ec50c0493696cb7e797e84c1763038e9ad70"
+
+	// The fee payer of the 2026-08-25 Phantom + Ledger capture, which predates
+	// the fee-payer parameter.
+	captureFeePayerKeyHex = "48ab05fd4f9c5a20ee631f7f45e8ac8ecf133b2ab59b247b452b6ea5dd5bf948"
 
 	// MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr.
 	memoProgramKeyHex = "054a535a992921064d24e87160da387c7c35b5ddbc92bb81e41fa8404105448d"
 
+	// ComputeBudget111111111111111111111111111111.
+	computeBudgetProgramKeyHex = "0306466fe5211732ffecadba72c39be7bc8ce5bbc5f7126b2c439b3a40000000"
+
 	blockhashHex = "d3266180b58ab52ad71ace42190f053f25dd7e4b74dba3a6c07aa8f7ec52201c"
 )
 
-const (
-	systemProgramIndex = 2
-	memoProgramIndex   = 3
-)
-
-// transferZeroLamports is the System program instruction the client pairs the memo
-// with so hardware wallets have something renderable to approve.
+// transferZeroLamports is a System program transfer of nothing, the instruction
+// hardware wallets were previously paired with so they had something renderable
+// to approve.
 var transferZeroLamports = []byte{0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 var (
-	sentinelFeePayerKey = hexKey(sentinelFeePayerKeyHex)
-	memoProgramKey      = hexKey(memoProgramKeyHex)
-	carrierBlockhash    = hexKey(blockhashHex)
+	paramFeePayerKey        = hexKey(paramFeePayerKeyHex)
+	captureFeePayerKey      = hexKey(captureFeePayerKeyHex)
+	memoProgramKey          = hexKey(memoProgramKeyHex)
+	computeBudgetProgramKey = hexKey(computeBudgetProgramKeyHex)
+	systemProgramKey        = make([]byte, 32)
+	carrierBlockhash        = hexKey(blockhashHex)
 )
 
 func hexKey(s string) []byte {
@@ -89,40 +97,86 @@ func (m solanaMessage) encode() []byte {
 	return out
 }
 
-func carrierMessage(signerKey, memoData []byte) solanaMessage {
-	return solanaMessage{
-		numRequiredSignatures: 2,
-		numReadonlySigned:     0,
-		numReadonlyUnsigned:   2,
-		accountKeys: [][]byte{
-			bytes.Clone(sentinelFeePayerKey),
-			bytes.Clone(signerKey),
-			make([]byte, 32),
-			bytes.Clone(memoProgramKey),
-		},
-		recentBlockhash: bytes.Clone(carrierBlockhash),
-		instructions: []solanaInstruction{
-			{programIDIndex: systemProgramIndex, accounts: []byte{1, 1}, data: transferZeroLamports},
-			{programIDIndex: memoProgramIndex, accounts: []byte{1}, data: memoData},
-		},
-	}
+// testInstruction names its program by key rather than by account index so cases
+// can be written without tracking the account table buildMessage lays out.
+type testInstruction struct {
+	programKey []byte
+	accounts   []byte
+	data       []byte
 }
 
-// padToLength appends an inert instruction sized so the encoded message lands on
-// target exactly, which is how the packet-cap boundary cases are built.
+func memoInstruction(data []byte) testInstruction {
+	return testInstruction{programKey: memoProgramKey, accounts: []byte{1}, data: data}
+}
+
+func computeBudgetInstruction(data ...byte) testInstruction {
+	return testInstruction{programKey: computeBudgetProgramKey, data: data}
+}
+
+func systemTransferInstruction() testInstruction {
+	return testInstruction{programKey: systemProgramKey, accounts: []byte{1, 1}, data: transferZeroLamports}
+}
+
+func unknownProgramInstruction(data []byte) testInstruction {
+	return testInstruction{programKey: bytes.Repeat([]byte{0x11}, 32), accounts: []byte{1}, data: data}
+}
+
+// buildMessage lays the account table out as [feePayer, signer, program keys in
+// first-use order] and compiles the instructions against it.
+func buildMessage(feePayer, signerKey []byte, instructions ...testInstruction) solanaMessage {
+	message := solanaMessage{
+		numRequiredSignatures: 2,
+		numReadonlySigned:     0,
+		accountKeys:           [][]byte{bytes.Clone(feePayer), bytes.Clone(signerKey)},
+		recentBlockhash:       bytes.Clone(carrierBlockhash),
+	}
+	for _, instruction := range instructions {
+		message.instructions = append(message.instructions, solanaInstruction{
+			programIDIndex: programIndex(&message, instruction.programKey),
+			accounts:       instruction.accounts,
+			data:           instruction.data,
+		})
+	}
+	return message
+}
+
+// programIndex returns the account index of key, appending it to the read-only
+// unsigned region of the table when it is not there yet.
+func programIndex(message *solanaMessage, key []byte) byte {
+	for i, existing := range message.accountKeys {
+		if bytes.Equal(existing, key) {
+			return byte(i)
+		}
+	}
+	message.accountKeys = append(message.accountKeys, bytes.Clone(key))
+	message.numReadonlyUnsigned++
+	return byte(len(message.accountKeys) - 1)
+}
+
+// carrierMessage is the layout the client builds: the parameter's fee payer, the
+// signer, and the single bound memo.
+func carrierMessage(signerKey, memoData []byte) solanaMessage {
+	return buildMessage(paramFeePayerKey, signerKey, memoInstruction(memoData))
+}
+
+// padToLength appends an allowlisted ComputeBudget instruction sized so the
+// encoded message lands on target exactly, which is how the packet-cap boundary
+// cases are built.
 func padToLength(t *testing.T, base solanaMessage, target int) solanaMessage {
 	t.Helper()
 	for n := 0; n <= target; n++ {
 		padded := base
-		padded.instructions = append(
-			append([]solanaInstruction{}, base.instructions...),
-			solanaInstruction{programIDIndex: systemProgramIndex, data: make([]byte, n)},
-		)
+		padded.accountKeys = append([][]byte{}, base.accountKeys...)
+		padded.instructions = append([]solanaInstruction{}, base.instructions...)
+		padded.instructions = append(padded.instructions, solanaInstruction{
+			programIDIndex: programIndex(&padded, computeBudgetProgramKey),
+			data:           make([]byte, n),
+		})
 		if len(padded.encode()) == target {
 			return padded
 		}
 	}
-	t.Fatalf("no inert-instruction size encodes this message to exactly %d bytes", target)
+	t.Fatalf("no ComputeBudget-instruction size encodes this message to exactly %d bytes", target)
 	return solanaMessage{}
 }
 

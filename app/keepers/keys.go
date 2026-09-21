@@ -20,6 +20,7 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
@@ -50,6 +51,7 @@ func (appKeepers *AppKeepers) GenerateKeys() {
 		feegrant.StoreKey,
 		ibctransfertypes.StoreKey,
 		taxmoduletypes.StoreKey,
+		solanacarriertypes.StoreKey,
 		vestingstypes.StoreKey,
 		icacontrollertypes.StoreKey,
 		icahosttypes.StoreKey,

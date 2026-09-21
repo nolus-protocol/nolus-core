@@ -216,7 +216,7 @@ templates and example invocations, run:
 				txConfigOpts := tx.ConfigOptions{
 					EnabledSignModes:           enabledSignModes,
 					TextualCoinMetadataQueryFn: authtxconfig.NewGRPCCoinMetadataQueryFn(initClientCtx),
-					CustomSignModes:            app.CustomSignModeHandlers(aminoHandler),
+					CustomSignModes:            app.CustomSignModeHandlers(aminoHandler, nil),
 				}
 				txConfig, err := tx.NewTxConfigWithOptions(
 					initClientCtx.Codec,
