@@ -21,8 +21,8 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // SolanaCarrierKeeper builds a solanacarrier keeper over an in-memory store. A

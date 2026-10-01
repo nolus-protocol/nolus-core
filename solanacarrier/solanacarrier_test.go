@@ -25,6 +25,7 @@ import (
 
 	"github.com/Nolus-Protocol/nolus-core/app"
 	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // Carrier captured 2026-08-25 from Phantom + Ledger. Phantom injected two
@@ -144,7 +145,7 @@ func txDataWithExtensions(t *testing.T, extensions ...*codectypes.Any) txsigning
 
 func carrierExtension(t *testing.T, message []byte) *codectypes.Any {
 	t.Helper()
-	extension, err := codectypes.NewAnyWithValue(&solanacarrier.SolanaCarrier{Message: message})
+	extension, err := codectypes.NewAnyWithValue(&solanacarriertypes.SolanaCarrier{Message: message})
 	require.NoError(t, err)
 	return extension
 }

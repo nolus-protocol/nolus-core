@@ -7,7 +7,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.

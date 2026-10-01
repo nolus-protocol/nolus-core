@@ -3,7 +3,7 @@ package nolus.solanacarrier.v1;
 
 import "gogoproto/gogo.proto";
 
-option go_package = "github.com/Nolus-Protocol/nolus-core/solanacarrier";
+option go_package = "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types";
 
 // Params defines the parameters of the solanacarrier module.
 message Params {

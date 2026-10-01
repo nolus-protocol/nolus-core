@@ -15,7 +15,7 @@ import (
 	authtx "github.com/cosmos/cosmos-sdk/x/auth/tx"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // A nil FeePayerSource fails closed with a distinct error, so a refactor that
@@ -25,7 +25,7 @@ import (
 // a handler that read the keeper's value can reach that rejection.
 func TestSolanaCarrierSignModeReadsTheFeePayerFromTheKeeper(t *testing.T) {
 	testApp, ctx := CreateTestApp(true, t.TempDir())
-	require.NoError(t, testApp.SolanaCarrierKeeper.SetParams(ctx, solanacarrier.DefaultParams()))
+	require.NoError(t, testApp.SolanaCarrierKeeper.SetParams(ctx, solanacarriertypes.DefaultParams()))
 
 	signerKey := make([]byte, 32)
 	signerKey[0] = 0x01
@@ -40,7 +40,7 @@ func TestSolanaCarrierSignModeReadsTheFeePayerFromTheKeeper(t *testing.T) {
 	message = append(message, make([]byte, 32)...)
 	message = append(message, 0x00)
 
-	carrierAny, err := codectypes.NewAnyWithValue(&solanacarrier.SolanaCarrier{Message: message})
+	carrierAny, err := codectypes.NewAnyWithValue(&solanacarriertypes.SolanaCarrier{Message: message})
 	require.NoError(t, err)
 
 	builder, ok := testApp.GetTxConfig().NewTxBuilder().(authtx.ExtensionOptionsTxBuilder)

@@ -1,4 +1,4 @@
-package solanacarrier
+package types
 
 const (
 	// ModuleName defines the module name.

@@ -11,9 +11,9 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // altFeePayer is a second off-curve account key, used to prove a param update

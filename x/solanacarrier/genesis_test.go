@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	testkeeper "github.com/Nolus-Protocol/nolus-core/testutil/keeper"
 	solanacarrier "github.com/Nolus-Protocol/nolus-core/x/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 func TestInitExportGenesisRoundTrip(t *testing.T) {

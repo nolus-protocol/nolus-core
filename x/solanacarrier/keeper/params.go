@@ -5,7 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // GetParams gets all parameters as types.Params.

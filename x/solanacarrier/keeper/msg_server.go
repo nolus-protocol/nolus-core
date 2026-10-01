@@ -7,7 +7,7 @@ import (
 
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 var _ types.MsgServer = msgServer{}

@@ -10,7 +10,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/module"
 
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
-	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // CreateUpgradeHandler for v0.8.6 introduces the x/solanacarrier module, whose

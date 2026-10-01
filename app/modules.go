@@ -43,10 +43,10 @@ import (
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
-	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/mint"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 	"github.com/Nolus-Protocol/nolus-core/x/tax"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"

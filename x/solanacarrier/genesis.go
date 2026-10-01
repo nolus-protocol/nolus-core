@@ -3,8 +3,8 @@ package solanacarrier
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // InitGenesis initializes the solanacarrier module's state from a provided

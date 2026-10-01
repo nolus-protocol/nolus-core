@@ -11,6 +11,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
 	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // The carrier rides in the transaction as an Any, so the tx decoder must be able to
@@ -23,7 +24,7 @@ func TestSolanaCarrierExtensionDecodesThroughTxConfig(t *testing.T) {
 	_, err := proto.HybridResolver.FindDescriptorByName("nolus.solanacarrier.v1.SolanaCarrier")
 	require.NoError(t, err, "carrier descriptor must be registered")
 
-	carrier := &solanacarrier.SolanaCarrier{Message: []byte{0x01, 0x00, 0x00, 0x02}}
+	carrier := &solanacarriertypes.SolanaCarrier{Message: []byte{0x01, 0x00, 0x00, 0x02}}
 	carrierAny, err := codectypes.NewAnyWithValue(carrier)
 	require.NoError(t, err)
 	require.Equal(t, solanacarrier.SolanaCarrierTypeURL, carrierAny.TypeUrl)
@@ -50,7 +51,7 @@ func TestSolanaCarrierExtensionDecodesThroughTxConfig(t *testing.T) {
 	require.Len(t, exts, 1)
 	require.Equal(t, solanacarrier.SolanaCarrierTypeURL, exts[0].TypeUrl)
 
-	var decodedCarrier solanacarrier.SolanaCarrier
+	var decodedCarrier solanacarriertypes.SolanaCarrier
 	require.NoError(t, decodedCarrier.Unmarshal(exts[0].Value))
 	require.Equal(t, carrier.Message, decodedCarrier.Message)
 }

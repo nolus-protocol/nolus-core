@@ -14,7 +14,7 @@ import (
 	"github.com/cosmos/gogoproto/proto"
 
 	"github.com/Nolus-Protocol/nolus-core/app/legacycodec"
-	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // EncodingConfig specifies the concrete encoding types to use for a given app.
@@ -82,7 +82,7 @@ func MakeEncodingConfig(moduleBasics module.BasicManager) EncodingConfig {
 	// Any type URL resolves during amino JSON unknown-field checking.
 	encodingConfig.InterfaceRegistry.RegisterImplementations(
 		(*sdktx.TxExtensionOptionI)(nil),
-		&solanacarrier.SolanaCarrier{},
+		&solanacarriertypes.SolanaCarrier{},
 	)
 	return encodingConfig
 }

@@ -15,9 +15,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/client/cli"
 	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // ConsensusVersion defines the current x/solanacarrier module consensus version.

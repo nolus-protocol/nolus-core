@@ -12,6 +12,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 const (
@@ -170,7 +172,7 @@ func extractCarrier(txData signing.TxData) ([]byte, signing.TxData, error) {
 		)
 	}
 
-	var carrier SolanaCarrier
+	var carrier solanacarriertypes.SolanaCarrier
 	if err := carrier.Unmarshal(carrierAny.GetValue()); err != nil {
 		return nil, signing.TxData{}, sdkerrors.ErrInvalidRequest.Wrapf(
 			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER cannot decode carrier extension: %v", err,

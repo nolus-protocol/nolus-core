@@ -1,4 +1,4 @@
-package solanacarrier
+package types
 
 import (
 	"bytes"

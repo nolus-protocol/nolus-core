@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
-	types "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 func CmdQueryParams() *cobra.Command {

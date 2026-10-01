@@ -2,11 +2,11 @@
 // source: nolus/solanacarrier/v1/query.proto
 
 /*
-Package solanacarrier is a reverse proxy.
+Package types is a reverse proxy.
 
 It translates gRPC into RESTful JSON APIs.
 */
-package solanacarrier
+package types
 
 import (
 	"context"

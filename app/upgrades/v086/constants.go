@@ -4,7 +4,7 @@ import (
 	store "cosmossdk.io/store/types"
 
 	"github.com/Nolus-Protocol/nolus-core/app/upgrades"
-	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 const (

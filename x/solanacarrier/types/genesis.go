@@ -1,4 +1,4 @@
-package solanacarrier
+package types
 
 // DefaultGenesis returns the default solanacarrier genesis state.
 func DefaultGenesis() *GenesisState {

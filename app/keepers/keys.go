@@ -20,8 +20,8 @@ import (
 	ibctransfertypes "github.com/cosmos/ibc-go/v10/modules/apps/transfer/types"
 	ibcexported "github.com/cosmos/ibc-go/v10/modules/core/exported"
 
-	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 	taxmoduletypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	vestingstypes "github.com/Nolus-Protocol/nolus-core/x/vestings/types"
 

@@ -1,4 +1,4 @@
-package solanacarrier_test
+package types_test
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoreflect"
 	"google.golang.org/protobuf/types/descriptorpb"
 
-	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	"github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 )
 
 // The legacy amino codec and the aminojson sign-mode handler take the name from
@@ -30,7 +30,7 @@ func TestAminoNameMatchesTheProtoOption(t *testing.T) {
 	require.True(t, protov2.HasExtension(opts, amino.E_Name), "MsgUpdateParams must carry an amino.name option")
 
 	require.Equal(t,
-		solanacarrier.AminoNameMsgUpdateParams,
+		types.AminoNameMsgUpdateParams,
 		protov2.GetExtension(opts, amino.E_Name).(string),
 	)
 }
@@ -39,12 +39,12 @@ func TestAminoNameMatchesTheProtoOption(t *testing.T) {
 // agree with the proto file about what it should be.
 func TestLegacyAminoCodecRegistersMsgUpdateParamsUnderTheAminoName(t *testing.T) {
 	cdc := codec.NewLegacyAmino()
-	solanacarrier.RegisterLegacyAminoCodec(cdc)
+	types.RegisterLegacyAminoCodec(cdc)
 
-	bz, err := cdc.MarshalJSON(&solanacarrier.MsgUpdateParams{
+	bz, err := cdc.MarshalJSON(&types.MsgUpdateParams{
 		Authority: "nolus10d07y265gmmuvt4z0w9aw880jnsr700js7zslc",
-		Params:    solanacarrier.DefaultParams(),
+		Params:    types.DefaultParams(),
 	})
 	require.NoError(t, err)
-	require.Contains(t, string(bz), `"type":"`+solanacarrier.AminoNameMsgUpdateParams+`"`)
+	require.Contains(t, string(bz), `"type":"`+types.AminoNameMsgUpdateParams+`"`)
 }

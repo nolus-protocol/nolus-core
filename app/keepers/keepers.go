@@ -62,11 +62,11 @@ import (
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
 
-	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/solanacarrier"
 	"github.com/Nolus-Protocol/nolus-core/wasmbinding"
 	mintkeeper "github.com/Nolus-Protocol/nolus-core/x/mint/keeper"
 	minttypes "github.com/Nolus-Protocol/nolus-core/x/mint/types"
 	solanacarrierkeeper "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/keeper"
+	solanacarriertypes "github.com/Nolus-Protocol/nolus-core/x/solanacarrier/types"
 	taxkeeper "github.com/Nolus-Protocol/nolus-core/x/tax/keeper"
 	taxtypes "github.com/Nolus-Protocol/nolus-core/x/tax/typesv2"
 	"github.com/Nolus-Protocol/nolus-core/x/vestings"
