@@ -115,13 +115,13 @@ var ModuleBasics = module.NewBasicManager(
 	ibctm.AppModuleBasic{},
 )
 
-func appModules(
+func newModuleManager(
 	app *App,
 	encodingConfig EncodingConfig,
-) []module.AppModule {
+) *module.Manager {
 	appCodec := encodingConfig.Marshaler
 
-	return []module.AppModule{
+	return module.NewManager(
 		genutil.NewAppModule(
 			app.AccountKeeper,
 			app.StakingKeeper,
@@ -154,7 +154,7 @@ func appModules(
 		consensus.NewAppModule(appCodec, *app.ConsensusParamsKeeper),
 		// IBC light clients
 		ibctm.NewAppModule(app.TMLightClientModule),
-	}
+	)
 }
 
 // simulationModules returns modules for simulation manager
