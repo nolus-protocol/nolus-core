@@ -203,7 +203,7 @@ func New(
 
 	// NOTE: Any module instantiated in the module manager that is later modified
 	// must be passed by reference here.
-	app.mm = module.NewManager(appModules(app, encodingConfig)...)
+	app.mm = newModuleManager(app, encodingConfig)
 
 	app.mm.SetOrderPreBlockers(
 		upgradetypes.ModuleName,

@@ -25,7 +25,7 @@ func TestSolanaCarrierIsWiredIntoTheApp(t *testing.T) {
 	require.Contains(t, ModuleBasics, solanacarrier.ModuleName,
 		"module must be in ModuleBasics so its codec, genesis and gateway routes register")
 	require.Contains(t, testApp.mm.Modules, solanacarrier.ModuleName,
-		"module must be in appModules so the module manager drives it")
+		"module must be in newModuleManager so the module manager drives it")
 
 	require.True(t, slices.Contains(testApp.mm.OrderInitGenesis, solanacarrier.ModuleName),
 		"module must be in the InitGenesis order")
