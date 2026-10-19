@@ -48,7 +48,7 @@ contract address. Known admin addresses by chain-id:
 Substitute the one matching your --chain-id for every <admin> placeholder
 below. For any other chain, obtain the admin address out-of-band.
 
-[Q] List all registered protocol identifiers (e.g. OSMOSIS-OSMOSIS-USDC_NOBLE).
+[Q] List all registered protocol identifiers (e.g. SOLANA-METIS-USDC).
   nolusd q wasm contract-state smart <admin> '{"protocols":{}}' --output json
 
 [Q] Get contract addresses (leaser, lpp, oracle, profit, ...) for one protocol.
@@ -151,7 +151,7 @@ Single-sided lender pool; issues loans to Lease instances; mints nLPN receipts.
 [Q] deposit_capacity  —  remaining capacity given the min-utilization rule
   nolusd q wasm contract-state smart <lpp> '{"deposit_capacity":[]}'
 
-[Q] lpn  —  this pool's native asset ticker (e.g. USDC_NOBLE)
+[Q] lpn  —  this pool's native asset ticker (e.g. USDC)
   nolusd q wasm contract-state smart <lpp> '{"lpn":[]}'
 
 [Q] price  —  nLPN ↔ LPN receipt price
@@ -204,7 +204,8 @@ Provides market prices and swap topology to the protocol.
 NOTES
 ================================================================================
 - Micro-units: amounts are in the smallest indivisible unit (e.g. 6 decimals
-  for USDC/OSMO/NLS, 8 for ALL_BTC, 9 for ALL_SOL). 15 USDC = "15000000".
+  for USDC and NLS, 9 for SOL). 15 USDC = "15000000". Read each ticker's
+  decimal_digits from Oracle '{"currencies":{}}'.
 - Permilles: rates and ratios are in thousandths. 1500 = 150%, 80 = 8%.
 - IBC denoms: collateral and repayments use the IBC-wrapped denom of the
   ticker on Nolus, not the raw ticker. Resolve via Oracle '{"currencies":{}}'.
