@@ -1,6 +1,6 @@
 # Security Policy
 
-The full Nolus security policy, including scope, rewards, disclosure and source access for researchers, lives at https://docs.nolus.io/docs/protocol/security.
+The full Nolus security policy, including scope, rewards, disclosure and source access for researchers, lives at https://docs.nolus.io/protocol/security.
 
 ## Reporting a vulnerability
 
