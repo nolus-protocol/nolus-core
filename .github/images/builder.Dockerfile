@@ -29,11 +29,11 @@ ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
 ENV WASMVM_DIR=${WASMVM_DIR}
 ARG WASMVM_LIB_LOCAL="libwasmvm_muslc.x86_64.a"
 ARG WASMVM_LOCAL_PATH="$WASMVM_DIR/$WASMVM_LIB_LOCAL"
-ARG WASMVM_CHECKSUM_URL="$WASMVM_BASE_URL/checksums.txt"
+ARG WASMVM_SHA256="b2299c85d49faccf3dcbb84984f30f55e8870111df98c10f017f86204d007470"
 
 RUN mkdir -p $WASMVM_DIR
-RUN wasmvm_lib_checksum=$(wget -O - "$WASMVM_CHECKSUM_URL")
-RUN wget -O $WASMVM_LOCAL_PATH $WASMVM_URL
-RUN echo "$(sha256sum "$WASMVM_LOCAL_PATH")" | grep "$wasmvm_lib_checksum"
+RUN set -eux; \
+    wget -O "$WASMVM_LOCAL_PATH" "$WASMVM_URL"; \
+    echo "${WASMVM_SHA256}  ${WASMVM_LOCAL_PATH}" | sha256sum -c -
 
 CMD ["/bin/sh"]
