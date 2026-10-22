@@ -65,7 +65,7 @@ func ValidateMinter(minter Minter) error {
 // Integral:  -0.0279375 x^4 + 16.9415 x^3 - 883.75 x^2 + 833810 x + constant
 // transformed to: (((-0.0279375 x + 16.9415) x - 883.75) x + 833810) x.
 func CalcTokensByIntegral(x sdkmath.LegacyDec) sdkmath.Uint {
-	return util.ConvertToMicroNolusDec(((((QuadCoef.Mul(x).Add(CubeCoef)).Mul(x).Add(SquareCoef)).Mul(x).Add(Coef)).Mul(x)))
+	return util.ConvertToMicroNolusDec(QuadCoef.Mul(x).Add(CubeCoef).Mul(x).Add(SquareCoef).Mul(x).Add(Coef).Mul(x))
 }
 
 func GetAbsDiff(a, b sdkmath.Uint) sdkmath.Uint {

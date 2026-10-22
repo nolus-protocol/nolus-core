@@ -11,11 +11,14 @@ RUN apk update && apk add --no-cache \
   jq \
   bash
 
+RUN apk upgrade --no-cache ca-certificates ca-certificates-bundle
+
 RUN npm install -g swagger-combine
 RUN npm install -g swagger-merger
 RUN npm install -g swagger2openapi
 
-COPY --from=golang:1.25-alpine /usr/local/go/ /usr/local/go/
+RUN rm -rf /usr/local/go
+COPY --from=golang:1.27.3-alpine /usr/local/go/ /usr/local/go/
 
 ENV PATH="/usr/local/go/bin:${PATH}"
 

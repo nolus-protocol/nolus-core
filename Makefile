@@ -12,7 +12,7 @@ FUZZ_BLOCK_SIZE ?= 200
 export GO111MODULE = on
 
 GO_SYSTEM_VERSION = $(shell go version | cut -c 14- | cut -d' ' -f1 | cut -d'.' -f1-2)
-REQUIRE_GO_VERSION = 1.25
+REQUIRE_GO_VERSION = 1.27
 
 # Default target executed when no arguments are given to make.
 default_target: all
@@ -148,7 +148,7 @@ go.sum: go.mod
 .PHONY: lint
 
 lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.11.4
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(shell go env GOPATH)/bin v2.15.0
 	golangci-lint run --verbose
 
 ###############################################################################
@@ -187,7 +187,7 @@ test-unit-coverage-report: ## Generate global code coverage report in HTML
 ###############################################################################
 ###                                  Proto                                  ###
 ###############################################################################
-protoVer=0.2.1
+protoVer=0.2.2
 protoImageName=ghcr.io/nolus-protocol/nolus-core/protogen:$(protoVer)
 protoImage=docker run --rm -v $(CURDIR):/workspace --workdir /workspace --user root $(protoImageName)
 
