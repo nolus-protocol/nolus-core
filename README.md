@@ -120,8 +120,8 @@ docker run --rm -it -v "$(pwd)":/code public.ecr.aws/nolus/builder:<replace_with
 ## Upgrade wasmvm
 
 * Update the Go modules
-* Update the wasmvm version in the builder Dockerfile at .github/images/builder.Dockerfile
-* Increment the IMAGE_TAG and use the same version in the build-binary step in .github/workflows/build.yaml
+* Update `WASMVM_VERSION` and `WASMVM_SHA256` (the sha256 of `libwasmvm_muslc.x86_64.a` from that release's `checksums.txt`) in the builder Dockerfile at .github/images/builder.Dockerfile
+* Increment `BUILDER_IMAGE_TAG` and use the same version in the build-binary step in .github/workflows/nolus-core.yaml
 
 ## Run a full node with docker
 
