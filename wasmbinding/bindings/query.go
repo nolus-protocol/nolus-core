@@ -56,7 +56,7 @@ func (sv StorageValue) MarshalJSON() ([]byte, error) {
 	a := struct {
 		AliasSV
 	}{
-		AliasSV: (AliasSV)(sv),
+		AliasSV: AliasSV(sv),
 	}
 
 	// We want Key and Value be as empty arrays in Json ('[]'), not 'null'

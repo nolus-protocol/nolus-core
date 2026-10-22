@@ -16,10 +16,10 @@ env:
 
   # docker images
   CONTAINER_REGISTRY: ghcr.io
-  BUILDER_IMAGE_TAG: "1.25.1"
+  BUILDER_IMAGE_TAG: "1.27.0"
   BUILDER_IMAGE_NAME: "builder"
   BUILDER_DOCKERFILE: ".github/images/builder.Dockerfile"
-  PROTOGEN_IMAGE_TAG: "0.2.1"
+  PROTOGEN_IMAGE_TAG: "0.2.2"
   PROTOGEN_IMAGE_NAME: "protogen"
   PROTOGEN_DOCKERFILE: ".github/images/protogen.Dockerfile"
 
@@ -97,7 +97,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: 1.27
           cache: false
 
       - uses: actions/checkout@v4
@@ -109,7 +109,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
-          version: v2.11.4
+          version: v2.15.0
           # Optional: if set to true, then all caching functionality will be completely disabled,
           #           takes precedence over all other caching options.
           skip-cache: true
@@ -124,7 +124,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: 1.27
           cache: false
 
       - uses: actions/checkout@v4
@@ -151,7 +151,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v5
         with:
-          go-version: 1.25
+          go-version: 1.27
           cache: false
 
       - uses: actions/checkout@v4
@@ -183,7 +183,7 @@ jobs:
     needs: [test-unit-coverage, builder-image]
     container:
       # image name needs to be hardcoded: https://github.com/orgs/community/discussions/26324
-      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.25.1"
+      image: "ghcr.io/nolus-protocol/nolus-core/builder:1.27.0"
       
     steps:
       - uses: actions/checkout@v4
