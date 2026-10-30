@@ -158,7 +158,7 @@ func TestAppStateDeterminism(t *testing.T) {
 				newApp.BaseApp,
 				simtestutil.AppStateFn(newApp.AppCodec(), newApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 				simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-				simtestutil.SimulationOperations(newApp, newApp.AppCodec(), config),
+				simtestutil.BuildSimulationOperations(newApp, newApp.AppCodec(), config, newApp.GetTxConfig()),
 				newApp.BlockedAddrs(),
 				config,
 				newApp.AppCodec(),
@@ -221,7 +221,7 @@ func TestAppImportExport(t *testing.T) {
 		nolusApp.BaseApp,
 		simtestutil.AppStateFn(nolusApp.AppCodec(), nolusApp.SimulationManager(), NewDefaultGenesisState(encConfig)),
 		simtypes.RandomAccounts,
-		simtestutil.SimulationOperations(nolusApp, nolusApp.AppCodec(), config),
+		simtestutil.BuildSimulationOperations(nolusApp, nolusApp.AppCodec(), config, nolusApp.GetTxConfig()),
 		nolusApp.ModuleAccountAddrs(),
 		config,
 		nolusApp.AppCodec(),
