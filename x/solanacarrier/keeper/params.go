@@ -11,7 +11,7 @@ import (
 // GetParams gets all parameters as types.Params.
 func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) {
 	// The store service unwraps the sdk.Context and panics when there is none.
-	// FeePayer is reached from the sign-mode handler, whose context is not
+	// GetParams is reached from the sign-mode handler, whose context is not
 	// guaranteed to carry one, so the absence has to be an error, not a panic.
 	if err := assertSDKContext(ctx); err != nil {
 		return params, err
@@ -43,19 +43,6 @@ func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
 	}
 
 	return store.Set(types.ParamsKey, bz)
-}
-
-// FeePayer returns the account key every carrier must place at account index 0.
-// It satisfies solanacarrier.FeePayerSource, so an unreadable or unset parameter
-// must surface as an error rather than an empty key the sign-mode handler would
-// silently match against.
-func (k Keeper) FeePayer(ctx context.Context) ([]byte, error) {
-	params, err := k.GetParams(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return params.FeePayer, nil
 }
 
 // assertSDKContext mirrors sdk.UnwrapSDKContext's lookup without its panic.

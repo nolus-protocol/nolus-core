@@ -3,11 +3,13 @@ package solanacarrier
 import (
 	"bytes"
 	"context"
+	"slices"
 
 	signingv1beta1 "cosmossdk.io/api/cosmos/tx/signing/v1beta1"
 	txv1beta1 "cosmossdk.io/api/cosmos/tx/v1beta1"
 	"cosmossdk.io/x/tx/signing"
 	"cosmossdk.io/x/tx/signing/aminojson"
+	"github.com/cosmos/btcutil/base58"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/protobuf/proto"
@@ -29,11 +31,6 @@ const (
 	// the wallet signs is always one signature short of a broadcastable Solana
 	// transaction.
 	minRequiredSignatures = 2
-
-	// maxComputeBudgetInstructions is the number of ComputeBudget instructions
-	// the allowlist tolerates alongside the bound memo, one per ComputeBudget
-	// instruction kind, since wallets inject them before signing.
-	maxComputeBudgetInstructions = 4
 )
 
 // memoProgramID is the 32-byte account key of the SPL Memo program
@@ -45,39 +42,30 @@ var memoProgramID = []byte{
 	0xe4, 0x1f, 0xa8, 0x40, 0x41, 0x05, 0x44, 0x8d,
 }
 
-// computeBudgetProgramID is the 32-byte account key of the ComputeBudget program
-// (base58 ComputeBudget111111111111111111111111111111).
-var computeBudgetProgramID = []byte{
-	0x03, 0x06, 0x46, 0x6f, 0xe5, 0x21, 0x17, 0x32,
-	0xff, 0xec, 0xad, 0xba, 0x72, 0xc3, 0x9b, 0xe7,
-	0xbc, 0x8c, 0xe5, 0xbb, 0xc5, 0xf7, 0x12, 0x6b,
-	0x2c, 0x43, 0x9b, 0x3a, 0x40, 0x00, 0x00, 0x00,
-}
-
 var _ signing.SignModeHandler = SignModeHandler{}
 
-// FeePayerSource reports the fee payer every carrier must place at account
-// index 0.
-type FeePayerSource interface {
-	FeePayer(ctx context.Context) ([]byte, error)
+// ParamsSource reports the module parameters a carrier is verified against: the
+// fee payer at account index 0 and the program allowlist.
+type ParamsSource interface {
+	GetParams(ctx context.Context) (Params, error)
 }
 
 // SignModeHandler is the SIGN_MODE_SOLANA_TX_CARRIER implementation of
 // signing.SignModeHandler.
 type SignModeHandler struct {
 	aminoJsonSignModeHandler *aminojson.SignModeHandler
-	feePayerSource           FeePayerSource
+	paramsSource             ParamsSource
 }
 
 type SignModeHandlerOptions struct {
 	AminoJsonSignModeHandler *aminojson.SignModeHandler
-	FeePayerSource           FeePayerSource
+	ParamsSource             ParamsSource
 }
 
 func NewSignModeHandler(options SignModeHandlerOptions) *SignModeHandler {
 	return &SignModeHandler{
 		aminoJsonSignModeHandler: options.AminoJsonSignModeHandler,
-		feePayerSource:           options.FeePayerSource,
+		paramsSource:             options.ParamsSource,
 	}
 }
 
@@ -121,20 +109,18 @@ func (s SignModeHandler) GetSignBytes(ctx context.Context, signerData signing.Si
 		)
 	}
 
-	if s.feePayerSource == nil {
+	if s.paramsSource == nil {
 		return nil, sdkerrors.ErrLogic.Wrap(
-			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER requires a fee payer source",
+			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER requires a params source",
 		)
 	}
 
-	feePayer, err := s.feePayerSource.FeePayer(ctx)
+	params, err := s.paramsSource.GetParams(ctx)
 	if err != nil {
-		return nil, sdkerrors.ErrLogic.Wrapf(
-			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER cannot read the fee payer: %v", err,
-		)
+		return nil, paramsReadError{cause: err}
 	}
 
-	if err := validateBinding(message, signerPubKey, aminoJSON, feePayer); err != nil {
+	if err := validateBinding(message, signerPubKey, aminoJSON, params); err != nil {
 		return nil, err
 	}
 
@@ -205,20 +191,19 @@ func extractCarrier(txData signing.TxData) ([]byte, signing.TxData, error) {
 // validateBinding enforces the carrier's fail-closed binding rules against the
 // parsed message: account index 0 holds the governance-set fee payer, which is
 // off curve and therefore unsignable, the signer is one of the other required
-// signers, every instruction belongs to the SPL Memo or ComputeBudget
-// allowlist, and exactly one Memo instruction reproduces the transaction's
-// amino JSON byte for byte. Together the pinned fee payer and the allowlist
-// leave a signed carrier with no signature for index 0 and nothing a Solana
-// validator would execute, so a valid Nolus signature can never double as a
-// broadcastable Solana transaction.
-func validateBinding(message *LegacyMessage, signerPubKey, aminoJSON, feePayer []byte) error {
+// signers, every instruction other than the SPL Memo invokes a program the
+// allowlist names, within that program's instruction cap, and exactly one Memo
+// instruction reproduces the transaction's amino JSON byte for byte. The pinned
+// fee payer leaves a signed carrier with no signature for index 0, so a valid
+// Nolus signature can never double as a broadcastable Solana transaction.
+func validateBinding(message *LegacyMessage, signerPubKey, aminoJSON []byte, params Params) error {
 	if int(message.NumRequiredSignatures) < minRequiredSignatures {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
 			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER requires at least %d required signatures, got %d",
 			minRequiredSignatures, message.NumRequiredSignatures,
 		)
 	}
-	if !bytes.Equal(feePayer, message.AccountKeys[0]) {
+	if !bytes.Equal(params.FeePayer, message.AccountKeys[0]) {
 		return sdkerrors.ErrInvalidRequest.Wrap(
 			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER requires the configured fee payer at account index 0",
 		)
@@ -243,26 +228,32 @@ func validateBinding(message *LegacyMessage, signerPubKey, aminoJSON, feePayer [
 	}
 
 	memos := 0
-	computeBudgets := 0
+	// Indexed like params.AllowedPrograms, so caps are checked in params order.
+	counts := make([]uint32, len(params.AllowedPrograms))
 	for i := range message.Instructions {
 		programID := message.AccountKeys[message.Instructions[i].ProgramIDIndex]
-		switch {
-		case bytes.Equal(programID, memoProgramID):
+		if bytes.Equal(programID, memoProgramID) {
 			memos++
-		case bytes.Equal(programID, computeBudgetProgramID):
-			computeBudgets++
-		default:
+			continue
+		}
+		j := slices.IndexFunc(params.AllowedPrograms, func(program AllowedProgram) bool {
+			return bytes.Equal(program.ProgramId, programID)
+		})
+		if j < 0 {
 			return sdkerrors.ErrInvalidRequest.Wrapf(
 				"SignMode_SIGN_MODE_SOLANA_TX_CARRIER instruction %d invokes a program outside the allowlist",
 				i,
 			)
 		}
+		counts[j]++
 	}
-	if computeBudgets > maxComputeBudgetInstructions {
-		return sdkerrors.ErrInvalidRequest.Wrapf(
-			"SignMode_SIGN_MODE_SOLANA_TX_CARRIER allowlist tolerates at most %d ComputeBudget instructions, found %d",
-			maxComputeBudgetInstructions, computeBudgets,
-		)
+	for j, program := range params.AllowedPrograms {
+		if counts[j] > program.MaxInstructions {
+			return sdkerrors.ErrInvalidRequest.Wrapf(
+				"SignMode_SIGN_MODE_SOLANA_TX_CARRIER allowlist tolerates at most %d instructions of program %s, found %d",
+				program.MaxInstructions, base58.Encode(program.ProgramId), counts[j],
+			)
+		}
 	}
 	if memos != 1 {
 		return sdkerrors.ErrInvalidRequest.Wrapf(
@@ -310,3 +301,19 @@ func signerEd25519PubKey(signerData signing.SignerData) ([]byte, error) {
 }
 
 var _ signing.SignModeHandler = (*SignModeHandler)(nil)
+
+type paramsReadError struct {
+	cause error
+}
+
+func (e paramsReadError) Error() string {
+	return "SignMode_SIGN_MODE_SOLANA_TX_CARRIER cannot read the module params: " + e.cause.Error() + ": " + sdkerrors.ErrLogic.Error()
+}
+
+func (e paramsReadError) Cause() error {
+	return sdkerrors.ErrLogic // the ABCI code and codespace are read through Cause
+}
+
+func (e paramsReadError) Unwrap() []error {
+	return []error{sdkerrors.ErrLogic, e.cause} // errors.Is and errors.As reach both
+}

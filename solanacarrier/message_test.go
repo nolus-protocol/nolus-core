@@ -27,6 +27,9 @@ const (
 	// ComputeBudget111111111111111111111111111111.
 	computeBudgetProgramKeyHex = "0306466fe5211732ffecadba72c39be7bc8ce5bbc5f7126b2c439b3a40000000"
 
+	// L2TExMFKdjpN9kozasaurPirfHy9P8sbXoAN1qA3S95.
+	lighthouseProgramKeyHex = "04dfad7962ffb1dd925d0a9fb5e6d00ce6195ba8bb3a91fd07ef9860c5e97bb8"
+
 	blockhashHex = "d3266180b58ab52ad71ace42190f053f25dd7e4b74dba3a6c07aa8f7ec52201c"
 )
 
@@ -40,6 +43,7 @@ var (
 	captureFeePayerKey      = hexKey(captureFeePayerKeyHex)
 	memoProgramKey          = hexKey(memoProgramKeyHex)
 	computeBudgetProgramKey = hexKey(computeBudgetProgramKeyHex)
+	lighthouseProgramKey    = hexKey(lighthouseProgramKeyHex)
 	systemProgramKey        = make([]byte, 32)
 	carrierBlockhash        = hexKey(blockhashHex)
 )
@@ -111,6 +115,10 @@ func memoInstruction(data []byte) testInstruction {
 
 func computeBudgetInstruction(data ...byte) testInstruction {
 	return testInstruction{programKey: computeBudgetProgramKey, data: data}
+}
+
+func lighthouseInstruction(data ...byte) testInstruction {
+	return testInstruction{programKey: lighthouseProgramKey, accounts: []byte{1}, data: data}
 }
 
 func systemTransferInstruction() testInstruction {
