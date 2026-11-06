@@ -18,6 +18,13 @@ import (
 
 // altFeePayer is a second off-curve account key, used to prove a param update
 // actually replaces the stored value.
+var lighthouseProgram = []byte{
+	0x04, 0xdf, 0xad, 0x79, 0x62, 0xff, 0xb1, 0xdd,
+	0x92, 0x5d, 0x0a, 0x9f, 0xb5, 0xe6, 0xd0, 0x0c,
+	0xe6, 0x19, 0x5b, 0xa8, 0xbb, 0x3a, 0x91, 0xfd,
+	0x07, 0xef, 0x98, 0x60, 0xc5, 0xe9, 0x7b, 0xb8,
+}
+
 var altFeePayer = []byte{
 	0x4a, 0x7c, 0x9e, 0x0b, 0x4d, 0xdd, 0x06, 0x9c,
 	0x64, 0x31, 0x08, 0x5d, 0x1c, 0x0b, 0x1e, 0x2f,
@@ -42,27 +49,30 @@ func TestSetParamsRejectsInvalidParams(t *testing.T) {
 	require.ErrorIs(t, err, types.ErrInvalidFeePayer)
 }
 
-func TestFeePayerReturnsStoredValue(t *testing.T) {
+func TestGetParamsReturnsStoredValue(t *testing.T) {
 	params := types.DefaultParams()
 	k, ctx := testkeeper.SolanaCarrierKeeper(t, &params)
 
-	feePayer, err := k.FeePayer(ctx)
+	got, err := k.GetParams(ctx)
 	require.NoError(t, err)
-	require.Equal(t, types.DefaultFeePayer, feePayer)
+	require.Equal(t, types.DefaultParams(), got)
 
-	require.NoError(t, k.SetParams(ctx, types.Params{FeePayer: altFeePayer}))
+	updated := types.Params{
+		FeePayer:        altFeePayer,
+		AllowedPrograms: []types.AllowedProgram{{ProgramId: lighthouseProgram, MaxInstructions: 1}},
+	}
+	require.NoError(t, k.SetParams(ctx, updated))
 
-	feePayer, err = k.FeePayer(ctx)
+	got, err = k.GetParams(ctx)
 	require.NoError(t, err)
-	require.Equal(t, altFeePayer, feePayer)
+	require.Equal(t, updated, got)
 }
 
-func TestFeePayerErrorsWhenParamsUnset(t *testing.T) {
+func TestGetParamsErrorsWhenParamsUnset(t *testing.T) {
 	k, ctx := testkeeper.SolanaCarrierKeeper(t, nil)
 
-	feePayer, err := k.FeePayer(ctx)
+	_, err := k.GetParams(ctx)
 	require.ErrorIs(t, err, types.ErrParamsNotFound)
-	require.Nil(t, feePayer)
 }
 
 // Gov routes MsgUpdateParams straight to the msg server, so SetParams itself is
@@ -83,26 +93,25 @@ func TestSetParamsValidatesAndLeavesStoredParamsUntouched(t *testing.T) {
 	require.Equal(t, types.DefaultFeePayer, stored.FeePayer)
 }
 
-// FeePayer is reached from the sign-mode handler, whose context need not carry an
-// sdk.Context; the store service would panic on one, so the keeper guards first.
-func TestFeePayerErrorsOnNonSDKContext(t *testing.T) {
+// GetParams is reached from the sign-mode handler, whose context need not carry
+// an sdk.Context; the store service would panic on one, so the keeper guards first.
+func TestGetParamsErrorsOnNonSDKContext(t *testing.T) {
 	params := types.DefaultParams()
 	k, _ := testkeeper.SolanaCarrierKeeper(t, &params)
 
 	require.NotPanics(t, func() {
-		feePayer, err := k.FeePayer(context.Background())
+		_, err := k.GetParams(context.Background())
 		require.ErrorIs(t, err, types.ErrNoSDKContext)
-		require.Nil(t, feePayer)
 	})
 }
 
-func TestFeePayerReadsThroughAWrappedSDKContext(t *testing.T) {
+func TestGetParamsReadsThroughAWrappedSDKContext(t *testing.T) {
 	params := types.DefaultParams()
 	k, ctx := testkeeper.SolanaCarrierKeeper(t, &params)
 
-	feePayer, err := k.FeePayer(context.WithValue(context.Background(), sdk.SdkContextKey, ctx))
+	got, err := k.GetParams(context.WithValue(context.Background(), sdk.SdkContextKey, ctx))
 	require.NoError(t, err)
-	require.Equal(t, types.DefaultFeePayer, feePayer)
+	require.Equal(t, types.DefaultParams(), got)
 }
 
 func TestUpdateParamsRejectsWrongAuthority(t *testing.T) {
@@ -159,4 +168,42 @@ func TestQueryParams(t *testing.T) {
 
 	_, err = k.Params(ctx, nil)
 	require.Error(t, err)
+}
+
+func TestUpdateParamsRejectsInvalidAllowlistAndKeepsStoredParams(t *testing.T) {
+	params := types.DefaultParams()
+	k, ctx := testkeeper.SolanaCarrierKeeper(t, &params)
+	msgServer := keeper.NewMsgServerImpl(*k)
+
+	invalid := types.DefaultParams()
+	invalid.AllowedPrograms = append(invalid.AllowedPrograms, types.AllowedProgram{
+		ProgramId:       invalid.AllowedPrograms[0].ProgramId,
+		MaxInstructions: 1,
+	})
+
+	_, err := msgServer.UpdateParams(ctx, &types.MsgUpdateParams{
+		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		Params:    invalid,
+	})
+	require.ErrorIs(t, err, types.ErrInvalidAllowedPrograms)
+
+	stored, err := k.GetParams(ctx)
+	require.NoError(t, err)
+	require.Equal(t, types.DefaultParams(), stored)
+}
+
+func TestUpdateParamsReplacesTheWholeAllowlist(t *testing.T) {
+	params := types.DefaultParams()
+	k, ctx := testkeeper.SolanaCarrierKeeper(t, &params)
+	msgServer := keeper.NewMsgServerImpl(*k)
+
+	_, err := msgServer.UpdateParams(ctx, &types.MsgUpdateParams{
+		Authority: authtypes.NewModuleAddress(govtypes.ModuleName).String(),
+		Params:    types.Params{FeePayer: types.DefaultFeePayer},
+	})
+	require.NoError(t, err)
+
+	stored, err := k.GetParams(ctx)
+	require.NoError(t, err)
+	require.Empty(t, stored.AllowedPrograms, "params omitting allowed_programs leave the Memo instruction alone allowed")
 }

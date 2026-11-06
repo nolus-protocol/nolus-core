@@ -13,6 +13,7 @@ import (
 
 	v086 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v086"
 	"github.com/Nolus-Protocol/nolus-core/solanacarrier"
+	solanacarriermodule "github.com/Nolus-Protocol/nolus-core/x/solanacarrier"
 )
 
 // The module manager panics at construction when a module implementing a genesis
@@ -72,7 +73,7 @@ func TestSolanaCarrierRegistersItsGatewayRouteWithoutPanicking(t *testing.T) {
 	})
 }
 
-func TestSolanaCarrierInitGenesisPersistsTheDefaultFeePayer(t *testing.T) {
+func TestSolanaCarrierInitGenesisPersistsTheDefaultParams(t *testing.T) {
 	testApp, ctx := CreateTestApp(true, t.TempDir())
 
 	genesisModule, ok := testApp.mm.Modules[solanacarrier.ModuleName].(module.HasGenesis)
@@ -83,19 +84,17 @@ func TestSolanaCarrierInitGenesisPersistsTheDefaultFeePayer(t *testing.T) {
 
 	genesisModule.InitGenesis(ctx, testApp.appCodec, genesisJSON)
 
-	feePayer, err := testApp.SolanaCarrierKeeper.FeePayer(ctx)
+	params, err := testApp.SolanaCarrierKeeper.GetParams(ctx)
 	require.NoError(t, err)
-	require.Equal(t, solanacarrier.DefaultFeePayer, feePayer)
+	require.Equal(t, solanacarrier.DefaultParams(), params)
 
 	require.JSONEq(t, string(genesisJSON), string(genesisModule.ExportGenesis(ctx, testApp.appCodec)))
 }
 
-// The v0.8.6 handler must leave the fee payer seeded on a chain whose store never
-// held this module, which is the state every upgrading node starts from.
-func TestV086UpgradeHandlerSeedsTheFeePayer(t *testing.T) {
+func TestV086UpgradeHandlerSeedsTheDefaultParams(t *testing.T) {
 	testApp, ctx := CreateTestApp(true, t.TempDir())
 
-	_, err := testApp.SolanaCarrierKeeper.FeePayer(ctx)
+	_, err := testApp.SolanaCarrierKeeper.GetParams(ctx)
 	require.ErrorIs(t, err, solanacarrier.ErrParamsNotFound,
 		"precondition: the module's params must be absent before the upgrade")
 
@@ -111,12 +110,12 @@ func TestV086UpgradeHandlerSeedsTheFeePayer(t *testing.T) {
 
 	vm, err := handler(ctx, upgradetypes.Plan{Name: v086.UpgradeName}, fromVM)
 	require.NoError(t, err)
-	require.Equal(t, uint64(1), vm[solanacarrier.ModuleName],
-		"the upgrade must record the module at consensus version 1")
+	require.Equal(t, uint64(solanacarriermodule.ConsensusVersion), vm[solanacarrier.ModuleName],
+		"the upgrade must record the module at its current consensus version")
 
-	feePayer, err := testApp.SolanaCarrierKeeper.FeePayer(ctx)
+	params, err := testApp.SolanaCarrierKeeper.GetParams(ctx)
 	require.NoError(t, err)
-	require.Equal(t, solanacarrier.DefaultFeePayer, feePayer)
+	require.Equal(t, solanacarrier.DefaultParams(), params)
 }
 
 func TestV086AddsTheSolanaCarrierStore(t *testing.T) {

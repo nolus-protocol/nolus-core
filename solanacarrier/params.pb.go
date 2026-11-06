@@ -30,6 +30,11 @@ type Params struct {
 	// fee-payer signature a broadcastable Solana transaction would need can never
 	// be produced.
 	FeePayer []byte `protobuf:"bytes,1,opt,name=fee_payer,json=feePayer,proto3" json:"fee_payer,omitempty"`
+	// allowed_programs lists the Solana programs a carrier may invoke besides the
+	// single bound SPL Memo instruction, each with the most instructions a carrier
+	// may hold for it. An empty list admits the Memo instruction alone. Updating
+	// the params replaces the whole list.
+	AllowedPrograms []AllowedProgram `protobuf:"bytes,2,rep,name=allowed_programs,json=allowedPrograms,proto3" json:"allowed_programs"`
 }
 
 func (m *Params) Reset()         { *m = Params{} }
@@ -72,8 +77,72 @@ func (m *Params) GetFeePayer() []byte {
 	return nil
 }
 
+func (m *Params) GetAllowedPrograms() []AllowedProgram {
+	if m != nil {
+		return m.AllowedPrograms
+	}
+	return nil
+}
+
+// AllowedProgram is one Solana program a carrier may invoke.
+type AllowedProgram struct {
+	// program_id is the program's 32-byte account key.
+	ProgramId []byte `protobuf:"bytes,1,opt,name=program_id,json=programId,proto3" json:"program_id,omitempty"`
+	// max_instructions is the most instructions of this program one carrier may
+	// hold, between 1 and 64.
+	MaxInstructions uint32 `protobuf:"varint,2,opt,name=max_instructions,json=maxInstructions,proto3" json:"max_instructions,omitempty"`
+}
+
+func (m *AllowedProgram) Reset()         { *m = AllowedProgram{} }
+func (m *AllowedProgram) String() string { return proto.CompactTextString(m) }
+func (*AllowedProgram) ProtoMessage()    {}
+func (*AllowedProgram) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dfa2e9d03ee256fd, []int{1}
+}
+func (m *AllowedProgram) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *AllowedProgram) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_AllowedProgram.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *AllowedProgram) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_AllowedProgram.Merge(m, src)
+}
+func (m *AllowedProgram) XXX_Size() int {
+	return m.Size()
+}
+func (m *AllowedProgram) XXX_DiscardUnknown() {
+	xxx_messageInfo_AllowedProgram.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_AllowedProgram proto.InternalMessageInfo
+
+func (m *AllowedProgram) GetProgramId() []byte {
+	if m != nil {
+		return m.ProgramId
+	}
+	return nil
+}
+
+func (m *AllowedProgram) GetMaxInstructions() uint32 {
+	if m != nil {
+		return m.MaxInstructions
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Params)(nil), "nolus.solanacarrier.v1.Params")
+	proto.RegisterType((*AllowedProgram)(nil), "nolus.solanacarrier.v1.AllowedProgram")
 }
 
 func init() {
@@ -81,19 +150,26 @@ func init() {
 }
 
 var fileDescriptor_dfa2e9d03ee256fd = []byte{
-	// 191 bytes of a gzipped FileDescriptorProto
+	// 295 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0xce, 0xcb, 0xcf, 0x29,
 	0x2d, 0xd6, 0x2f, 0xce, 0xcf, 0x49, 0xcc, 0x4b, 0x4c, 0x4e, 0x2c, 0x2a, 0xca, 0x4c, 0x2d, 0xd2,
 	0x2f, 0x33, 0xd4, 0x2f, 0x48, 0x2c, 0x4a, 0xcc, 0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17,
 	0x12, 0x03, 0x2b, 0xd2, 0x43, 0x51, 0xa4, 0x57, 0x66, 0x28, 0x25, 0x92, 0x9e, 0x9f, 0x9e, 0x0f,
-	0x56, 0xa2, 0x0f, 0x62, 0x41, 0x54, 0x2b, 0x69, 0x73, 0xb1, 0x05, 0x80, 0x75, 0x0b, 0x49, 0x73,
-	0x71, 0xa6, 0xa5, 0xa6, 0xc6, 0x17, 0x24, 0x56, 0xa6, 0x16, 0x49, 0x30, 0x2a, 0x30, 0x6a, 0xf0,
-	0x04, 0x71, 0xa4, 0xa5, 0xa6, 0x06, 0x80, 0xf8, 0x56, 0x2c, 0x33, 0x16, 0xc8, 0x33, 0x3a, 0xf9,
-	0x9c, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb,
-	0x31, 0x5c, 0x78, 0x2c, 0xc7, 0x70, 0xe3, 0xb1, 0x1c, 0x43, 0x94, 0x51, 0x7a, 0x66, 0x49, 0x46,
-	0x69, 0x92, 0x5e, 0x72, 0x7e, 0xae, 0xbe, 0x1f, 0xc8, 0x7e, 0xdd, 0x00, 0x90, 0xf1, 0xc9, 0xf9,
-	0x39, 0xfa, 0x60, 0xe7, 0xe8, 0x26, 0xe7, 0x17, 0xa5, 0xa2, 0x3a, 0x3c, 0x89, 0x0d, 0xec, 0x02,
-	0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xcb, 0x30, 0x32, 0xfa, 0xd6, 0x00, 0x00, 0x00,
+	0x56, 0xa2, 0x0f, 0x62, 0x41, 0x54, 0x2b, 0xb5, 0x30, 0x72, 0xb1, 0x05, 0x80, 0xb5, 0x0b, 0x49,
+	0x73, 0x71, 0xa6, 0xa5, 0xa6, 0xc6, 0x17, 0x24, 0x56, 0xa6, 0x16, 0x49, 0x30, 0x2a, 0x30, 0x6a,
+	0xf0, 0x04, 0x71, 0xa4, 0xa5, 0xa6, 0x06, 0x80, 0xf8, 0x42, 0xe1, 0x5c, 0x02, 0x89, 0x39, 0x39,
+	0xf9, 0xe5, 0xa9, 0x29, 0xf1, 0x05, 0x45, 0xf9, 0xe9, 0x20, 0x0d, 0x12, 0x4c, 0x0a, 0xcc, 0x1a,
+	0xdc, 0x46, 0x6a, 0x7a, 0xd8, 0x2d, 0xd4, 0x73, 0x84, 0xa8, 0x0f, 0x80, 0x28, 0x77, 0x62, 0x39,
+	0x71, 0x4f, 0x9e, 0x21, 0x88, 0x3f, 0x11, 0x45, 0xb4, 0xd8, 0x8a, 0x65, 0xc6, 0x02, 0x79, 0x46,
+	0xa5, 0x28, 0x2e, 0x3e, 0x54, 0xe5, 0x42, 0xb2, 0x5c, 0x5c, 0x50, 0x8b, 0xe2, 0x33, 0x53, 0xa0,
+	0xce, 0xe1, 0x84, 0x8a, 0x78, 0xa6, 0x08, 0x69, 0x72, 0x09, 0xe4, 0x26, 0x56, 0xc4, 0x67, 0xe6,
+	0x15, 0x97, 0x14, 0x95, 0x26, 0x97, 0x64, 0xe6, 0xe7, 0x81, 0xdc, 0xc3, 0xa8, 0xc1, 0x1b, 0xc4,
+	0x9f, 0x9b, 0x58, 0xe1, 0x89, 0x24, 0xec, 0xe4, 0x73, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72,
+	0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7,
+	0x72, 0x0c, 0x51, 0x46, 0xe9, 0x99, 0x25, 0x19, 0xa5, 0x49, 0x7a, 0xc9, 0xf9, 0xb9, 0xfa, 0x7e,
+	0x20, 0x4f, 0xe8, 0x06, 0x80, 0x02, 0x25, 0x39, 0x3f, 0x47, 0x1f, 0xec, 0x27, 0xdd, 0xe4, 0xfc,
+	0xa2, 0x54, 0xd4, 0xe0, 0x4e, 0x62, 0x03, 0x87, 0x9b, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0x08,
+	0x19, 0x1e, 0x5c, 0x8c, 0x01, 0x00, 0x00,
 }
 
 func (m *Params) Marshal() (dAtA []byte, err error) {
@@ -116,10 +192,59 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.AllowedPrograms) > 0 {
+		for iNdEx := len(m.AllowedPrograms) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AllowedPrograms[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintParams(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
 	if len(m.FeePayer) > 0 {
 		i -= len(m.FeePayer)
 		copy(dAtA[i:], m.FeePayer)
 		i = encodeVarintParams(dAtA, i, uint64(len(m.FeePayer)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *AllowedProgram) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *AllowedProgram) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *AllowedProgram) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.MaxInstructions != 0 {
+		i = encodeVarintParams(dAtA, i, uint64(m.MaxInstructions))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.ProgramId) > 0 {
+		i -= len(m.ProgramId)
+		copy(dAtA[i:], m.ProgramId)
+		i = encodeVarintParams(dAtA, i, uint64(len(m.ProgramId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -146,6 +271,28 @@ func (m *Params) Size() (n int) {
 	l = len(m.FeePayer)
 	if l > 0 {
 		n += 1 + l + sovParams(uint64(l))
+	}
+	if len(m.AllowedPrograms) > 0 {
+		for _, e := range m.AllowedPrograms {
+			l = e.Size()
+			n += 1 + l + sovParams(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *AllowedProgram) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ProgramId)
+	if l > 0 {
+		n += 1 + l + sovParams(uint64(l))
+	}
+	if m.MaxInstructions != 0 {
+		n += 1 + sovParams(uint64(m.MaxInstructions))
 	}
 	return n
 }
@@ -219,6 +366,143 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				m.FeePayer = []byte{}
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowedPrograms", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AllowedPrograms = append(m.AllowedPrograms, AllowedProgram{})
+			if err := m.AllowedPrograms[len(m.AllowedPrograms)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipParams(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthParams
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *AllowedProgram) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowParams
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: AllowedProgram: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: AllowedProgram: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProgramId", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthParams
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthParams
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProgramId = append(m.ProgramId[:0], dAtA[iNdEx:postIndex]...)
+			if m.ProgramId == nil {
+				m.ProgramId = []byte{}
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxInstructions", wireType)
+			}
+			m.MaxInstructions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowParams
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MaxInstructions |= uint32(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipParams(dAtA[iNdEx:])

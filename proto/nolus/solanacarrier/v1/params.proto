@@ -14,4 +14,20 @@ message Params {
   // fee-payer signature a broadcastable Solana transaction would need can never
   // be produced.
   bytes fee_payer = 1;
+
+  // allowed_programs lists the Solana programs a carrier may invoke besides the
+  // single bound SPL Memo instruction, each with the most instructions a carrier
+  // may hold for it. An empty list admits the Memo instruction alone. Updating
+  // the params replaces the whole list.
+  repeated AllowedProgram allowed_programs = 2 [ (gogoproto.nullable) = false ];
+}
+
+// AllowedProgram is one Solana program a carrier may invoke.
+message AllowedProgram {
+  // program_id is the program's 32-byte account key.
+  bytes program_id = 1;
+
+  // max_instructions is the most instructions of this program one carrier may
+  // hold, between 1 and 64.
+  uint32 max_instructions = 2;
 }

@@ -12,11 +12,10 @@ import (
 	"github.com/Nolus-Protocol/nolus-core/app/keepers"
 )
 
-// CreateUpgradeHandler for v0.8.7 carries no store or parameter changes. The
-// release moves the node to Cosmos SDK v0.53.8 (Nolus fork) and CometBFT
-// v0.38.26, whose state-breaking fixes live in the binary; the coordinated
-// upgrade height switches every validator at once, and the handler only runs
-// the module migrations so the plan named "v0.8.7" resolves and is recorded.
+// CreateUpgradeHandler for v0.8.7 adds no stores. It runs the module
+// migrations, which move x/solanacarrier to consensus version 2: its stored
+// params keep their fee payer and gain the program allowlist (ComputeBudget and
+// Lighthouse, at most four instructions each).
 func CreateUpgradeHandler(
 	mm *module.Manager,
 	configurator module.Configurator,
