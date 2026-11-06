@@ -1,0 +1,26 @@
+{
+  "messages": [
+    {
+      "@type": "/nolus.solanacarrier.v1.MsgUpdateParams",
+      "authority": "nolus10d07y265gmmuvt4z0w9aw880jnsr700jvjr65k",
+      "params": {
+        "fee_payer": "zvwDfBFDbchbaUO0PJTsUMBJNpbLfnl+hMF2MDjprXA=",
+        "allowed_programs": [
+          {
+            "program_id": "AwZGb+UhFzL/7K26csOb57yM5bvF9xJrLEObOkAAAAA=",
+            "max_instructions": 4
+          },
+          {
+            "program_id": "BN+teWL/sd2SXQqftebQDOYZW6i7OpH9B++YYMXpe7g=",
+            "max_instructions": 4
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": "",
+  "deposit": "30000000000unls",
+  "title": "Update the Solana carrier program allowlist",
+  "summary": "Sets the programs a SIGN_MODE_SOLANA_TX_CARRIER carrier may invoke besides its bound memo. The list replaces the stored one whole.",
+  "expedited": false
+}
