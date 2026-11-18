@@ -18,6 +18,12 @@ Originally a Neutron module, internalized into nolus-core; see
 `MsgTransferResponse` returns the `sequence_id` and `channel`, so the caller can
 correlate the later acknowledgement/timeout callback with the originating transfer.
 
+A transfer over a Solana light client must not set a timeout height with a
+non-zero revision: Solana client heights are always revision 0, so such a
+timeout could never pass, and the send fails with `ErrInvalidHeight`. A
+revision-0 timeout height, or no timeout height with a timeout timestamp, is
+accepted.
+
 ## Wiring
 
 `ibc_handlers.go` intercepts the IBC-transfer ack/timeout, escrows relayer fees via
