@@ -19,9 +19,9 @@ RUN set -eux; apk add --no-cache ca-certificates build-base;
 
 RUN apk add git
 
-ARG WASMVM_VERSION="v3.0.8"
+ARG WASMVM_VERSION="v3.0.10-rc.4"
 ARG WASMVM_LIB="libwasmvm_muslc.x86_64.a"
-ARG WASMVM_BASE_URL="https://github.com/CosmWasm/wasmvm/releases/download/$WASMVM_VERSION"
+ARG WASMVM_BASE_URL="https://github.com/nolus-protocol/wasmvm/releases/download/$WASMVM_VERSION"
 ARG WASMVM_URL="$WASMVM_BASE_URL/$WASMVM_LIB"
 ARG WASMVM_REL_DIR=".wasmvm"
 ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
@@ -29,7 +29,7 @@ ARG WASMVM_DIR=/go/"$WASMVM_REL_DIR"
 ENV WASMVM_DIR=${WASMVM_DIR}
 ARG WASMVM_LIB_LOCAL="libwasmvm_muslc.x86_64.a"
 ARG WASMVM_LOCAL_PATH="$WASMVM_DIR/$WASMVM_LIB_LOCAL"
-ARG WASMVM_SHA256="b2299c85d49faccf3dcbb84984f30f55e8870111df98c10f017f86204d007470"
+ARG WASMVM_SHA256="575c7b1f8f66e621975ccc7c5eb34ab53678b31fc10ca2385847ff56c242fd2f"
 
 RUN mkdir -p $WASMVM_DIR
 RUN set -eux; \
