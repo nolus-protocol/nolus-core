@@ -59,8 +59,6 @@ github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 h1:L/gRVlceqvL25
 github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161/go.mod h1:xomTg63KZ2rFqZQzSB4Vz2SUXa1BpHTVz9L5PTmPC4E=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/BurntSushi/xgb v0.0.0-20160522181843-27f122750802/go.mod h1:IVnqGOEym/WlBOVXweHU+Q+/VP0lqqI8lqeDx9IjBqo=
-github.com/CosmWasm/wasmvm/v3 v3.0.8 h1:RwucGylWvzHH4Bh7fwMcQf7ta7rJvh4qXW1wU06X/Z8=
-github.com/CosmWasm/wasmvm/v3 v3.0.8/go.mod h1:oknpb1bFERvvKcY7vHRp1F/Y/z66xVrsl7n9uWkOAlM=
 github.com/DataDog/datadog-go v3.2.0+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
 github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=
 github.com/DataDog/datadog-go v4.8.3+incompatible/go.mod h1:LButxg5PwREeZtORoXG3tL4fMGNddJ+vMq1mwgfaqoQ=
@@ -636,8 +634,10 @@ github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4 h1:AvTCpEzR8dHPoye2UlpOy
 github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4/go.mod h1:VIH3FLXQ2KWCkzkqXSThA9npvg0LgSBxBRzVSRoJWeg=
 github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-2 h1:diK/qC7bsytWz+2mElWLUMZpixgeou9k2gyvweDgafc=
 github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-2/go.mod h1:a74pAPUSJ7NewvmvELU74hUClJhwnmm5MGbEaiTw/kE=
-github.com/nolus-protocol/wasmd v0.61.15-nolus h1:ynz0OeFw+fx4f+eLu8Na8PaF+qh5i/vqGjoEKW/eTnI=
-github.com/nolus-protocol/wasmd v0.61.15-nolus/go.mod h1:zXHAK+9Kml6ZZr+Dkju+I6rz+DeVbEiH3kDT/Ftb+90=
+github.com/nolus-protocol/wasmd v0.61.17-nolus h1:R2zb3obrmmEwPG7/KJOOobr3+IYY8t2Sjn5Kzap6tWs=
+github.com/nolus-protocol/wasmd v0.61.17-nolus/go.mod h1:cPUoGiL7OrnX/5s/o2cCgiJ2JwfbH9cadzeGgavBwl8=
+github.com/nolus-protocol/wasmvm/v3 v3.0.10-rc.4 h1:yS9O3YKGCERR3K5vUYbFj8FsFdWLV/e3bA27DJjk9tU=
+github.com/nolus-protocol/wasmvm/v3 v3.0.10-rc.4/go.mod h1:oknpb1bFERvvKcY7vHRp1F/Y/z66xVrsl7n9uWkOAlM=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
 github.com/nxadm/tail v1.4.11 h1:8feyoE3OzPrcshW5/MJ4sGESc5cqmGkGCWlco4l0bqY=
 github.com/nxadm/tail v1.4.11/go.mod h1:OTaG3NK980DZzxbRq6lEuzgU+mug70nY11sMd4JXXHc=

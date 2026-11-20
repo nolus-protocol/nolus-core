@@ -17,7 +17,7 @@ require (
 	cosmossdk.io/x/upgrade v0.2.0
 	filippo.io/edwards25519 v1.2.0
 	github.com/CosmWasm/wasmd v0.61.15
-	github.com/CosmWasm/wasmvm/v3 v3.0.8
+	github.com/CosmWasm/wasmvm/v3 v3.0.10-rc.4
 	github.com/cometbft/cometbft v0.38.26
 	github.com/cosmos/admin-module/v2 v2.0.0-20240430142959-8b3328d1b1a2
 	github.com/cosmos/btcutil v1.0.5
@@ -255,7 +255,8 @@ replace (
 	cosmossdk.io/client/v2 => cosmossdk.io/client/v2 v2.0.0-beta.1.0.20240124105859-5ad1805d0e79
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.61.15-nolus
+	github.com/CosmWasm/wasmd => github.com/nolus-protocol/wasmd v0.61.17-nolus
+	github.com/CosmWasm/wasmvm/v3 => github.com/nolus-protocol/wasmvm/v3 v3.0.10-rc.4
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
