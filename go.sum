@@ -634,8 +634,8 @@ github.com/nolus-protocol/cosmos-sdk v0.53.8-nolus-1 h1:eAPN3Ti+5AD1yzrdCjTMMPkV
 github.com/nolus-protocol/cosmos-sdk v0.53.8-nolus-1/go.mod h1:6F/x/3IuOYOSxKWYFcKfk0ONs61VJL8xzxP68PMxiqg=
 github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4 h1:AvTCpEzR8dHPoye2UlpOyoItKsiUqM/MS9z+6nmo1v4=
 github.com/nolus-protocol/cosmos-sdk/api v0.9.2-nolus-4/go.mod h1:VIH3FLXQ2KWCkzkqXSThA9npvg0LgSBxBRzVSRoJWeg=
-github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-1 h1:JOHHP2M6VbMbKcaYqJB9YZrOGxp0ND/zWicjt6e0R0M=
-github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-1/go.mod h1:a74pAPUSJ7NewvmvELU74hUClJhwnmm5MGbEaiTw/kE=
+github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-2 h1:diK/qC7bsytWz+2mElWLUMZpixgeou9k2gyvweDgafc=
+github.com/nolus-protocol/ibc-go/v10 v10.5.0-nolus-2/go.mod h1:a74pAPUSJ7NewvmvELU74hUClJhwnmm5MGbEaiTw/kE=
 github.com/nolus-protocol/wasmd v0.61.15-nolus h1:ynz0OeFw+fx4f+eLu8Na8PaF+qh5i/vqGjoEKW/eTnI=
 github.com/nolus-protocol/wasmd v0.61.15-nolus/go.mod h1:zXHAK+9Kml6ZZr+Dkju+I6rz+DeVbEiH3kDT/Ftb+90=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=

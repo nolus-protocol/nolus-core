@@ -26,7 +26,7 @@ type Upgrade struct {
  // Upgrade version name, for the upgrade handler, e.g. `v7`
  UpgradeName string
  // Function that creates an upgrade handler
- CreateUpgradeHandler func(mm *module.Manager, configurator module.Configurator, keepers *keepers.AppKeepers) upgradetypes.UpgradeHandler
+ CreateUpgradeHandler func(*module.Manager, module.Configurator, *keepers.AppKeepers, codec.Codec) upgradetypes.UpgradeHandler
  // Store upgrades, should be used for any new modules introduced, new modules deleted, or store names renamed.
  StoreUpgrades store.StoreUpgrades
 }
