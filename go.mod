@@ -261,7 +261,6 @@ replace (
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
 
-	// cometbft fork: replays the last stored block on startup without re-validating it
 	github.com/cometbft/cometbft => github.com/nolus-protocol/cometbft v0.38.27-nolus
 
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
