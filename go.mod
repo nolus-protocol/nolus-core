@@ -260,11 +260,14 @@ replace (
 
 	// TODO: Simapp dependency, review removing when updating to SDK with backported update https://github.com/cosmos/cosmos-sdk/issues/13423
 	github.com/btcsuite/btcd => github.com/btcsuite/btcd v0.22.2 // indirect
+
+	// cometbft fork: replays the last stored block on startup without re-validating it
+	github.com/cometbft/cometbft => github.com/nolus-protocol/cometbft v0.38.27-nolus
+
 	github.com/cosmos/admin-module/v2 => github.com/neutron-org/admin-module/v2 v2.0.0
 
 	// cosmos-sdk-nolus fork adds --validate flag with default value 'true' on gov submit-proposal so we can validate the proposal on submission rather than directly on execution
-	// local checkout of the fork rebased on v0.53.8 until the v0.53.8-nolus-1 tag is published
-	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.53.8-nolus-1
+	github.com/cosmos/cosmos-sdk => github.com/nolus-protocol/cosmos-sdk v0.53.9-nolus-1
 	// explicitely replace iavl to v1.2.0 cause sometimes go mod tidy uses not right version
 	github.com/cosmos/iavl => github.com/cosmos/iavl v1.2.0
 
