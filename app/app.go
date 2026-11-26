@@ -74,6 +74,7 @@ import (
 	v087 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v087"
 	v088 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v088"
 	v089 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v089"
+	v090 "github.com/Nolus-Protocol/nolus-core/app/upgrades/v090"
 	"github.com/Nolus-Protocol/nolus-core/docs"
 
 	wasmkeeper "github.com/CosmWasm/wasmd/x/wasm/keeper"
@@ -93,7 +94,7 @@ var (
 		v063.Upgrade, v064.Upgrade, v065.Upgrade, v066.Upgrade, v067.Upgrade, v068.Upgrade,
 		v069.Upgrade, v070.Upgrade, v072.Upgrade, v080.Upgrade, v081.Upgrade, v082.Upgrade,
 		v083.Upgrade, v084.Upgrade, v085.Upgrade, v086.Upgrade, v087.Upgrade, v088.Upgrade,
-		v089.Upgrade,
+		v089.Upgrade, v090.Upgrade,
 	}
 )
 
