@@ -149,9 +149,19 @@ func TestCommittedListsParse(t *testing.T) {
 	last, err := sdk.GetFromBech32("nolus1qpxdzl5hcu8qjk6g5yfyr2mr7079zlsxyusf7j", "nolus")
 	require.NoError(t, err, "the last pirin-1 attacker is a nolus address")
 
+	rilaFirst, err := sdk.GetFromBech32("nolus174yg0trew8dtjcjcaejga3eq9eagtzp6sr62gw", "nolus")
+	require.NoError(t, err, "the first rila-3 test victim is a nolus address")
+	rilaLast, err := sdk.GetFromBech32("nolus1laf76yt48n98l5c8c6jdslk5ceqtn26ty6n9c6", "nolus")
+	require.NoError(t, err, "the rila-3 test attacker is a nolus address")
+
 	got := mustParseEmbedded()
 	require.Equal(t, []string{"pirin-1", "rila-3"}, slices.Sorted(maps.Keys(got)), "only pirin-1 and rila-3 carry lists")
-	require.Equal(t, mustConfig(t, recipient, nil), got["rila-3"], "rila-3 carries only the recovery recipient")
+
+	rila := got["rila-3"]
+	require.Equal(t, sdk.AccAddress(recipient), rila.recipient, "rila-3 sweeps to the recovery recipient")
+	require.Len(t, rila.compromised, 98, "rila-3 lists 97 test victims and 1 test attacker")
+	require.Equal(t, []sdk.AccAddress{rilaFirst, rilaLast}, []sdk.AccAddress{rila.compromised[0], rila.compromised[97]},
+		"rila-3 keeps the file order")
 
 	pirin := got["pirin-1"]
 	// the 97 victims and 2 attackers are data; the list is checked by size, order at both ends and recipient

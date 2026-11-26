@@ -535,7 +535,7 @@ func TestV090UpgradeHandlerSweepsOnlyConfiguredChains(t *testing.T) {
 			},
 		},
 		{
-			name:         "rila-3 lists no compromised address",
+			name:         "rila-3 leaves a pirin-1 address untouched",
 			chainID:      "rila-3",
 			wantBalances: []string{funds.String(), ""},
 			wantEvents:   func(*testing.T, sweepFixture) []sdk.Event { return nil },
