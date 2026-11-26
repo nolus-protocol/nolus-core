@@ -508,35 +508,53 @@ func TestV090ConfigRefusesInstantiatedContract(t *testing.T) {
 }
 
 func TestV090UpgradeHandlerSweepsOnlyConfiguredChains(t *testing.T) {
-	// the recipient of the committed lists, made a module account so a configured chain's pre-check refuses it
+	// the first pirin-1 victim and the recipient from the committed lists
+	listed := sdk.MustAccAddressFromBech32("nolus1p52cmyqtzggu6hxaajh3vrntcugtkrk28fvxzm")
 	pirinRecipient := sdk.MustAccAddressFromBech32("nolus1luvaejqplajhq33xpn42ffsy6558fzg4dvkqnz")
+	funds := sdk.NewCoins(sdk.NewInt64Coin(sweepBondDenom, 1_000))
 
 	tests := []struct {
-		name    string
-		chainID string
-		wantErr error
+		name         string
+		chainID      string
+		wantBalances []string
+		wantEvents   func(t *testing.T, f sweepFixture) []sdk.Event
 	}{
-		{name: "chain without lists runs no sweep", chainID: "unknown-1"},
-		{name: "pirin-1 runs its configured sweep", chainID: "pirin-1", wantErr: v090.ErrProtectedAddress},
-		{name: "rila-3 runs its configured sweep", chainID: "rila-3", wantErr: v090.ErrProtectedAddress},
+		{
+			name:         "chain without lists",
+			chainID:      "unknown-1",
+			wantBalances: []string{funds.String(), ""},
+			wantEvents:   func(*testing.T, sweepFixture) []sdk.Event { return nil },
+		},
+		{
+			name:         "pirin-1 sweeps its listed address",
+			chainID:      "pirin-1",
+			wantBalances: []string{"", funds.String()},
+			wantEvents: func(t *testing.T, f sweepFixture) []sdk.Event {
+				t.Helper()
+				return []sdk.Event{f.sweepEvent(t, listed, funds)}
+			},
+		},
+		{
+			name:         "rila-3 lists no compromised address",
+			chainID:      "rila-3",
+			wantBalances: []string{funds.String(), ""},
+			wantEvents:   func(*testing.T, sweepFixture) []sdk.Event { return nil },
+		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			f := newSweepFixture(t)
-			macc := authtypes.NewModuleAccount(authtypes.NewBaseAccountWithAddress(pirinRecipient), "recovery-recipient")
-			f.app.AccountKeeper.SetAccount(f.ctx, f.app.AccountKeeper.NewAccount(f.ctx, macc))
+			f.fund(t, listed, funds)
 			f.ctx = f.ctx.WithChainID(tc.chainID)
 
 			handler := v090.CreateUpgradeHandler(f.app.mm, f.app.configurator, &f.app.AppKeepers, f.app.appCodec)
 			vm, err := handler(f.ctx, upgradetypes.Plan{Name: v090.UpgradeName}, f.app.mm.GetVersionMap())
-			if tc.wantErr != nil {
-				require.ErrorIs(t, err, tc.wantErr, "a configured chain's sweep checks that chain's recipient")
-			} else {
-				require.NoError(t, err, "the v0.9.0 handler succeeds")
-				require.Equal(t, f.app.mm.GetVersionMap(), vm, "the handler must return every module at its current consensus version")
-			}
-			require.Empty(t, f.sweepEvents(), "no address is swept")
+			require.NoError(t, err, "the v0.9.0 handler succeeds")
+			require.Equal(t, f.app.mm.GetVersionMap(), vm, "the handler must return every module at its current consensus version")
+			require.Equal(t, tc.wantBalances, f.balances(listed, pirinRecipient),
+				"only the chain whose list names the address sweeps it to that chain's recipient")
+			require.Equal(t, tc.wantEvents(t, f), f.sweepEvents(), "the handler emits a sweep event only for a swept address")
 		})
 	}
 }

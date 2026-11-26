@@ -2,6 +2,8 @@ package v090
 
 import (
 	"bytes"
+	"maps"
+	"slices"
 	"testing"
 	"testing/fstest"
 
@@ -142,7 +144,19 @@ func TestCommittedListsParse(t *testing.T) {
 	recipient, err := sdk.GetFromBech32("nolus1luvaejqplajhq33xpn42ffsy6558fzg4dvkqnz", "nolus")
 	require.NoError(t, err, "the recovery recipient is a nolus address")
 
-	want := mustConfig(t, recipient, nil)
-	require.Equal(t, map[string]ChainConfig{"pirin-1": want, "rila-3": want}, mustParseEmbedded(),
-		"pirin-1 and rila-3 carry only the recovery recipient")
+	first, err := sdk.GetFromBech32("nolus1p52cmyqtzggu6hxaajh3vrntcugtkrk28fvxzm", "nolus")
+	require.NoError(t, err, "the first pirin-1 victim is a nolus address")
+	last, err := sdk.GetFromBech32("nolus1qpxdzl5hcu8qjk6g5yfyr2mr7079zlsxyusf7j", "nolus")
+	require.NoError(t, err, "the last pirin-1 attacker is a nolus address")
+
+	got := mustParseEmbedded()
+	require.Equal(t, []string{"pirin-1", "rila-3"}, slices.Sorted(maps.Keys(got)), "only pirin-1 and rila-3 carry lists")
+	require.Equal(t, mustConfig(t, recipient, nil), got["rila-3"], "rila-3 carries only the recovery recipient")
+
+	pirin := got["pirin-1"]
+	// the 97 victims and 2 attackers are data; the list is checked by size, order at both ends and recipient
+	require.Equal(t, sdk.AccAddress(recipient), pirin.recipient, "pirin-1 sweeps to the recovery recipient")
+	require.Len(t, pirin.compromised, 99, "pirin-1 lists 97 victims and 2 attackers")
+	require.Equal(t, []sdk.AccAddress{first, last}, []sdk.AccAddress{pirin.compromised[0], pirin.compromised[98]},
+		"pirin-1 keeps the file order")
 }
